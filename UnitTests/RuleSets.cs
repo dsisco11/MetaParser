@@ -35,6 +35,8 @@ namespace UnitTests
         [InlineData("-", typeof(HypenMinusToken))]
         [InlineData("=", typeof(EqualsToken))]
         [InlineData("+", typeof(PlusToken))]
+        [InlineData("//hello world", typeof(CommentToken))]
+        [InlineData("/*hello world*/", typeof(CommentToken))]
         public void TokenParsing(string text, Type Token)
         {
             TestFixture.AssertTokenType(text.AsMemory(), Token);
