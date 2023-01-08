@@ -20,13 +20,8 @@ namespace MetaParser.RuleSets.Text.Tokens
         // So doing something tragic like... calling toString and comparing the values... is... fine?
         public bool Equals(IToken<char>? other)
         {
-            if (ReferenceEquals(this, other)) 
-                return true;
-
-            if (Value.Start.Equals(other?.Value.Start))
-                return true;
-
-            return ToString().Equals(other?.ToString(), StringComparison.Ordinal);
+            return ReferenceEquals(this, other)
+|| Value.Start.Equals(other?.Value.Start) || ToString().Equals(other?.ToString(), StringComparison.Ordinal);
         }
 
         public override string ToString()

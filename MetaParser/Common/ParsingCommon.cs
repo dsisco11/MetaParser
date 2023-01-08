@@ -50,7 +50,7 @@ namespace MetaParser
 
 
             /* Collect sequence of ASCII digit codepoints */
-            _try_consume_ascii_digit_sequence(ref Stream, out ReadOnlySequence<char> digitSeq);
+            Try_consume_ascii_digit_sequence(ref Stream, out ReadOnlySequence<char> digitSeq);
 
             if (!Stream.End && Stream.TryPeek(out char pk) && char.IsLetter(pk))
             {
@@ -58,7 +58,7 @@ namespace MetaParser
                 return false;
             }
 
-            var n = _consume_subseq_base10(digitSeq);
+            var n = Consume_subseq_base10(digitSeq);
             outValue = sign ? n :  -n;
             return true;
         }
@@ -103,13 +103,13 @@ namespace MetaParser
             if (!stream.IsNext(CHAR_FULL_STOP))
             {
                 /* 11) Collect a sequence of code points that are ASCII digits from input given position, and interpret the resulting sequence as a base-ten integer. Multiply value by that integer. */
-                if(!_try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
+                if(!Try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
                 {
                     outValue = double.NaN;
                     return false;
                 }
 
-                var n = _consume_subseq_base10(digitSeq);
+                var n = Consume_subseq_base10(digitSeq);
                 value *= n;
             }
 
@@ -145,9 +145,9 @@ namespace MetaParser
 
                 /* 4) If the character indicated by position is not an ASCII digit, then jump to the step labeled conversion. */
                 /* 5) Collect a sequence of code points that are ASCII digits from input given position, and interpret the resulting sequence as a base-ten integer. Multiply exponent by that integer. */
-                if(_try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
+                if(Try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
                 {
-                    var n = _consume_subseq_base10(digitSeq);
+                    var n = Consume_subseq_base10(digitSeq);
                     exponent *= n;
                     /* 6) Multiply value by ten raised to the exponentth power. */
                     value *= Math.Pow(10, exponent);
@@ -188,7 +188,7 @@ namespace MetaParser
                 if (roundedValue == -0D) roundedValue = -roundedValue;
 
                 /* 17) If rounded-value is 2^1024 or −2^1024, return an error. */
-                if (roundedValue == double.MinValue || roundedValue == double.MaxValue)
+                if (roundedValue is double.MinValue or double.MaxValue)
                 {
                     outValue = double.NaN;
                     return false;
@@ -201,7 +201,7 @@ namespace MetaParser
         #endregion
 
         #region Utility
-        private static bool _try_consume_ascii_digit_sequence(ref SequenceReader<char> stream, out ReadOnlySequence<char> consumed)
+        private static bool Try_consume_ascii_digit_sequence(ref SequenceReader<char> stream, out ReadOnlySequence<char> consumed)
         {
             var startPos = stream.Position;
             var count = stream.AdvancePastAny(ASCII_DIGITS);
@@ -215,7 +215,7 @@ namespace MetaParser
             return true;
         }
 
-        private static long _consume_subseq_base10(ReadOnlySequence<char> seq)
+        private static long Consume_subseq_base10(ReadOnlySequence<char> seq)
         {
             var rd = new SequenceReader<char>(seq);
             long accum = 0;

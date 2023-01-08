@@ -18,15 +18,12 @@ namespace MetaParser.Parsing.Rules
             return Tokenizer.Get_Reader().IsNext(Value);
         }
 
-        protected override ReadOnlySequence<Ty>? consume(ITokenizer<Ty> Tokenizer, IToken<Ty> Previous)
+        protected override bool Try_Consume(ITokenizer<Ty> Tokenizer, IToken<Ty> Previous, out ReadOnlySequence<Ty>? outConsumed)
         {
             var rd = Tokenizer.Get_Reader();
-            if (rd.IsNext(Value, true))
-            {
-                return Tokenizer.Consume(ref rd);
-            }
-
-            return null;
+            bool success = rd.IsNext(Value, true);
+            outConsumed = success ? Tokenizer.Consume(ref rd) : null;
+            return success;
         }
     }
 }

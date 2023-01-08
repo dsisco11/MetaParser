@@ -293,13 +293,11 @@ namespace MetaParser
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Is_Surrogate_Code_Point(char codePoint)
         {/* Docs: https://infra.spec.whatwg.org/#surrogate */
-            switch (codePoint)
+            return codePoint switch
             {
-                case var _ when (codePoint >= '\uD800' && codePoint <= '\uDFFF'):
-                    return true;
-                default:
-                    return false;
-            }
+                var _ when (codePoint is >= '\uD800' and <= '\uDFFF') => true,
+                _ => false,
+            };
         }
 
         /// <summary>
@@ -313,9 +311,9 @@ namespace MetaParser
             */
             switch (codePoint)
             {
-                case var _ when (codePoint >= CHAR_DIGIT_0 && codePoint <= CHAR_DIGIT_9):
-                case var _ when (codePoint >= CHAR_A_LOWER && codePoint <= CHAR_F_LOWER):
-                case var _ when (codePoint >= CHAR_A_UPPER && codePoint <= CHAR_F_UPPER):
+                case var _ when (codePoint is >= CHAR_DIGIT_0 and <= CHAR_DIGIT_9):
+                case var _ when (codePoint is >= CHAR_A_LOWER and <= CHAR_F_LOWER):
+                case var _ when (codePoint is >= CHAR_A_UPPER and <= CHAR_F_UPPER):
                     return true;
                 default:
                     return false;
@@ -360,62 +358,37 @@ namespace MetaParser
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Percent_Encode_Set_C0_Control(char c)
         {/* Docs: https://url.spec.whatwg.org/#c0-control-percent-encode-set */
-            return (c >= CHAR_C0_DELETE && c <= CHAR_C0_APPLICATION_PROGRAM_COMMAND) || (c > CHAR_TILDE);
+            return c is (>= CHAR_C0_DELETE and <= CHAR_C0_APPLICATION_PROGRAM_COMMAND) or > CHAR_TILDE;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Percent_Encode_Set_Fragment(char c)
         {/* Docs: https://url.spec.whatwg.org/#fragment-percent-encode-set */
-            if (Percent_Encode_Set_C0_Control(c)) return true;
-            switch (c)
+            return Percent_Encode_Set_C0_Control(c) || c switch
             {
-                case CHAR_SPACE:
-                case CHAR_QUOTATION_MARK:
-                case CHAR_LEFT_CHEVRON:
-                case CHAR_RIGHT_CHEVRON:
-                case CHAR_BACKTICK:
-                    return true;
-                default:
-                    return false;
-            }
+                CHAR_SPACE or CHAR_QUOTATION_MARK or CHAR_LEFT_CHEVRON or CHAR_RIGHT_CHEVRON or CHAR_BACKTICK => true,
+                _ => false,
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Percent_Encode_Set_Path(char c)
         {/* Docs: https://url.spec.whatwg.org/#path-percent-encode-set */
-            if (Percent_Encode_Set_Fragment(c)) return true;
-            switch (c)
+            return Percent_Encode_Set_Fragment(c) || c switch
             {
-                case CHAR_HASH:
-                case CHAR_QUESTION_MARK:
-                case CHAR_LEFT_CURLY_BRACKET:
-                case CHAR_RIGHT_CURLY_BRACKET:
-                    return true;
-                default:
-                    return false;
-            }
+                CHAR_HASH or CHAR_QUESTION_MARK or CHAR_LEFT_CURLY_BRACKET or CHAR_RIGHT_CURLY_BRACKET => true,
+                _ => false,
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Percent_Encode_Set_Userinfo(char c)
         {/* Docs: https://url.spec.whatwg.org/#userinfo-percent-encode-set */
-            if (Percent_Encode_Set_Path(c)) return true;
-            switch (c)
+            return Percent_Encode_Set_Path(c) || c switch
             {
-                case CHAR_SOLIDUS:
-                case CHAR_COLON:
-                case CHAR_SEMICOLON:
-                case CHAR_EQUALS:
-                case CHAR_AT_SIGN:
-                case CHAR_LEFT_SQUARE_BRACKET:
-                case CHAR_REVERSE_SOLIDUS:
-                case CHAR_RIGHT_SQUARE_BRACKET:
-                case CHAR_CARET:
-                case CHAR_PIPE:
-                    return true;
-                default:
-                    return false;
-            }
+                CHAR_SOLIDUS or CHAR_COLON or CHAR_SEMICOLON or CHAR_EQUALS or CHAR_AT_SIGN or CHAR_LEFT_SQUARE_BRACKET or CHAR_REVERSE_SOLIDUS or CHAR_RIGHT_SQUARE_BRACKET or CHAR_CARET or CHAR_PIPE => true,
+                _ => false,
+            };
         }
         #endregion
 
@@ -430,13 +403,9 @@ namespace MetaParser
             if (ParsingCommon.Try_Consume_Hexadecimal_Number(Stream, out var hexNum))
             {
                 Stream.AdvancePastAny(ASCII_WHITESPACE);
-                if (hexNum == 0 || hexNum > CHAR_UNICODE_MAX)
-                    return CHAR_REPLACEMENT;
-
-                if (Is_Surrogate_Code_Point((char)hexNum))
-                    return CHAR_REPLACEMENT;
-
-                return (char)hexNum;
+                return hexNum is 0 or > CHAR_UNICODE_MAX
+                    ? CHAR_REPLACEMENT
+                    : Is_Surrogate_Code_Point((char)hexNum) ? CHAR_REPLACEMENT : (char)hexNum;
             }
 
             return Stream.TryRead(out var ch) ? ch : CHAR_REPLACEMENT;

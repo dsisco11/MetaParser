@@ -37,7 +37,7 @@ namespace MetaParser
                 last = Consume_Next(Stream, last);
                 tokenList.AddLast(last);
             }
-            while (!Stream.atEnd);
+            while (!Stream.AtEnd);
 
             return tokenList.ToArray();
         }
@@ -48,7 +48,7 @@ namespace MetaParser
             ArgumentNullException.ThrowIfNull(Stream);
             Contract.EndContractBlock();
 
-            if (Stream.atEOF || Stream.atEnd)
+            if (Stream.AtEOF || Stream.AtEnd)
             {
                 Stream.Consume(1);
                 return Config.EOF_TOKEN;

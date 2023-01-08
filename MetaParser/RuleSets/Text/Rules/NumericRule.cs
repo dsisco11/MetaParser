@@ -15,7 +15,7 @@ namespace MetaParser.RuleSets.Text.Rules
             return ParsingCommon.Is_Number_Start(Tokenizer.Get_Reader());
         }
 
-        private ENumberKind Detect_Number_Kind(ITokenizer<char> Tokenizer)
+        private static ENumberKind Detect_Number_Kind(ITokenizer<char> Tokenizer)
         {
             var rd = Tokenizer.Get_Reader();
             rd.IsNext(UnicodeCommon.CHAR_PLUS_SIGN, advancePast: true);
@@ -23,22 +23,11 @@ namespace MetaParser.RuleSets.Text.Rules
 
             rd.AdvancePastAny(UnicodeCommon.ASCII_DIGITS);
 
-            if (rd.IsNext(UnicodeCommon.CHAR_FULL_STOP))
-            {
-                return ENumberKind.Decimal;
-            }
-
-            if (rd.IsNext(UnicodeCommon.CHAR_E_LOWER))
-            {
-                return ENumberKind.Decimal;
-            }
-
-            if (rd.IsNext(UnicodeCommon.CHAR_E_UPPER))
-            {
-                return ENumberKind.Decimal;
-            }
-
-            return ENumberKind.Integer;
+            return rd.IsNext(UnicodeCommon.CHAR_FULL_STOP)
+                   || rd.IsNext(UnicodeCommon.CHAR_E_LOWER)
+                   || rd.IsNext(UnicodeCommon.CHAR_E_UPPER)
+                ? ENumberKind.Decimal
+                : ENumberKind.Integer;
         }
 
         public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
@@ -48,21 +37,15 @@ namespace MetaParser.RuleSets.Text.Rules
             var rd = Tokenizer.Get_Reader();
             if (Kind == ENumberKind.Integer)
             {
-                if (ParsingCommon.Try_Parse_Integer(ref rd, out var outInteger))
-                {
-                    return new IntegerToken(Tokenizer.Consume(ref rd), outInteger);
-                }
-
-                return new BadNumberToken(Tokenizer.Consume(ref rd));
+                return ParsingCommon.Try_Parse_Integer(ref rd, out var outInteger)
+                    ? new IntegerToken(Tokenizer.Consume(ref rd), outInteger)
+                    : new BadNumberToken(Tokenizer.Consume(ref rd));
             }
             else if (Kind == ENumberKind.Decimal)
             {
-                if (ParsingCommon.Try_Parse_FloatingPoint(ref rd, out var outDecimal))
-                {
-                    return new DecimalToken(Tokenizer.Consume(ref rd), outDecimal);
-                }
-
-                return new BadNumberToken(Tokenizer.Consume(ref rd));
+                return ParsingCommon.Try_Parse_FloatingPoint(ref rd, out var outDecimal)
+                    ? new DecimalToken(Tokenizer.Consume(ref rd), outDecimal)
+                    : new BadNumberToken(Tokenizer.Consume(ref rd));
             }
 
             rd.Advance(1);

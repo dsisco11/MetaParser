@@ -1,5 +1,5 @@
-﻿using MetaParser.Parsing.Tokens;
-using MetaParser.Parsing.Definitions;
+﻿using MetaParser.Parsing.Definitions;
+using MetaParser.Parsing.Tokens;
 
 using System.Buffers;
 
@@ -18,15 +18,10 @@ namespace MetaParser.Parsing.Rules
 
         public IToken<Ty>? Consume(ITokenizer<Ty> Tokenizer, IToken<Ty> Previous)
         {
-            var consumed = consume(Tokenizer, Previous);
-            if (consumed is not null)
-            {
-                return TokenFactory?.Invoke(consumed.Value) ?? new Token<Ty>(consumed.Value);
-            }
-
-            return null;
+            return Try_Consume(Tokenizer, Previous, out var consumed) && consumed is not null
+                ? (TokenFactory?.Invoke(consumed.Value) ?? new Token<Ty>(consumed.Value)) : null;
         }
 
-        protected abstract ReadOnlySequence<Ty>? consume(ITokenizer<Ty> Tokenizer, IToken<Ty> Previous);
+        protected abstract bool Try_Consume(ITokenizer<Ty> Tokenizer, IToken<Ty> Previous, out ReadOnlySequence<Ty>? outConsumed);
     }
 }

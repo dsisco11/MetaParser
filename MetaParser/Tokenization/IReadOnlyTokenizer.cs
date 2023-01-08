@@ -4,12 +4,9 @@ namespace MetaParser
 {
     public interface IReadOnlyTokenizer<T> where T : unmanaged, IEquatable<T>
     {
-        bool atEnd { get; }
-        bool atEOF { get; }
+        bool AtEnd { get; }
+        bool AtEOF { get; }
         long Length { get; }
-        T Next { get; }
-        T NextNext { get; }
-        T NextNextNext { get; }
         int Position { get; }
         long Remaining { get; }
 

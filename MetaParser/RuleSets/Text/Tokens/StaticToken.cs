@@ -2,5 +2,5 @@
 
 namespace MetaParser.RuleSets.Text.Tokens
 {
-    public abstract record StaticToken(ETextToken type, char value) : ValueToken(type, new[] { value });
+    public abstract record StaticToken(ETextToken Type, char Character) : ValueToken(Type, new[] { Character });
 }

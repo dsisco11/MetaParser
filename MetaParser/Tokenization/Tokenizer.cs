@@ -55,30 +55,14 @@ namespace MetaParser
         public long Length => DataSeq.Length;// Data.Length;
         public long Remaining => CurrentSeq.Length;//(Length - Position);
         /// <summary>
-        /// Returns the next item to be consumed, equivalent to calling Peek(0)
-        /// </summary>
-        [Obsolete]
-        public T Next => Peek(0);
-        /// <summary>
-        /// Returns the next item to be consumed, equivalent to calling Peek(1)
-        /// </summary>
-        [Obsolete]
-        public T NextNext => Peek(1);
-        /// <summary>
-        /// Returns the next item to be consumed, equivalent to calling Peek(2)
-        /// </summary>
-        [Obsolete]
-        public T NextNextNext => Peek(2);
-
-        /// <summary>
         /// Returns whether the stream position is currently at the end of the stream
         /// </summary>
-        public bool atEnd => CurrentSeq.IsEmpty;
+        public bool AtEnd => CurrentSeq.IsEmpty;
 
         /// <summary>
         /// Returns whether the next character in the stream is the EOF character
         /// </summary>
-        public bool atEOF => object.Equals(CurrentSeq.FirstSpan[0], EOF_ITEM);
+        public bool AtEOF => object.Equals(CurrentSeq.FirstSpan[0], EOF_ITEM);
         #endregion
 
         #region Reader

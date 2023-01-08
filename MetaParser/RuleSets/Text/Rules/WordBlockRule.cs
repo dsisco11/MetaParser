@@ -8,7 +8,7 @@ namespace MetaParser.RuleSets.Text.Rules
     {
         public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            return char.IsLetter(Tokenizer.Next) && char.IsLetterOrDigit(Tokenizer.NextNext);
+            return char.IsLetter(Tokenizer.Peek(0)) && char.IsLetterOrDigit(Tokenizer.Peek(1));
         }
 
         public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
@@ -26,13 +26,7 @@ namespace MetaParser.RuleSets.Text.Rules
             }
             while (!rd.End);
 
-            if (rd.Consumed <= 0)
-            {
-                return null;
-            }
-
-            return new IdentToken(Tokenizer.Consume(ref rd));
-
+            return rd.Consumed <= 0 ? null : (IToken<char>)new IdentToken(Tokenizer.Consume(ref rd));
         }
     }
 }
