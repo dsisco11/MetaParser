@@ -12,12 +12,8 @@
     <PackageTags>parsing, tokenization, tokenizer, text parser</PackageTags>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AnalysisLevel>6.0-recommended</AnalysisLevel>
-    <Version>0.1.2</Version>
+    <Version>0.1.3</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Rules\NewFolder\" />
-  </ItemGroup>
 
 </Project>

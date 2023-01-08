@@ -1,5 +1,4 @@
-﻿using MetaParser.Parsing;
-using MetaParser.Rules;
+﻿using MetaParser.Rules;
 using MetaParser.RuleSets.Text;
 using MetaParser.Tokens.Text;
 
@@ -13,7 +12,7 @@ namespace MetaParser.RuleSets
         /// <note>Whitespace: \s(space), \r, \t, \f</note>
         /// <note>Words: sequences of 2 or more letters/digits where the first character is a letter and not a digit</note>
         /// </summary>
-        public static TokenRuleSet<char> Common => new(
+        public static RuleSet<char> Common => new(
             new AutoRule<char>(new NewlineToken()),
             new WhitespaceRule(includeNewline: false),
             new WordBlockRule()
@@ -22,7 +21,7 @@ namespace MetaParser.RuleSets
         /// This ruleset captures sequences of basic ASCII whitespace characters such as: \s(space), \n, \r, \t, \f
         /// <note>The newline(\n) character is output as its own token type</note>
         /// </summary>
-        public static TokenRuleSet<char> Whitespace => new(
+        public static RuleSet<char> Whitespace => new(
             new AutoRule<char>(new NewlineToken()),
             new WhitespaceRule(includeNewline: false)
         );
@@ -30,7 +29,7 @@ namespace MetaParser.RuleSets
         /// <summary>
         /// This ruleset contains tokens which capture sequences of legible 'word' characters, so any sequence of human-readable characters which are not whitespace or control characters
         /// </summary>
-        public static TokenRuleSet<char> Words => new(
+        public static RuleSet<char> Words => new(
             new WordBlockRule()
         );
 
@@ -38,7 +37,7 @@ namespace MetaParser.RuleSets
         /// Common symbols of importance for things like programming, markup, and configuration files.
         /// <para>: | ; , [ ] ( ) { } \< \> - = +</para>
         /// </summary>
-        public static TokenRuleSet<char> CodeLikeSymbols => new(
+        public static RuleSet<char> CodeLikeSymbols => new(
             new AutoRule<char>(new ColonToken()),
             new AutoRule<char>(new ColumnToken()),
             new AutoRule<char>(new SemicolonToken()),
@@ -59,7 +58,7 @@ namespace MetaParser.RuleSets
         /// <summary>
         /// Code 'Objects' are more complex structures like comment blocks, function names, variable declarations, etc.
         /// </summary>
-        public static TokenRuleSet<char> CodeStructures => new(
+        public static RuleSet<char> CodeStructures => new(
             new CodeLineCommentRule("//"),
             new CodeBlockCommentRule("/*", "*/"),
             new NumericRule()

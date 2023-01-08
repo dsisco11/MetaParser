@@ -1,5 +1,6 @@
 ﻿using MetaParser;
 using MetaParser.Parsing;
+using MetaParser.Rules;
 using MetaParser.Tokens;
 using MetaParser.Tokens.Text;
 
@@ -17,7 +18,7 @@ namespace UnitTests
             parser = new(config);
         }
 
-        public ParsingTestFixture(params TokenRuleSet<Ty>[] rules)
+        public ParsingTestFixture(params RuleSet<Ty>[] rules)
         {
             parser = new(new ParsingConfig<Ty>(rules));
         }

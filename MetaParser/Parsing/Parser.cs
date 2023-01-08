@@ -77,7 +77,7 @@ namespace MetaParser
         /// <param name="Tokenizer"></param>
         /// <param name="prevToken"></param>
         /// <returns></returns>
-        private static bool Try_Consume(TokenRuleSet<T> Ruleset, ITokenizer<T> Tokenizer, IToken<T> prevToken, out IToken<T>? Result)
+        private static bool Try_Consume(RuleSet<T> Ruleset, ITokenizer<T> Tokenizer, IToken<T> prevToken, out IToken<T>? Result)
         {
             ArgumentNullException.ThrowIfNull(Ruleset);
             ArgumentNullException.ThrowIfNull(Tokenizer);

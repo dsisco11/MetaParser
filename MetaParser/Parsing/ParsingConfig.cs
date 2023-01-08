@@ -1,4 +1,5 @@
-﻿using MetaParser.Tokens;
+﻿using MetaParser.Rules;
+using MetaParser.Tokens;
 
 namespace MetaParser.Parsing
 {
@@ -7,17 +8,17 @@ namespace MetaParser.Parsing
     {
         #region Fields
         private readonly EOFToken<TTokenData> eof = new();
-        private readonly TokenRuleSet<TTokenData>[] rulesets;
+        private readonly RuleSet<TTokenData>[] rulesets;
         #endregion
 
         #region Properties
         public readonly EOFToken<TTokenData> EOF => eof;
-        public TokenRuleSet<TTokenData>[] Rulesets => rulesets;
+        public RuleSet<TTokenData>[] Rulesets => rulesets;
 
         #endregion
 
         #region Constructors
-        public ParsingConfig(params TokenRuleSet<TTokenData>[] rulesets)
+        public ParsingConfig(params RuleSet<TTokenData>[] rulesets)
         {
             this.rulesets = rulesets;
         }
