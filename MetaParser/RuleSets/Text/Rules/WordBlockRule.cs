@@ -1,6 +1,6 @@
-﻿using MetaParser.RuleSets.Text.Tokens;
-using MetaParser.Parsing.Definitions;
+﻿using MetaParser.Parsing.Definitions;
 using MetaParser.Parsing.Tokens;
+using MetaParser.RuleSets.Text.Tokens;
 
 namespace MetaParser.RuleSets.Text.Rules
 {
@@ -16,7 +16,7 @@ namespace MetaParser.RuleSets.Text.Rules
             var rd = Tokenizer.Get_Reader();
             do
             {
-                if(!rd.TryPeek(out var ch))
+                if (!rd.TryPeek(out var ch))
                     break;
 
                 if (!char.IsLetterOrDigit(ch))

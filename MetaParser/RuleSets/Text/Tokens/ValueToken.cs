@@ -1,4 +1,5 @@
 ﻿using MetaParser.Parsing;
+
 using System.Buffers;
 
 namespace MetaParser.RuleSets.Text.Tokens
@@ -17,7 +18,7 @@ namespace MetaParser.RuleSets.Text.Tokens
 
         public ValueToken(ETextToken type, ReadOnlyMemory<char> value) : base(type)
         {
-            this.value = new (value);
+            this.value = new(value);
         }
     }
 }

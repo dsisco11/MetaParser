@@ -1,7 +1,5 @@
 ﻿using MetaParser.Parsing.Tokens;
 
-using System.Buffers;
-
 namespace MetaParser.Parsing.Definitions
 {
     /// <summary>

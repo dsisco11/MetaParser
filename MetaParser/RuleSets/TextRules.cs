@@ -1,7 +1,7 @@
-﻿using MetaParser.RuleSets.Text.Tokens;
+﻿using MetaParser.Parsing;
 using MetaParser.Parsing.Definitions;
-using MetaParser.Parsing;
 using MetaParser.RuleSets.Text.Rules;
+using MetaParser.RuleSets.Text.Tokens;
 
 namespace MetaParser.RuleSets
 {

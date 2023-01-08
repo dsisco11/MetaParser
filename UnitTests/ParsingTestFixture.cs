@@ -5,7 +5,7 @@ using MetaParser.RuleSets.Text.Tokens;
 
 namespace UnitTests
 {
-    public class ParsingTestFixture<Ty> : IDisposable 
+    public class ParsingTestFixture<Ty> : IDisposable
         where Ty : unmanaged, IEquatable<Ty>
     {
         protected readonly Parser<Ty> parser;

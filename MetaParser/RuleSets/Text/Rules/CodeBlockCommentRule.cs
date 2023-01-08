@@ -1,6 +1,6 @@
-﻿using MetaParser.RuleSets.Text.Tokens;
-using MetaParser.Parsing.Definitions;
+﻿using MetaParser.Parsing.Definitions;
 using MetaParser.Parsing.Tokens;
+using MetaParser.RuleSets.Text.Tokens;
 
 using System.Buffers;
 
@@ -31,7 +31,7 @@ namespace MetaParser.RuleSets.Text.Rules
             var rd = Tokenizer.Get_Reader();
             rd.Advance(BlockStart.Length);
             // Skip forward until we find the block end sequence or we reach the stream end
-            if(!rd.TryReadTo(out ReadOnlySequence<char> _, BlockEnd))
+            if (!rd.TryReadTo(out ReadOnlySequence<char> _, BlockEnd))
             {// Consume everything thats left if we couldnt find it
                 rd.AdvanceToEnd();
             }

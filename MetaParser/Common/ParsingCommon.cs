@@ -59,7 +59,7 @@ namespace MetaParser
             }
 
             var n = Consume_subseq_base10(digitSeq);
-            outValue = sign ? n :  -n;
+            outValue = sign ? n : -n;
             return true;
         }
         #endregion
@@ -103,7 +103,7 @@ namespace MetaParser
             if (!stream.IsNext(CHAR_FULL_STOP))
             {
                 /* 11) Collect a sequence of code points that are ASCII digits from input given position, and interpret the resulting sequence as a base-ten integer. Multiply value by that integer. */
-                if(!Try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
+                if (!Try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
                 {
                     outValue = double.NaN;
                     return false;
@@ -145,7 +145,7 @@ namespace MetaParser
 
                 /* 4) If the character indicated by position is not an ASCII digit, then jump to the step labeled conversion. */
                 /* 5) Collect a sequence of code points that are ASCII digits from input given position, and interpret the resulting sequence as a base-ten integer. Multiply exponent by that integer. */
-                if(Try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
+                if (Try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
                 {
                     var n = Consume_subseq_base10(digitSeq);
                     exponent *= n;
