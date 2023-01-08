@@ -2,18 +2,24 @@
 
 namespace MetaParser.Parsing
 {
-    public sealed record ParsingConfig<TokenData>
-        where TokenData : unmanaged, IEquatable<TokenData>
+    public readonly struct ParsingConfig<TTokenData>
+        where TTokenData : unmanaged, IEquatable<TTokenData>
     {
+        #region Fields
+        private readonly EOFToken<TTokenData> eof = new();
+        private readonly TokenRuleSet<TTokenData>[] rulesets;
+        #endregion
+
         #region Properties
-        public readonly EOFToken<TokenData> EOF_TOKEN = new();
-        public readonly TokenRuleSet<TokenData>[] Rulesets;
+        public readonly EOFToken<TTokenData> EOF => eof;
+        public TokenRuleSet<TTokenData>[] Rulesets => rulesets;
+
         #endregion
 
         #region Constructors
-        public ParsingConfig(params TokenRuleSet<TokenData>[] rulesets)
+        public ParsingConfig(params TokenRuleSet<TTokenData>[] rulesets)
         {
-            Rulesets = rulesets;
+            this.rulesets = rulesets;
         }
         #endregion
 

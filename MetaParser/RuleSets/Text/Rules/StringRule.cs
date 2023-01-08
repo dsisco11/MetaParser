@@ -8,12 +8,12 @@ namespace MetaParser.RuleSets.Text.Rules
     {
         public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            return Tokenizer.Get_Reader().AdvancePastAny(UnicodeCommon.SYMBOLS_QUOTATION_MARKS) > 0;
+            return Tokenizer.GetReader().AdvancePastAny(UnicodeCommon.SYMBOLS_QUOTATION_MARKS) > 0;
         }
 
         public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            var rd = Tokenizer.Get_Reader();
+            var rd = Tokenizer.GetReader();
             if (!rd.TryRead(out char closingChar))
             {
                 throw new Exception($"Exception while parsing @{Tokenizer}");

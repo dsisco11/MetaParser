@@ -18,10 +18,10 @@ namespace MetaParser.Parsing.Rules
 
         public IToken<T>? Consume(ITokenizer<T> Tokenizer, IToken<T> Previous)
         {
-            return Try_Consume(Tokenizer, Previous, out var consumed) && consumed is not null
+            return TryConsume(Tokenizer, Previous, out var consumed) && consumed is not null
                 ? (TokenFactory?.Invoke(consumed.Value) ?? new Token<T>(consumed.Value)) : null;
         }
 
-        protected abstract bool Try_Consume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed);
+        protected abstract bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed);
     }
 }

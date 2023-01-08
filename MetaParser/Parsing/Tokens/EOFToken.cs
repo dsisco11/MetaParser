@@ -2,16 +2,16 @@
 
 namespace MetaParser.Parsing.Tokens
 {
-    public record EOFToken<Ty> : IToken<Ty> where Ty : unmanaged, IEquatable<Ty>
+    public record EOFToken<T> : IToken<T> where T : unmanaged, IEquatable<T>
     {
-        public ReadOnlySequence<Ty> Value
+        public ReadOnlySequence<T> Value
         {
-            get => ReadOnlySequence<Ty>.Empty;
+            get => ReadOnlySequence<T>.Empty;
         }
 
-        public bool Equals(IToken<Ty>? other)
+        public bool Equals(IToken<T>? other)
         {
-            return (other is EOFToken<Ty>);
+            return (other is EOFToken<T>);
         }
 
         public override string ToString()

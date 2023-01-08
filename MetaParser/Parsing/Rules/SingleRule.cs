@@ -4,23 +4,23 @@ using System.Buffers;
 
 namespace MetaParser.Parsing.Rules
 {
-    public class SingleRule<Ty> : TokenRule<Ty> where Ty : unmanaged, IEquatable<Ty>
+    public class SingleRule<T> : TokenRule<T> where T : unmanaged, IEquatable<T>
     {
-        public Ty Value { get; init; }
+        public T Value { get; init; }
 
-        public SingleRule(Ty value, TokenFactory<Ty> tokenFactory) : base(tokenFactory)
+        public SingleRule(T value, TokenFactory<T> tokenFactory) : base(tokenFactory)
         {
             Value = value;
         }
 
-        public override bool Check(IReadOnlyTokenizer<Ty> Tokenizer, IToken<Ty> Previous)
+        public override bool Check(IReadOnlyTokenizer<T> Tokenizer, IToken<T> Previous)
         {
-            return Tokenizer.Get_Reader().IsNext(Value);
+            return Tokenizer.GetReader().IsNext(Value);
         }
 
-        protected override bool Try_Consume(ITokenizer<Ty> Tokenizer, IToken<Ty> Previous, out ReadOnlySequence<Ty>? outConsumed)
+        protected override bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed)
         {
-            var rd = Tokenizer.Get_Reader();
+            var rd = Tokenizer.GetReader();
             bool success = rd.IsNext(Value, true);
             outConsumed = success ? Tokenizer.Consume(ref rd) : null;
             return success;

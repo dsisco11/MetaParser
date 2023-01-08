@@ -9,7 +9,7 @@ namespace MetaParser
     public static class ParsingCommon
     {
         #region Hexadecimal
-        public static bool Try_Consume_Hexadecimal_Number(in SequenceReader<char> Stream, out ulong outValue)
+        public static bool TryParseHexadecimal(in SequenceReader<char> Stream, out ulong outValue)
         {
             ulong result = 0;
             Stream.IsNext(CHAR_HASH, true);
@@ -27,7 +27,7 @@ namespace MetaParser
         #endregion
 
         #region Integer
-        public static bool Try_Parse_Integer(ref SequenceReader<char> Stream, out long outValue)
+        public static bool TryParseInteger(ref SequenceReader<char> Stream, out long outValue)
         {/* Docs: https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#signed-integers */
 
             bool sign = true;
@@ -65,7 +65,7 @@ namespace MetaParser
         #endregion
 
         #region Decimal
-        public static bool Try_Parse_FloatingPoint(ref SequenceReader<char> stream, out double outValue)
+        public static bool TryParseFloatingPoint(ref SequenceReader<char> stream, out double outValue)
         {/* Docs: https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#rules-for-parsing-floating-point-number-values */
 
             double value = 1;

@@ -23,12 +23,12 @@ namespace MetaParser.RuleSets.Text.Rules
 
         public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            return Tokenizer.Get_Reader().IsNext(BlockStart);
+            return Tokenizer.GetReader().IsNext(BlockStart);
         }
 
         public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            var rd = Tokenizer.Get_Reader();
+            var rd = Tokenizer.GetReader();
             rd.Advance(BlockStart.Length);
             // Skip forward until we find the block end sequence or we reach the stream end
             if (!rd.TryReadTo(out ReadOnlySequence<char> _, BlockEnd))

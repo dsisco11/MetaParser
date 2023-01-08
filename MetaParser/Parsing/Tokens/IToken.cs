@@ -2,8 +2,8 @@
 
 namespace MetaParser.Parsing.Tokens
 {
-    public interface IToken<Ty> : IEquatable<IToken<Ty>>
+    public interface IToken<T> : IEquatable<IToken<T>>
     {
-        ReadOnlySequence<Ty> Value { get; }
+        ReadOnlySequence<T> Value { get; }
     }
 }

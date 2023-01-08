@@ -2,5 +2,5 @@
 
 namespace MetaParser.Parsing.Tokens
 {
-    public delegate IToken<Ty> TokenFactory<Ty>(ReadOnlySequence<Ty> seq);
+    public delegate IToken<T> TokenFactory<T>(ReadOnlySequence<T> seq);
 }

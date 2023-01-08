@@ -12,12 +12,12 @@ namespace MetaParser.RuleSets.Text.Rules
     {
         public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            return ParsingCommon.Is_Number_Start(Tokenizer.Get_Reader());
+            return ParsingCommon.Is_Number_Start(Tokenizer.GetReader());
         }
 
         private static ENumberKind Detect_Number_Kind(ITokenizer<char> Tokenizer)
         {
-            var rd = Tokenizer.Get_Reader();
+            var rd = Tokenizer.GetReader();
             rd.IsNext(UnicodeCommon.CHAR_PLUS_SIGN, advancePast: true);
             rd.IsNext(UnicodeCommon.CHAR_HYPHEN_MINUS, advancePast: true);
 
@@ -34,16 +34,16 @@ namespace MetaParser.RuleSets.Text.Rules
         {
             // First, determine if this is an integer or decimal
             ENumberKind Kind = Detect_Number_Kind(Tokenizer);
-            var rd = Tokenizer.Get_Reader();
+            var rd = Tokenizer.GetReader();
             if (Kind == ENumberKind.Integer)
             {
-                return ParsingCommon.Try_Parse_Integer(ref rd, out var outInteger)
+                return ParsingCommon.TryParseInteger(ref rd, out var outInteger)
                     ? new IntegerToken(Tokenizer.Consume(ref rd), outInteger)
                     : new BadNumberToken(Tokenizer.Consume(ref rd));
             }
             else if (Kind == ENumberKind.Decimal)
             {
-                return ParsingCommon.Try_Parse_FloatingPoint(ref rd, out var outDecimal)
+                return ParsingCommon.TryParseFloatingPoint(ref rd, out var outDecimal)
                     ? new DecimalToken(Tokenizer.Consume(ref rd), outDecimal)
                     : new BadNumberToken(Tokenizer.Consume(ref rd));
             }

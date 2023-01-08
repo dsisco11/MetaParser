@@ -69,12 +69,12 @@ namespace MetaParser
         #endregion
 
         #region Reader
-        public SequenceReader<T> Get_Reader()
+        public SequenceReader<T> GetReader()
         {
             return new SequenceReader<T>(CurrentSeq);
         }
 
-        public SequenceReader<T> Get_Reader(Range range)
+        public SequenceReader<T> GetReader(Range range)
         {
             var r = range.GetOffsetAndLength((int)CurrentSeq.Length);
             return new SequenceReader<T>(CurrentSeq.Slice(r.Offset, r.Length));
@@ -83,7 +83,7 @@ namespace MetaParser
         public T Peek(Index index)
         {
             var offset = index.GetOffset((int)Remaining);
-            return Get_Reader().TryPeek(offset, out T val) ? val : EOF_ITEM;
+            return GetReader().TryPeek(offset, out T val) ? val : EOF_ITEM;
         }
         #endregion
 

@@ -18,12 +18,12 @@ namespace MetaParser.RuleSets.Text.Rules
 
         public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            return Tokenizer.Get_Reader().IsNext(CommentPrefix);
+            return Tokenizer.GetReader().IsNext(CommentPrefix);
         }
 
         public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            var rd = Tokenizer.Get_Reader();
+            var rd = Tokenizer.GetReader();
             // Consume until line end
             if (!rd.TryAdvanceTo(UnicodeCommon.CHAR_LINE_FEED, advancePastDelimiter: false))
             {

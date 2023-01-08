@@ -5,10 +5,10 @@ namespace MetaParser.Parsing.Definitions
     /// <summary>
     /// Provides logic for detecting and consuming tokens
     /// </summary>
-    /// <typeparam name="Ty">The value type being parsed</typeparam>
-    public interface ITokenRule<Ty> where Ty : unmanaged, IEquatable<Ty>
+    /// <typeparam name="T">The value type being parsed</typeparam>
+    public interface ITokenRule<T> where T : unmanaged, IEquatable<T>
     {
-        public bool Check(IReadOnlyTokenizer<Ty> Tokenizer, IToken<Ty> Previous);
-        public IToken<Ty>? Consume(ITokenizer<Ty> Tokenizer, IToken<Ty> Previous);
+        public bool Check(IReadOnlyTokenizer<T> Tokenizer, IToken<T> Previous);
+        public IToken<T>? Consume(ITokenizer<T> Tokenizer, IToken<T> Previous);
     }
 }

@@ -16,13 +16,13 @@ namespace MetaParser.RuleSets.Text.Rules
 
         public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            return Tokenizer.Get_Reader().AdvancePastAny(CharacterSet.Span) > 0;
+            return Tokenizer.GetReader().AdvancePastAny(CharacterSet.Span) > 0;
             //return !IncludeNewline && Tokenizer.Next == UnicodeCommon.CHAR_LINE_FEED ? false : char.IsWhiteSpace(Tokenizer.Next);
         }
 
         public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            var rd = Tokenizer.Get_Reader();
+            var rd = Tokenizer.GetReader();
             var count = rd.AdvancePastAny(CharacterSet.Span);
             if (count > 0)
             {

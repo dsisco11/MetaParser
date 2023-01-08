@@ -13,7 +13,7 @@ namespace MetaParser.RuleSets.Text.Rules
 
         public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            var rd = Tokenizer.Get_Reader();
+            var rd = Tokenizer.GetReader();
             do
             {
                 if (!rd.TryPeek(out var ch))

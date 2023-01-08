@@ -10,28 +10,32 @@ namespace MetaParser
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="Ty">Value type of the stuff being parsed</typeparam>
-    public class Parser<Ty> : IDisposable
-        where Ty : unmanaged, IEquatable<Ty>
+    /// <typeparam name="T">Value type of the stuff being parsed</typeparam>
+    public class Parser<T> : IDisposable
+        where T : unmanaged, IEquatable<T>
     {
         #region Properties
-        public readonly ParsingConfig<Ty> Config;
+        private readonly ParsingConfig<T> config;
         private bool disposedValue;
         #endregion
 
+        #region Properties
+        public ParsingConfig<T> Config => config;
+        #endregion
+
         #region Constructors
-        public Parser(ParsingConfig<Ty> configuration)
+        public Parser(ParsingConfig<T> configuration)
         {
-            Config = configuration;
+            config = configuration;
         }
         #endregion
 
         #region Parsing
-        public IToken<Ty>[] Parse(ReadOnlyMemory<Ty> Data)
+        public IToken<T>[] Parse(ReadOnlyMemory<T> Data)
         {
-            var Stream = new Tokenizer<Ty>(Data);
-            var tokenList = new LinkedList<IToken<Ty>>();
-            IToken<Ty> last = Config.EOF_TOKEN;
+            var Stream = new Tokenizer<T>(Data);
+            var tokenList = new LinkedList<IToken<T>>();
+            IToken<T> last = Config.EOF;
             do
             {
                 last = Consume_Next(Stream, last);
@@ -43,7 +47,7 @@ namespace MetaParser
         }
         #endregion
 
-        private IToken<Ty> Consume_Next(Tokenizer<Ty> Stream, IToken<Ty> lastToken)
+        private IToken<T> Consume_Next(Tokenizer<T> Stream, IToken<T> lastToken)
         {
             ArgumentNullException.ThrowIfNull(Stream);
             Contract.EndContractBlock();
@@ -51,19 +55,19 @@ namespace MetaParser
             if (Stream.AtEOF || Stream.AtEnd)
             {
                 Stream.Consume(1);
-                return Config.EOF_TOKEN;
+                return Config.EOF;
             }
 
             foreach (var ruleset in Config.Rulesets)
             {
                 if (Try_Consume(ruleset, Stream, lastToken, out var consumed))
                 {
-                    return consumed ?? Config.EOF_TOKEN;
+                    return consumed ?? Config.EOF;
                 }
             }
 
             // In the absence of any other matches, consume a default token
-            return new Token<Ty>(Stream.Consume(1));
+            return new Token<T>(Stream.Consume(1));
         }
 
         /// <summary>
@@ -73,13 +77,13 @@ namespace MetaParser
         /// <param name="Tokenizer"></param>
         /// <param name="prevToken"></param>
         /// <returns></returns>
-        private static bool Try_Consume(TokenRuleSet<Ty> Ruleset, ITokenizer<Ty> Tokenizer, IToken<Ty> prevToken, out IToken<Ty>? Result)
+        private static bool Try_Consume(TokenRuleSet<T> Ruleset, ITokenizer<T> Tokenizer, IToken<T> prevToken, out IToken<T>? Result)
         {
             ArgumentNullException.ThrowIfNull(Ruleset);
             ArgumentNullException.ThrowIfNull(Tokenizer);
             Contract.EndContractBlock();
 
-            foreach (ITokenRule<Ty> rule in Ruleset.Items)
+            foreach (ITokenRule<T> rule in Ruleset.Items)
             {
                 if (rule.Check(Tokenizer, prevToken))
                 {

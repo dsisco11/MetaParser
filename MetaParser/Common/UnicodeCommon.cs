@@ -400,7 +400,7 @@ namespace MetaParser
         public static char Consume_Escaped(SequenceReader<char> Stream)
         {// Docs:  https://www.w3.org/TR/css-syntax-3/#consume-escaped-code-point
             // Consume as many hex digits as possible but no more then 5 (for a total of 6)
-            if (ParsingCommon.Try_Consume_Hexadecimal_Number(Stream, out var hexNum))
+            if (ParsingCommon.TryParseHexadecimal(Stream, out var hexNum))
             {
                 Stream.AdvancePastAny(ASCII_WHITESPACE);
                 return hexNum is 0 or > CHAR_UNICODE_MAX
