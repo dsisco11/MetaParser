@@ -3,17 +3,22 @@
 namespace MetaParser.Tokens
 {
     /// <summary>
-    /// Represents any single item which is not consumed by another token
+    /// Represents any single item which is not consumed by another token, the 'default' token
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public sealed record Token<T> : IToken<T> where T : unmanaged, IEquatable<T>
+    public sealed record Token<T> : IToken<T> where T : IEquatable<T>
     {
         private readonly ReadOnlySequence<T> _value;
-        public ReadOnlySequence<T> Value => _value;
+        public T[] Value => _value.ToArray();
 
-        public Token(T value)
+        public Token(params T[] values)
         {
-            _value = new ReadOnlySequence<T>(new[] { value });
+            _value = new ReadOnlySequence<T>(values);
+        }
+
+        public Token(ReadOnlyMemory<T> values)
+        {
+            _value = new ReadOnlySequence<T>(values);
         }
 
         public Token(ReadOnlySequence<T> value)
@@ -27,7 +32,7 @@ namespace MetaParser.Tokens
         public bool Equals(IToken<T>? other)
         {
             return ReferenceEquals(this, other)
-                   || Value.Start.Equals(other?.Value.Start)
+                   || ((other is Token<T> tok) && _value.Start.Equals(tok?._value.Start))
                    || ToString().Equals(other?.ToString(), StringComparison.Ordinal);
         }
 

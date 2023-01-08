@@ -18,7 +18,7 @@ namespace UnitTests
             parser = new(config);
         }
 
-        public ParsingTestFixture(params RuleSet<Ty>[] rules)
+        public ParsingTestFixture(RuleSet<Ty> rules)
         {
             parser = new(new ParsingConfig<Ty>(rules));
         }

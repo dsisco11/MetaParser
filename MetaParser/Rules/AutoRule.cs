@@ -10,20 +10,16 @@ namespace MetaParser.Rules
     public sealed record AutoRule<T> : ITokenRule<T>
         where T : unmanaged, IEquatable<T>
     {
-        private readonly IToken<T> Instance;
+        private readonly IStaticToken<T> Instance;
 
-        public AutoRule(IToken<T> instance)
+        public AutoRule(IStaticToken<T> instance)
         {
             Instance = instance;
-            if (!Instance.Value.IsSingleSegment)
-            {
-                throw new ArgumentException($"{nameof(AutoRule<T>)} can only accept constant tokens whose value is wholly contained within a contiguous block of memory.");
-            }
         }
 
         public bool Check(IReadOnlyTokenizer<T> Tokenizer, IToken<T> Previous)
         {
-            return Tokenizer.GetReader().IsNext(Instance.Value.FirstSpan);
+            return Tokenizer.GetReader().IsNext(Instance.Value);
         }
 
         public IToken<T>? Consume(ITokenizer<T> Tokenizer, IToken<T> Previous)

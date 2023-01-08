@@ -4,9 +4,9 @@ namespace MetaParser.Tokens
 {
     public record EOFToken<T> : IToken<T> where T : unmanaged, IEquatable<T>
     {
-        public ReadOnlySequence<T> Value
+        public T[] Value
         {
-            get => ReadOnlySequence<T>.Empty;
+            get => Array.Empty<T>();
         }
 
         public bool Equals(IToken<T>? other)

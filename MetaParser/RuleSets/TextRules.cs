@@ -1,6 +1,6 @@
 ﻿using MetaParser.Rules;
 using MetaParser.RuleSets.Text;
-using MetaParser.Tokens.Text;
+using MetaParser.Tokens.Text.Static;
 
 namespace MetaParser.RuleSets
 {
@@ -12,56 +12,56 @@ namespace MetaParser.RuleSets
         /// <note>Whitespace: \s(space), \r, \t, \f</note>
         /// <note>Words: sequences of 2 or more letters/digits where the first character is a letter and not a digit</note>
         /// </summary>
-        public static RuleSet<char> Common => new(
-            new AutoRule<char>(new NewlineToken()),
+        public static ITokenRule<char>[] Common => new ITokenRule<char>[] {
+            new AutoRule<char>(NewlineToken.Instance),
             new WhitespaceRule(includeNewline: false),
             new WordBlockRule()
-        );
+        };
         /// <summary>
         /// This ruleset captures sequences of basic ASCII whitespace characters such as: \s(space), \n, \r, \t, \f
         /// <note>The newline(\n) character is output as its own token type</note>
         /// </summary>
-        public static RuleSet<char> Whitespace => new(
-            new AutoRule<char>(new NewlineToken()),
+        public static ITokenRule<char>[] Whitespace => new ITokenRule<char>[] {
+            new AutoRule<char>(NewlineToken.Instance),
             new WhitespaceRule(includeNewline: false)
-        );
+        };
 
         /// <summary>
         /// This ruleset contains tokens which capture sequences of legible 'word' characters, so any sequence of human-readable characters which are not whitespace or control characters
         /// </summary>
-        public static RuleSet<char> Words => new(
+        public static ITokenRule<char>[] Words => new ITokenRule<char>[] {
             new WordBlockRule()
-        );
+        };
 
         /// <summary>
         /// Common symbols of importance for things like programming, markup, and configuration files.
         /// <para>: | ; , [ ] ( ) { } \< \> - = +</para>
         /// </summary>
-        public static RuleSet<char> CodeLikeSymbols => new(
-            new AutoRule<char>(new ColonToken()),
-            new AutoRule<char>(new ColumnToken()),
-            new AutoRule<char>(new SemicolonToken()),
-            new AutoRule<char>(new CommaToken()),
-            new AutoRule<char>(new SqBracketOpenToken()),
-            new AutoRule<char>(new SqBracketCloseToken()),
-            new AutoRule<char>(new ParenthOpenToken()),
-            new AutoRule<char>(new ParenthCloseToken()),
-            new AutoRule<char>(new BracketOpenToken()),
-            new AutoRule<char>(new BracketCloseToken()),
-            new AutoRule<char>(new LessThanToken()),
-            new AutoRule<char>(new GreaterThanToken()),
-            new AutoRule<char>(new HypenMinusToken()),
-            new AutoRule<char>(new EqualsToken()),
-            new AutoRule<char>(new PlusToken())
-        );
+        public static ITokenRule<char>[] CodeLikeSymbols => new ITokenRule<char>[] {
+            new AutoRule<char>(ColonToken.Instance),
+            new AutoRule<char>(ColumnToken.Instance),
+            new AutoRule<char>(SemicolonToken.Instance),
+            new AutoRule<char>(CommaToken.Instance),
+            new AutoRule<char>(SqBracketOpenToken.Instance),
+            new AutoRule<char>(SqBracketCloseToken.Instance),
+            new AutoRule<char>(ParenthOpenToken.Instance),
+            new AutoRule<char>(ParenthCloseToken.Instance),
+            new AutoRule<char>(BracketOpenToken.Instance),
+            new AutoRule<char>(BracketCloseToken.Instance),
+            new AutoRule<char>(LessThanToken.Instance),
+            new AutoRule<char>(GreaterThanToken.Instance),
+            new AutoRule<char>(HypenMinusToken.Instance),
+            new AutoRule<char>(EqualsToken.Instance),
+            new AutoRule<char>(PlusToken.Instance)
+        };
 
         /// <summary>
         /// Code 'Objects' are more complex structures like comment blocks, function names, variable declarations, etc.
         /// </summary>
-        public static RuleSet<char> CodeStructures => new(
+        public static ITokenRule<char>[] CodeStructures => new ITokenRule<char>[] {
             new CodeLineCommentRule("//"),
             new CodeBlockCommentRule("/*", "*/"),
             new NumericRule()
-        );
+        };
     };
 }

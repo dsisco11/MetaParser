@@ -1,4 +1,5 @@
 using MetaParser.Parsing;
+using MetaParser.Rules;
 using MetaParser.RuleSets;
 
 namespace UnitTests
@@ -8,7 +9,7 @@ namespace UnitTests
         public ParsingTestFixture<char> TestFixture { get; init; }
         public GeneralTokenTests()
         {
-            TestFixture = new ParsingTestFixture<char>(TextRules.Whitespace, TextRules.Words, TextRules.CodeLikeSymbols, TextRules.CodeStructures);
+            TestFixture = new ParsingTestFixture<char>(new RuleSet<char>(TextRules.Whitespace, TextRules.Words, TextRules.CodeLikeSymbols, TextRules.CodeStructures));
         }
 
         [Theory]

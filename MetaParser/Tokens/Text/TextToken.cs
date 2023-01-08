@@ -1,13 +1,11 @@
 ﻿using MetaParser.Parsing;
 
-using System.Buffers;
-
 namespace MetaParser.Tokens.Text
 {
     public abstract record TextToken : IToken<char>
     {
         public ETextToken Type { get; init; }
-        public abstract ReadOnlySequence<char> Value { get; }
+        public abstract char[] Value { get; }
 
         protected TextToken(ETextToken type)
         {
@@ -20,12 +18,13 @@ namespace MetaParser.Tokens.Text
         public bool Equals(IToken<char>? other)
         {
             return ReferenceEquals(this, other)
-|| Value.Start.Equals(other?.Value.Start) || ToString().Equals(other?.ToString(), StringComparison.Ordinal);
+                   || ((other is TextToken otok) && Value.SequenceEqual(otok.Value))
+                   || ToString().Equals(other?.ToString(), StringComparison.Ordinal);
         }
 
         public override string ToString()
         {
-            return Value.ToString();
+            return Value?.ToString() ?? string.Empty;
         }
     }
 }

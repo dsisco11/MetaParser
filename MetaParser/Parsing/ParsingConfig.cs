@@ -18,9 +18,9 @@ namespace MetaParser.Parsing
         #endregion
 
         #region Constructors
-        public ParsingConfig(params RuleSet<TTokenData>[] rulesets)
+        public ParsingConfig(RuleSet<TTokenData> ruleset)
         {
-            this.rulesets = rulesets;
+            this.rulesets = new[] { ruleset };
         }
         #endregion
 

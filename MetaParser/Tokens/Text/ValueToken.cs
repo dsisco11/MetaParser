@@ -7,18 +7,25 @@ namespace MetaParser.Tokens.Text
     public abstract record ValueToken : TextToken
     {
         #region Properties
-        private readonly ReadOnlySequence<char> value;
-        public override ReadOnlySequence<char> Value => value;
+        private readonly ReadOnlySequence<char> _value;
+        public override char[] Value => _value.ToArray();
         #endregion
 
         public ValueToken(ETextToken type, ReadOnlySequence<char> value) : base(type)
         {
-            this.value = value;
+            this._value = value;
         }
 
         public ValueToken(ETextToken type, ReadOnlyMemory<char> value) : base(type)
         {
-            this.value = new(value);
+            this._value = new(value);
+        }
+
+        public virtual bool Equals(ValueToken? other)
+        {
+            return ReferenceEquals(this, other)
+                   || _value.Start.Equals(other!._value.Start)
+                   || ToString().Equals(other?.ToString(), StringComparison.Ordinal);
         }
     }
 }

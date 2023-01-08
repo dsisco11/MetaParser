@@ -31,7 +31,7 @@ namespace MetaParser.RuleSets.Text
             var rd = Tokenizer.GetReader();
             rd.Advance(BlockStart.Length);
             // Skip forward until we find the block end sequence or we reach the stream end
-            if (!rd.TryReadTo(out ReadOnlySequence<char> _, BlockEnd))
+            if (!rd.TryReadTo(out ReadOnlySequence<char> _, BlockEnd, advancePastDelimiter: true))
             {// Consume everything thats left if we couldnt find it
                 rd.AdvanceToEnd();
             }
