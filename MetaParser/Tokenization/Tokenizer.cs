@@ -7,7 +7,7 @@ namespace MetaParser
     /// Provides access to a genericized, consumable stream of data.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class Tokenizer<T> : ITokenizer<T>, IReadOnlyTokenizer<T> where T : unmanaged, IEquatable<T>
+    public class Tokenizer<T> : ITokenizer<T> where T : unmanaged, IEquatable<T>
     {
         #region Fields
         private readonly T EOF_ITEM;
