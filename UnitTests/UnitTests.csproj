@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LibTextParse\MetaParser.csproj" />
+    <ProjectReference Include="..\MetaParser\MetaParser.csproj" />
   </ItemGroup>
 
 </Project>
