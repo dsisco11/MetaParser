@@ -52,8 +52,8 @@ namespace MetaParser
         #endregion
 
         #region Accessors
-        public long Length => DataSeq.Length;// Data.Length;
-        public long Remaining => CurrentSeq.Length;//(Length - Position);
+        public long Length => DataSeq.Length;
+        public long Remaining => CurrentSeq.Length;
         /// <summary>
         /// Returns whether the stream position is currently at the end of the stream
         /// </summary>
