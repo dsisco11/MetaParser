@@ -8,7 +8,7 @@ namespace MetaParser.RuleSets.Text.Rules
     {
         public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            return char.IsLetter(Tokenizer.Next);
+            return char.IsLetter(Tokenizer.Next) && char.IsLetterOrDigit(Tokenizer.NextNext);
         }
 
         public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
