@@ -7,12 +7,20 @@ namespace MetaParser.RuleSets
 {
     public static class TextRules
     {
+        /// <summary>
+        /// This ruleset captures sequences of basic ASCII whitespace characters such as: \s(space), \n, \r, \t, \f
+        /// <note>The newline(\n) character is output as its own token type</note>
+        /// </summary>
         public static TokenRuleSet<char> Whitespace => new(
             new AutoRule<char>(new NewlineToken()),
             new WhitespaceRule(includeNewline: false)
         );
 
-        public static TokenRuleSet<char> CodeSymbols => new(
+        /// <summary>
+        /// Common symbols of importance for things like programming, markup, and configuration files.
+        /// <para>: | ; , [ ] ( ) { } \< \> - = +</para>
+        /// </summary>
+        public static TokenRuleSet<char> CodeLikeSymbols => new(
             new AutoRule<char>(new ColonToken()),
             new AutoRule<char>(new ColumnToken()),
             new AutoRule<char>(new SemicolonToken()),
@@ -30,11 +38,17 @@ namespace MetaParser.RuleSets
             new AutoRule<char>(new PlusToken())
         );
 
+        /// <summary>
+        /// This ruleset contains tokens which capture sequences of legible 'word' characters, so any sequence of human-readable characters which are not whitespace or control characters
+        /// </summary>
         public static TokenRuleSet<char> WordBlocks => new(
             new WordBlockRule()
         );
 
-        public static TokenRuleSet<char> CodeObjects => new(
+        /// <summary>
+        /// Code 'Objects' are more complex structures like comment blocks, function names, variable declarations, etc.
+        /// </summary>
+        public static TokenRuleSet<char> CodeStructures => new(
             new CodeLineCommentRule("//"),
             new CodeBlockCommentRule("/*", "*/")
         );

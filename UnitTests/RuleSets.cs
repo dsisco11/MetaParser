@@ -8,7 +8,7 @@ namespace UnitTests
         public ParsingTestFixture<char> TestFixture { get; init; }
         public RuleSets()
         {
-            TestFixture = new ParsingTestFixture<char>(TextRules.Whitespace, TextRules.CodeSymbols, TextRules.WordBlocks);
+            TestFixture = new ParsingTestFixture<char>(TextRules.Whitespace, TextRules.CodeLikeSymbols, TextRules.CodeStructures, TextRules.WordBlocks);
         }
 
         [Theory]
@@ -37,7 +37,23 @@ namespace UnitTests
         [InlineData("+", typeof(PlusToken))]
         [InlineData("//hello world", typeof(CommentToken))]
         [InlineData("/*hello world*/", typeof(CommentToken))]
-        public void TokenParsing(string text, Type Token)
+        public void Token(string text, Type Token)
+        {
+            TestFixture.AssertTokenTypes(text.AsMemory(), Token);
+        }
+
+        [Theory]
+        [InlineData("\n", typeof(NewlineToken), typeof(WhitespaceToken))]
+        [InlineData(" ", typeof(WhitespaceToken), typeof(WhitespaceToken))]
+        [InlineData("\r", typeof(WhitespaceToken), typeof(WhitespaceToken))]
+        [InlineData("\f", typeof(WhitespaceToken), typeof(WhitespaceToken))]
+        [InlineData("\t", typeof(WhitespaceToken), typeof(WhitespaceToken))]
+        // Word blocks
+        [InlineData("hello", typeof(IdentToken))]
+        // code structures
+        [InlineData("//hello world\n   //foo bar", typeof(CommentToken))]
+        [InlineData("/*hello world*/", typeof(CommentToken))]
+        public void TokenSequence(string text, params Type[] TokenSequence)
         {
             TestFixture.AssertTokenType(text.AsMemory(), Token);
         }

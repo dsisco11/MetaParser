@@ -22,10 +22,11 @@ namespace UnitTests
         }
         #endregion
 
-        public void AssertTokenType(ReadOnlyMemory<Ty> input, Type TokenType)
+        public void AssertTokenTypes(ReadOnlyMemory<Ty> input, Type[] expected)
         {
-            var results = parser.Parse(input).Single();
-            Assert.IsType(TokenType, results);
+            var results = parser.Parse(input);
+            var types = results.Select(o => o.GetType());
+            Assert.Equal(expected, types);
         }
 
         public void AssertTokens(ReadOnlyMemory<Ty> input, IToken<Ty>[] expected)
