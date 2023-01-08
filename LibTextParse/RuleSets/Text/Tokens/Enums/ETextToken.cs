@@ -46,32 +46,19 @@
 
         /// <summary></summary>
         Number,
-        /// <summary></summary>
-        Percentage,
-        /// <summary></summary>
-        Dimension,
-
-        /// <summary>an identifier followed immediately by an opening-parenthesis "FUNCTION_NAME("</summary>
-        FunctionName,
-        /// <summary>an identifier prefixed with an at-sign(@)</summary>
-        At_Keyword,
-        /// <summary>an identifier prefixed with a hashtag(#)</summary>
-        Hash,
 
         /// <summary>A code-like comment text sequence of some sort</summary>
         Comment,
+
         /// <summary>A collection of characters contained within quotations ("")</summary>
         String,
         /// <summary></summary>
         Bad_String,
+
         /// <summary></summary>
         Url,
         /// <summary></summary>
         Bad_Url,
 
-        /// <summary>'<!--'</summary>
-        CDO,
-        /// <summary>'-->'</summary>
-        CDC,
     }
 }
