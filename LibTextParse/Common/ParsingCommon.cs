@@ -27,7 +27,7 @@ namespace MetaParser
         #endregion
 
         #region Integer
-        public static bool Parse_Integer(SequenceReader<char> Stream, out long outValue)
+        public static bool Try_Parse_Integer(SequenceReader<char> Stream, out long outValue)
         {/* Docs: https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#signed-integers */
 
             bool sign = true;
@@ -65,7 +65,7 @@ namespace MetaParser
         #endregion
 
         #region Decimal
-        public static bool Parse_FloatingPoint(in SequenceReader<char> stream, out double outValue)
+        public static bool Try_Parse_FloatingPoint(in SequenceReader<char> stream, out double outValue)
         {/* Docs: https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#rules-for-parsing-floating-point-number-values */
 
             double value = 1;
