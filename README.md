@@ -16,7 +16,7 @@ It chops the data up into instances of Token (IToken) objects which each point t
 Derived from the `IToken<T>` interface.   
 Tokens contain small sections of the data being parsed, and represent a logical object interpreted from said data.   
 As such, a separate token is defined for each distinct concept being parsed.   
-For example; code-comment tokens represent a code comment & contain the text of the comment aswell as any other relevant information required for them to be reserialized back into their raw data (the type of comment for instance; line comments prefixed with double slashes // vs block comments which span multiple lines and are surrounded by '/*' and '*/').   
+For example; code-comment tokens represent a code comment & contain the text of the comment aswell as any other relevant information required for them to be reserialized back into their raw data (the type of comment for instance; line comments prefixed with double slashes // vs block comments which span multiple lines and are surrounded by `/*` and `*/`).   
 This is so that tokens can be used not only for deserialization but also the other way around (serialization).   
 
 
