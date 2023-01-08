@@ -1,14 +1,15 @@
+using MetaParser.Parsing;
 using MetaParser.RuleSets;
 using MetaParser.RuleSets.Text.Tokens;
 
 namespace UnitTests
 {
-    public class RuleSets
+    public class TokenRuleTests
     {
         public ParsingTestFixture<char> TestFixture { get; init; }
-        public RuleSets()
+        public TokenRuleTests()
         {
-            TestFixture = new ParsingTestFixture<char>(TextRules.Whitespace, TextRules.CodeLikeSymbols, TextRules.CodeStructures, TextRules.WordBlocks);
+            TestFixture = new ParsingTestFixture<char>(TextRules.Whitespace, TextRules.WordBlocks, TextRules.CodeLikeSymbols, TextRules.CodeStructures);
         }
 
         [Theory]
@@ -43,19 +44,15 @@ namespace UnitTests
         }
 
         [Theory]
-        [InlineData("\n", typeof(NewlineToken), typeof(WhitespaceToken))]
-        [InlineData(" ", typeof(WhitespaceToken), typeof(WhitespaceToken))]
-        [InlineData("\r", typeof(WhitespaceToken), typeof(WhitespaceToken))]
-        [InlineData("\f", typeof(WhitespaceToken), typeof(WhitespaceToken))]
-        [InlineData("\t", typeof(WhitespaceToken), typeof(WhitespaceToken))]
+        [InlineData("\n   ", ETextToken.Newline, ETextToken.Whitespace)]
         // Word blocks
-        [InlineData("hello", typeof(IdentToken))]
+        [InlineData("hello", ETextToken.Ident)]
         // code structures
-        [InlineData("//hello world\n   //foo bar", typeof(CommentToken))]
-        [InlineData("/*hello world*/", typeof(CommentToken))]
-        public void TokenSequence(string text, params Type[] TokenSequence)
+        [InlineData("//hello world\n   //foo bar", ETextToken.Comment, ETextToken.Newline, ETextToken.Whitespace, ETextToken.Comment)]
+        [InlineData("/*hello world*/", ETextToken.Comment)]
+        public void TokenSequence(string text, params ETextToken[] TokenSequence)
         {
-            TestFixture.AssertTokenType(text.AsMemory(), Token);
+            TestFixture.AssertTokenTypes(text.AsMemory(), TokenSequence);
         }
     }
 }
