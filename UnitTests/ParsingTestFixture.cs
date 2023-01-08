@@ -1,6 +1,7 @@
 ﻿using MetaParser;
 using MetaParser.Parsing;
 using MetaParser.Parsing.Tokens;
+using MetaParser.RuleSets.Text.Tokens;
 
 namespace UnitTests
 {
@@ -22,10 +23,17 @@ namespace UnitTests
         }
         #endregion
 
-        public void AssertTokenTypes(ReadOnlyMemory<Ty> input, Type[] expected)
+        public void AssertTokenTypes(ReadOnlyMemory<Ty> input, params Type[] expected)
         {
             var results = parser.Parse(input);
             var types = results.Select(o => o.GetType());
+            Assert.Equal(expected, types);
+        }
+
+        public void AssertTokenTypes(ReadOnlyMemory<Ty> input, params ETextToken[] expected)
+        {
+            var results = parser.Parse(input);
+            var types = results.Select(o => ((TextToken)o).Type);
             Assert.Equal(expected, types);
         }
 
