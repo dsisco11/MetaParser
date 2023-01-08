@@ -4,10 +4,10 @@ using MetaParser.RuleSets.Text.Tokens;
 
 namespace UnitTests
 {
-    public class TokenRuleTests
+    public class GeneralTokenTests
     {
         public ParsingTestFixture<char> TestFixture { get; init; }
-        public TokenRuleTests()
+        public GeneralTokenTests()
         {
             TestFixture = new ParsingTestFixture<char>(TextRules.Whitespace, TextRules.Words, TextRules.CodeLikeSymbols, TextRules.CodeStructures);
         }
