@@ -9,6 +9,10 @@ namespace MetaParser
     /// <typeparam name="T"></typeparam>
     public class Tokenizer<T> : ITokenizer<T>, IReadOnlyTokenizer<T> where T : unmanaged, IEquatable<T>
     {
+        #region Fields
+        private readonly T EOF_ITEM;
+        #endregion
+
         #region Properties
         /// <summary>
         /// Our stream of tokens
@@ -22,8 +26,7 @@ namespace MetaParser
         /// </summary>
         private Range Bounds => Range.StartAt(Position);
 
-        public int Position { get; private set; } = 0;
-        public readonly T EOF_ITEM = default;
+        public int Position { get; private set; }
         #endregion
 
         #region Constructors
@@ -44,10 +47,10 @@ namespace MetaParser
         /// Creates a new stream from a memory pointer
         /// </summary>
         /// <param name="Memory"></param>
-        /// <param name="EOF_ITEM"></param>
-        public Tokenizer(ReadOnlyMemory<T> Memory, T EOF_ITEM) : this(Memory)
+        /// <param name="EOF"></param>
+        public Tokenizer(ReadOnlyMemory<T> Memory, T EOF) : this(Memory)
         {
-            this.EOF_ITEM = EOF_ITEM;
+            this.EOF_ITEM = EOF;
         }
         #endregion
 
