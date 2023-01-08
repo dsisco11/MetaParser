@@ -13,9 +13,8 @@ namespace MetaParser.RuleSets.Text.Rules
 
         public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
         {
-            char closingChar;
             var rd = Tokenizer.Get_Reader();
-            if (!rd.TryRead(out closingChar))
+            if (!rd.TryRead(out char closingChar))
             {
                 throw new Exception($"Exception while parsing @{Tokenizer}");
             }
