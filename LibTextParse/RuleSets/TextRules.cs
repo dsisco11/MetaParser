@@ -30,7 +30,7 @@ namespace MetaParser.RuleSets
         /// <summary>
         /// This ruleset contains tokens which capture sequences of legible 'word' characters, so any sequence of human-readable characters which are not whitespace or control characters
         /// </summary>
-        public static TokenRuleSet<char> WordBlocks => new(
+        public static TokenRuleSet<char> Words => new(
             new WordBlockRule()
         );
 
@@ -61,7 +61,8 @@ namespace MetaParser.RuleSets
         /// </summary>
         public static TokenRuleSet<char> CodeStructures => new(
             new CodeLineCommentRule("//"),
-            new CodeBlockCommentRule("/*", "*/")
+            new CodeBlockCommentRule("/*", "*/"),
+            new NumberRule()
         );
     };
 }
