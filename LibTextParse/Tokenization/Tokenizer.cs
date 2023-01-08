@@ -95,7 +95,8 @@ namespace MetaParser
 
         public T Peek(Index index)
         {
-            return Get_Reader(index..1).TryPeek(out T val) ? val : EOF_ITEM;
+            var offset = index.GetOffset((int)Remaining);
+            return Get_Reader().TryPeek(offset, out T val) ? val : EOF_ITEM;
         }
         #endregion
 
