@@ -25,7 +25,7 @@ namespace MetaParser.RuleSets.Text.Rules
         {
             var rd = Tokenizer.Get_Reader();
             // Consume until line end
-            if (!rd.TryAdvanceTo(UnicodeCommon.CHAR_LINE_FEED))
+            if (!rd.TryAdvanceTo(UnicodeCommon.CHAR_LINE_FEED, advancePastDelimiter: false))
             {
                 // If no newline then consume everything thats left
                 rd.AdvanceToEnd();
