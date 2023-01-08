@@ -9,7 +9,7 @@ namespace UnitTests
         public ParsingTestFixture<char> TestFixture { get; init; }
         public TokenRuleTests()
         {
-            TestFixture = new ParsingTestFixture<char>(TextRules.Whitespace, TextRules.WordBlocks, TextRules.CodeLikeSymbols, TextRules.CodeStructures);
+            TestFixture = new ParsingTestFixture<char>(TextRules.Whitespace, TextRules.Words, TextRules.CodeLikeSymbols, TextRules.CodeStructures);
         }
 
         [Theory]
