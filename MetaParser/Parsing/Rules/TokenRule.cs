@@ -5,23 +5,23 @@ using System.Buffers;
 
 namespace MetaParser.Parsing.Rules
 {
-    public abstract class TokenRule<Ty> : ITokenRule<Ty> where Ty : unmanaged, IEquatable<Ty>
+    public abstract class TokenRule<T> : ITokenRule<T> where T : unmanaged, IEquatable<T>
     {
-        public TokenFactory<Ty>? TokenFactory { get; init; }
+        public TokenFactory<T>? TokenFactory { get; init; }
 
-        public TokenRule(TokenFactory<Ty>? tokenFactory = null)
+        public TokenRule(TokenFactory<T>? tokenFactory = null)
         {
             TokenFactory = tokenFactory;
         }
 
-        public abstract bool Check(IReadOnlyTokenizer<Ty> Tokenizer, IToken<Ty> Previous);
+        public abstract bool Check(IReadOnlyTokenizer<T> Tokenizer, IToken<T> Previous);
 
-        public IToken<Ty>? Consume(ITokenizer<Ty> Tokenizer, IToken<Ty> Previous)
+        public IToken<T>? Consume(ITokenizer<T> Tokenizer, IToken<T> Previous)
         {
             return Try_Consume(Tokenizer, Previous, out var consumed) && consumed is not null
-                ? (TokenFactory?.Invoke(consumed.Value) ?? new Token<Ty>(consumed.Value)) : null;
+                ? (TokenFactory?.Invoke(consumed.Value) ?? new Token<T>(consumed.Value)) : null;
         }
 
-        protected abstract bool Try_Consume(ITokenizer<Ty> Tokenizer, IToken<Ty> Previous, out ReadOnlySequence<Ty>? outConsumed);
+        protected abstract bool Try_Consume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed);
     }
 }
