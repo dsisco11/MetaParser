@@ -33,10 +33,10 @@ namespace MetaParser.RuleSets.Text.Rules
             if (!rd.TryAdvanceTo(closingChar))
             {// We couldnt find a matching string quote char, this is a bad bad string...
                 rd.AdvanceToEnd();
-                return new BadStringToken(Tokenizer.Consume(rd));
+                return new BadStringToken(Tokenizer.Consume(ref rd));
             }
 
-            return new StringToken(Tokenizer.Consume(rd));
+            return new StringToken(Tokenizer.Consume(ref rd));
         }
     }
 }

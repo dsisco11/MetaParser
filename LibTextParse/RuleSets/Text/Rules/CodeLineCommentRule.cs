@@ -31,7 +31,7 @@ namespace MetaParser.RuleSets.Text.Rules
                 rd.AdvanceToEnd();
             }
 
-            var consume = Tokenizer.Consume(rd);
+            var consume = Tokenizer.Consume(ref rd);
             return new CommentToken(consume);
         }
     }

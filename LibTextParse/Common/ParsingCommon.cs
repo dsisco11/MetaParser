@@ -27,7 +27,7 @@ namespace MetaParser
         #endregion
 
         #region Integer
-        public static bool Try_Parse_Integer(SequenceReader<char> Stream, out long outValue)
+        public static bool Try_Parse_Integer(ref SequenceReader<char> Stream, out long outValue)
         {/* Docs: https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#signed-integers */
 
             bool sign = true;
@@ -40,9 +40,9 @@ namespace MetaParser
                 return false;
             }
 
-            if (!Stream.IsNext(CHAR_PLUS_SIGN, true))
+            if (!Stream.IsNext(CHAR_PLUS_SIGN, advancePast: true))
             {
-                if (Stream.IsNext(CHAR_HYPHEN_MINUS, true))
+                if (Stream.IsNext(CHAR_HYPHEN_MINUS, advancePast: true))
                 {
                     sign = false;
                 }
@@ -50,7 +50,7 @@ namespace MetaParser
 
 
             /* Collect sequence of ASCII digit codepoints */
-            _try_consume_ascii_digit_sequence(Stream, out ReadOnlySequence<char> digitSeq);
+            _try_consume_ascii_digit_sequence(ref Stream, out ReadOnlySequence<char> digitSeq);
 
             if (!Stream.End && Stream.TryPeek(out char pk) && char.IsLetter(pk))
             {
@@ -65,7 +65,7 @@ namespace MetaParser
         #endregion
 
         #region Decimal
-        public static bool Try_Parse_FloatingPoint(in SequenceReader<char> stream, out double outValue)
+        public static bool Try_Parse_FloatingPoint(ref SequenceReader<char> stream, out double outValue)
         {/* Docs: https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#rules-for-parsing-floating-point-number-values */
 
             double value = 1;
@@ -103,7 +103,7 @@ namespace MetaParser
             if (!stream.IsNext(CHAR_FULL_STOP))
             {
                 /* 11) Collect a sequence of code points that are ASCII digits from input given position, and interpret the resulting sequence as a base-ten integer. Multiply value by that integer. */
-                if(!_try_consume_ascii_digit_sequence(stream, out ReadOnlySequence<char> digitSeq))
+                if(!_try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
                 {
                     outValue = double.NaN;
                     return false;
@@ -126,7 +126,7 @@ namespace MetaParser
                 /* 3) If the character indicated by position is a U+0065 LATIN SMALL LETTER E character (e) or a U+0045 LATIN CAPITAL LETTER E character (E), skip the remainder of these substeps. */
                 if (!stream.End && stream.TryPeek(out char pk) && char.IsDigit(pk))
                 {
-                    _parse_number_seq_fraction(stream, ref value, ref divisor);
+                    _parse_number_seq_fraction(ref stream, ref value, ref divisor);
                 }
             }
 
@@ -145,7 +145,7 @@ namespace MetaParser
 
                 /* 4) If the character indicated by position is not an ASCII digit, then jump to the step labeled conversion. */
                 /* 5) Collect a sequence of code points that are ASCII digits from input given position, and interpret the resulting sequence as a base-ten integer. Multiply exponent by that integer. */
-                if(_try_consume_ascii_digit_sequence(stream, out ReadOnlySequence<char> digitSeq))
+                if(_try_consume_ascii_digit_sequence(ref stream, out ReadOnlySequence<char> digitSeq))
                 {
                     var n = _consume_subseq_base10(digitSeq);
                     exponent *= n;
@@ -156,7 +156,7 @@ namespace MetaParser
 
             return _seq_conversion(out outValue, value);
 
-            static void _parse_number_seq_fraction(in SequenceReader<char> stream, ref double value, ref double divisor)
+            static void _parse_number_seq_fraction(ref SequenceReader<char> stream, ref double value, ref double divisor)
             {
                 while (!stream.End && stream.TryPeek(out char pk) && char.IsDigit(pk))
                 {
@@ -201,7 +201,7 @@ namespace MetaParser
         #endregion
 
         #region Utility
-        private static bool _try_consume_ascii_digit_sequence(in SequenceReader<char> stream, out ReadOnlySequence<char> consumed)
+        private static bool _try_consume_ascii_digit_sequence(ref SequenceReader<char> stream, out ReadOnlySequence<char> consumed)
         {
             var startPos = stream.Position;
             var count = stream.AdvancePastAny(ASCII_DIGITS);

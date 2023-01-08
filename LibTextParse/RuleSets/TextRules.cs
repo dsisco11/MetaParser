@@ -62,7 +62,7 @@ namespace MetaParser.RuleSets
         public static TokenRuleSet<char> CodeStructures => new(
             new CodeLineCommentRule("//"),
             new CodeBlockCommentRule("/*", "*/"),
-            new NumberRule()
+            new NumericRule()
         );
     };
 }

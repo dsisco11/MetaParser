@@ -8,7 +8,7 @@ namespace MetaParser.RuleSets.Text.Rules
     /// <summary>
     /// Causes number-like (integer/decimal) sequences to be emitted as a single number-type token
     /// </summary>
-    public sealed class NumberRule : ITokenRule<char>
+    public sealed class NumericRule : ITokenRule<char>
     {
         public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
         {
@@ -48,25 +48,25 @@ namespace MetaParser.RuleSets.Text.Rules
             var rd = Tokenizer.Get_Reader();
             if (Kind == ENumberKind.Integer)
             {
-                if (ParsingCommon.Try_Parse_Integer(rd, out var outInteger))
+                if (ParsingCommon.Try_Parse_Integer(ref rd, out var outInteger))
                 {
-                    return new IntegerToken(Tokenizer.Consume(rd), outInteger);
+                    return new IntegerToken(Tokenizer.Consume(ref rd), outInteger);
                 }
 
-                return new BadNumberToken(Tokenizer.Consume(rd));
+                return new BadNumberToken(Tokenizer.Consume(ref rd));
             }
             else if (Kind == ENumberKind.Decimal)
             {
-                if (ParsingCommon.Try_Parse_FloatingPoint(rd, out var outDecimal))
+                if (ParsingCommon.Try_Parse_FloatingPoint(ref rd, out var outDecimal))
                 {
-                    return new DecimalToken(Tokenizer.Consume(rd), outDecimal);
+                    return new DecimalToken(Tokenizer.Consume(ref rd), outDecimal);
                 }
 
-                return new BadNumberToken(Tokenizer.Consume(rd));
+                return new BadNumberToken(Tokenizer.Consume(ref rd));
             }
 
             rd.Advance(1);
-            return new IdentToken(Tokenizer.Consume(rd));
+            return new IdentToken(Tokenizer.Consume(ref rd));
         }
     }
 }

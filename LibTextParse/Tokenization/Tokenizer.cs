@@ -106,7 +106,7 @@ namespace MetaParser
         /// </summary>
         /// <param name="reader"></param>
         /// <returns></returns>
-        public ReadOnlySequence<T> Consume(SequenceReader<T> reader)
+        public ReadOnlySequence<T> Consume(ref SequenceReader<T> reader)
         {
             var consumed = CurrentSeq.Slice(0, reader.Position);
             CurrentSeq = CurrentSeq.Slice(reader.Position);

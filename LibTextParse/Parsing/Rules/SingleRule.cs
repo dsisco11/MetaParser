@@ -23,7 +23,7 @@ namespace MetaParser.Parsing.Rules
             var rd = Tokenizer.Get_Reader();
             if (rd.IsNext(Value, true))
             {
-                return Tokenizer.Consume(rd);
+                return Tokenizer.Consume(ref rd);
             }
 
             return null;

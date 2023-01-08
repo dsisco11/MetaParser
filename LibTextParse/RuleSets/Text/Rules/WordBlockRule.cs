@@ -31,7 +31,7 @@ namespace MetaParser.RuleSets.Text.Rules
                 return null;
             }
 
-            return new IdentToken(Tokenizer.Consume(rd));
+            return new IdentToken(Tokenizer.Consume(ref rd));
 
         }
     }

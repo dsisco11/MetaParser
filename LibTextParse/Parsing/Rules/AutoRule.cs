@@ -32,7 +32,7 @@ namespace MetaParser.Parsing.Definitions
         {
             var rd = Tokenizer.Get_Reader();
             rd.Advance(1);
-            Tokenizer.Consume(rd);
+            Tokenizer.Consume(ref rd);
             return Instance;
         }
     }

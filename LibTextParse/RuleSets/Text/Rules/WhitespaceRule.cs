@@ -26,7 +26,7 @@ namespace MetaParser.RuleSets.Text.Rules
             var count = rd.AdvancePastAny(CharacterSet.Span);
             if (count > 0)
             {
-                var consumed = Tokenizer.Consume(rd);
+                var consumed = Tokenizer.Consume(ref rd);
                 return new WhitespaceToken(consumed);
             }
 
