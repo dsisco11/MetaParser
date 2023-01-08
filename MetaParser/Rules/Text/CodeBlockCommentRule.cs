@@ -21,22 +21,23 @@ namespace MetaParser.RuleSets.Text
             BlockEnd = blockEnd.ToArray();
         }
 
-        public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
-        {
-            return Tokenizer.GetReader().IsNext(BlockStart);
-        }
-
-        public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
+        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
             var rd = Tokenizer.GetReader();
-            rd.Advance(BlockStart.Length);
+            if (!rd.IsNext(BlockStart, advancePast: true))
+            {
+                outToken = null;
+                return false;
+            }
+
             // Skip forward until we find the block end sequence or we reach the stream end
             if (!rd.TryReadTo(out ReadOnlySequence<char> _, BlockEnd, advancePastDelimiter: true))
             {// Consume everything thats left if we couldnt find it
                 rd.AdvanceToEnd();
             }
 
-            return new CommentToken(Tokenizer.Consume(ref rd));
+            outToken = new CommentToken(Tokenizer.Consume(ref rd));
+            return true;
         }
     }
 }

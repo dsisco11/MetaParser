@@ -13,14 +13,19 @@ namespace MetaParser.Rules
             TokenFactory = tokenFactory;
         }
 
-        public abstract bool Check(IReadOnlyTokenizer<T> Tokenizer, IToken<T> Previous);
+        protected abstract bool Consume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed);
 
-        public IToken<T>? Consume(ITokenizer<T> Tokenizer, IToken<T> Previous)
+        public bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out IToken<T>? outToken)
         {
-            return TryConsume(Tokenizer, Previous, out var consumed) && consumed is not null
-                ? TokenFactory?.Invoke(consumed.Value) ?? new Token<T>(consumed.Value) : null;
+            if (Consume(Tokenizer, Previous, out ReadOnlySequence<T>? consumed) && consumed is not null)
+            {
+                outToken = TokenFactory?.Invoke(consumed.Value) ?? new Token<T>(consumed.Value);
+                return true;
+            }
+
+            outToken = null;
+            return false;                
         }
 
-        protected abstract bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed);
     }
 }

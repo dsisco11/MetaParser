@@ -7,13 +7,15 @@ namespace MetaParser.RuleSets.Text
 {
     public sealed partial class StringRule : ITokenRule<char>
     {
-        public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
+        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
-            return Tokenizer.GetReader().AdvancePastAny(UnicodeCommon.SYMBOLS_QUOTATION_MARKS) > 0;
-        }
+            bool isValid = Tokenizer.GetReader().AdvancePastAny(UnicodeCommon.SYMBOLS_QUOTATION_MARKS) > 0;
+            if (!isValid)
+            {
+                outToken = null;
+                return false;
+            }
 
-        public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
-        {
             var rd = Tokenizer.GetReader();
             if (!rd.TryRead(out char closingChar))
             {
@@ -33,10 +35,14 @@ namespace MetaParser.RuleSets.Text
             if (!rd.TryAdvanceTo(closingChar))
             {// We couldnt find a matching string quote char, this is a bad bad string...
                 rd.AdvanceToEnd();
-                return new BadStringToken(Tokenizer.Consume(ref rd));
+                outToken = new BadStringToken(Tokenizer.Consume(ref rd));
+            }
+            else
+            {
+                outToken = new StringToken(Tokenizer.Consume(ref rd));
             }
 
-            return new StringToken(Tokenizer.Consume(ref rd));
+            return true;
         }
     }
 }

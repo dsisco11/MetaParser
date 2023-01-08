@@ -6,13 +6,15 @@ namespace MetaParser.RuleSets.Text
 {
     public sealed class WordBlockRule : ITokenRule<char>
     {
-        public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
+        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
-            return char.IsLetter(Tokenizer.Peek(0)) && char.IsLetterOrDigit(Tokenizer.Peek(1));
-        }
+            bool valid = char.IsLetter(Tokenizer.Peek(0)) && char.IsLetterOrDigit(Tokenizer.Peek(1));
+            if (!valid)
+            {
+                outToken = null;
+                return false;
+            }
 
-        public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
-        {
             var rd = Tokenizer.GetReader();
             do
             {
@@ -26,7 +28,8 @@ namespace MetaParser.RuleSets.Text
             }
             while (!rd.End);
 
-            return rd.Consumed <= 0 ? null : (IToken<char>)new IdentToken(Tokenizer.Consume(ref rd));
+            outToken = new IdentToken(Tokenizer.Consume(ref rd));
+            return true;
         }
     }
 }

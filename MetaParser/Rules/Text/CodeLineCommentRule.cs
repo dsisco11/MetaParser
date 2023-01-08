@@ -16,14 +16,15 @@ namespace MetaParser.RuleSets.Text
             CommentPrefix = commentPrefix.ToArray();
         }
 
-        public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
-        {
-            return Tokenizer.GetReader().IsNext(CommentPrefix);
-        }
-
-        public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
+        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
             var rd = Tokenizer.GetReader();
+            if (!rd.IsNext(CommentPrefix, advancePast: true))
+            {
+                outToken = null;
+                return false;
+            }
+
             // Consume until line end
             if (!rd.TryAdvanceTo(UnicodeCommon.CHAR_LINE_FEED, advancePastDelimiter: false))
             {
@@ -32,7 +33,8 @@ namespace MetaParser.RuleSets.Text
             }
 
             var consume = Tokenizer.Consume(ref rd);
-            return new CommentToken(consume);
+            outToken = new CommentToken(consume);
+            return true;
         }
     }
 }

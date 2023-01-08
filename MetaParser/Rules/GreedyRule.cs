@@ -13,12 +13,7 @@ namespace MetaParser.Rules
             Value = value;
         }
 
-        public override bool Check(IReadOnlyTokenizer<T> Tokenizer, IToken<T> Previous)
-        {
-            return Tokenizer.GetReader().IsNext(Value);
-        }
-
-        protected override bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed)
+        protected override bool Consume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed)
         {
             var rd = Tokenizer.GetReader();
             bool success = rd.AdvancePast(Value) > 0;

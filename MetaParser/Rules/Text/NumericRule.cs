@@ -10,11 +10,6 @@ namespace MetaParser.RuleSets.Text
     /// </summary>
     public sealed class NumericRule : ITokenRule<char>
     {
-        public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
-        {
-            return ParsingCommon.Is_Number_Start(Tokenizer.GetReader());
-        }
-
         private static ENumberKind Detect_Number_Kind(ITokenizer<char> Tokenizer)
         {
             var rd = Tokenizer.GetReader();
@@ -30,26 +25,36 @@ namespace MetaParser.RuleSets.Text
                 : ENumberKind.Integer;
         }
 
-        public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
+        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
+            var rd = Tokenizer.GetReader();
+            if (!ParsingCommon.Is_Number_Start(rd))
+            {
+                outToken = null;
+                return false;
+            }
+
             // First, determine if this is an integer or decimal
             ENumberKind Kind = Detect_Number_Kind(Tokenizer);
-            var rd = Tokenizer.GetReader();
             if (Kind == ENumberKind.Integer)
             {
-                return ParsingCommon.TryParseInteger(ref rd, out var outInteger)
+                outToken = ParsingCommon.TryParseInteger(ref rd, out var outInteger)
                     ? new IntegerToken(Tokenizer.Consume(ref rd), outInteger)
                     : new BadNumberToken(Tokenizer.Consume(ref rd));
             }
             else if (Kind == ENumberKind.Decimal)
             {
-                return ParsingCommon.TryParseFloatingPoint(ref rd, out var outDecimal)
+                outToken = ParsingCommon.TryParseFloatingPoint(ref rd, out var outDecimal)
                     ? new DecimalToken(Tokenizer.Consume(ref rd), outDecimal)
                     : new BadNumberToken(Tokenizer.Consume(ref rd));
             }
+            else
+            {
+                rd.Advance(1);
+                outToken = new IdentToken(Tokenizer.Consume(ref rd));
+            }
 
-            rd.Advance(1);
-            return new IdentToken(Tokenizer.Consume(ref rd));
+            return true;
         }
     }
 }

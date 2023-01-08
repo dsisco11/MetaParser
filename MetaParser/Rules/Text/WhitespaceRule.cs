@@ -14,23 +14,19 @@ namespace MetaParser.RuleSets.Text
             CharacterSet = IncludeNewline ? UnicodeCommon.ASCII_WHITESPACE : UnicodeCommon.ASCII_WHITESPACE_EXCLUDING_NEWLINE;
         }
 
-        public bool Check(IReadOnlyTokenizer<char> Tokenizer, IToken<char> Previous)
-        {
-            return Tokenizer.GetReader().AdvancePastAny(CharacterSet.Span) > 0;
-            //return !IncludeNewline && Tokenizer.Next == UnicodeCommon.CHAR_LINE_FEED ? false : char.IsWhiteSpace(Tokenizer.Next);
-        }
-
-        public IToken<char>? Consume(ITokenizer<char> Tokenizer, IToken<char> Previous)
+        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
             var rd = Tokenizer.GetReader();
             var count = rd.AdvancePastAny(CharacterSet.Span);
-            if (count > 0)
+            if (count <= 0)
             {
-                var consumed = Tokenizer.Consume(ref rd);
-                return new WhitespaceToken(consumed);
+                outToken = null;
+                return false;
             }
 
-            return null;
+            var consumed = Tokenizer.Consume(ref rd);
+            outToken = new WhitespaceToken(consumed);
+            return true;
         }
     }
 

@@ -85,9 +85,9 @@ namespace MetaParser
 
             foreach (ITokenRule<T> rule in Ruleset.Items)
             {
-                if (rule.Check(Tokenizer, prevToken))
+                if (rule.TryConsume(Tokenizer, prevToken, out var outConsumed))
                 {
-                    Result = rule.Consume(Tokenizer, prevToken);
+                    Result = outConsumed;
                     return true;
                 }
             }

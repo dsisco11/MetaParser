@@ -17,17 +17,18 @@ namespace MetaParser.Rules
             Instance = instance;
         }
 
-        public bool Check(IReadOnlyTokenizer<T> Tokenizer, IToken<T> Previous)
-        {
-            return Tokenizer.GetReader().IsNext(Instance.Value);
-        }
-
-        public IToken<T>? Consume(ITokenizer<T> Tokenizer, IToken<T> Previous)
+        public bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out IToken<T>? outToken)
         {
             var rd = Tokenizer.GetReader();
-            rd.Advance(1);
-            Tokenizer.Consume(ref rd);
-            return Instance;
+            if(rd.IsNext(Instance.Value, advancePast: true))
+            {
+                Tokenizer.Consume(ref rd);
+                outToken = Instance;
+                return true;
+            }
+
+            outToken = null;
+            return false;
         }
     }
 }
