@@ -46,6 +46,7 @@
 
         /// <summary></summary>
         Number,
+        Bad_Number,
 
         /// <summary>A code-like comment text sequence of some sort</summary>
         Comment,
