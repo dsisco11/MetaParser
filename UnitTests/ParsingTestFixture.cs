@@ -46,6 +46,7 @@ namespace UnitTests
         public void Dispose()
         {
             parser.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }
