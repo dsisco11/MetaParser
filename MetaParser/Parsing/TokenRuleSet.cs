@@ -1,4 +1,4 @@
-﻿using MetaParser.Parsing.Definitions;
+﻿using MetaParser.Rules;
 
 namespace MetaParser.Parsing
 {

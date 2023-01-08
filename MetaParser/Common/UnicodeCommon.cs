@@ -345,7 +345,7 @@ namespace MetaParser
         public static int Ascii_Hex_To_Value(char c)
         {
             if (c > HexLookupTable.Length)
-                throw new IndexOutOfRangeException();
+                throw new ArgumentOutOfRangeException($"The given character('{c}') is not a valid hexadecimal specifier!");
 
             Contract.EndContractBlock();
 

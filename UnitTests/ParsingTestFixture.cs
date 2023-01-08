@@ -1,7 +1,7 @@
 ﻿using MetaParser;
 using MetaParser.Parsing;
-using MetaParser.Parsing.Tokens;
-using MetaParser.RuleSets.Text.Tokens;
+using MetaParser.Tokens;
+using MetaParser.Tokens.Text;
 
 namespace UnitTests
 {

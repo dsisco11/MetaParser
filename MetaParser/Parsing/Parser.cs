@@ -1,6 +1,6 @@
 ﻿using MetaParser.Parsing;
-using MetaParser.Parsing.Definitions;
-using MetaParser.Parsing.Tokens;
+using MetaParser.Rules;
+using MetaParser.Tokens;
 
 using System.Buffers;
 using System.Diagnostics.Contracts;
