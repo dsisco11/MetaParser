@@ -6,7 +6,7 @@ namespace MetaParser.RuleSets.Text
 {
     public sealed class WordBlockRule : ITokenRule<char>
     {
-        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
+        public bool TryConsume(ITokenReader<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
             bool valid = char.IsLetter(Tokenizer.Peek(0)) && char.IsLetterOrDigit(Tokenizer.Peek(1));
             if (!valid)

@@ -7,8 +7,8 @@ namespace MetaParser.Rules
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <inheritdoc cref="ITokenRule{T}"/>
-    public sealed record AutoRule<T> : ITokenRule<T>
-        where T : unmanaged, IEquatable<T>
+    public sealed class AutoRule<T> : ITokenRule<T>
+        where T : IEquatable<T>
     {
         private readonly IStaticToken<T> Instance;
 
@@ -17,17 +17,17 @@ namespace MetaParser.Rules
             Instance = instance;
         }
 
-        public bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out IToken<T>? outToken)
+        public bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out IToken<T>? Token)
         {
             var rd = Tokenizer.GetReader();
             if(rd.IsNext(Instance.Value, advancePast: true))
             {
-                Tokenizer.Consume(ref rd);
-                outToken = Instance;
+                Tokenizer.TryConsume(rd, out _);
+                Token = Instance;
                 return true;
             }
 
-            outToken = null;
+            Token = null;
             return false;
         }
     }

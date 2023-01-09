@@ -16,7 +16,7 @@ namespace MetaParser.RuleSets.Text
             CommentPrefix = commentPrefix.ToArray();
         }
 
-        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
+        public bool TryConsume(ITokenReader<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
             var rd = Tokenizer.GetReader();
             if (!rd.IsNext(CommentPrefix, advancePast: true))

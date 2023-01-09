@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 
 namespace MetaParser.Tokens
 {
@@ -6,6 +7,7 @@ namespace MetaParser.Tokens
     /// Represents any single item which is not consumed by another token, the 'default' token
     /// </summary>
     /// <typeparam name="T"></typeparam>
+    [DebuggerDisplay("{ToString(),raw}")]
     public sealed record Token<T> : IToken<T> where T : IEquatable<T>
     {
         private readonly ReadOnlySequence<T> _value;

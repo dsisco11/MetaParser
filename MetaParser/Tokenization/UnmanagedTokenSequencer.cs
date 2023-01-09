@@ -1,13 +1,13 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace MetaParser
 {
-    /// <summary>
-    /// Provides access to a genericized, consumable stream of data.
-    /// </summary>
+    /// <inheritdoc cref="ITokenizer{T}"/>
     /// <typeparam name="T"></typeparam>
-    public class Tokenizer<T> : ITokenizer<T> where T : unmanaged, IEquatable<T>
+    [DebuggerDisplay("{ToString(),raw}")]
+    public sealed class UnmanagedTokenSequencer<T> : ITokenizer<T> where T : unmanaged, IEquatable<T>
     {
         #region Fields
         private readonly T EOF_ITEM;
@@ -24,9 +24,9 @@ namespace MetaParser
         /// <summary>
         /// The current working range of the stream, that is, the range of unconsumed data.
         /// </summary>
-        private Range Bounds => Range.StartAt(Position);
+        private Range Bounds => Range.StartAt(Consumed);
 
-        public int Position { get; private set; }
+        public int Consumed { get; private set; }
         #endregion
 
         #region Constructors
@@ -36,7 +36,7 @@ namespace MetaParser
         /// </summary>
         /// <param name="Memory"></param>
         /// <param name="EOF_ITEM"></param>
-        public Tokenizer(ReadOnlyMemory<T> Memory)
+        public UnmanagedTokenSequencer(ReadOnlyMemory<T> Memory)
         {
             Data = Memory;
             DataSeq = new(Data);
@@ -48,64 +48,47 @@ namespace MetaParser
         /// </summary>
         /// <param name="Memory"></param>
         /// <param name="EOF"></param>
-        public Tokenizer(ReadOnlyMemory<T> Memory, T EOF) : this(Memory)
+        public UnmanagedTokenSequencer(ReadOnlyMemory<T> Memory, T EOF) : this(Memory)
         {
             this.EOF_ITEM = EOF;
         }
         #endregion
 
         #region Accessors
+        public bool End => CurrentSeq.IsEmpty;
         public long Length => DataSeq.Length;
         public long Remaining => CurrentSeq.Length;
-        /// <summary>
-        /// Returns whether the stream position is currently at the end of the stream
-        /// </summary>
-        public bool AtEnd => CurrentSeq.IsEmpty;
-
-        /// <summary>
-        /// Returns whether the next character in the stream is the EOF character
-        /// </summary>
-        public bool AtEOF => object.Equals(CurrentSeq.FirstSpan[0], EOF_ITEM);
         #endregion
 
         #region Reader
-        public SequenceReader<T> GetReader()
-        {
-            return new SequenceReader<T>(CurrentSeq);
-        }
+        //public SequenceReader<T> GetReader()
+        //{
+        //    return new SequenceReader<T>(CurrentSeq);
+        //}
 
-        public SequenceReader<T> GetReader(Range range)
-        {
-            var r = range.GetOffsetAndLength((int)CurrentSeq.Length);
-            return new SequenceReader<T>(CurrentSeq.Slice(r.Offset, r.Length));
-        }
+        //public SequenceReader<T> GetReader(Range range)
+        //{
+        //    var r = range.GetOffsetAndLength((int)CurrentSeq.Length);
+        //    return new SequenceReader<T>(CurrentSeq.Slice(r.Offset, r.Length));
+        //}
 
-        public T Peek(Index index)
+        ITokenReader<T> ITokenizer<T>.GetReader()
         {
-            var offset = index.GetOffset((int)Remaining);
-            return GetReader().TryPeek(offset, out T val) ? val : EOF_ITEM;
+            return new UnmanagedTokenReader<T>(CurrentSeq);
         }
         #endregion
 
         #region Consuming
         /// <summary>
-        /// Consumes the given <paramref name="reader"/>, progressing the stream and returning the difference.
+        /// Consumes the given <paramref name="Reader"/>, progressing the stream and returning the difference.
         /// </summary>
-        /// <param name="reader"></param>
+        /// <param name="Reader"></param>
         /// <returns></returns>
-        public ReadOnlySequence<T> Consume(ref SequenceReader<T> reader)
+        public bool TryConsume(ITokenReader<T> Reader, out ReadOnlySequence<T> Consumed)
         {
-            var consumed = CurrentSeq.Slice(0, reader.Position);
-            CurrentSeq = CurrentSeq.Slice(reader.Position);
-            return consumed;
-        }
-
-        public ReadOnlySequence<T> Consume(Index endIndex)
-        {
-            var index = endIndex.GetOffset((int)Remaining);
-            var consumed = CurrentSeq.Slice(0, index);
-            CurrentSeq = CurrentSeq.Slice(index);
-            return consumed;
+            Consumed = CurrentSeq.Slice(0, Reader.Consumed);
+            CurrentSeq = CurrentSeq.Slice(Reader.Consumed);
+            return !Consumed.IsEmpty;
         }
         #endregion
 
@@ -127,17 +110,6 @@ namespace MetaParser
         public ReadOnlyMemory<T> Slice(Range range)
         {
             return Data[Bounds][range];
-        }
-        #endregion
-
-        #region Cloning
-        /// <summary>
-        /// Creates and returns a copy of this stream
-        /// </summary>
-        /// <returns></returns>
-        public Tokenizer<T> Clone()
-        {
-            return new Tokenizer<T>(Data, EOF_ITEM);
         }
         #endregion
 

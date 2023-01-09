@@ -33,7 +33,7 @@ namespace MetaParser
         #region Parsing
         public IToken<T>[] Parse(ReadOnlyMemory<T> Data)
         {
-            var Stream = new Tokenizer<T>(Data);
+            var Stream = new UnmanagedTokenReader<T>(Data);
             var tokenList = new LinkedList<IToken<T>>();
             IToken<T> last = Config.EOF;
             do
@@ -41,18 +41,18 @@ namespace MetaParser
                 last = Consume_Next(Stream, last);
                 tokenList.AddLast(last);
             }
-            while (!Stream.AtEnd);
+            while (!Stream.End);
 
             return tokenList.ToArray();
         }
         #endregion
 
-        private IToken<T> Consume_Next(Tokenizer<T> Stream, IToken<T> lastToken)
+        private IToken<T> Consume_Next(UnmanagedTokenReader<T> Stream, IToken<T> lastToken)
         {
             ArgumentNullException.ThrowIfNull(Stream);
             Contract.EndContractBlock();
 
-            if (Stream.AtEOF || Stream.AtEnd)
+            if (Stream.AtEOF || Stream.End)
             {
                 Stream.Consume(1);
                 return Config.EOF;
@@ -77,7 +77,7 @@ namespace MetaParser
         /// <param name="Tokenizer"></param>
         /// <param name="prevToken"></param>
         /// <returns></returns>
-        private static bool Try_Consume(RuleSet<T> Ruleset, ITokenizer<T> Tokenizer, IToken<T> prevToken, out IToken<T>? Result)
+        private static bool Try_Consume(RuleSet<T> Ruleset, ITokenReader<T> Tokenizer, IToken<T> prevToken, out IToken<T>? Result)
         {
             ArgumentNullException.ThrowIfNull(Ruleset);
             ArgumentNullException.ThrowIfNull(Tokenizer);

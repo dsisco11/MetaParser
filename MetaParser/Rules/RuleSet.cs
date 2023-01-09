@@ -2,7 +2,7 @@
 
 namespace MetaParser.Rules
 {
-    public sealed record RuleSet<T> where T : unmanaged, IEquatable<T>
+    public sealed record RuleSet<T> where T : IEquatable<T>
     {
         public ITokenRule<T>[] Items { get; init; }
         public RuleSet(params ITokenRule<T>[] items)

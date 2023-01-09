@@ -1,10 +1,11 @@
 ﻿using MetaParser.Tokens;
 
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace MetaParser.Rules
 {
-    public abstract class TokenRule<T> : ITokenRule<T> where T : unmanaged, IEquatable<T>
+    public abstract class TokenRule<T> : ITokenRule<T> where T : IEquatable<T>
     {
         public TokenFactory<T>? TokenFactory { get; init; }
 
@@ -13,17 +14,18 @@ namespace MetaParser.Rules
             TokenFactory = tokenFactory;
         }
 
-        protected abstract bool Consume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected abstract bool Consume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T> Consumed);
 
-        public bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out IToken<T>? outToken)
+        public bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out IToken<T>? Token)
         {
-            if (Consume(Tokenizer, Previous, out ReadOnlySequence<T>? consumed) && consumed is not null)
+            if (Consume(Tokenizer, Previous, out ReadOnlySequence<T> consumed))
             {
-                outToken = TokenFactory?.Invoke(consumed.Value) ?? new Token<T>(consumed.Value);
+                Token = TokenFactory?.Invoke(consumed) ?? new Token<T>(consumed);
                 return true;
             }
 
-            outToken = null;
+            Token = null;
             return false;                
         }
 

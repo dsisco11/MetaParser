@@ -7,12 +7,12 @@ namespace MetaParser.RuleSets.Text
 {
     public sealed partial class StringRule : ITokenRule<char>
     {
-        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
+        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? Token)
         {
             bool isValid = Tokenizer.GetReader().AdvancePastAny(UnicodeCommon.SYMBOLS_QUOTATION_MARKS) > 0;
             if (!isValid)
             {
-                outToken = null;
+                Token = null;
                 return false;
             }
 
@@ -32,16 +32,14 @@ namespace MetaParser.RuleSets.Text
             //}
 
             // Consume until we hit the next instance of the same character we consumed at the start of the string
-            if (!rd.TryAdvanceTo(closingChar))
+            bool isClosedString = !rd.TryAdvanceTo(closingChar);
+            if (!isClosedString) 
             {// We couldnt find a matching string quote char, this is a bad bad string...
                 rd.AdvanceToEnd();
-                outToken = new BadStringToken(Tokenizer.Consume(ref rd));
-            }
-            else
-            {
-                outToken = new StringToken(Tokenizer.Consume(ref rd));
             }
 
+            Tokenizer.TryConsume(rd, out var consumed);
+            Token = isClosedString ? new StringToken(consumed) : new BadStringToken(consumed);
             return true;
         }
     }

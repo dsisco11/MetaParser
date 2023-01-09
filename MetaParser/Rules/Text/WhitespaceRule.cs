@@ -14,7 +14,7 @@ namespace MetaParser.RuleSets.Text
             CharacterSet = IncludeNewline ? UnicodeCommon.ASCII_WHITESPACE : UnicodeCommon.ASCII_WHITESPACE_EXCLUDING_NEWLINE;
         }
 
-        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
+        public bool TryConsume(ITokenReader<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
             var rd = Tokenizer.GetReader();
             var count = rd.AdvancePastAny(CharacterSet.Span);

@@ -1,10 +1,11 @@
 ﻿using MetaParser.Tokens;
 
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace MetaParser.Rules
 {
-    public class SingleRule<T> : TokenRule<T> where T : unmanaged, IEquatable<T>
+    public sealed class SingleRule<T> : TokenRule<T> where T : IEquatable<T>
     {
         public T Value { get; init; }
 
@@ -13,12 +14,12 @@ namespace MetaParser.Rules
             Value = value;
         }
 
-        protected override bool Consume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected override bool Consume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T> Consumed)
         {
             var rd = Tokenizer.GetReader();
-            bool success = rd.IsNext(Value, true);
-            outConsumed = success ? Tokenizer.Consume(ref rd) : null;
-            return success;
+            rd.IsNext(Value, true);
+            return Tokenizer.TryConsume(rd, out Consumed);
         }
     }
 }

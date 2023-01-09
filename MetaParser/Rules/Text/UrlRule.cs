@@ -9,7 +9,7 @@ namespace MetaParser.RuleSets.Text
     /// </summary>
     public sealed class UrlRule : ITokenRule<char>
     {
-        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
+        public bool TryConsume(ITokenReader<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
             throw new NotImplementedException();
         }

@@ -2,6 +2,8 @@
 using MetaParser.Tokens;
 using MetaParser.Tokens.Text;
 
+using System.Buffers;
+
 namespace MetaParser.RuleSets.Text
 {
     // TODO:
@@ -27,7 +29,9 @@ namespace MetaParser.RuleSets.Text
 
         public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
         {
-            var rd = Tokenizer.GetReader();
+            var tokenReader = Tokenizer.GetReader() as UnmanagedTokenReader<char>;
+            SequenceReader<char> rd = tokenReader.GetReader();
+
             if (!ParsingCommon.Is_Number_Start(rd))
             {
                 outToken = null;
@@ -38,20 +42,30 @@ namespace MetaParser.RuleSets.Text
             ENumberKind Kind = Detect_Number_Kind(Tokenizer);
             if (Kind == ENumberKind.Integer)
             {
-                outToken = ParsingCommon.TryParseInteger(ref rd, out var outInteger)
-                    ? new IntegerToken(Tokenizer.Consume(ref rd), outInteger)
-                    : new BadNumberToken(Tokenizer.Consume(ref rd));
+                bool success = ParsingCommon.TryParseInteger(ref rd, out var outInteger);
+                tokenReader.Advance(rd.Consumed);
+                Tokenizer.TryConsume(tokenReader, out var consumed);
+
+                outToken = success
+                    ? new IntegerToken(consumed, outInteger)
+                    : new BadNumberToken(consumed);
             }
             else if (Kind == ENumberKind.Decimal)
             {
-                outToken = ParsingCommon.TryParseFloatingPoint(ref rd, out var outDecimal)
-                    ? new DecimalToken(Tokenizer.Consume(ref rd), outDecimal)
-                    : new BadNumberToken(Tokenizer.Consume(ref rd));
+                var success = ParsingCommon.TryParseFloatingPoint(ref rd, out var outDecimal);
+                tokenReader.Advance(rd.Consumed);
+                Tokenizer.TryConsume(tokenReader, out var consumed);
+
+                outToken = success
+                    ? new DecimalToken(consumed, outDecimal)
+                    : new BadNumberToken(consumed);
             }
             else
             {
                 rd.Advance(1);
-                outToken = new IdentToken(Tokenizer.Consume(ref rd));
+                tokenReader.Advance(rd.Consumed);
+                Tokenizer.TryConsume(tokenReader, out var consumed);
+                outToken = new IdentToken(consumed);
             }
 
             return true;
