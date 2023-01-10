@@ -5,18 +5,10 @@ using System.Buffers;
 namespace MetaParser.Tokens.Text
 {
     public enum ENumberKind { Integer, Decimal }
-    public abstract record NumberToken : ValueToken
+    public abstract record NumberToken : TextToken
     {
         public abstract ENumberKind Kind { get; }
         public NumberToken(ReadOnlySequence<char> value) : base(ETextToken.Number, value)
-        {
-        }
-
-        public NumberToken(ReadOnlyMemory<char> value) : base(ETextToken.Number, value)
-        {
-        }
-
-        public NumberToken(char[] value) : base(ETextToken.Number, value)
         {
         }
     }
@@ -30,16 +22,6 @@ namespace MetaParser.Tokens.Text
         {
             Number = number;
         }
-
-        public IntegerToken(ReadOnlyMemory<char> value, long number) : base(value)
-        {
-            Number = number;
-        }
-
-        public IntegerToken(char[] value, long number) : base(value)
-        {
-            Number = number;
-        }
     }
 
     public sealed record DecimalToken : NumberToken
@@ -47,16 +29,6 @@ namespace MetaParser.Tokens.Text
         public override ENumberKind Kind => ENumberKind.Decimal;
         public double Number { get; init; }
         public DecimalToken(ReadOnlySequence<char> value, double number) : base(value)
-        {
-            Number = number;
-        }
-
-        public DecimalToken(ReadOnlyMemory<char> value, double number) : base(value)
-        {
-            Number = number;
-        }
-
-        public DecimalToken(char[] value, double number) : base(value)
         {
             Number = number;
         }

@@ -1,14 +1,14 @@
-﻿using MetaParser.Rules;
+﻿using MetaParser.Parsing;
+using MetaParser.Rules.Text;
 using MetaParser.Tokens;
 using MetaParser.Tokens.Text;
 
 namespace MetaParser.RuleSets.Text
 {
-    // TODO:
     /// <summary>
     /// Causes number-like (integer/decimal) sequences to be emitted as a single number-type token
     /// </summary>
-    public sealed class NumericRule : ITokenRule<char>
+    public sealed class NumericRule : TextTokenRule
     {
         private static ENumberKind Detect_Number_Kind(ITokenizer<char> Tokenizer)
         {
@@ -25,12 +25,12 @@ namespace MetaParser.RuleSets.Text
                 : ENumberKind.Integer;
         }
 
-        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
+        public override bool TryConsume(ITokenizer<char> Tokenizer, Token<TokenType<ETextToken>, char>? Previous, out Token<TokenType<ETextToken>, char>? Token)
         {
             var rd = Tokenizer.GetReader();
             if (!ParsingCommon.Is_Number_Start(rd))
             {
-                outToken = null;
+                Token = null;
                 return false;
             }
 
@@ -38,20 +38,20 @@ namespace MetaParser.RuleSets.Text
             ENumberKind Kind = Detect_Number_Kind(Tokenizer);
             if (Kind == ENumberKind.Integer)
             {
-                outToken = ParsingCommon.TryParseInteger(ref rd, out var outInteger)
+                Token = ParsingCommon.TryParseInteger(ref rd, out var outInteger)
                     ? new IntegerToken(Tokenizer.Consume(ref rd), outInteger)
-                    : new BadNumberToken(Tokenizer.Consume(ref rd));
+                    : new TextToken(ETextToken.Bad_Number, Tokenizer.Consume(ref rd));
             }
             else if (Kind == ENumberKind.Decimal)
             {
-                outToken = ParsingCommon.TryParseFloatingPoint(ref rd, out var outDecimal)
+                Token = ParsingCommon.TryParseFloatingPoint(ref rd, out var outDecimal)
                     ? new DecimalToken(Tokenizer.Consume(ref rd), outDecimal)
-                    : new BadNumberToken(Tokenizer.Consume(ref rd));
+                    : new TextToken(ETextToken.Bad_Number, Tokenizer.Consume(ref rd));
             }
             else
             {
                 rd.Advance(1);
-                outToken = new IdentToken(Tokenizer.Consume(ref rd));
+                Token = new TextToken(ETextToken.Ident, Tokenizer.Consume(ref rd));
             }
 
             return true;

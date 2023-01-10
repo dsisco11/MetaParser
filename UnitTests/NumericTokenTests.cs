@@ -1,15 +1,17 @@
-﻿using MetaParser.Rules;
+﻿using MetaParser.Parsing;
+using MetaParser.Rules;
 using MetaParser.RuleSets.Text;
+using MetaParser.Tokens;
 using MetaParser.Tokens.Text;
 
 namespace UnitTests
 {
     public class NumericTokenTests
     {
-        public ParsingTestFixture<char> TestFixture { get; init; }
+        public ParsingTestFixture<TokenType<ETextToken>, char> TestFixture { get; init; }
         public NumericTokenTests()
         {
-            TestFixture = new ParsingTestFixture<char>(new RuleSet<char>(new NumericRule()));
+            TestFixture = new ParsingTestFixture<TokenType<ETextToken>, char>(new RuleSet<TokenType<ETextToken>, char>(new NumericRule()));
         }
 
         [Theory]

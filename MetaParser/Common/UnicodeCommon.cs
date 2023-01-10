@@ -100,9 +100,11 @@ namespace MetaParser
         public const char CHAR_EQUALS = '\u003D';
 
         /// <summary>
+        /// '<'
         /// </summary>
         public const char CHAR_LEFT_CHEVRON = '\u003C';
         /// <summary>
+        /// '>'
         /// </summary>
         public const char CHAR_RIGHT_CHEVRON = '\u003E';
 

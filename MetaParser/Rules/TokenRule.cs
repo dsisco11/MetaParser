@@ -1,29 +1,44 @@
 ﻿using MetaParser.Tokens;
 
 using System.Buffers;
+using System.Diagnostics;
 
 namespace MetaParser.Rules
 {
-    public abstract class TokenRule<T> : ITokenRule<T> where T : unmanaged, IEquatable<T>
+    [DebuggerDisplay("TokenRule :: {Definition}")]
+    public abstract class TokenRule<TData, TValue> : ITokenRule<TData, TValue>
+        where TData : struct, IEquatable<TData>
+        where TValue : unmanaged, IEquatable<TValue>
     {
-        public TokenFactory<T>? TokenFactory { get; init; }
+        public abstract RuleSpecificty Specificity { get; }        
 
-        public TokenRule(TokenFactory<T>? tokenFactory = null)
+        #region Properties
+        public TData Definition { get; init; }
+        public Token<TData, TValue>? Instance { get; init; }
+        #endregion
+
+        #region Constructors
+        protected TokenRule(TData definition)
         {
-            TokenFactory = tokenFactory;
+            Definition = definition;
         }
-
-        protected abstract bool Consume(ITokenizer<T> Tokenizer, IToken<T> Previous, out ReadOnlySequence<T>? outConsumed);
-
-        public bool TryConsume(ITokenizer<T> Tokenizer, IToken<T> Previous, out IToken<T>? outToken)
+        protected TokenRule(Token<TData, TValue> instance)
         {
-            if (Consume(Tokenizer, Previous, out ReadOnlySequence<T>? consumed) && consumed is not null)
+            Instance = instance;
+        }
+        #endregion
+
+        protected abstract bool Consume(ITokenizer<TValue> Tokenizer, Token<TData, TValue>? Previous, out ReadOnlySequence<TValue> Consumed);
+
+        public bool TryConsume(ITokenizer<TValue> Tokenizer, Token<TData, TValue>? Previous, out Token<TData, TValue>? Token)
+        {
+            if (Consume(Tokenizer, Previous, out ReadOnlySequence<TValue> consumed))
             {
-                outToken = TokenFactory?.Invoke(consumed.Value) ?? new Token<T>(consumed.Value);
+                Token = Instance ?? new Token<TData, TValue>(Definition, consumed);
                 return true;
             }
 
-            outToken = null;
+            Token = null;
             return false;                
         }
 

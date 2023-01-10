@@ -1,24 +1,22 @@
 ﻿using MetaParser.Rules;
-using MetaParser.Tokens;
 
 namespace MetaParser.Parsing
 {
-    public readonly struct ParsingConfig<TTokenData>
-        where TTokenData : unmanaged, IEquatable<TTokenData>
+    public readonly struct ParsingConfig<TData, TValue>
+        where TData : struct, IEquatable<TData>
+        where TValue : unmanaged, IEquatable<TValue>
     {
         #region Fields
-        private readonly EOFToken<TTokenData> eof = new();
-        private readonly RuleSet<TTokenData>[] rulesets;
+        private readonly RuleSet<TData, TValue>[] rulesets;
         #endregion
 
         #region Properties
-        public readonly EOFToken<TTokenData> EOF => eof;
-        public RuleSet<TTokenData>[] Rulesets => rulesets;
+        public RuleSet<TData, TValue>[] Rulesets => rulesets;
 
         #endregion
 
         #region Constructors
-        public ParsingConfig(RuleSet<TTokenData> ruleset)
+        public ParsingConfig(RuleSet<TData, TValue> ruleset)
         {
             this.rulesets = new[] { ruleset };
         }

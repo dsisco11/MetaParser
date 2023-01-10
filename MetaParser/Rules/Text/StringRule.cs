@@ -1,18 +1,19 @@
 ﻿using MetaParser.Exceptions;
-using MetaParser.Rules;
+using MetaParser.Parsing;
+using MetaParser.Rules.Text;
 using MetaParser.Tokens;
 using MetaParser.Tokens.Text;
 
 namespace MetaParser.RuleSets.Text
 {
-    public sealed partial class StringRule : ITokenRule<char>
+    public sealed partial class StringRule : TextTokenRule
     {
-        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
+        public override bool TryConsume(ITokenizer<char> Tokenizer, Token<TokenType<ETextToken>, char>? Previous, out Token<TokenType<ETextToken>, char>? Token)
         {
             bool isValid = Tokenizer.GetReader().AdvancePastAny(UnicodeCommon.SYMBOLS_QUOTATION_MARKS) > 0;
             if (!isValid)
             {
-                outToken = null;
+                Token = null;
                 return false;
             }
 
@@ -35,11 +36,11 @@ namespace MetaParser.RuleSets.Text
             if (!rd.TryAdvanceTo(closingChar))
             {// We couldnt find a matching string quote char, this is a bad bad string...
                 rd.AdvanceToEnd();
-                outToken = new BadStringToken(Tokenizer.Consume(ref rd));
+                Token = new TextToken(ETextToken.Bad_String, Tokenizer.Consume(ref rd));
             }
             else
             {
-                outToken = new StringToken(Tokenizer.Consume(ref rd));
+                Token = new TextToken(ETextToken.String, Tokenizer.Consume(ref rd));
             }
 
             return true;

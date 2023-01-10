@@ -43,6 +43,12 @@
         Equals,
         /// <summary>'+'</summary>
         Plus,
+        /// <summary>'*'</summary>
+        Asterisk,
+        /// <summary>'/'</summary>
+        Solidus,
+        /// <summary>'\'</summary>
+        ReverseSolidus,
 
         /// <summary></summary>
         Number,

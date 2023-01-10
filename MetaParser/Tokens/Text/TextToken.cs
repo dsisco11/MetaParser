@@ -1,30 +1,21 @@
 ﻿using MetaParser.Parsing;
 
+using System.Buffers;
+
 namespace MetaParser.Tokens.Text
 {
-    public abstract record TextToken : IToken<char>
+    public record TextToken : EnumToken<ETextToken, char>
     {
-        public ETextToken Type { get; init; }
-        public abstract char[] Value { get; }
-
-        protected TextToken(ETextToken type)
+        public TextToken(ETextToken type, ReadOnlySequence<char> data) : base(type, data)
         {
-            Type = type;
         }
 
-        // Token-on-token equality checking theoretically is usually only going to be done in scenarios where the desire is to know if the tokens point to the same memory chunk.
-        // Assumedly, the only useful scenarios wherein you would want to do strict equality checks between tokens with the desire to know if they contain equal values, would be in cases such as unit testing.
-        // So doing something tragic like... calling toString and comparing the values... is... fine?
-        public bool Equals(IToken<char>? other)
+        public TextToken(ETextToken type, ReadOnlyMemory<char> data) : base(type, data)
         {
-            return ReferenceEquals(this, other)
-                   || ((other is TextToken otok) && Value.SequenceEqual(otok.Value))
-                   || ToString().Equals(other?.ToString(), StringComparison.Ordinal);
         }
 
-        public override string ToString()
+        public TextToken(ETextToken type, params char[] data) : base(type, data.ToArray())
         {
-            return Value?.ToString() ?? string.Empty;
         }
     }
 }

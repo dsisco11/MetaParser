@@ -1,17 +1,18 @@
-﻿using MetaParser.Rules;
+﻿using MetaParser.Parsing;
+using MetaParser.Rules.Text;
 using MetaParser.Tokens;
 using MetaParser.Tokens.Text;
 
 namespace MetaParser.RuleSets.Text
 {
-    public sealed class WordBlockRule : ITokenRule<char>
+    public sealed class WordBlockRule : TextTokenRule
     {
-        public bool TryConsume(ITokenizer<char> Tokenizer, IToken<char> Previous, out IToken<char>? outToken)
+        public override bool TryConsume(ITokenizer<char> Tokenizer, Token<TokenType<ETextToken>, char>? Previous, out Token<TokenType<ETextToken>, char>? Token)
         {
             bool valid = char.IsLetter(Tokenizer.Peek(0)) && char.IsLetterOrDigit(Tokenizer.Peek(1));
             if (!valid)
             {
-                outToken = null;
+                Token = null;
                 return false;
             }
 
@@ -28,7 +29,7 @@ namespace MetaParser.RuleSets.Text
             }
             while (!rd.End);
 
-            outToken = new IdentToken(Tokenizer.Consume(ref rd));
+            Token = new TextToken(ETextToken.Ident, Tokenizer.Consume(ref rd));
             return true;
         }
     }
