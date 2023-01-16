@@ -8,41 +8,41 @@ namespace MetaParser.Rules
     /// <summary>
     /// Consumes contiguous sequences of a set of values.
     /// </summary>
-    /// <typeparam name="TData"></typeparam>
+    /// <typeparam name="TEnum"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     [DebuggerDisplay("GroupSetRule :: {Definition} :: {Values.ToString()}")]
-    public class GroupSetRule<TData, TValue> : TokenRule<TData, TValue> 
-        where TData : struct, IEquatable<TData>
+    public class GroupSetRule<TEnum, TValue> : ITokenRule<TEnum, TValue> 
+        where TEnum : unmanaged
         where TValue : unmanaged, IEquatable<TValue>
     {
-        public override RuleSpecificty Specificity => new RuleSpecificty(false, true);
+        public RuleSpecificty Specificity => new RuleSpecificty(false, true);
 
         #region Properties
+        private TEnum definition;
         public TValue[] Values { get; init; }
         #endregion
 
         #region Constructors
-        public GroupSetRule(TData definition, TValue[] values) : base(definition)
+        public GroupSetRule(TEnum definition, TValue[] values)
         {
+            this.definition = definition;
             Values = values;
         }
 
-        public GroupSetRule(TData definition, ReadOnlySpan<TValue> values) : base(definition)
+        public GroupSetRule(TEnum definition, ReadOnlySpan<TValue> values)
         {
+            this.definition = definition;
             Values = values.ToArray();
-        }
-
-        public GroupSetRule(Token<TData, TValue> instance) : base(instance.Data)
-        {
-            Values = instance.Value;
         }
         #endregion
 
-        protected override bool Consume(ITokenizer<TValue> Tokenizer, Token<TData, TValue>? Previous, out ReadOnlySequence<TValue> Consumed)
+        public bool TryConsume(ITokenizer<TValue> Tokenizer, TEnum? Previous, out TEnum TokenType, out long TokenLength)
         {
             var rd = Tokenizer.GetReader();
             bool success = rd.AdvancePastAny(Values.AsSpan()) > 0;
-            Consumed = Tokenizer.Consume(ref rd);
+
+            TokenType = definition;
+            TokenLength = rd.Consumed;
             return success;
         }
     }

@@ -3,54 +3,60 @@ using MetaParser.Rules;
 using MetaParser.RuleSets.Text;
 using static MetaParser.UnicodeCommon;
 
-using TextTokenType = MetaParser.Tokens.TokenType<MetaParser.Parsing.ETextToken>;
-using TextTokenRule = MetaParser.Rules.ITokenRule<MetaParser.Tokens.TokenType<MetaParser.Parsing.ETextToken>, char>;
 
 namespace MetaParser.RuleSets
 {
+    using TextTokenRule = ITokenRule<byte, char>;
+    using TSingleRule = SingleRule<byte, char>;
+    using TBlockRule = BlockRule<byte, char>;
+    using TGroupSetRule = GroupSetRule<byte, char>;
+    using TGroupSingleRule = GroupSingleRule<byte, char>;
+
     public static class TextRules
     {
-        public static readonly TextTokenRule Newline = new GroupSingleRule<TextTokenType, char>(ETextToken.Newline, CHAR_LINE_FEED);
-        public static readonly TextTokenRule Whitespace = new GroupSetRule<TextTokenType, char>(ETextToken.Whitespace, ASCII_WHITESPACE);
-        public static readonly TextTokenRule Whitespace_Except_Newline = new GroupSetRule<TextTokenType, char>(ETextToken.Whitespace, ASCII_WHITESPACE_EXCLUDING_NEWLINE);
+        public static readonly TextTokenRule Newline = new TGroupSingleRule(ETextToken.Newline, CHAR_LINE_FEED);
+        public static readonly TextTokenRule Whitespace = new TGroupSetRule(ETextToken.Whitespace, ASCII_WHITESPACE);
+        public static readonly TextTokenRule Whitespace_Except_Newline = new TGroupSetRule(ETextToken.Whitespace, ASCII_WHITESPACE_EXCLUDING_NEWLINE);
 
         /// <summary>
         /// This rule captures sequences of legible 'word' characters, so any sequence of human-readable characters which are not whitespace or control characters
         /// </summary>
-        public static readonly TextTokenRule Words = new WordBlockRule();
+        public static readonly TextTokenRule Words = new PredicateRule<byte, char>(ETextToken.Ident, char.IsLetterOrDigit, char.IsLetter);
 
         /// <summary>
         /// Common symbols of importance for things like programming, markup, and configuration files.
         /// <para>: | ; , [ ] ( ) { } \< \> - = +</para>
         /// </summary>
-        public static TextTokenRule[] CommonSymbols => new [] {
-            new SingleRule<TextTokenType, char>(ETextToken.Colon, CHAR_COLON),
-            new SingleRule<TextTokenType, char>(ETextToken.Column, CHAR_PIPE),
-            new SingleRule<TextTokenType, char>(ETextToken.Semicolon, CHAR_SEMICOLON),
-            new SingleRule<TextTokenType, char>(ETextToken.Comma, CHAR_COMMA),
-            new SingleRule<TextTokenType, char>(ETextToken.SqBracketOpen, CHAR_LEFT_SQUARE_BRACKET),
-            new SingleRule<TextTokenType, char>(ETextToken.SqBracketClose, CHAR_RIGHT_SQUARE_BRACKET),
-            new SingleRule<TextTokenType, char>(ETextToken.ParenthOpen, CHAR_LEFT_PARENTHESES),
-            new SingleRule<TextTokenType, char>(ETextToken.ParenthClose, CHAR_RIGHT_PARENTHESES),
-            new SingleRule<TextTokenType, char>(ETextToken.BracketOpen, CHAR_LEFT_CURLY_BRACKET),
-            new SingleRule<TextTokenType, char>(ETextToken.BracketClose, CHAR_RIGHT_CURLY_BRACKET),
-            new SingleRule<TextTokenType, char>(ETextToken.LessThan, CHAR_LEFT_CHEVRON),
-            new SingleRule<TextTokenType, char>(ETextToken.GreaterThan, CHAR_RIGHT_CHEVRON),
-            new SingleRule<TextTokenType, char>(ETextToken.HypenMinus, CHAR_HYPHEN_MINUS),
-            new SingleRule<TextTokenType, char>(ETextToken.Equals, CHAR_EQUALS),
-            new SingleRule<TextTokenType, char>(ETextToken.Plus, CHAR_PLUS_SIGN),
-            new SingleRule<TextTokenType, char>(ETextToken.Asterisk, CHAR_ASTERISK),
-            new SingleRule<TextTokenType, char>(ETextToken.Solidus, CHAR_SOLIDUS),
-            new SingleRule<TextTokenType, char>(ETextToken.ReverseSolidus, CHAR_REVERSE_SOLIDUS),
+        public static ITokenRule<byte,char>[] CommonSymbols => new [] {
+            new TSingleRule(ETextToken.Colon, CHAR_COLON),
+            new TSingleRule(ETextToken.Column, CHAR_PIPE),
+            new TSingleRule(ETextToken.Semicolon, CHAR_SEMICOLON),
+            new TSingleRule(ETextToken.Comma, CHAR_COMMA),
+            new TSingleRule(ETextToken.SqBracketOpen, CHAR_LEFT_SQUARE_BRACKET),
+            new TSingleRule(ETextToken.SqBracketClose, CHAR_RIGHT_SQUARE_BRACKET),
+            new TSingleRule(ETextToken.ParenthOpen, CHAR_LEFT_PARENTHESES),
+            new TSingleRule(ETextToken.ParenthClose, CHAR_RIGHT_PARENTHESES),
+            new TSingleRule(ETextToken.BracketOpen, CHAR_LEFT_CURLY_BRACKET),
+            new TSingleRule(ETextToken.BracketClose, CHAR_RIGHT_CURLY_BRACKET),
+            new TSingleRule(ETextToken.LessThan, CHAR_LEFT_CHEVRON),
+            new TSingleRule(ETextToken.GreaterThan, CHAR_RIGHT_CHEVRON),
+            new TSingleRule(ETextToken.HypenMinus, CHAR_HYPHEN_MINUS),
+            new TSingleRule(ETextToken.Equals, CHAR_EQUALS),
+            new TSingleRule(ETextToken.Plus, CHAR_PLUS_SIGN),
+            new TSingleRule(ETextToken.Asterisk, CHAR_ASTERISK),
+            new TSingleRule(ETextToken.Solidus, CHAR_SOLIDUS),
+            new TSingleRule(ETextToken.ReverseSolidus, CHAR_REVERSE_SOLIDUS),
         };
 
         /// <summary>
         /// Code 'Objects' are more complex structures like comment blocks, function names, variable declarations, etc.
         /// </summary>
         public static TextTokenRule[] CodeStructures => new TextTokenRule[] {
-            new BlockRule<TextTokenType, char>(ETextToken.Comment, "//", "\n"),
-            new BlockRule<TextTokenType, char>(ETextToken.Comment, "/*", "*/"),
-            new NumericRule()
+            new TBlockRule(ETextToken.Comment, ETextToken.Bad_Comment, "//", "\n"),
+            new TBlockRule(ETextToken.Comment, ETextToken.Bad_Comment, "/*", "*/"),
+            new TBlockRule(ETextToken.String, ETextToken.Bad_String, CHAR_APOSTRAPHE, CHAR_APOSTRAPHE, CHAR_REVERSE_SOLIDUS),
+            new TBlockRule(ETextToken.String, ETextToken.Bad_String, CHAR_QUOTATION_MARK, CHAR_QUOTATION_MARK, CHAR_REVERSE_SOLIDUS),
+            new NumericRule(),
         };
     };
 }

@@ -1,15 +1,16 @@
 ﻿using MetaParser.Parsing;
-using MetaParser.Rules.Text;
-using MetaParser.Tokens;
-using MetaParser.Tokens.Text;
+using MetaParser.Rules;
 
 namespace MetaParser.RuleSets.Text
 {
+    enum ENumberKind { Decimal, Integer }
     /// <summary>
     /// Causes number-like (integer/decimal) sequences to be emitted as a single number-type token
     /// </summary>
-    public sealed class NumericRule : TextTokenRule
+    public sealed class NumericRule : ITokenRule<byte, char>
     {
+        public RuleSpecificty Specificity => new RuleSpecificty(true, false);
+
         private static ENumberKind Detect_Number_Kind(ITokenizer<char> Tokenizer)
         {
             var rd = Tokenizer.GetReader();
@@ -25,12 +26,13 @@ namespace MetaParser.RuleSets.Text
                 : ENumberKind.Integer;
         }
 
-        public override bool TryConsume(ITokenizer<char> Tokenizer, Token<TokenType<ETextToken>, char>? Previous, out Token<TokenType<ETextToken>, char>? Token)
+        public bool TryConsume(ITokenizer<char> Tokenizer, byte? Previous, out byte TokenType, out long TokenLength)
         {
             var rd = Tokenizer.GetReader();
             if (!ParsingCommon.Is_Number_Start(rd))
             {
-                Token = null;
+                TokenType = default;
+                TokenLength = default;
                 return false;
             }
 
@@ -38,20 +40,26 @@ namespace MetaParser.RuleSets.Text
             ENumberKind Kind = Detect_Number_Kind(Tokenizer);
             if (Kind == ENumberKind.Integer)
             {
-                Token = ParsingCommon.TryParseInteger(ref rd, out var outInteger)
-                    ? new IntegerToken(Tokenizer.Consume(ref rd), outInteger)
-                    : new TextToken(ETextToken.Bad_Number, Tokenizer.Consume(ref rd));
+                //    Token = ParsingCommon.TryParseInteger(ref rd, out var outInteger)
+                //        ? new IntegerToken(Tokenizer.Consume(ref rd), outInteger)
+                //        : new TextToken(ETextToken.Bad_Number, Tokenizer.Consume(ref rd));
+
+                TokenType = ParsingCommon.TryParseInteger(ref rd, out var outInteger)
+                    ? ETextToken.Number
+                    : ETextToken.Bad_Number;
+                TokenLength = rd.Consumed;
             }
             else if (Kind == ENumberKind.Decimal)
             {
-                Token = ParsingCommon.TryParseFloatingPoint(ref rd, out var outDecimal)
-                    ? new DecimalToken(Tokenizer.Consume(ref rd), outDecimal)
-                    : new TextToken(ETextToken.Bad_Number, Tokenizer.Consume(ref rd));
+                TokenType = ParsingCommon.TryParseFloatingPoint(ref rd, out var outDecimal)
+                    ? ETextToken.Number
+                    : ETextToken.Bad_Number;
+                TokenLength = rd.Consumed;
             }
             else
             {
-                rd.Advance(1);
-                Token = new TextToken(ETextToken.Ident, Tokenizer.Consume(ref rd));
+                TokenType = ETextToken.Ident;
+                TokenLength = 1;
             }
 
             return true;

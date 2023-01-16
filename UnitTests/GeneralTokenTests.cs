@@ -7,10 +7,10 @@ namespace UnitTests
 {
     public class GeneralTokenTests
     {
-        public ParsingTestFixture<TokenType<ETextToken>, char> TestFixture { get; init; }
+        public ParsingTestFixture<byte, char> TestFixture { get; init; }
         public GeneralTokenTests()
         {
-            TestFixture = new ParsingTestFixture<TokenType<ETextToken>, char>(new RuleSet<TokenType<ETextToken>, char>(
+            TestFixture = new ParsingTestFixture<byte, char>(new RuleSet<byte, char>(
                 new[] { TextRules.Newline, TextRules.Whitespace_Except_Newline, TextRules.Words },
                 TextRules.CommonSymbols,
                 TextRules.CodeStructures));
@@ -46,7 +46,7 @@ namespace UnitTests
         [InlineData("*", ETextToken.Asterisk)]
         [InlineData("/", ETextToken.Solidus)]
         [InlineData("\\", ETextToken.ReverseSolidus)]
-        public void Token(string text, ETextToken Type)
+        public void Token(string text, byte Type)
         {
             TestFixture.AssertTokenTypes(text.AsMemory(), Type);
         }
@@ -58,10 +58,9 @@ namespace UnitTests
         // code structures
         [InlineData("//hello world\n*   //foo bar", ETextToken.Comment, ETextToken.Asterisk, ETextToken.Whitespace, ETextToken.Comment)]
         [InlineData("/*hello world*/", ETextToken.Comment)]
-        public void TokenSequence(string text, params ETextToken[] TokenSequence)
+        public void TokenSequence(string text, params byte[] TokenSequence)
         {
-            var seq = TokenSequence.Select(o => (TokenType<ETextToken>)o).ToArray();
-            TestFixture.AssertTokenTypes(text.AsMemory(), seq);
+            TestFixture.AssertTokenTypes(text.AsMemory(), TokenSequence);
         }
     }
 }

@@ -9,10 +9,11 @@ namespace MetaParser.Tokens
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [DebuggerDisplay("{Type.ToString(),nq}")]
-    public record TypedToken<TEnum, TData>(TEnum Type, ReadOnlySequence<TData> Data) : Token<TData>(Data)
+    public record TokenType<TEnum, TData>(TEnum Type, ReadOnlySequence<TData>? Data) : Token<TData>(Data)
         where TEnum : struct, Enum
         where TData : unmanaged, IEquatable<TData>
     { }
+
     //public readonly struct TokenType<T> : IEquatable<TokenType<T>>
     //    where T : struct, Enum
     //{

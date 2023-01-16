@@ -1,39 +1,34 @@
-﻿using MetaParser.Tokens;
-
-using System.Buffers;
+﻿using System.Buffers;
 using System.Diagnostics;
 
 namespace MetaParser.Rules
 {
     [DebuggerDisplay("SingleRule :: {Definition} :: {Value.ToString()}")]
-    public class SingleRule<TData, TValue> : TokenRule<TData, TValue> 
-        where TData : struct, IEquatable<TData>
+    public class SingleRule<TEnum, TValue> : ITokenRule<TEnum, TValue> 
+        where TEnum : unmanaged
         where TValue : unmanaged, IEquatable<TValue>
     {
-        public override RuleSpecificty Specificity => new RuleSpecificty(false, false, 1);
+        public RuleSpecificty Specificity => new RuleSpecificty(false, false, 1);
 
         #region Properties
+        private TEnum Definition { get; init; }
         public TValue Value { get; init; }
-
         #endregion
 
         #region Constructors
-        public SingleRule(TData definition, TValue value) : base(definition)
+        public SingleRule(TEnum definition, TValue value)
         {
+            Definition = definition;
             Value = value;
-        }
-
-        public SingleRule(Token<TData, TValue> instance) : base(instance)
-        {
-            Value = instance.Value.Single();
         }
         #endregion
 
-        protected override bool Consume(ITokenizer<TValue> Tokenizer, Token<TData, TValue>? Previous, out ReadOnlySequence<TValue> Consumed)
+        public bool TryConsume(ITokenizer<TValue> Tokenizer, TEnum? Previous, out TEnum TokenType, out long TokenLength)
         {
             var rd = Tokenizer.GetReader();
             bool success = rd.IsNext(Value, true);
-            Consumed = Tokenizer.Consume(ref rd);
+            TokenLength = rd.Consumed;
+            TokenType = Definition;
             return success;
         }
     }

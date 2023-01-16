@@ -1,47 +1,33 @@
 ﻿using MetaParser;
-using MetaParser.Parsing;
 using MetaParser.Rules;
-using MetaParser.Tokens;
 
 namespace UnitTests
 {
-    public class ParsingTestFixture<TData, TValue> : IDisposable
-        where TData : struct, IEquatable<TData>
+    public class ParsingTestFixture<TEnum, TValue> : IDisposable
+        where TEnum : unmanaged, IEquatable<TEnum>
         where TValue : unmanaged, IEquatable<TValue>
     {
-        protected readonly Parser<TData, TValue> parser;
+        protected readonly Parser<TEnum, TValue> parser;
 
         #region Constructors
-
-        public ParsingTestFixture(ParsingConfig<TData, TValue> config)
+        public ParsingTestFixture(RuleSet<TEnum, TValue> rules)
         {
-            parser = new(config);
-        }
-
-        public ParsingTestFixture(RuleSet<TData, TValue> rules)
-        {
-            parser = new(new ParsingConfig<TData, TValue>(rules));
+            parser = new Parser<TEnum, TValue>(rules);
         }
         #endregion
 
         public void AssertTokenTypes(ReadOnlyMemory<TValue> input, params Type[] expected)
         {
             var results = parser.Parse(input);
-            var types = results.Select(o => o.GetType());
+            var types = results.ToArray().Select(o => o.GetType());
             Assert.Equal(expected, types);
         }
 
-        public void AssertTokenTypes(ReadOnlyMemory<TValue> input, params TData[] expected)
+        public void AssertTokenTypes(ReadOnlyMemory<TValue> input, params TEnum[] expected)
         {
             var results = parser.Parse(input);
-            var types = results.Select(o => o.Data);
+            var types = results.ToArray().Select(o => o.Type);
             Assert.Equal(expected, types);
-        }
-
-        public void AssertTokens(ReadOnlyMemory<TValue> input, Token<TData, TValue>[] expected)
-        {
-            var results = parser.Parse(input);
-            Assert.Equal(expected, results);
         }
 
         public void Dispose()

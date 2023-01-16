@@ -36,6 +36,17 @@ namespace MetaParser
         /// </summary>
         /// <param name="Memory"></param>
         /// <param name="EOF_ITEM"></param>
+        public Tokenizer(ReadOnlySequence<T> Sequence)
+        {
+            DataSeq = Sequence;
+            CurrentSeq = DataSeq;
+        }
+
+        /// <summary>
+        /// Creates a new stream from a memory pointer
+        /// </summary>
+        /// <param name="Memory"></param>
+        /// <param name="EOF_ITEM"></param>
         public Tokenizer(ReadOnlyMemory<T> Memory)
         {
             Data = Memory;
@@ -65,7 +76,7 @@ namespace MetaParser
         /// <summary>
         /// Returns whether the next character in the stream is the EOF character
         /// </summary>
-        public bool AtEOF => object.Equals(CurrentSeq.FirstSpan[0], EOF_ITEM);
+        public bool AtEOF => CurrentSeq.IsEmpty || object.Equals(CurrentSeq.FirstSpan[0], EOF_ITEM);
         #endregion
 
         #region Reader
@@ -102,6 +113,11 @@ namespace MetaParser
 
         public ReadOnlySequence<T> Consume(Index endIndex)
         {
+            if (AtEnd)
+            {
+                return ReadOnlySequence<T>.Empty;
+            }
+
             var index = endIndex.GetOffset((int)Remaining);
             var consumed = CurrentSeq.Slice(0, index);
             CurrentSeq = CurrentSeq.Slice(index);

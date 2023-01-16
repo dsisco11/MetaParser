@@ -1,102 +1,86 @@
-﻿using MetaParser.Parsing;
-using MetaParser.Rules;
+﻿using MetaParser.Rules;
 using MetaParser.Tokens;
 
 using System.Buffers;
-using System.Diagnostics.Contracts;
 
 namespace MetaParser
 {
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="TData">Value type of the output tokens identifier struct</typeparam>
+    /// <typeparam name="TEnum">Value type of the output tokens identifier struct</typeparam>
     /// <typeparam name="TValue">Value type of the data being parsed</typeparam>
-    public class Parser<TData, TValue> : IDisposable
-        where TData : struct, IEquatable<TData>
+    public class Parser<TEnum, TValue> : IDisposable
+        where TEnum : unmanaged, IEquatable<TEnum>
         where TValue : unmanaged, IEquatable<TValue>
     {
         #region Properties
-        private readonly ParsingConfig<TData, TValue> config;
+        private readonly RuleSetProcessor<TEnum, TValue> preprocessor;
+        private readonly RuleSetProcessor<TEnum, TEnum>[] processors;
         private bool disposedValue;
         #endregion
 
-        #region Properties
-        public ParsingConfig<TData, TValue> Config => config;
-        #endregion
-
         #region Constructors
-        public Parser(ParsingConfig<TData, TValue> configuration)
+
+        public Parser(RuleSet<TEnum, TValue> preprocessor, params RuleSet<TEnum, TEnum>[] processors)
         {
-            config = configuration;
+            this.preprocessor = new (preprocessor);
+            this.processors = processors.Select(x => new RuleSetProcessor<TEnum, TEnum>(x)).ToArray();
+        }
+
+        public Parser(RuleSetProcessor<TEnum, TValue> preprocessor, params RuleSetProcessor<TEnum, TEnum>[] processors)
+        {
+            this.preprocessor = preprocessor;
+            this.processors = processors;
         }
         #endregion
 
         #region Parsing
-        public Token<TData, TValue>[] Parse(ReadOnlyMemory<TValue> Data)
+        public ReadOnlyMemory<TokenValue<TEnum, TEnum>> Parse(ReadOnlyMemory<TValue> Data)
         {
-            var Stream = new Tokenizer<TValue>(Data);
-            var tokenList = new LinkedList<Token<TData, TValue>>();
-            Token<TData, TValue>? last = null;
-            do
-            {
-                last = Consume_Next(Stream, last);
-                tokenList.AddLast(last);
-            }
-            while (!Stream.AtEnd);
+            return Parse(new ReadOnlySequence<TValue>(Data));
+        }
 
-            return tokenList.ToArray();
+        public ReadOnlyMemory<TokenValue<TEnum, TEnum>> Parse(ReadOnlySequence<TValue> Data)
+        {
+            var rootSeq = preprocessor.Process(Data);
+            var layers = new LinkedList<ReadOnlyMemory<TokenValue<TEnum, TEnum>>>();
+            ReadOnlyMemory<TEnum> readLayer = CompileSequence(rootSeq.Span);
+            foreach (RuleSetProcessor<TEnum, TEnum> processor in processors)
+            {
+                using (readLayer.Pin())
+                {
+                    var nextLayer = processor.Process(new(readLayer));
+                    layers.AddLast(nextLayer);
+                    using (nextLayer.Pin())
+                    {
+                        readLayer = CompileSequence(nextLayer.Span);
+                    }
+                }
+            }
+
+            if (layers.Count <= 0 || layers.Last is null)
+            {
+                return default;
+            }
+
+            return layers.Last!.Value;
+        }
+
+        private Memory<Tin> CompileSequence<Tin, Tout>(ReadOnlySpan<TokenValue<Tin, Tout>> buffer)
+            where Tin: unmanaged//, IEquatable<Tin>
+            where Tout: unmanaged, IEquatable<Tout>
+        {
+            var memory = new Memory<Tin>(new Tin[buffer.Length]);
+            var result = memory.Span;
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                result[i] = buffer[i].Type;
+            }
+
+            return memory;
         }
         #endregion
-
-        private Token<TData, TValue>? Consume_Next(Tokenizer<TValue> Stream, Token<TData, TValue>? lastToken)
-        {
-            ArgumentNullException.ThrowIfNull(Stream);
-            Contract.EndContractBlock();
-
-            if (Stream.AtEOF || Stream.AtEnd)
-            {
-                Stream.Consume(1);
-                return null;
-            }
-
-            foreach (var ruleset in Config.Rulesets)
-            {
-                if (Try_Consume(ruleset, Stream, lastToken, out var consumed))
-                {
-                    return consumed;
-                }
-            }
-
-            // In the absence of any other matches, consume a default token
-            return new Token<TData, TValue>(default(TData), Stream.Consume(1));
-        }
-
-        /// <summary>
-        /// Attempts to consume a token using a specific rule-set
-        /// </summary>
-        /// <param name="Ruleset"></param>
-        /// <param name="Tokenizer"></param>
-        /// <param name="prevToken"></param>
-        /// <returns></returns>
-        private static bool Try_Consume(RuleSet<TData, TValue> Ruleset, ITokenizer<TValue> Tokenizer, Token<TData, TValue>? prevToken, out Token<TData, TValue>? Result)
-        {
-            ArgumentNullException.ThrowIfNull(Ruleset);
-            ArgumentNullException.ThrowIfNull(Tokenizer);
-            Contract.EndContractBlock();
-
-            foreach (ITokenRule<TData, TValue> rule in Ruleset.Items)
-            {
-                if (rule.TryConsume(Tokenizer, prevToken, out var outConsumed))
-                {
-                    Result = outConsumed;
-                    return true;
-                }
-            }
-
-            Result = null;
-            return false;
-        }
 
         protected virtual void Dispose(bool disposing)
         {

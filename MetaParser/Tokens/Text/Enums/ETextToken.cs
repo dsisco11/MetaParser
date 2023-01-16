@@ -3,69 +3,70 @@
     /// <summary>
     /// Defines all of the different possible token types
     /// </summary>
-    public enum ETextToken : long
+    public static class ETextToken
     {
         /// <summary></summary>
-        None,
+        public const byte None = 0;
         /// <summary>Any collection of 2 or more characters NOT within quotations</summary>
-        Ident,
+        public const byte Ident = 1;
         /// <summary>' ', '\r', '\t', '\f'</summary>
-        Whitespace,
+        public const byte Whitespace = 2;
         /// <summary>'\n'</summary>
-        Newline,
+        public const byte Newline = 3;
         /// <summary>'|'</summary>
-        Column,
+        public const byte Column = 4;
         /// <summary>':'</summary>
-        Colon,
+        public const byte Colon = 5;
         /// <summary>';'</summary>
-        Semicolon,
+        public const byte Semicolon = 6;
         /// <summary>','</summary>
-        Comma,
+        public const byte Comma = 7;
         /// <summary>'['</summary>
-        SqBracketOpen,
+        public const byte SqBracketOpen = 8;
         /// <summary>']'</summary>
-        SqBracketClose,
+        public const byte SqBracketClose = 9;
         /// <summary>'('</summary>
-        ParenthOpen,
+        public const byte ParenthOpen = 10;
         /// <summary>')'</summary>
-        ParenthClose,
+        public const byte ParenthClose = 11;
         /// <summary>'{'</summary>
-        BracketOpen,
+        public const byte BracketOpen = 12;
         /// <summary>'}'</summary>
-        BracketClose,
+        public const byte BracketClose = 13;
         /// <summary>'<'</summary>
-        LessThan,
+        public const byte LessThan = 14;
         /// <summary>'>'</summary>
-        GreaterThan,
+        public const byte GreaterThan = 15;
         /// <summary>'-'</summary>
-        HypenMinus,
+        public const byte HypenMinus = 16;
         /// <summary>'='</summary>
-        Equals,
+        public const byte Equals = 17;
         /// <summary>'+'</summary>
-        Plus,
+        public const byte Plus = 18;
         /// <summary>'*'</summary>
-        Asterisk,
+        public const byte Asterisk = 19;
         /// <summary>'/'</summary>
-        Solidus,
+        public const byte Solidus = 20;
         /// <summary>'\'</summary>
-        ReverseSolidus,
+        public const byte ReverseSolidus = 21;
 
         /// <summary></summary>
-        Number,
-        Bad_Number,
+        public const byte Number = 22;
+        public const byte Bad_Number = 23;
 
         /// <summary>A code-like comment text sequence of some sort</summary>
-        Comment,
+        public const byte Comment = 24;
+        public const byte Bad_Comment = 25;
 
         /// <summary>A collection of characters contained within quotations ("")</summary>
-        String,
+        public const byte String = 26;
         /// <summary></summary>
-        Bad_String,
+        public const byte Bad_String = 27;
 
         /// <summary></summary>
-        Url,
+        public const byte Url = 28;
         /// <summary></summary>
-        Bad_Url,
+        public const byte Bad_Url = 29;
 
     }
 }
