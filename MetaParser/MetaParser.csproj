@@ -16,4 +16,24 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
+	<ItemGroup>
+		<PackageReference Include="System.Text.Json" Version="7.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\MetaTranspiler\MetaTranspiler.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Rules\Schemas\text-tokens.parser-meta.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="Rules\Schemas\text-tokens.parser-meta.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Schemas\" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,94 @@
+﻿{
+  "$schema": "https://github/dsisco11/MetaParser",
+  "namespace": "MetaParser.Rules.TextTokens",
+  "tokens": {
+    "colon": {
+      "$type": "constant",
+      "value": ":"
+    },
+    "column": {
+      "$type": "constant",
+      "value": "|"
+    },
+    "semicolon": {
+      "$type": "constant",
+      "value": ";"
+    },
+    "comma": {
+      "$type": "constant",
+      "value": ","
+    },
+    "sqbracketopen": {
+      "$type": "constant",
+      "value": "["
+    },
+    "sqbracketclose": {
+      "$type": "constant",
+      "value": "]"
+    },
+    "parenthopen": {
+      "$type": "constant",
+      "value": "("
+    },
+    "parenthclose": {
+      "$type": "constant",
+      "value": ")"
+    },
+    "bracketopen": {
+      "$type": "constant",
+      "value": "{"
+    },
+    "bracketclose": {
+      "$type": "constant",
+      "value": "}"
+    },
+    "lessthan": {
+      "$type": "constant",
+      "value": "<"
+    },
+    "greaterthan": {
+      "$type": "constant",
+      "value": ">"
+    },
+    "hypenminus": {
+      "$type": "constant",
+      "value": "-"
+    },
+    "equals": {
+      "$type": "constant",
+      "value": "="
+    },
+    "plus": {
+      "$type": "constant",
+      "value": "+"
+    },
+    "asterisk": {
+      "$type": "constant",
+      "value": "*"
+    },
+    "solidus": {
+      "$type": "constant",
+      "value": "/"
+    },
+    "reversesolidus": {
+      "$type": "constant",
+      "value": "\\"
+    },
+    "newline": {
+      "$type": "constant",
+      "value": "\n"
+    },
+    "whitespace": {
+      "$type": "compound",
+      "values": [ " ", "\t", "\r", "\f" ]
+    },
+    "digits": {
+      "$type": "compound",
+      "values": [ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+    },
+    "letters": {
+      "$type": "compound",
+      "values": [ "^$", "1" ]
+    }
+  }
+}
