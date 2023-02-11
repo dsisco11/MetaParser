@@ -1,0 +1,21 @@
+﻿{
+  "namespace": "Foo.Bar.Tokens",
+  "tokens": {
+    "fourth": {
+      "$type": "compound",
+      "consume": "b"
+    },
+    "third": {
+      "$type": "compound",
+      "consume": "a"
+    },
+    "first": {
+      "$type": "compound",
+      "consume": "bc"
+    },
+    "second": {
+      "$type": "compound",
+      "consume": "ab"
+    }
+  }
+}
