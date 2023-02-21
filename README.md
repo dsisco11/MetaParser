@@ -23,6 +23,7 @@ You will find an example parser definition file below.
 ## Example Parser File
 ```json
 {
+  "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-01.json",
   "namespace": "ExampleParser",
   "tokens": {
     "char_open_bracket": {
