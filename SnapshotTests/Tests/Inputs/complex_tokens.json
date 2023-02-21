@@ -1,0 +1,62 @@
+﻿{
+  "namespace": "Foo.Bar.Tokens",
+  "tokens": {
+    "keyword_var": {
+      "$type": "constant",
+      "value": "var"
+    },
+    "keyword_function": {
+      "$type": "constant",
+      "value": "function"
+    },
+    "char_open_bracket": {
+      "$type": "constant",
+      "value": "{"
+    },
+    "char_close_bracket": {
+      "$type": "constant",
+      "value": "}"
+    },
+    "char_asterisk": {
+      "$type": "constant",
+      "value": "*"
+    },
+    "char_solidus": {
+      "$type": "constant",
+      "value": "/"
+    },
+    "char_reverse_solidus": {
+      "$type": "constant",
+      "value": "\\"
+    },
+    "whitespace": {
+      "$type": "compound",
+      "consume": [ " ", "\t", "\f" ]
+    },
+    "digits": {
+      "$type": "compound",
+      "consume": { "range": [ "0", "9" ] }
+    },
+    "letters": {
+      "$type": "compound",
+      "consume": [
+        { "range": [ "a", "z" ] },
+        { "range": [ "A", "Z" ] }
+      ]
+    },
+    "newline": {
+      "$type": "compound",
+      "consume": "\n"
+    },
+    "identifier": {
+      "$type": "complex",
+      "start": [ "letters" ],
+      "consume": [ "letters", "digits" ]
+    },
+    "comment": {
+      "$type": "complex",
+      "start": [ "char_solidus", "char_asterisk" ],
+      "end": [ "char_asterisk", "char_solidus" ]
+    }
+  }
+}

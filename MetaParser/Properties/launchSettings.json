@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Parser": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\TranspilerUnitTests\\TranspilerUnitTests.csproj"
+    }
+  }
+}

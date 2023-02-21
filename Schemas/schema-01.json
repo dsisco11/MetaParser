@@ -1,0 +1,166 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/MetaParser/parser/schema-01",
+  "title": "Token Definitions",
+  "description": "A definition for a token which is consumed & output by the meta-parser system",
+  "type": "object",
+  "properties": {
+    "namespace": {
+      "type": "string",
+      "description": "The namespace of the generated parser"
+    },
+    "tokens": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^([\\w-]*)$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [ "$type" ],
+        "anyOf": [
+          { "$ref": "#/$defs/def:token:constant" },
+          { "$ref": "#/$defs/def:token:compound" },
+          { "$ref": "#/$defs/def:token:complex" }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "def:token:constant": {
+      "properties": {
+        "$type": { "const": "constant" },
+        "value": {
+          "oneOf": [
+            { "$ref": "#/$defs/ref:value:constant" },
+            {
+              "type": "array",
+              "items": { "$ref": "#/$defs/ref:value:constant" },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "def:token:compound": {
+      "properties": {
+        "$type": { "const": "compound" },
+        "consume": {
+          "oneOf": [
+            { "$ref": "#/$defs/ref:value:single" },
+            { "$ref": "#/$defs/ref:value:range" },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  { "$ref": "#/$defs/ref:value:single" },
+                  { "$ref": "#/$defs/ref:value:range" }
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          ]
+        },
+        "additionalProperties": false
+      }
+    },
+    "def:token:complex": {
+      "anyOf": [
+        { "$ref": "#/$defs/def:token:complex:static:value" },
+        { "$ref": "#/$defs/def:token:complex:dynamic:value" }
+      ]
+    },
+    "def:token:compound:values": {
+      "values": {
+        "type": "array",
+        "items": { "$ref": "#/$defs/ref:value:single" }
+      }
+    },
+    "def:token:complex:dynamic:value": {
+      "type": "object",
+      "properties": {
+        "$type": { "const": "complex" },
+        "start": {
+          "description": "A prefix pattern for the token, used to detect the intended presence of the token to initiate the process of populating it",
+          "$ref": "#/$defs/ref:tokenid:single_or_array"
+        },
+        "consume": {
+          "description": "Set of valid items which this token may consume",
+          "$ref": "#/$defs/ref:tokenid:single_or_array"
+        },
+        "additionalProperties": false
+      },
+      "required": [ "start", "consume" ]
+    },
+    "def:token:complex:static:value": {
+      "type": "object",
+      "properties": {
+        "$type": { "const": "complex" },
+        "start": {
+          "description": "A prefix pattern for the token, used to detect the intended presence of the token to initiate the process of populating it",
+          "$ref": "#/$defs/ref:tokenid:single_or_array"
+        },
+        "end": {
+          "description": "The pattern which signifies the end of this token",
+          "$ref": "#/$defs/ref:tokenid:single_or_array"
+        },
+        "escape": {
+          "description": "A value which (when immediately preceeding it) will allow the token to ignore an occurance of its terminator and continue consuming items",
+          "$ref": "#/$defs/ref:tokenid:single_or_array"
+        },
+        "additionalProperties": false
+      },
+      "required": [ "start", "end" ]
+    },
+    "ref:value:single": {
+      "type": "string",
+      "maxLength": 1
+    },
+    "ref:value:range": {
+      "type": "object",
+      "properties": {
+        "range": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ref:value:single" },
+          "maxItems": 2,
+          "minItems": 2
+        }
+      },
+      "additionalProperties": false
+    },
+    "ref:array:value:single": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ref:value:single" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "ref:value:constant": {
+      "type": "string"
+    },
+    "ref:array:value:constant": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ref:value:constant" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "ref:tokenid": {
+      "description": "A token identifier",
+      "type": "string",
+      "pattern": "^([\\w-]*)$"
+    },
+    "ref:tokenid:array": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ref:tokenid" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "ref:tokenid:single_or_array": {
+      "oneOf": [
+        { "$ref": "#/$defs/ref:tokenid" },
+        { "$ref": "#/$defs/ref:tokenid:array" }
+      ]
+    }
+  }
+}

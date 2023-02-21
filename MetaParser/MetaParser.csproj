@@ -1,19 +1,94 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+	<TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+	<AnalyzerRoslynVersion>4.4</AnalyzerRoslynVersion>
+    <IsRoslynComponent>true</IsRoslynComponent>
+	<DevelopmentDependency>true</DevelopmentDependency>
+	<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <Nullable>enable</Nullable>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Title>MetaParser</Title>
-    <Authors>$(AssemblyName),dsisco11</Authors>
-    <PackageProjectUrl></PackageProjectUrl>
-    <RepositoryUrl>https://github.com/dsisco11/MetaParser</RepositoryUrl>
-    <PackageTags>parsing, tokenization, tokenizer, text parser</PackageTags>
-    <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-    <AnalysisLevel>6.0-recommended</AnalysisLevel>
-    <Version>0.1.5</Version>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <EmitCompilerGeneratedFiles>false</EmitCompilerGeneratedFiles>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput> <!-- Do not include the generator as a lib dependency -->
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
+
+	<PropertyGroup>
+		<Title>MetaParser</Title>
+		<Authors>David (dsisco11) Sisco, $(AssemblyName)</Authors>
+		<PackageProjectUrl></PackageProjectUrl>
+		<RepositoryUrl>https://github.com/dsisco11/MetaParser</RepositoryUrl>
+		<PackageTags>parsing, tokenization, tokenizer, text parser</PackageTags>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<AnalysisLevel>6.0-recommended</AnalysisLevel>
+		<Version>0.1.6</Version>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Resources\Parser.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\schema.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\Schemas\schema-01.json" Link="Resources\schema-01.json" />
+    <EmbeddedResource Include="Resources\Parser.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="H.Generators.Extensions" Version="1.9.2" PrivateAssets="all" />
+	  <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" PrivateAssets="all">
+	  </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all">
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="JsonSchema.Net" Version="3.3.2" GeneratePathProperty="true" PrivateAssets="all" />
+	  <PackageReference Include="System.Text.Json" Version="7.0.2" GeneratePathProperty="true" PrivateAssets="all" />
+	  <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="7.0.0" GeneratePathProperty="true" IncludeAssets="all" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <!-- Package the generator in the analyzer directory of the nuget package -->
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="true" />
+  </ItemGroup>
+
+
+  <PropertyGroup>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    <Title>MetaParser</Title>
+    <PackageProjectUrl>https://github.com/dsisco11/MetaParser</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/dsisco11/MetaParser</RepositoryUrl>
+  </PropertyGroup>
+
+  <Target Name="GetDependencyTargetPaths">
+    <ItemGroup>
+		<TargetPathWithTargetPlatformMoniker Include="$(PKGMicrosoft_Bcl_AsyncInterfaces)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
+    </ItemGroup>
+  </Target>
+  
+  <!-- 
+    https://github.com/dotnet/roslyn/issues/52017#issuecomment-1046216200
+    This automatically adds explicit and transient dependencies so that they are available at the time the generator is executed. 
+	-->
+	<!--<Target Name="AddGenerationTimeReferences" AfterTargets="ResolvePackageDependenciesForBuild">
+		<ItemGroup>
+			<None Include="@(ResolvedCompileFileDefinitions)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		</ItemGroup>
+	</Target>-->
+	
+	<!--<Target Name="GetDependencyTargetPaths" AfterTargets="ResolvePackageDependenciesForBuild">
+		<ItemGroup Condition="'$(MSBuildRuntimeType)' == 'Full'">
+			<TargetPathWithTargetPlatformMoniker Include="@(ResolvedCompileFileDefinitions)" IncludeRuntimeDependency="false" />
+		</ItemGroup>
+		<ItemGroup Condition="'$(MSBuildRuntimeType)' != 'Full'">
+			<None Include="@(ResolvedCompileFileDefinitions)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		</ItemGroup>
+	</Target>-->
 
 </Project>

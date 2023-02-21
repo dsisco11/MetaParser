@@ -1,0 +1,25 @@
+﻿{
+  "namespace": "Foo.Bar.Tokens",
+  "tokens": {
+    "fourth": {
+      "$type": "constant",
+      "value": "b"
+    },
+    "third": {
+      "$type": "constant",
+      "value": "a"
+    },
+    "first": {
+      "$type": "constant",
+      "value": "abc"
+    },
+    "second": {
+      "$type": "constant",
+      "value": "ab"
+    },
+    "fifth": {
+      "$type": "constant",
+      "value": [ "x", "y", "z" ]
+    }
+  }
+}

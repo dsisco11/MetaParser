@@ -1,0 +1,26 @@
+﻿{
+  "namespace": "Foo.Bar.Tokens",
+  "tokens": {
+    "whitespace": {
+      "$type": "compound",
+      "consume": [ " ", "\t", "\f" ]
+    },
+    "digits": {
+      "$type": "compound",
+      "consume": {"range": ["0", "9"]}
+    },
+    "letters": {
+      "$type": "compound",
+      "consume": [
+        { "range": [ "a", "z" ] },
+        { "range": [ "A", "Z" ] },
+        "-",
+        "_"
+      ]
+    },
+    "newline": {
+      "$type": "compound",
+      "consume": "\n"
+    }
+  }
+}
