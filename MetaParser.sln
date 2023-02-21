@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaParser", "MetaParser\MetaParser.csproj", "{CE2141B1-A4D7-42CF-B018-A26061207118}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{7795BD73-A606-49AB-9ADE-91ADD05C37D2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{69910747-9DDE-4326-B06D-C87D400B2316}"
@@ -12,9 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaTranspiler", "MetaTranspiler\MetaTranspiler.csproj", "{9DB6122A-5A75-4123-BE2F-BEA21C365CB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaParser", "MetaParser\MetaParser.csproj", "{9DB6122A-5A75-4123-BE2F-BEA21C365CB6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TranspilerUnitTests", "TranspilerUnitTests\TranspilerUnitTests.csproj", "{C7F6D63C-DCC9-401E-BAA8-33D87731A75C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnapshotTests", "SnapshotTests\SnapshotTests.csproj", "{C7F6D63C-DCC9-401E-BAA8-33D87731A75C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,10 +20,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CE2141B1-A4D7-42CF-B018-A26061207118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CE2141B1-A4D7-42CF-B018-A26061207118}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CE2141B1-A4D7-42CF-B018-A26061207118}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CE2141B1-A4D7-42CF-B018-A26061207118}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7795BD73-A606-49AB-9ADE-91ADD05C37D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7795BD73-A606-49AB-9ADE-91ADD05C37D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7795BD73-A606-49AB-9ADE-91ADD05C37D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
