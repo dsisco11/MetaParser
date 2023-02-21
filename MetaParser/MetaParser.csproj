@@ -22,7 +22,7 @@
 		<PackageTags>parsing, tokenization, tokenizer, text parser</PackageTags>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<AnalysisLevel>6.0-recommended</AnalysisLevel>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
@@ -76,11 +76,11 @@
     https://github.com/dotnet/roslyn/issues/52017#issuecomment-1046216200
     This automatically adds explicit and transient dependencies so that they are available at the time the generator is executed. 
 	-->
-	<!--<Target Name="AddGenerationTimeReferences" AfterTargets="ResolvePackageDependenciesForBuild">
+	<Target Name="AddGenerationTimeReferences" AfterTargets="ResolvePackageDependenciesForBuild">
 		<ItemGroup>
 			<None Include="@(ResolvedCompileFileDefinitions)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		</ItemGroup>
-	</Target>-->
+	</Target>
 	
 	<!--<Target Name="GetDependencyTargetPaths" AfterTargets="ResolvePackageDependenciesForBuild">
 		<ItemGroup Condition="'$(MSBuildRuntimeType)' == 'Full'">
