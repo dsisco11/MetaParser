@@ -1,4 +1,5 @@
 ﻿{
+  "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-01.json",
   "namespace": "UnitTestParser",
   "tokens": {
     "keyword_var": {
