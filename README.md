@@ -13,7 +13,12 @@ or in visual studio select "C# analyzer additional file" from the "Build Action"
    
 Finally; define all of your tokens and patterns inside the metaparser file you just made.
 You will find an example parser definition file below.
-## Tokens
+
+## Parser Definition Format
+// TODO: Documentation explaining schema
+
+### Tokens
+// TODO: Describe token types
 
 ## Example Parser File
 ```json
