@@ -44,6 +44,7 @@ public class Detection
     [InlineData("{ var int i; }", ETokenType.Codeblock)]
     [InlineData("/*hello world*/\n  ", ETokenType.Comment, ETokenType.Newline, ETokenType.Whitespace)]
     [InlineData(@"/*hello\*world*/  ", ETokenType.Comment, ETokenType.Whitespace)]
+    [InlineData(@"hello:::bar", ETokenType.Identifier, ETokenType.Unknown, ETokenType.Identifier)]
     public void Multi(string input, params ETokenType[] expected)
     {
         var parser = new Parser();
