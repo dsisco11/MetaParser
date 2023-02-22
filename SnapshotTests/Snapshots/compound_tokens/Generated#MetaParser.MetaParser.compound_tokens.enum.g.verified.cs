@@ -1,10 +1,10 @@
 ﻿//HintName: MetaParser.MetaParser.compound_tokens.enum.g.cs
 namespace Foo.Bar.Tokens;
-public enum EToken : System.Int32
+public enum ETokenType : byte
 {
-    Unknown = (Int32) 0,
-    Whitespace = (Int32) 1,
-    Digits = (Int32) 2,
-    Letters = (Int32) 3,
-    Newline = (Int32) 4,
+    Unknown = (byte) 0,
+    Whitespace = (byte) 1,
+    Digits = (byte) 2,
+    Letters = (byte) 3,
+    Newline = (byte) 4,
 }

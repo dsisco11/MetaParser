@@ -19,12 +19,12 @@ namespace MetaParser;
 [Generator(LanguageNames.CSharp)]
 public partial class Generator : IIncrementalGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext Context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // define the execution pipeline here via a series of transformations:
 
         // find all additional files that end with .parser-meta.json
-        IncrementalValuesProvider<AdditionalText> ctxFileNames = Context.AdditionalTextsProvider.Where(static file => file.Path.EndsWith(Common.MetaParserFileExtension));
+        IncrementalValuesProvider<AdditionalText> ctxFileNames = context.AdditionalTextsProvider.Where(static file => file.Path.EndsWith(Common.MetaParserFileExtension, StringComparison.InvariantCultureIgnoreCase));
 
         // read their contents and save their name
         IncrementalValuesProvider<FileData> ctxFiles = ctxFileNames.Select(static (text, cancellationToken) => new FileData(Common.Get_FileName(text.Path), text.Path, text.GetText(cancellationToken)!.ToString()));
@@ -39,23 +39,39 @@ public partial class Generator : IIncrementalGenerator
         {
             FileData file = data.Item1;
             JsonDocument jsonDoc = data.Item2;
-            var schema = jsonDoc.Deserialize(TokenJsonContext.Default.ParserDefinitionSchema)!;
-            return (file, schema);
+            var schema = jsonDoc.Deserialize(TokenJsonContext.Default.ParserDefinitionSchema);
+
+            if (schema is null || schema.Definitions is null)
+            {
+                throw new Exception($"MetaParser schema ({file.Path}) is malformed!");
+            }
+
+            return (file, schema!);
         }));
 
-        IncrementalValuesProvider<ValueTuple<MetaParserContext, ParserDefinitionSchema>> ctxFull = ctxSchema.Select(static (ValueTuple<FileData, ParserDefinitionSchema> data, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider <ValueTuple<MetaParserContext, ParserDefinitionSchema>> ctxFull = ctxSchema.Select(static (ValueTuple<FileData, ParserDefinitionSchema> data, CancellationToken cancellationToken) =>
         {
             FileData file = data.Item1;
             var schema = data.Item2;
             var result = new MetaParserContext()
             {
                 BaseFileName = file.FileName,
-                Namespace = schema.Namespace!,
+                Namespace = schema.Namespace!
             };
 
-            if (schema.Tokens is not null)
+            if (schema.ClassName is not null)
             {
-                result.IdType = Common.Get_Integer_Type(schema.Tokens.Count);
+                result.ClassName = schema.ClassName;
+            }
+
+            if (schema.ParserType is not null)
+            {
+                result.ParserType = schema.ParserType;
+            }
+
+            if (schema.Definitions is not null)
+            {
+                result.IdType = Common.Get_Integer_Type(schema.Definitions.Count);
             }
 
             return new ValueTuple<MetaParserContext, ParserDefinitionSchema>(result, schema);
@@ -72,12 +88,12 @@ public partial class Generator : IIncrementalGenerator
             var baseContext = data.Item1;
             var result = new MetaParserTokenContext(baseContext);
 
-            if (schema?.Tokens is not null)
+            if (schema?.Definitions is not null)
             {
                 int idx = 0;
                 // copy token definitions from dictionary to array
-                var Tokens = new List<TokenDef>(schema.Tokens.Count);
-                foreach (var tok in schema.Tokens)
+                var Tokens = new List<TokenDef>(schema.Definitions.Count);
+                foreach (var tok in schema.Definitions)
                 {
                     tok.Value.Name = tok.Key;
                     tok.Value.Index = ++idx;
@@ -95,7 +111,7 @@ public partial class Generator : IIncrementalGenerator
         var complexTokens = ctxParserTokens.Select(static (MetaParserTokenContext parser, CancellationToken cancellationToken) => (parser with { ComplexTokens = parser.DefinedTokens.OfType<TokenDefComplex>().ToImmutableArray() }));
 
         // Parser Class
-        Context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, MetaParserContext context) =>
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
 
@@ -105,7 +121,7 @@ public partial class Generator : IIncrementalGenerator
         });
 
         // Token Structure
-        Context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, MetaParserContext context) =>
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
 
@@ -115,17 +131,17 @@ public partial class Generator : IIncrementalGenerator
         });
 
         // Constant-Type Tokens
-        Context.RegisterSourceOutput(constantTokens, static (SourceProductionContext spc, MetaParserTokenContext context) =>
+        context.RegisterSourceOutput(constantTokens, static (SourceProductionContext spc, MetaParserTokenContext context) =>
         {
-            if (context.ConstantTokens.Length <= 0) return;
+            if (context?.ConstantTokens.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
 
-            writer.WriteLine($"namespace {context.Namespace};");
-            writer.WriteLine($"{Common.ParserClassDeclaration}");
+            writer.WriteLine($"namespace {context?.Namespace};");
+            writer.WriteLine($"{context.ParserClassDeclaration}");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"private bool try_consume_token_constant ({CodeGen.FormatReadOnlyMemoryBuffer(context.InputType)} source, out {context.IdTypeName} id, out {typeof(int).FullName} length)");
+            writer.WriteLine($"private bool {context.ConstantTokenConsumerFunctionName} ({CodeGen.FormatReadOnlyMemoryBuffer(context.InputType)} source, out {context.IdTypeName} id, out {CodeGen.Format(SpecialType.System_Int32)} length)");
             writer.WriteLine("{");
             writer.Indent++;
             context.ConstantTokenGen.Generate(writer, context);
@@ -140,16 +156,16 @@ public partial class Generator : IIncrementalGenerator
         });
 
         // Compound-Type Tokens
-        Context.RegisterSourceOutput(compoundTokens, static (SourceProductionContext spc, MetaParserTokenContext context) =>
+        context.RegisterSourceOutput(compoundTokens, static (SourceProductionContext spc, MetaParserTokenContext context) =>
         {
-            if (context.CompoundTokens.Length <= 0) return;
+            if (context?.CompoundTokens.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
 
-            writer.WriteLine($"namespace {context.Namespace};");
-            writer.WriteLine($"{Common.ParserClassDeclaration}");
+            writer.WriteLine($"namespace {context?.Namespace};");
+            writer.WriteLine($"{context.ParserClassDeclaration}");
             writer.WriteLine("{");
-            writer.WriteLine($"private bool try_consume_token_compound ({CodeGen.FormatReadOnlyMemoryBuffer(context.InputType)} source, out {context.IdTypeName} id, out {typeof(int).FullName} length)");
+            writer.WriteLine($"private bool {context.CompoundTokenConsumerFunctionName} ({CodeGen.FormatReadOnlyMemoryBuffer(context.InputType)} source, out {context.IdTypeName} id, out {CodeGen.Format(SpecialType.System_Int32)} length)");
             writer.WriteLine("{");
             writer.Indent++;
             context.CompoundTokenGen.Generate(writer, context);
@@ -164,17 +180,17 @@ public partial class Generator : IIncrementalGenerator
         });
 
         // Complex-Type Tokens
-        Context.RegisterSourceOutput(complexTokens, static (SourceProductionContext spc, MetaParserTokenContext context) =>
+        context.RegisterSourceOutput(complexTokens, static (SourceProductionContext spc, MetaParserTokenContext context) =>
         {
-            if (context.ComplexTokens.Length <= 0) return;
+            if (context?.ComplexTokens.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
 
-            writer.WriteLine($"namespace {context.Namespace};");
-            writer.WriteLine($"{Common.ParserClassDeclaration}");
+            writer.WriteLine($"namespace {context?.Namespace};");
+            writer.WriteLine($"{context.ParserClassDeclaration}");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"private bool try_consume_token_complex ({CodeGen.FormatReadOnlyMemoryBuffer(context.IdType)} source, out {context.IdTypeName} id, out {typeof(int).FullName} length)");
+            writer.WriteLine($"private bool {context.ComplexTokenConsumerFunctionName} ({CodeGen.FormatReadOnlyMemoryBuffer(context.IdType)} source, out {context.IdTypeName} id, out {CodeGen.Format(SpecialType.System_Int32)} length)");
             writer.WriteLine("{");
             writer.Indent++;
             context.ComplexTokenGen.Generate(writer, context);
@@ -189,20 +205,20 @@ public partial class Generator : IIncrementalGenerator
         });
 
         // Enums
-        Context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, MetaParserTokenContext context) => {
-            if (context.DefinedTokens.Length <= 0) return;
+        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, MetaParserTokenContext context) => {
+            if (context?.DefinedTokens.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
-            writer.WriteLine($"namespace {context.Namespace};");
+            writer.WriteLine($"namespace {context?.Namespace};");
             writer.WriteLine($"public enum {context.TokenEnum} : {context.IdTypeName}");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"Unknown = ({context.IdType.Name}) 0,");
+            writer.WriteLine($"Unknown = ({context.IdTypeName}) 0,");
 
             foreach (var token in context.DefinedTokens)
             {
                 var enumName = context.Format_TokenId(token.Name!);
-                writer.WriteLine($"{enumName} = ({context.IdType.Name}) {token.Index},");
+                writer.WriteLine($"{enumName} = ({context.IdTypeName}) {token.Index},");
             }
 
             writer.Indent--;
@@ -214,12 +230,12 @@ public partial class Generator : IIncrementalGenerator
         });
 
         // Constants
-        Context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, MetaParserTokenContext context) =>
+        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, MetaParserTokenContext context) =>
         {
-            if (context.DefinedTokens.Length <= 0) return;
+            if (context?.DefinedTokens.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
-            writer.WriteLine($"namespace {context.Namespace};");
+            writer.WriteLine($"namespace {context?.Namespace};");
             writer.WriteLine($"internal static class {context.TokenConsts}");
             writer.WriteLine("{");
             writer.Indent++;
@@ -244,7 +260,7 @@ public partial class Generator : IIncrementalGenerator
     {
         const string extension = "g.cs";
         fileName = $"{nameof(MetaParser)}.{fileName}";
-        if (!fileName.EndsWith(extension))
+        if (!fileName.EndsWith(extension, StringComparison.InvariantCultureIgnoreCase))
         {
             fileName = $"{nameof(MetaParser)}.{fileName}.{extension}";
         }

@@ -9,7 +9,7 @@
 	<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <Nullable>enable</Nullable>
     <EmitCompilerGeneratedFiles>false</EmitCompilerGeneratedFiles>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <IncludeBuildOutput>false</IncludeBuildOutput> <!-- Do not include the generator as a lib dependency -->
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
@@ -22,7 +22,7 @@
 		<PackageTags>parsing, tokenization, tokenizer, text parser</PackageTags>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<AnalysisLevel>6.0-recommended</AnalysisLevel>
-		<Version>1.0.3</Version>
+		<Version>1.0.4</Version>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	</PropertyGroup>
 
@@ -57,38 +57,32 @@
     <!-- Package the generator in the analyzer directory of the nuget package -->
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="true" />
   </ItemGroup>
-
-
-  <PropertyGroup>
-    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
-    <Title>MetaParser</Title>
-    <PackageProjectUrl>https://github.com/dsisco11/MetaParser</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/dsisco11/MetaParser</RepositoryUrl>
-  </PropertyGroup>
-
-  <Target Name="GetDependencyTargetPaths">
-    <ItemGroup>
-		<TargetPathWithTargetPlatformMoniker Include="$(PKGMicrosoft_Bcl_AsyncInterfaces)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-    </ItemGroup>
-  </Target>
   
   <!-- 
     https://github.com/dotnet/roslyn/issues/52017#issuecomment-1046216200
     This automatically adds explicit and transient dependencies so that they are available at the time the generator is executed. 
 	-->
-	<Target Name="AddGenerationTimeReferences" AfterTargets="ResolvePackageDependenciesForBuild">
+	<!--<Target Name="AddGenerationTimeReferences" AfterTargets="ResolvePackageDependenciesForBuild">
+		<ItemGroup>
+			<None Include="@(ResolvedCompileFileDefinitions)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		</ItemGroup>
+	</Target>-->
+
+
+  <PropertyGroup>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+  </PropertyGroup>
+	
+	<Target Name="GetDependencyTargetPaths" AfterTargets="ResolvePackageDependenciesForBuild">
+		<ItemGroup Condition="'$(MSBuildRuntimeType)' == 'Full'">
+			<TargetPathWithTargetPlatformMoniker Include="$(PKGMicrosoft_Bcl_AsyncInterfaces)\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
+		</ItemGroup>
+		<!--<ItemGroup Condition="'$(MSBuildRuntimeType)' == 'Full'">
+			<TargetPathWithTargetPlatformMoniker Include="@(ResolvedCompileFileDefinitions)" IncludeRuntimeDependency="false" />
+		</ItemGroup>-->
 		<ItemGroup>
 			<None Include="@(ResolvedCompileFileDefinitions)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		</ItemGroup>
 	</Target>
-	
-	<!--<Target Name="GetDependencyTargetPaths" AfterTargets="ResolvePackageDependenciesForBuild">
-		<ItemGroup Condition="'$(MSBuildRuntimeType)' == 'Full'">
-			<TargetPathWithTargetPlatformMoniker Include="@(ResolvedCompileFileDefinitions)" IncludeRuntimeDependency="false" />
-		</ItemGroup>
-		<ItemGroup Condition="'$(MSBuildRuntimeType)' != 'Full'">
-			<None Include="@(ResolvedCompileFileDefinitions)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-		</ItemGroup>
-	</Target>-->
 
 </Project>

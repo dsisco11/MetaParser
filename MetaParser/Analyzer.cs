@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using Json.Schema;
 using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.Text;
 
 namespace MetaParser;
 
@@ -14,12 +15,12 @@ namespace MetaParser;
 [Generator(LanguageNames.CSharp)]
 public partial class Analyzer : IIncrementalGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext Context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // define the execution pipeline here via a series of transformations:
 
         // find all additional files that end with .parser-meta.json
-        IncrementalValuesProvider<AdditionalText> ctxFileNames = Context.AdditionalTextsProvider.Where(static file => file.Path.EndsWith(Common.MetaParserFileExtension));
+        IncrementalValuesProvider<AdditionalText> ctxFileNames = context.AdditionalTextsProvider.Where(static file => file.Path.EndsWith(Common.MetaParserFileExtension, StringComparison.InvariantCultureIgnoreCase));
 
         // read their contents and save their name
         IncrementalValuesProvider<FileData> ctxFiles = ctxFileNames.Select(static (text, cancellationToken) => new FileData(Common.Get_FileName(text.Path), text.Path, text.GetText(cancellationToken)!.ToString()));
@@ -30,7 +31,7 @@ public partial class Analyzer : IIncrementalGenerator
             return (file, doc);
         }));
 
-        Context.RegisterSourceOutput(ctxParserJson, static (SourceProductionContext spc, (FileData file, JsonDocument jsonDoc) data) =>
+        context.RegisterSourceOutput(ctxParserJson, static (SourceProductionContext spc, (FileData file, JsonDocument jsonDoc) data) =>
         {
             FileData file = data.file;
             JsonDocument jsonDoc = data.jsonDoc;
@@ -66,7 +67,11 @@ public partial class Analyzer : IIncrementalGenerator
                     { "Schema", Results?.AbsoluteSchemaLocation?.Fragment },
                     { "Location", Results?.InstanceLocation.Source }
                 }.ToImmutableDictionary();
-                var diag = Diagnostic.Create(DIAGNOSTIC_DEFS.SchemaException, Location.None, properties: data, Results!.InstanceLocation.Source, Results.Message);
+
+                var textPos = TextSpan.FromBounds(0, 1);
+                var linePos = new LinePositionSpan();
+                var loc = Location.Create(file.Path, textPos, linePos);
+                var diag = Diagnostic.Create(DIAGNOSTIC_DEFS.SchemaException, loc, properties: data, Results!.InstanceLocation.Source, Results.Message);
                 spc.ReportDiagnostic(diag);
             }
         }

@@ -1,15 +1,24 @@
 ﻿{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "/MetaParser/parser/schema-01",
-  "title": "Token Definitions",
-  "description": "A definition for a token which is consumed & output by the meta-parser system",
+  "title": "Parser Definition Structure",
+  "description": "A definition for an auto-generated meta-parser",
   "type": "object",
   "properties": {
     "namespace": {
       "type": "string",
-      "description": "The namespace of the generated parser"
+      "description": "Namespace for the generated code to reside in"
     },
-    "tokens": {
+    "classname": {
+      "type": "string",
+      "description": "Name of the generated parser class"
+    },
+    "$type": {
+      "type": "string",
+      "description": "Determines the parsing system strategy for consuming data",
+      "enum": ["span", "switch"]
+    },
+    "definitions": {
       "type": "object",
       "propertyNames": {
         "pattern": "^([\\w-]*)$"
@@ -23,7 +32,8 @@
           { "$ref": "#/$defs/def:token:complex" }
         ]
       }
-    }
+    },
+    "required": ["namespace", "definitions"]
   },
   "$defs": {
     "def:token:constant": {

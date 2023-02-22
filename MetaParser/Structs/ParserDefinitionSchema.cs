@@ -8,7 +8,13 @@ namespace MetaParser.Schemas.Structs
         [JsonPropertyName("namespace")]
         public string? Namespace { get; set; }
 
-        [JsonPropertyName("tokens")]
-        public IReadOnlyDictionary<string, TokenDef>? Tokens { get; set; }
+        [JsonPropertyName("classname")]
+        public string? ClassName { get; set; }
+
+        [JsonPropertyName("$type")]
+        public string? ParserType { get; set; }
+
+        [JsonPropertyName("definitions")]
+        public IReadOnlyDictionary<string, TokenDef>? Definitions { get; set; }
     }
 }

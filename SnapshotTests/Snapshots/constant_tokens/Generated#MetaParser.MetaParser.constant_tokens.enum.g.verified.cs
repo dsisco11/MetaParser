@@ -1,11 +1,11 @@
 ﻿//HintName: MetaParser.MetaParser.constant_tokens.enum.g.cs
 namespace Foo.Bar.Tokens;
-public enum EToken : System.Int32
+public enum ETokenType : byte
 {
-    Unknown = (Int32) 0,
-    Fourth = (Int32) 1,
-    Third = (Int32) 2,
-    First = (Int32) 3,
-    Second = (Int32) 4,
-    Fifth = (Int32) 5,
+    Unknown = (byte) 0,
+    Fourth = (byte) 1,
+    Third = (byte) 2,
+    First = (byte) 3,
+    Second = (byte) 4,
+    Fifth = (byte) 5,
 }

@@ -2,6 +2,8 @@
 
 using MetaParser.Contexts;
 
+using Microsoft.CodeAnalysis;
+
 namespace MetaParser.Generators;
 
 internal static class ParserClassGenerator
@@ -10,7 +12,7 @@ internal static class ParserClassGenerator
     {
         wr.WriteLine($"namespace {context.Namespace};");
         //wr.WriteLine(Common.s_generatedCodeAttributeSource);
-        wr.WriteLine(Common.ParserClassDeclaration);
+        wr.WriteLine(context.ParserClassDeclaration);
         wr.WriteLine("{");
         wr.Indent++;
         Generate_Primary_Parsing_Function(wr, context);
@@ -28,14 +30,14 @@ internal static class ParserClassGenerator
         wr.WriteLine("do");
         wr.WriteLine("{");
         wr.Indent++;
-        wr.WriteLine("if (try_consume_token_constant(Source, out var constId, out var constLen))");
+        wr.WriteLine($"if ({context.ConstantTokenConsumerFunctionName}(Source, out var constId, out var constLen))");
         wr.WriteLine("{");
         wr.Indent++;
         wr.WriteLine("valueTokens.Add(new ValueToken(constId, Source.Slice(0, constLen)));");
         wr.WriteLine("Source = Source.Slice(constLen);");
         wr.Indent--;
         wr.WriteLine("}");
-        wr.WriteLine("else if (try_consume_token_compound(Source, out var compId, out var compLen))");
+        wr.WriteLine($"else if ({context.CompoundTokenConsumerFunctionName}(Source, out var compId, out var compLen))");
         wr.WriteLine("{");
         wr.Indent++;
         wr.WriteLine("valueTokens.Add(new ValueToken(compId, Source.Slice(0, compLen)));");
@@ -61,16 +63,16 @@ internal static class ParserClassGenerator
         wr.WriteLine("idValues[i] = valueTokens[i].Id;");
         wr.Indent--;
         wr.WriteLine("}");
-        wr.WriteLine($"var idSource = new global::System.ReadOnlyMemory<{context.IdTypeName}>( idValues );");
+        wr.WriteLine($"var idSource = new {CodeGen.FormatReadOnlyMemoryBuffer(context.IdType)}( idValues );");
         // complex-tokens
         wr.WriteLine();
-        wr.WriteLine($"{typeof(int).FullName} offset = 0;");
+        wr.WriteLine($"{CodeGen.Format(SpecialType.System_Int32)} offset = 0;");
         wr.WriteLine("var buffer = idSource;");
         wr.WriteLine("System.Collections.Generic.List<Token> results = new();");
         wr.WriteLine("do");
         wr.WriteLine("{");
         wr.Indent++;
-        wr.WriteLine("if (try_consume_token_complex(buffer, out var outId, out var outLength))");
+        wr.WriteLine($"if ({context.ComplexTokenConsumerFunctionName}(buffer, out var outId, out var outLength))");
         wr.WriteLine("{");
         wr.Indent++;
         wr.WriteLine("var values = new ValueToken[outLength];");
