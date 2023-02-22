@@ -42,7 +42,7 @@ internal static class ParserClassGenerator
         wr.WriteLine("{");
         wr.Indent++;
         wr.WriteLine("var Consumed = Source.Slice(0, outLen);");
-        wr.WriteLine("valueTokens.Add( new (outId, Consumed) );");
+        wr.WriteLine("valueTokens.Add( new ValueToken(outId, Consumed) );");
         wr.WriteLine("Source = Source.Slice(outLen);");
         wr.Indent--;
         wr.WriteLine("}");

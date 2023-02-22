@@ -11,7 +11,7 @@ public sealed partial class Parser
             if (TryConsume(Source.Span, out var outId, out var outLen))
             {
                 var Consumed = Source.Slice(0, outLen);
-                valueTokens.Add( new (outId, Consumed) );
+                valueTokens.Add( new ValueToken(outId, Consumed) );
                 Source = Source.Slice(outLen);
             }
             else
