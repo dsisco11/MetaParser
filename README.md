@@ -23,10 +23,10 @@ Below is a diagram illustrating the generated parser class structure.
 title: Parsing Process
 ---
 classDiagram
-Parser --> Token : Parse()
-Token --* ValueToken : [0]
-Token --* ValueToken : [1]
-Token --* ValueToken : [2]
+Parser --> Token : Parse("hello world")
+Token --* ValueToken : ["hello"]
+Token --* ValueToken : [" "]
+Token --* ValueToken : ["world"]
 
 class Parser{
    Token[] Parse(ReadOnlyMemory)
@@ -52,6 +52,7 @@ A MetaParser definition file is a simple JSON object structure with only a handf
 The _definitions_ field is an JSON object, and each named property within it is a token whose name corrosponds to the property name.
 There are 3 types of tokens.
 
+// TODO: Finish explaining token types
 
 ## Example Parser File
 ```json
