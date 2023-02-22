@@ -23,6 +23,7 @@ namespace MetaParser.Contexts
         #region Constants
         public readonly string TokenEnum = "ETokenType";
         public readonly string TokenConsts = "TokenId";
+        public readonly string UnknownToken = "Unknown";
 
         public readonly string ConstantTokenConsumerFunctionName = "consume_constant_token";
         public readonly string CompoundTokenConsumerFunctionName = "consume_compound_token";

@@ -19,7 +19,7 @@ namespace MetaParser.Generators.SwitchGenerators
             // now write the token consuming functions
 
             // Token Detection
-            wr.WriteLine("switch (source.Span)");
+            wr.WriteLine("switch (source)");
             wr.WriteLine("{");
             wr.Indent++;
 
@@ -31,7 +31,7 @@ namespace MetaParser.Generators.SwitchGenerators
                 wr.WriteLine("{");
                 wr.Indent++;
                 wr.WriteLine($"id = {tokenIdName};");
-                wr.WriteLine($"return {context.Get_Token_Consumer_Function_Name(token.Name)}(source.Span, out length);");
+                wr.WriteLine($"return {context.Get_Token_Consumer_Function_Name(token.Name)}(source, out length);");
                 wr.Indent--;
                 wr.WriteLine("}");
             }

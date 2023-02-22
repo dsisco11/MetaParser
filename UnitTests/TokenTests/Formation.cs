@@ -1,5 +1,3 @@
-using Newtonsoft.Json.Linq;
-
 using UnitTestParser;
 namespace UnitTests.TokenTests;
 
@@ -17,6 +15,7 @@ public class Formation
     [InlineData("  \t     \f ", ETokenType.Whitespace)]
     [InlineData("0123456789", ETokenType.Digits)]
     [InlineData("/*hello world*/", ETokenType.Comment)]
+    [InlineData("::;;;::;;", ETokenType.Unknown)]
     public void Single(string input, ETokenType expected)
     {
         var parser = new Parser();
@@ -54,6 +53,10 @@ public class Formation
     [InlineData("123/*456*/78", 0, ETokenType.Digits, 0, 3)]
     [InlineData("123/*456*/78", 1, ETokenType.Comment, 3, 10)]
     [InlineData("123/*456*/78", 2, ETokenType.Digits, 10, 12)]
+
+    [InlineData("123:::4567", 0, ETokenType.Digits, 0, 3)]
+    [InlineData("123:::4567", 1, ETokenType.Unknown, 3, 6)]
+    [InlineData("123:::4567", 2, ETokenType.Digits, 6, 10)]
     public void Segment(string input, int indice, ETokenType id, int startIndex, int endIndex)
     {
         var parser = new Parser();

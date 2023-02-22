@@ -26,10 +26,10 @@ namespace MetaParser.Generators.SwitchGenerators
 
             foreach (var vSizeGroup in tokenList.GroupBy(x => x.value.Length).OrderByDescending(g => g.Key))
             {
-                wr.WriteLine($"if (source.Span.Length > {vSizeGroup.Key - 1})");
+                wr.WriteLine($"if (source.Length > {vSizeGroup.Key - 1})");
                 wr.WriteLine("{");
                 wr.Indent++;
-                wr.WriteLine($"buffer = source.Span.Slice(0, {vSizeGroup.Key});");
+                wr.WriteLine($"buffer = source.Slice(0, {vSizeGroup.Key});");
                 wr.WriteLine("switch(buffer)");
                 wr.WriteLine("{");
                 wr.Indent++;

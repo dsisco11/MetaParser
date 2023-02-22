@@ -22,7 +22,7 @@ namespace MetaParser.Generators.PatternGenerators
                 }
             }
 
-            wr.WriteLine("switch (source.Span)");
+            wr.WriteLine("switch (source)");
             wr.WriteLine("{");
             wr.Indent++;
             foreach (var token in tokenList)
