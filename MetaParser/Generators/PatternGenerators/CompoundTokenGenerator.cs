@@ -15,7 +15,7 @@ namespace MetaParser.Generators.PatternGenerators
         {
             var Tokens = context.CompoundTokens;
             // generate token type detection switch map
-            wr.WriteLine("switch (source.Span[0])");
+            wr.WriteLine("switch (source[0])");
             wr.WriteLine("{");
             wr.Indent++;
             foreach (var token in Tokens)
@@ -24,7 +24,7 @@ namespace MetaParser.Generators.PatternGenerators
                 wr.WriteLine("{");
                 wr.Indent++;
                 wr.WriteLine($"id = {context.Get_TokenId_Ref(token.Name)};");
-                wr.WriteLine($"length = {context.Get_Token_Consumer_Function_Name(token.Name)} (source.Span);");
+                wr.WriteLine($"length = {context.Get_Token_Consumer_Function_Name(token.Name)} (source);");
                 wr.WriteLine("return true;");
                 wr.WriteLine("");
                 wr.Indent--;

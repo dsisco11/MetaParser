@@ -141,7 +141,7 @@ public partial class Generator : IIncrementalGenerator
             writer.WriteLine($"{context.ParserClassDeclaration}");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"private bool {context.ConstantTokenConsumerFunctionName} ({CodeGen.FormatReadOnlyMemoryBuffer(context.InputType)} source, out {context.IdTypeName} id, out {CodeGen.Format(SpecialType.System_Int32)} length)");
+            writer.WriteLine($"private static bool {context.ConstantTokenConsumerFunctionName} ({CodeGen.FormatReadOnlySpanBuffer(context.InputType)} source, out {context.IdTypeName} id, out {CodeGen.Format(SpecialType.System_Int32)} length)");
             writer.WriteLine("{");
             writer.Indent++;
             context.ConstantTokenGen.Generate(writer, context);
@@ -165,7 +165,7 @@ public partial class Generator : IIncrementalGenerator
             writer.WriteLine($"namespace {context?.Namespace};");
             writer.WriteLine($"{context.ParserClassDeclaration}");
             writer.WriteLine("{");
-            writer.WriteLine($"private bool {context.CompoundTokenConsumerFunctionName} ({CodeGen.FormatReadOnlyMemoryBuffer(context.InputType)} source, out {context.IdTypeName} id, out {CodeGen.Format(SpecialType.System_Int32)} length)");
+            writer.WriteLine($"private static bool {context.CompoundTokenConsumerFunctionName} ({CodeGen.FormatReadOnlySpanBuffer(context.InputType)} source, out {context.IdTypeName} id, out {CodeGen.Format(SpecialType.System_Int32)} length)");
             writer.WriteLine("{");
             writer.Indent++;
             context.CompoundTokenGen.Generate(writer, context);
@@ -190,7 +190,7 @@ public partial class Generator : IIncrementalGenerator
             writer.WriteLine($"{context.ParserClassDeclaration}");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"private bool {context.ComplexTokenConsumerFunctionName} ({CodeGen.FormatReadOnlyMemoryBuffer(context.IdType)} source, out {context.IdTypeName} id, out {CodeGen.Format(SpecialType.System_Int32)} length)");
+            writer.WriteLine($"private static bool {context.ComplexTokenConsumerFunctionName} ({CodeGen.FormatReadOnlySpanBuffer(context.IdType)} source, out {context.IdTypeName} id, out {CodeGen.Format(SpecialType.System_Int32)} length)");
             writer.WriteLine("{");
             writer.Indent++;
             context.ComplexTokenGen.Generate(writer, context);

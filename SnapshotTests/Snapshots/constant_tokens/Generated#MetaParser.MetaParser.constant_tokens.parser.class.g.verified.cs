@@ -8,19 +8,15 @@ public sealed partial class Parser
         var Source = Input;
         do
         {
-            if (consume_constant_token(Source, out var constId, out var constLen))
+            if (TryConsume(Source.Span, out var outId, out var outLen))
             {
-                valueTokens.Add(new ValueToken(constId, Source.Slice(0, constLen)));
-                Source = Source.Slice(constLen);
+                var Consumed = Source.Slice(0, outLen);
+                valueTokens.Add( new (outId, Consumed) );
+                Source = Source.Slice(outLen);
             }
-            else if (consume_compound_token(Source, out var compId, out var compLen))
+            else
             {
-                valueTokens.Add(new ValueToken(compId, Source.Slice(0, compLen)));
-                Source = Source.Slice(compLen);
-            }
-            else // Consume 'unknown' token
-            {
-                valueTokens.Add(new ValueToken(0, Source.Slice(0, 1)));
+                valueTokens.Add(new ValueToken(TokenId.Unknown, Source.Slice(0, 1)));
                 Source = Source.Slice(1);
             }
         }
@@ -38,7 +34,7 @@ public sealed partial class Parser
         System.Collections.Generic.List<Token> results = new();
         do
         {
-            if (consume_complex_token(buffer, out var outId, out var outLength))
+            if (consume_complex_token(buffer.Span, out var outId, out var outLength))
             {
                 var values = new ValueToken[outLength];
                 valueTokens.CopyTo(offset, values, 0, outLength);
@@ -59,5 +55,24 @@ public sealed partial class Parser
         while (buffer.Length > 0);
         
         return results;
+    }
+    private static bool TryConsume(global::System.ReadOnlySpan<char> Source, out byte Id, out int Length)
+    {
+        if (consume_constant_token(Source, out var constId, out var constLen))
+        {
+            Id = constId;
+            Length = constLen;
+            return true;
+        }
+        else if (consume_compound_token(Source, out var compId, out var compLen))
+        {
+            Id = compId;
+            Length = compLen;
+            return true;
+        }
+        
+        Id = default;
+        Length = default;
+        return false;
     }
 }

@@ -2,19 +2,19 @@
 namespace Foo.Bar.Tokens;
 public sealed partial class Parser
 {
-    private bool consume_complex_token (global::System.ReadOnlyMemory<byte> source, out byte id, out int length)
+    private static bool consume_complex_token (global::System.ReadOnlySpan<byte> source, out byte id, out int length)
     {
-        switch (source.Span)
+        switch (source)
         {
             case [TokenId.Char_Solidus, TokenId.Char_Asterisk, ..]:
             {
                 id = TokenId.Comment;
-                return consume_comment(source.Span, out length);
+                return consume_comment(source, out length);
             }
             case [TokenId.Letters, ..]:
             {
                 id = TokenId.Identifier;
-                return consume_identifier(source.Span, out length);
+                return consume_identifier(source, out length);
             }
         }
         

@@ -2,23 +2,23 @@
 namespace Foo.Bar.Tokens;
 public sealed partial class Parser
 {
-private bool consume_compound_token (global::System.ReadOnlyMemory<char> source, out byte id, out int length)
+private static bool consume_compound_token (global::System.ReadOnlySpan<char> source, out byte id, out int length)
 {
-    switch (source.Span[0])
+    switch (source[0])
     {
         case ' ':
         case '\t':
         case '\f':
         {
             id = TokenId.Whitespace;
-            length = consume_whitespace (source.Span);
+            length = consume_whitespace (source);
             return true;
             
         }
         case (>= '0' and <= '9'):
         {
             id = TokenId.Digits;
-            length = consume_digits (source.Span);
+            length = consume_digits (source);
             return true;
             
         }
@@ -26,14 +26,14 @@ private bool consume_compound_token (global::System.ReadOnlyMemory<char> source,
         case (>= 'A' and <= 'Z'):
         {
             id = TokenId.Letters;
-            length = consume_letters (source.Span);
+            length = consume_letters (source);
             return true;
             
         }
         case '\n':
         {
             id = TokenId.Newline;
-            length = consume_newline (source.Span);
+            length = consume_newline (source);
             return true;
             
         }

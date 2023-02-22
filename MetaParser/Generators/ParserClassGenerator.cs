@@ -8,6 +8,11 @@ namespace MetaParser.Generators;
 
 internal static class ParserClassGenerator
 {
+    #region Constants
+    const string ConsumeNextFuncName = "TryConsume";
+    const string CallConsumeNext = $"{ConsumeNextFuncName}(Source.Span, out var outId, out var outLen)";
+    #endregion
+
     public static void Generate(IndentedTextWriter wr, MetaParserContext context)
     {
         wr.WriteLine($"namespace {context.Namespace};");
@@ -16,12 +21,15 @@ internal static class ParserClassGenerator
         wr.WriteLine("{");
         wr.Indent++;
         Generate_Primary_Parsing_Function(wr, context);
+        Generate_Consume_Next(wr, context);
         wr.Indent--;
         wr.WriteLine("}");// end class
     }
 
     public static void Generate_Primary_Parsing_Function(IndentedTextWriter wr, MetaParserContext context)
     {
+        var unkTokenId = context.Get_TokenId_Ref(context.UnknownToken);
+
         wr.WriteLine($"public System.Collections.Generic.List<Token> Parse({CodeGen.FormatReadOnlyMemoryBuffer(context.InputType)} Input)");
         wr.WriteLine("{");
         wr.Indent++;
@@ -30,24 +38,18 @@ internal static class ParserClassGenerator
         wr.WriteLine("do");
         wr.WriteLine("{");
         wr.Indent++;
-        wr.WriteLine($"if ({context.ConstantTokenConsumerFunctionName}(Source, out var constId, out var constLen))");
+        wr.WriteLine($"if ({CallConsumeNext})");
         wr.WriteLine("{");
         wr.Indent++;
-        wr.WriteLine("valueTokens.Add(new ValueToken(constId, Source.Slice(0, constLen)));");
-        wr.WriteLine("Source = Source.Slice(constLen);");
+        wr.WriteLine("var Consumed = Source.Slice(0, outLen);");
+        wr.WriteLine("valueTokens.Add( new (outId, Consumed) );");
+        wr.WriteLine("Source = Source.Slice(outLen);");
         wr.Indent--;
         wr.WriteLine("}");
-        wr.WriteLine($"else if ({context.CompoundTokenConsumerFunctionName}(Source, out var compId, out var compLen))");
+        wr.WriteLine("else");
         wr.WriteLine("{");
         wr.Indent++;
-        wr.WriteLine("valueTokens.Add(new ValueToken(compId, Source.Slice(0, compLen)));");
-        wr.WriteLine("Source = Source.Slice(compLen);");
-        wr.Indent--;
-        wr.WriteLine("}");
-        wr.WriteLine("else // Consume 'unknown' token");
-        wr.WriteLine("{");
-        wr.Indent++;
-        wr.WriteLine("valueTokens.Add(new ValueToken(0, Source.Slice(0, 1)));");
+        wr.WriteLine($"valueTokens.Add(new ValueToken({unkTokenId}, Source.Slice(0, 1)));");
         wr.WriteLine("Source = Source.Slice(1);");
         wr.Indent--;
         wr.WriteLine("}");
@@ -55,7 +57,6 @@ internal static class ParserClassGenerator
         wr.WriteLine("}");
         wr.WriteLine("while (Source.Length > 0);");
         wr.WriteLine();
-        //wr.WriteLine($"var idSource = new {CodeGen.FormatMemoryBuffer(context.IdType)}(new {context.IdTypeName}[valueTokens.Count]);");
         wr.WriteLine($"var idValues = new {context.IdTypeName}[valueTokens.Count];");
         wr.WriteLine("for (int i = 0; i < valueTokens.Count; i++)");
         wr.WriteLine("{");
@@ -72,7 +73,7 @@ internal static class ParserClassGenerator
         wr.WriteLine("do");
         wr.WriteLine("{");
         wr.Indent++;
-        wr.WriteLine($"if ({context.ComplexTokenConsumerFunctionName}(buffer, out var outId, out var outLength))");
+        wr.WriteLine($"if ({context.ComplexTokenConsumerFunctionName}(buffer.Span, out var outId, out var outLength))");
         wr.WriteLine("{");
         wr.Indent++;
         wr.WriteLine("var values = new ValueToken[outLength];");
@@ -96,6 +97,37 @@ internal static class ParserClassGenerator
         wr.WriteLine("while (buffer.Length > 0);");
         wr.WriteLine();
         wr.WriteLine("return results;");
+
+        wr.Indent--;
+        wr.WriteLine("}");// end function
+    }
+
+
+    public static void Generate_Consume_Next(IndentedTextWriter wr, MetaParserContext context)
+    {
+        wr.WriteLine($"private static bool {ConsumeNextFuncName}({CodeGen.FormatReadOnlySpanBuffer(context.InputType)} Source, out {context.IdTypeName} Id, out {CodeGen.Format(SpecialType.System_Int32)} Length)");
+        wr.WriteLine("{");
+        wr.Indent++;
+        wr.WriteLine($"if ({context.ConstantTokenConsumerFunctionName}(Source, out var constId, out var constLen))");
+        wr.WriteLine("{");
+        wr.Indent++;
+        wr.WriteLine("Id = constId;");
+        wr.WriteLine("Length = constLen;");
+        wr.WriteLine("return true;");
+        wr.Indent--;
+        wr.WriteLine("}");
+        wr.WriteLine($"else if ({context.CompoundTokenConsumerFunctionName}(Source, out var compId, out var compLen))");
+        wr.WriteLine("{");
+        wr.Indent++;
+        wr.WriteLine("Id = compId;");
+        wr.WriteLine("Length = compLen;");
+        wr.WriteLine("return true;");
+        wr.Indent--;
+        wr.WriteLine("}");
+        wr.WriteLine();
+        wr.WriteLine("Id = default;");
+        wr.WriteLine("Length = default;");
+        wr.WriteLine("return false;");
 
         wr.Indent--;
         wr.WriteLine("}");// end function
