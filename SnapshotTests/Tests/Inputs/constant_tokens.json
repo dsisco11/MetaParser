@@ -1,6 +1,7 @@
 ﻿{
+  "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-01.json",
   "namespace": "Foo.Bar.Tokens",
-  "tokens": {
+  "definitions": {
     "fourth": {
       "$type": "constant",
       "value": "b"

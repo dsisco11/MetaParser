@@ -1,14 +1,14 @@
 ﻿//HintName: MetaParser.MetaParser.compound_tokens.token.struct.g.cs
 namespace Foo.Bar.Tokens;
-public readonly record struct ValueToken(System.Int32 Id, global::System.ReadOnlyMemory<System.Char> Data)
+public readonly record struct ValueToken(byte Id, global::System.ReadOnlyMemory<char> Data)
 {
     public override string ToString()
     {
-        return $"{(EToken)Id}({Data})";
+        return $"{(ETokenType)Id}({Data})";
     }
 }
 
-public sealed record Token(EToken Id, ValueToken[] Values)
+public sealed record Token(ETokenType Id, ValueToken[] Values)
 {
     public override string ToString()
     {

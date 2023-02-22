@@ -10,44 +10,44 @@ namespace UnitTests.TokenTests;
 public class Detection
 {
     [Theory]
-    [InlineData("\n", EToken.Newline)]
-    [InlineData(" ", EToken.Whitespace)]
-    [InlineData("\t", EToken.Whitespace)]
-    [InlineData("*", EToken.Char_Asterisk)]
-    [InlineData("{", EToken.Char_Open_Bracket)]
-    [InlineData("}", EToken.Char_Close_Bracket)]
-    [InlineData("[", EToken.Char_Open_Sqbracket)]
-    [InlineData("]", EToken.Char_Close_Sqbracket)]
-    [InlineData("(", EToken.Char_Open_Parenthesis)]
-    [InlineData(")", EToken.Char_Close_Parenthesis)]
-    [InlineData("/", EToken.Char_Solidus)]
-    [InlineData("\\", EToken.Char_Reverse_Solidus)]
-    [InlineData("var", EToken.Keyword_Var)]
-    [InlineData("byte", EToken.Keyword_Byte)]
-    [InlineData("short", EToken.Keyword_Short)]
-    [InlineData("int", EToken.Keyword_Int)]
-    [InlineData("float", EToken.Keyword_Float)]
-    [InlineData("function", EToken.Keyword_Function)]
-    public void Single(string input, EToken expected)
+    [InlineData("\n", ETokenType.Newline)]
+    [InlineData(" ", ETokenType.Whitespace)]
+    [InlineData("\t", ETokenType.Whitespace)]
+    [InlineData("*", ETokenType.Char_Asterisk)]
+    [InlineData("{", ETokenType.Char_Open_Bracket)]
+    [InlineData("}", ETokenType.Char_Close_Bracket)]
+    [InlineData("[", ETokenType.Char_Open_Sqbracket)]
+    [InlineData("]", ETokenType.Char_Close_Sqbracket)]
+    [InlineData("(", ETokenType.Char_Open_Parenthesis)]
+    [InlineData(")", ETokenType.Char_Close_Parenthesis)]
+    [InlineData("/", ETokenType.Char_Solidus)]
+    [InlineData("\\", ETokenType.Char_Reverse_Solidus)]
+    [InlineData("var", ETokenType.Keyword_Var)]
+    [InlineData("byte", ETokenType.Keyword_Byte)]
+    [InlineData("short", ETokenType.Keyword_Short)]
+    [InlineData("int", ETokenType.Keyword_Int)]
+    [InlineData("float", ETokenType.Keyword_Float)]
+    [InlineData("function", ETokenType.Keyword_Function)]
+    public void Single(string input, ETokenType expected)
     {
         var parser = new Parser();
         var results = parser.Parse(input.AsMemory());
         Assert.Single(results);
-        Assert.Equal<EToken>(expected, results.Single().Id);
+        Assert.Equal<ETokenType>(expected, results.Single().Id);
     }
 
     [Theory]
-    [InlineData(" \n*/", EToken.Whitespace, EToken.Newline, EToken.Char_Asterisk, EToken.Char_Solidus)]
-    [InlineData("123 hello", EToken.Digits, EToken.Whitespace, EToken.Identifier)]
-    [InlineData("123 hello world", EToken.Digits, EToken.Whitespace, EToken.Identifier, EToken.Whitespace, EToken.Identifier)]
-    [InlineData("foo123   bar", EToken.Identifier, EToken.Whitespace, EToken.Identifier)]
-    [InlineData("{ var int i; }", EToken.Codeblock)]
-    [InlineData("/*hello world*/\n  ", EToken.Comment, EToken.Newline, EToken.Whitespace)]
-    [InlineData(@"/*hello\*world*/  ", EToken.Comment, EToken.Whitespace)]
-    public void Multi(string input, params EToken[] expected)
+    [InlineData(" \n*/", ETokenType.Whitespace, ETokenType.Newline, ETokenType.Char_Asterisk, ETokenType.Char_Solidus)]
+    [InlineData("123 hello", ETokenType.Digits, ETokenType.Whitespace, ETokenType.Identifier)]
+    [InlineData("123 hello world", ETokenType.Digits, ETokenType.Whitespace, ETokenType.Identifier, ETokenType.Whitespace, ETokenType.Identifier)]
+    [InlineData("foo123   bar", ETokenType.Identifier, ETokenType.Whitespace, ETokenType.Identifier)]
+    [InlineData("{ var int i; }", ETokenType.Codeblock)]
+    [InlineData("/*hello world*/\n  ", ETokenType.Comment, ETokenType.Newline, ETokenType.Whitespace)]
+    [InlineData(@"/*hello\*world*/  ", ETokenType.Comment, ETokenType.Whitespace)]
+    public void Multi(string input, params ETokenType[] expected)
     {
         var parser = new Parser();
         var results = parser.Parse(input.AsMemory());
-        Assert.Equal<EToken>(expected, results.Select(o => o.Id));
+        Assert.Equal<ETokenType>(expected, results.Select(o => o.Id));
     }
 }

@@ -11,7 +11,6 @@ namespace MetaParser.Generators.SwitchGenerators
 {
     internal class ComplexTokenGenerator : ITokenCodeGenerator
     {
-        private string Get_Token_Consumer_Function_Name(string tokenName) => $"consume_{tokenName.ToLowerInvariant()}_token";
         public void Generate(IndentedTextWriter wr, MetaParserTokenContext context)
         {
             var Tokens = context.ComplexTokens;
@@ -32,7 +31,7 @@ namespace MetaParser.Generators.SwitchGenerators
                 wr.WriteLine("{");
                 wr.Indent++;
                 wr.WriteLine($"id = {tokenIdName};");
-                wr.WriteLine($"return {Get_Token_Consumer_Function_Name(token.Name)}(source.Span, out length);");
+                wr.WriteLine($"return {context.Get_Token_Consumer_Function_Name(token.Name)}(source.Span, out length);");
                 wr.Indent--;
                 wr.WriteLine("}");
             }
@@ -52,7 +51,7 @@ namespace MetaParser.Generators.SwitchGenerators
             }
         }
 
-        private void Generate_Token_Consumption_Function(IndentedTextWriter wr, MetaParserTokenContext context, DependencyNode<TokenDefComplex> token)
+        private static void Generate_Token_Consumption_Function(IndentedTextWriter wr, MetaParserTokenContext context, DependencyNode<TokenDefComplex> token)
         {
             //const string nameConsumeSeq = "seqConsume";
             const string nameEndTerminatorSeq = "seqEndTerminator";
@@ -83,7 +82,7 @@ namespace MetaParser.Generators.SwitchGenerators
             }
 
             wr.WriteLine();
-            wr.WriteLine($"static bool {Get_Token_Consumer_Function_Name(token.Name)} ({CodeGen.FormatReadOnlySpanBuffer(context.IdType)} start, out {typeof(int).FullName} consumed)");
+            wr.WriteLine($"static bool {context.Get_Token_Consumer_Function_Name(token.Name)} ({CodeGen.FormatReadOnlySpanBuffer(context.IdType)} start, out {CodeGen.Format(SpecialType.System_Int32)} consumed)");
             wr.WriteLine("{");
             wr.Indent++;
 
@@ -96,12 +95,12 @@ namespace MetaParser.Generators.SwitchGenerators
 
             if (endTerminatorSeq is not null)
             {
-                wr.WriteLine($"Span<{context.IdTypeName}> {nameEndTerminatorSeq} = stackalloc[] {{ {string.Join(", ", endTerminatorSeq)} }};");
+                wr.WriteLine($"{CodeGen.FormatSpanBuffer(context.IdType)} {nameEndTerminatorSeq} = stackalloc[] {{ {string.Join(", ", endTerminatorSeq)} }};");
             }
 
             if (endEscapeSeq is not null)
             {
-                wr.WriteLine($"Span<{context.IdTypeName}> {nameEndEscapeSeq} = stackalloc[] {{ {string.Join(", ", endEscapeSeq)} }};");
+                wr.WriteLine($"{CodeGen.FormatSpanBuffer(context.IdType)} {nameEndEscapeSeq} = stackalloc[] {{ {string.Join(", ", endEscapeSeq)} }};");
             }
 
             wr.WriteLine();

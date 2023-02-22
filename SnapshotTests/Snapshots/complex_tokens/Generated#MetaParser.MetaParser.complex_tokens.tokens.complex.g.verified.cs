@@ -2,19 +2,19 @@
 namespace Foo.Bar.Tokens;
 public sealed partial class Parser
 {
-    private bool try_consume_token_complex (global::System.ReadOnlyMemory<System.Int32> source, out System.Int32 id, out System.Int32 length)
+    private bool consume_complex_token (global::System.ReadOnlyMemory<byte> source, out byte id, out int length)
     {
         switch (source.Span)
         {
             case [TokenId.Char_Solidus, TokenId.Char_Asterisk, ..]:
             {
                 id = TokenId.Comment;
-                return consume_comment_token(source.Span, out length);
+                return consume_comment(source.Span, out length);
             }
             case [TokenId.Letters, ..]:
             {
                 id = TokenId.Identifier;
-                return consume_identifier_token(source.Span, out length);
+                return consume_identifier(source.Span, out length);
             }
         }
         
@@ -23,13 +23,13 @@ public sealed partial class Parser
         return false;
         
         
-        static bool consume_comment_token (global::System.ReadOnlySpan<System.Int32> start, out System.Int32 consumed)
+        static bool consume_comment (global::System.ReadOnlySpan<byte> start, out int consumed)
         {
             #if DEBUG
                 System.Diagnostics.Debug.Assert(start.StartsWith(stackalloc[] { TokenId.Char_Solidus, TokenId.Char_Asterisk }));
             #endif
             var buffer = start.Slice(2);
-            Span<System.Int32> seqEndTerminator = stackalloc[] { TokenId.Char_Asterisk, TokenId.Char_Solidus };
+            global::System.Span<byte> seqEndTerminator = stackalloc[] { TokenId.Char_Asterisk, TokenId.Char_Solidus };
             
             while (buffer.Length > 0)
             {
@@ -51,7 +51,7 @@ public sealed partial class Parser
             return false;
         }
         
-        static bool consume_identifier_token (global::System.ReadOnlySpan<System.Int32> start, out System.Int32 consumed)
+        static bool consume_identifier (global::System.ReadOnlySpan<byte> start, out int consumed)
         {
             #if DEBUG
                 System.Diagnostics.Debug.Assert(start.StartsWith(stackalloc[] { TokenId.Letters }));

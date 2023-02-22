@@ -2,7 +2,7 @@
 namespace Foo.Bar.Tokens;
 public sealed partial class Parser
 {
-private bool try_consume_token_compound (global::System.ReadOnlyMemory<System.Char> source, out System.Int32 id, out System.Int32 length)
+private bool consume_compound_token (global::System.ReadOnlyMemory<char> source, out byte id, out int length)
 {
     switch (source.Span[0])
     {
@@ -11,14 +11,14 @@ private bool try_consume_token_compound (global::System.ReadOnlyMemory<System.Ch
         case '\f':
         {
             id = TokenId.Whitespace;
-            length = consume_all_whitespace (source.Span);
+            length = consume_whitespace (source.Span);
             return true;
             
         }
         case (>= '0' and <= '9'):
         {
             id = TokenId.Digits;
-            length = consume_all_digits (source.Span);
+            length = consume_digits (source.Span);
             return true;
             
         }
@@ -26,14 +26,14 @@ private bool try_consume_token_compound (global::System.ReadOnlyMemory<System.Ch
         case (>= 'A' and <= 'Z'):
         {
             id = TokenId.Letters;
-            length = consume_all_letters (source.Span);
+            length = consume_letters (source.Span);
             return true;
             
         }
         case '\n':
         {
             id = TokenId.Newline;
-            length = consume_all_newline (source.Span);
+            length = consume_newline (source.Span);
             return true;
             
         }
@@ -43,7 +43,7 @@ private bool try_consume_token_compound (global::System.ReadOnlyMemory<System.Ch
     length = default;
     return false;
     
-    static System.Int32 consume_all_whitespace (global::System.ReadOnlySpan<System.Char> buffer)
+    static int consume_whitespace (global::System.ReadOnlySpan<char> buffer)
     {
         int consumed = 0;
         while (buffer.Length > consumed)
@@ -63,7 +63,7 @@ private bool try_consume_token_compound (global::System.ReadOnlyMemory<System.Ch
         return consumed;
     }
     
-    static System.Int32 consume_all_digits (global::System.ReadOnlySpan<System.Char> buffer)
+    static int consume_digits (global::System.ReadOnlySpan<char> buffer)
     {
         int consumed = 0;
         while (buffer.Length > consumed)
@@ -81,7 +81,7 @@ private bool try_consume_token_compound (global::System.ReadOnlyMemory<System.Ch
         return consumed;
     }
     
-    static System.Int32 consume_all_letters (global::System.ReadOnlySpan<System.Char> buffer)
+    static int consume_letters (global::System.ReadOnlySpan<char> buffer)
     {
         int consumed = 0;
         while (buffer.Length > consumed)
@@ -100,7 +100,7 @@ private bool try_consume_token_compound (global::System.ReadOnlyMemory<System.Ch
         return consumed;
     }
     
-    static System.Int32 consume_all_newline (global::System.ReadOnlySpan<System.Char> buffer)
+    static int consume_newline (global::System.ReadOnlySpan<char> buffer)
     {
         int consumed = 0;
         while (buffer.Length > consumed)

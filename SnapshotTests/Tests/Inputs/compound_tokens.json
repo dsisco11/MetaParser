@@ -1,13 +1,14 @@
 ﻿{
+  "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-01.json",
   "namespace": "Foo.Bar.Tokens",
-  "tokens": {
+  "definitions": {
     "whitespace": {
       "$type": "compound",
       "consume": [ " ", "\t", "\f" ]
     },
     "digits": {
       "$type": "compound",
-      "consume": {"range": ["0", "9"]}
+      "consume": { "range": [ "0", "9" ] }
     },
     "letters": {
       "$type": "compound",

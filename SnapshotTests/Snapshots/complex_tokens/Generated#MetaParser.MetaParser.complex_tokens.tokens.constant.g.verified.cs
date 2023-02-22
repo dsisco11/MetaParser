@@ -2,7 +2,7 @@
 namespace Foo.Bar.Tokens;
 public sealed partial class Parser
 {
-    private bool try_consume_token_constant (global::System.ReadOnlyMemory<System.Char> source, out System.Int32 id, out System.Int32 length)
+    private bool consume_constant_token (global::System.ReadOnlyMemory<char> source, out byte id, out int length)
     {
         switch (source.Span)
         {

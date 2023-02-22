@@ -1,6 +1,7 @@
 ﻿using MetaParser.Contexts;
 using MetaParser.Schemas.Structs;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 using System;
@@ -10,8 +11,6 @@ namespace MetaParser.Generators.PatternGenerators
 {
     internal class CompoundTokenGenerator : ITokenCodeGenerator
     {
-        private string getTokenConsumerFuncName(TokenDefCompound token) => $"consume_all_{token?.Name?.ToLowerInvariant()}";
-
         public void Generate(IndentedTextWriter wr, MetaParserTokenContext context)
         {
             var Tokens = context.CompoundTokens;
@@ -21,11 +20,11 @@ namespace MetaParser.Generators.PatternGenerators
             wr.Indent++;
             foreach (var token in Tokens)
             {
-                writeSwitchCases(wr, token);
+                WriteSwitchCases(wr, token);
                 wr.WriteLine("{");
                 wr.Indent++;
                 wr.WriteLine($"id = {context.Get_TokenId_Ref(token.Name)};");
-                wr.WriteLine($"length = {getTokenConsumerFuncName(token)} (source.Span);");
+                wr.WriteLine($"length = {context.Get_Token_Consumer_Function_Name(token.Name)} (source.Span);");
                 wr.WriteLine("return true;");
                 wr.WriteLine("");
                 wr.Indent--;
@@ -44,7 +43,7 @@ namespace MetaParser.Generators.PatternGenerators
             // Generate all token consumer functions
             foreach (var token in Tokens)
             {
-                wr.WriteLine($"static {typeof(int).FullName} {getTokenConsumerFuncName(token)} ({CodeGen.FormatReadOnlySpanBuffer(context.InputType)} buffer)");
+                wr.WriteLine($"static {CodeGen.Format(SpecialType.System_Int32)} {context.Get_Token_Consumer_Function_Name(token.Name)} ({CodeGen.FormatReadOnlySpanBuffer(context.InputType)} buffer)");
                 wr.WriteLine("{");
                 wr.Indent++;
                 wr.WriteLine("int consumed = 0;");
@@ -54,7 +53,7 @@ namespace MetaParser.Generators.PatternGenerators
                 wr.WriteLine("switch (buffer[consumed])");
                 wr.WriteLine("{");
                 wr.Indent++;
-                writeSwitchCases(wr, token);
+                WriteSwitchCases(wr, token);
                 wr.WriteLine("{");
                 wr.Indent++;
                 wr.WriteLine("consumed++;");
@@ -73,7 +72,7 @@ namespace MetaParser.Generators.PatternGenerators
             }
         }
 
-        private void writeSwitchCases(IndentedTextWriter writer, TokenDefCompound token)
+        private static void WriteSwitchCases(IndentedTextWriter writer, TokenDefCompound token)
         {
             foreach (var value in token.Values)
             {

@@ -2,10 +2,10 @@
 namespace Foo.Bar.Tokens;
 internal static class TokenId
 {
-    public const System.Int32 Unknown = 0;
-    public const System.Int32 Fourth = 1;
-    public const System.Int32 Third = 2;
-    public const System.Int32 First = 3;
-    public const System.Int32 Second = 4;
-    public const System.Int32 Fifth = 5;
+    public const byte Unknown = 0;
+    public const byte Fourth = 1;
+    public const byte Third = 2;
+    public const byte First = 3;
+    public const byte Second = 4;
+    public const byte Fifth = 5;
 }

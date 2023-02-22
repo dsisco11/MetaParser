@@ -14,10 +14,10 @@ public class Formation
     /// <param name="input"></param>
     /// <param name="expected"></param>
     [Theory]
-    [InlineData("  \t     \f ", EToken.Whitespace)]
-    [InlineData("0123456789", EToken.Digits)]
-    [InlineData("/*hello world*/", EToken.Comment)]
-    public void Single(string input, EToken expected)
+    [InlineData("  \t     \f ", ETokenType.Whitespace)]
+    [InlineData("0123456789", ETokenType.Digits)]
+    [InlineData("/*hello world*/", ETokenType.Comment)]
+    public void Single(string input, ETokenType expected)
     {
         var parser = new Parser();
         var results = parser.Parse(input.AsMemory());
@@ -46,15 +46,15 @@ public class Formation
     /// <param name="input"></param>
     /// <param name="expected"></param>
     [Theory]
-    [InlineData("   \t    \f ", 0, EToken.Whitespace, 0, 10)]
-    [InlineData("0123456789", 0, EToken.Digits, 0, 10)]
-    [InlineData("123   4567", 0, EToken.Digits, 0, 3)]
-    [InlineData("123   4567", 1, EToken.Whitespace, 3, 6)]
-    [InlineData("123   4567", 2, EToken.Digits, 6, 10)]
-    [InlineData("123/*456*/78", 0, EToken.Digits, 0, 3)]
-    [InlineData("123/*456*/78", 1, EToken.Comment, 3, 10)]
-    [InlineData("123/*456*/78", 2, EToken.Digits, 10, 12)]
-    public void Segment(string input, int indice, EToken id, int startIndex, int endIndex)
+    [InlineData("   \t    \f ", 0, ETokenType.Whitespace, 0, 10)]
+    [InlineData("0123456789", 0, ETokenType.Digits, 0, 10)]
+    [InlineData("123   4567", 0, ETokenType.Digits, 0, 3)]
+    [InlineData("123   4567", 1, ETokenType.Whitespace, 3, 6)]
+    [InlineData("123   4567", 2, ETokenType.Digits, 6, 10)]
+    [InlineData("123/*456*/78", 0, ETokenType.Digits, 0, 3)]
+    [InlineData("123/*456*/78", 1, ETokenType.Comment, 3, 10)]
+    [InlineData("123/*456*/78", 2, ETokenType.Digits, 10, 12)]
+    public void Segment(string input, int indice, ETokenType id, int startIndex, int endIndex)
     {
         var parser = new Parser();
         var results = parser.Parse(input.AsMemory());
