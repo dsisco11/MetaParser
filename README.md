@@ -1,4 +1,4 @@
-# MetaParser
+# MetaParser - _Beta_
 
 ## Overview
 MetaParser is a C# source code generator which produces a text parser/tokenizer based on a definition file.   
@@ -107,13 +107,13 @@ There are 3 types of tokens.
     "comment": {
       "$type": "complex",
       "start": [ "char_solidus", "char_asterisk" ],
-      "end": [ "char_asterisk", "char_solidus" ],
+      "stop": [ "char_asterisk", "char_solidus" ],
       "escape": [ "char_reverse_solidus" ]
     },
     "codeblock": {
       "$type": "complex",
       "start": [ "char_open_bracket" ],
-      "end": [ "char_close_bracket" ]
+      "stop": [ "char_close_bracket" ]
     }
   }
 }
