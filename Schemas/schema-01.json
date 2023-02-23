@@ -77,18 +77,6 @@
       }
     },
     "def:token:complex": {
-      "anyOf": [
-        { "$ref": "#/$defs/def:token:complex:static:value" },
-        { "$ref": "#/$defs/def:token:complex:dynamic:value" }
-      ]
-    },
-    "def:token:compound:values": {
-      "values": {
-        "type": "array",
-        "items": { "$ref": "#/$defs/ref:value:single" }
-      }
-    },
-    "def:token:complex:dynamic:value": {
       "type": "object",
       "properties": {
         "$type": { "const": "complex" },
@@ -100,20 +88,8 @@
           "description": "Set of valid items which this token may consume",
           "$ref": "#/$defs/ref:tokenid:single_or_array"
         },
-        "additionalProperties": false
-      },
-      "required": [ "start", "consume" ]
-    },
-    "def:token:complex:static:value": {
-      "type": "object",
-      "properties": {
-        "$type": { "const": "complex" },
-        "start": {
-          "description": "A prefix pattern for the token, used to detect the intended presence of the token to initiate the process of populating it",
-          "$ref": "#/$defs/ref:tokenid:single_or_array"
-        },
-        "end": {
-          "description": "The pattern which signifies the end of this token",
+        "stop": {
+          "description": "Sequence which signifies the end of the token",
           "$ref": "#/$defs/ref:tokenid:single_or_array"
         },
         "escape": {
@@ -122,7 +98,13 @@
         },
         "additionalProperties": false
       },
-      "required": [ "start", "end" ]
+      "required": [ "start" ]
+    },
+    "def:token:compound:values": {
+      "values": {
+        "type": "array",
+        "items": { "$ref": "#/$defs/ref:value:single" }
+      }
     },
     "ref:value:single": {
       "type": "string",

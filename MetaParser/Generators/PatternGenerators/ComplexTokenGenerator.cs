@@ -56,7 +56,7 @@ namespace MetaParser.Generators.PatternGenerators
             const string nameEndTerminatorSeq = "seqEndTerminator";
             const string nameEndEscapeSeq = "seqEndEscape";
 
-            bool hasTerminator = token.Value.End?.Length > 0;
+            bool hasTerminator = token.Value.Stop?.Length > 0;
             bool hasEscape = token.Value.Escape.Length > 0;
 
             List<string>? startSeq = token.Value.Start.Select(context.Get_TokenId_Ref).ToList();
@@ -71,7 +71,7 @@ namespace MetaParser.Generators.PatternGenerators
 
             if (hasTerminator)
             {
-                endTerminatorSeq = token.Value.End?.Select(context.Get_TokenId_Ref).ToList();
+                endTerminatorSeq = token.Value.Stop?.Select(context.Get_TokenId_Ref).ToList();
 
                 if (hasEscape)
                 {
