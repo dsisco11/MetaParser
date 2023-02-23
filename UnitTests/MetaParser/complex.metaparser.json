@@ -89,13 +89,13 @@
     "comment": {
       "$type": "complex",
       "start": [ "char_solidus", "char_asterisk" ],
-      "end": [ "char_asterisk", "char_solidus" ],
+      "stop": [ "char_asterisk", "char_solidus" ],
       "escape": [ "char_reverse_solidus" ]
     },
     "codeblock": {
       "$type": "complex",
       "start": [ "char_open_bracket" ],
-      "end": [ "char_close_bracket" ]
+      "stop": [ "char_close_bracket" ]
     }
   }
 }

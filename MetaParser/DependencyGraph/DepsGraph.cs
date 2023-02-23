@@ -36,10 +36,10 @@ namespace MetaParser.DependencyGraph
                         }
                     }
 
-                    if (token.End is not null)
+                    if (token.Stop is not null)
                     {
                         // Add all pattern-terminator tokens
-                        foreach (var subTok in token.End)
+                        foreach (var subTok in token.Stop)
                         {
                             // find this tokens dependency node so we can link it
                             if (dependencies.TryGetValue(subTok, out var subTokDep))

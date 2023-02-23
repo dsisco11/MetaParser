@@ -14,22 +14,21 @@ namespace MetaParser.Schemas.Structs
         [JsonConverter(typeof(JsonOneOrManyConverter))]
         public string[] Consume { get; set; }
 
-        [JsonPropertyName("end")]
+        [JsonPropertyName("stop")]
         [JsonConverter(typeof(JsonOneOrManyConverter))]
-        public string[] End { get; set; }
+        public string[] Stop { get; set; }
 
         [JsonPropertyName("escape")]
         [JsonConverter(typeof(JsonOneOrManyConverter))]
         public string[] Escape { get; set; }
-
         #endregion
 
         [JsonConstructor]
-        public TokenDefComplex(string type, string[] start, string[]? consume, string[]? end, string[]? escape) : base(type)
+        public TokenDefComplex(string type, string[]? start, string[]? consume, string[]? stop, string[]? escape) : base(type)
         {
-            Start = start;
+            Start = start ?? Array.Empty<string>();
             Consume = consume ?? Array.Empty<string>();
-            End = end ?? Array.Empty<string>();
+            Stop = stop ?? Array.Empty<string>();
             Escape = escape ?? Array.Empty<string>();
         }
     }

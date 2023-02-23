@@ -57,7 +57,7 @@
     "comment": {
       "$type": "complex",
       "start": [ "char_solidus", "char_asterisk" ],
-      "end": [ "char_asterisk", "char_solidus" ]
+      "stop": [ "char_asterisk", "char_solidus" ]
     }
   }
 }
