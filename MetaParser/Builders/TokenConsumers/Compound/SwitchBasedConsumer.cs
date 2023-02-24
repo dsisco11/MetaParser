@@ -1,4 +1,6 @@
-﻿using MetaParser.Contexts;
+﻿using MetaParser.CodeGen;
+using MetaParser.CodeGen.Core;
+using MetaParser.Contexts;
 using MetaParser.Schemas.Structs;
 
 using Microsoft.CodeAnalysis;
@@ -7,24 +9,24 @@ using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.CodeDom.Compiler;
 
-namespace MetaParser.Generators.PatternGenerators
+namespace MetaParser.Builders.TokenConsumers.Compound
 {
-    internal class CompoundTokenGenerator : ITokenCodeGenerator
+    internal class SwitchBasedConsumer : IMetaCodeBuilder
     {
-        public void Generate(IndentedTextWriter wr, MetaParserTokenContext context)
+        public void WriteTo(MetaParserContext context)
         {
-            var Tokens = context.CompoundTokens;
+            var wr = context.writer;
             // generate token type detection switch map
-            wr.WriteLine("switch (source[0])");
+            wr.WriteLine("switch (source.Span[0])");
             wr.WriteLine("{");
             wr.Indent++;
-            foreach (var token in Tokens)
+            foreach (var token in context.CompoundTokens)
             {
-                WriteSwitchCases(wr, token);
+                WriteSwitchCases(context, token);
                 wr.WriteLine("{");
                 wr.Indent++;
                 wr.WriteLine($"id = {context.Get_TokenId_Ref(token.Name)};");
-                wr.WriteLine($"length = {context.Get_Token_Consumer_Function_Name(token.Name)} (source);");
+                wr.WriteLine($"length = {context.Get_Token_Consumer_Function_Name(token.Name)} (source.Span);");
                 wr.WriteLine("return true;");
                 wr.WriteLine("");
                 wr.Indent--;
@@ -41,9 +43,9 @@ namespace MetaParser.Generators.PatternGenerators
             wr.WriteLine("");
 
             // Generate all token consumer functions
-            foreach (var token in Tokens)
+            foreach (var token in context.CompoundTokens)
             {
-                wr.WriteLine($"static {CodeGen.Format(SpecialType.System_Int32)} {context.Get_Token_Consumer_Function_Name(token.Name)} ({CodeGen.FormatReadOnlySpanBuffer(context.InputType)} buffer)");
+                wr.WriteLine($"static {CodeCommon.Format(SpecialType.System_Int32)} {context.Get_Token_Consumer_Function_Name(token.Name)} ({CodeCommon.FormatReadOnlySpanBuffer(context.InputType)} buffer)");
                 wr.WriteLine("{");
                 wr.Indent++;
                 wr.WriteLine("int consumed = 0;");
@@ -53,7 +55,7 @@ namespace MetaParser.Generators.PatternGenerators
                 wr.WriteLine("switch (buffer[consumed])");
                 wr.WriteLine("{");
                 wr.Indent++;
-                WriteSwitchCases(wr, token);
+                WriteSwitchCases(context, token);
                 wr.WriteLine("{");
                 wr.Indent++;
                 wr.WriteLine("consumed++;");
@@ -72,7 +74,7 @@ namespace MetaParser.Generators.PatternGenerators
             }
         }
 
-        private static void WriteSwitchCases(IndentedTextWriter writer, TokenDefCompound token)
+        private static void WriteSwitchCases(MetaParserContext context, TokenDefCompound token)
         {
             foreach (var value in token.Values)
             {
@@ -82,10 +84,9 @@ namespace MetaParser.Generators.PatternGenerators
                     CompoundValueRange range => $"(>= {SymbolDisplay.FormatLiteral(range.Start, true)} and <= {SymbolDisplay.FormatLiteral(range.End, true)})",
                     _ => throw new NotImplementedException($"Unrecognized Compound-TokenDefinition value item type ({value})")
                 };
-                writer.WriteLine($"case {strCasePattern}:");
+                context.writer.WriteLine($"case {strCasePattern}:");
             }
         }
-
     }
 
 }

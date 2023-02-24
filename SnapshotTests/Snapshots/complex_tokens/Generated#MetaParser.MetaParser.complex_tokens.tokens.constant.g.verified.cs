@@ -2,7 +2,7 @@
 namespace Foo.Bar.Tokens;
 public sealed partial class Parser
 {
-    private static bool consume_constant_token (global::System.ReadOnlySpan<char> source, out byte id, out int length)
+    private static bool consume_constant_token(global::System.ReadOnlySpan<char> source, out byte id, out int length)
     {
         switch (source)
         {

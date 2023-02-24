@@ -1,15 +1,18 @@
-﻿using System.CodeDom.Compiler;
+﻿using MetaParser.CodeGen;
+using MetaParser.CodeGen.Core;
 using MetaParser.Contexts;
 
-namespace MetaParser.Generators
+namespace MetaParser.Builders
 {
-    internal static class TokenStructGenerator
+    internal class TokenStructBuilder : ICodeBuilder<MetaParserContext>
     {
-        public static void Generate(IndentedTextWriter wr, MetaParserContext context)
+        public void WriteTo(MetaParserContext context)
         {
+            var wr = context.writer;
+
             wr.WriteLine($"namespace {context.Namespace};");
             wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({context.TokenEnum})Id}}"")]");
-            wr.WriteLine($"public readonly record struct ValueToken({context.IdTypeName} Id, {CodeGen.FormatReadOnlyMemoryBuffer(context.InputType)} Data)");
+            wr.WriteLine($"public readonly record struct ValueToken({context.IdTypeName} Id, {CodeCommon.FormatReadOnlyMemoryBuffer(context.InputType)} Data)");
             wr.WriteLine("{");
             wr.Indent++;
             wr.WriteLine("public override string ToString()");
