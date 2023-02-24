@@ -2,11 +2,11 @@
 namespace Foo.Bar.Tokens;
 public sealed partial class Parser
 {
-    public System.Collections.Generic.List<Token> Parse(global::System.ReadOnlyMemory<char> Input)
+    public global::System.Collections.Generic.List<Token> Parse(global::System.ReadOnlyMemory<char> Input)
     {
         var buffer = Input;
         var reader = buffer.Span;
-        var valueTokens = new System.Collections.Generic.List<ValueToken>();
+        var valueTokens = new global::System.Collections.Generic.List<ValueToken>();
         
         do
         {
