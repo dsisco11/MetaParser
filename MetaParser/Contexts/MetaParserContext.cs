@@ -1,7 +1,8 @@
 ﻿using MetaParser.CodeGen;
 using MetaParser.CodeGen.Base;
 using MetaParser.CodeGen.Core;
-using MetaParser.Schemas.Structs;
+using MetaParser.Json.Definitions;
+using MetaParser.Structs;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -19,6 +20,8 @@ namespace MetaParser.Contexts
         public string Namespace { get; set; } = string.Empty;
         public string? ClassName { get; set; } = "Parser";
         public string? ParserType { get; set; }
+        public ImmutableDictionary<string, ImmutableArray<PatternDefinition>> Patterns { get; set; } = ImmutableDictionary<string, ImmutableArray<PatternDefinition>>.Empty;
+        public TokenDeclarationsList Tokens { get; set; } = new();
 
         public SpecialType IdType { get; set; } = SpecialType.System_Int32;
         public SpecialType InputType { get; set; } = SpecialType.System_Char;
@@ -26,16 +29,6 @@ namespace MetaParser.Contexts
         #region Accessors
         public string IdTypeName => CodeCommon.Format(IdType);
         public string InputTypeName => CodeCommon.Format(InputType);
-        #endregion
-
-        #region Tokens
-        /// <summary>
-        /// All of the tokens defined for this parser
-        /// </summary>
-        public ImmutableArray<TokenDef> DefinedTokens { get; set; }
-        public ImmutableArray<TokenDefConstant> ConstantTokens { get; set; }
-        public ImmutableArray<TokenDefCompound> CompoundTokens { get; set; }
-        public ImmutableArray<TokenDefComplex> ComplexTokens { get; set; }
         #endregion
 
         #region Constants
@@ -53,7 +46,7 @@ namespace MetaParser.Contexts
         #region Utility Functions
         public string Format_TokenId(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.ToLowerInvariant());
         public string Get_TokenId_Ref(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : $"{TokenConsts}.{Format_TokenId(name)}";
-        public string Get_Token_Consumer_Function_Name(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : $"consume_{name.ToLowerInvariant()}";
+        public string Get_Token_Consumer_Function_Name(int consumerIndex) => $"consume_{consumerIndex}";
         #endregion
 
         #region Builders
@@ -61,5 +54,18 @@ namespace MetaParser.Contexts
         public FunctionDefinition Get_Token_Consumer(string name, IMetaCodeBuilder body) => new(SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static")), SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{CodeCommon.ReadOnlySpan}<{IdTypeName}> source, out {IdTypeName} id, out int length"), body);
         #endregion
 
+    }
+
+    internal sealed record TokenDeclarationsList
+    {
+        /// <summary>
+        /// Complete list of all tokens defined
+        /// </summary>
+        public ImmutableArray<PatternConsumer> CompleteSet { get; set; } = ImmutableArray<PatternConsumer>.Empty;
+
+        /// <summary>
+        /// Set of tokens being targeted by the current action
+        /// </summary>
+        public PatternConsumer[] WorkingSet { get; set; } = Array.Empty<PatternConsumer>();
     }
 }

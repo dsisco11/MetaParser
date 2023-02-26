@@ -1,6 +1,4 @@
-﻿using MetaParser.Schemas.Structs;
-
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 using System;
 using System.Collections.Generic;
@@ -14,6 +12,10 @@ using MetaParser.Contexts;
 using MetaParser.Builders;
 using MetaParser.Builders.Parser.Functions;
 using MetaParser.CodeGen.Base;
+using MetaParser.Json.Definitions;
+using MetaParser.Structs;
+using MetaParser.Patternization;
+using MetaParser.Builders.TokenLogic.Consumer;
 
 namespace MetaParser;
 
@@ -38,11 +40,11 @@ public partial class Generator : IIncrementalGenerator
         }));
 
         // Create metaparser context from json
-        IncrementalValuesProvider<ValueTuple<FileData, ParserDefinitionSchema>> ctxSchema = ctxParserJson.Select(selector: (Func<(FileData file, JsonDocument jsonDoc), CancellationToken, ValueTuple<FileData, ParserDefinitionSchema>>)(static (ValueTuple<FileData, JsonDocument> data, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider<ValueTuple<FileData, ParserDefinition>> ctxSchema = ctxParserJson.Select(selector: (Func<(FileData file, JsonDocument jsonDoc), CancellationToken, ValueTuple<FileData, ParserDefinition>>)(static (ValueTuple<FileData, JsonDocument> data, CancellationToken cancellationToken) =>
         {
             FileData file = data.Item1;
             JsonDocument jsonDoc = data.Item2;
-            var schema = jsonDoc.Deserialize(TokenJsonContext.Default.ParserDefinitionSchema);
+            var schema = jsonDoc.Deserialize<ParserDefinition>(MetaParserJsonSerializer.Default.ParserDefinition);
 
             if (schema is null || schema.Definitions is null)
             {
@@ -52,7 +54,7 @@ public partial class Generator : IIncrementalGenerator
             return (file, schema!);
         }));
 
-        IncrementalValuesProvider <ValueTuple<MetaParserContext, ParserDefinitionSchema>> ctxFull = ctxSchema.Select(static (ValueTuple<FileData, ParserDefinitionSchema> data, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider <ValueTuple<MetaParserContext, ParserDefinition>> ctxFull = ctxSchema.Select(static (ValueTuple<FileData, ParserDefinition> data, CancellationToken cancellationToken) =>
         {
             FileData file = data.Item1;
             var schema = data.Item2;
@@ -77,40 +79,57 @@ public partial class Generator : IIncrementalGenerator
                 result.IdType = Common.Get_Integer_Type(schema.Definitions.Count);
             }
 
-            return new ValueTuple<MetaParserContext, ParserDefinitionSchema>(result, schema);
+            return new ValueTuple<MetaParserContext, ParserDefinition>(result, schema);
         });
 
-        IncrementalValuesProvider<MetaParserContext> ctxParser = ctxFull.Select(static (ValueTuple<MetaParserContext, ParserDefinitionSchema> data, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider<MetaParserContext> ctxParser = ctxFull.Select(static (ValueTuple<MetaParserContext, ParserDefinition> data, CancellationToken cancellationToken) =>
         {
             return data.Item1;
         });
 
-        IncrementalValuesProvider<MetaParserContext> ctxParserTokens = ctxFull.Select(static (ValueTuple<MetaParserContext, ParserDefinitionSchema> data, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider<MetaParserContext> ctxParserTokens = ctxFull.Select(static (ValueTuple<MetaParserContext, ParserDefinition> data, CancellationToken cancellationToken) =>
         {
             var schema = data.Item2;
             var context = data.Item1;
 
             if (schema?.Definitions is not null)
             {
-                int idx = 0;
-                // copy token definitions from dictionary to array
-                var Tokens = new List<TokenDef>(schema.Definitions.Count);
-                foreach (var tok in schema.Definitions)
+                int tokenIndex = 0;
+                int consumerIndex = 0;
+                var Tokens = new List<PatternConsumer>();
+                foreach (var def in schema.Definitions)
                 {
-                    tok.Value.Name = tok.Key;
-                    tok.Value.Index = ++idx;
-                    Tokens.Add(tok.Value);
+                    var Name = def.Key;
+                    tokenIndex++;
+
+                    foreach (var consumer in def.Value)
+                    {
+                        consumerIndex++;
+
+                        var startClause = consumer.Start.Length == 0 ? null : new PatternGroup(EPatternCondition.All, consumer.Start.Select(o => o.Resolve(context)).ToArray());
+                        var consumeClause = consumer.Consume.Length == 0 ? null : new PatternGroup(EPatternCondition.Any, consumer.Consume.Select(o => o.Resolve(context)).ToArray());
+                        var stopClause = consumer.Stop.Length == 0 ? null : new PatternGroup(EPatternCondition.All, consumer.Stop.Select(o => o.Resolve(context)).ToArray());
+                        var escapeClause = consumer.Escape.Length == 0 ? null : new PatternGroup(EPatternCondition.All, consumer.Escape.Select(o => o.Resolve(context)).ToArray());
+
+                        if (startClause is null && consumeClause is not null)
+                        {
+                            startClause = new PatternGroup(EPatternCondition.Any, consumer.Consume.Select(o => o.Resolve(context)).ToArray());
+                        }
+
+                        var token = new PatternConsumer(consumer.Type, tokenIndex, consumerIndex, def.Key, startClause, consumeClause, stopClause, escapeClause);
+                        Tokens.Add(token);
+                    }
                 }
 
-                context.DefinedTokens = Tokens.ToImmutableArray();
+                context.Tokens = new TokenDeclarationsList() { CompleteSet = Tokens.ToImmutableArray() };
             }
 
             return context;
         });
 
-        var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { ConstantTokens = parser.DefinedTokens.OfType<TokenDefConstant>().ToImmutableArray() }));
-        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { CompoundTokens = parser.DefinedTokens.OfType<TokenDefCompound>().ToImmutableArray() }));
-        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { ComplexTokens = parser.DefinedTokens.OfType<TokenDefComplex>().ToImmutableArray() }));
+        var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Tokens = parser.Tokens with { WorkingSet = parser.Tokens.CompleteSet.Where(o => o.Type == ETokenType.Constant).ToArray() } }));
+        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Tokens = parser.Tokens with { WorkingSet = parser.Tokens.CompleteSet.Where(o => o.Type == ETokenType.Compound).ToArray() } }));
+        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Tokens = parser.Tokens with { WorkingSet = parser.Tokens.CompleteSet.Where(o => o.Type == ETokenType.Complex).ToArray() } }));
         #endregion
 
         // Parser Class
@@ -128,14 +147,12 @@ public partial class Generator : IIncrementalGenerator
         // Constant-Type Tokens
         context.RegisterSourceOutput(constantTokens, static (SourceProductionContext spc, MetaParserContext context) =>
         {
-            if (context?.ConstantTokens.Length <= 0) return;
+            if (context?.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumerLogic = new Builders.TokenConsumers.Constant.PatternBasedConsumer();
-
-            var consumer = context.Get_ValueToken_Consumer(context.ConstantTokenConsumerFunctionName, consumerLogic);
+            var consumer = context.Get_ValueToken_Consumer(context.ConstantTokenConsumerFunctionName, DetectAndConsumeLogic.Instance);
             new ClassBuilder(context.ClassAccessKeywords, context.ClassName, consumer)
                 .WriteTo(context);
 
@@ -145,14 +162,12 @@ public partial class Generator : IIncrementalGenerator
         // Compound-Type Tokens
         context.RegisterSourceOutput(compoundTokens, static (SourceProductionContext spc, MetaParserContext context) =>
         {
-            if (context?.CompoundTokens.Length <= 0) return;
+            if (context?.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumerLogic = new Builders.TokenConsumers.Compound.PatternBasedConsumer();
-
-            var consumer = context.Get_ValueToken_Consumer(context.CompoundTokenConsumerFunctionName, consumerLogic);
+            var consumer = context.Get_ValueToken_Consumer(context.CompoundTokenConsumerFunctionName, DetectAndConsumeLogic.Instance);
             new ClassBuilder(context.ClassAccessKeywords, context.ClassName, consumer)
                 .WriteTo(context);
 
@@ -162,14 +177,12 @@ public partial class Generator : IIncrementalGenerator
         // Complex-Type Tokens
         context.RegisterSourceOutput(complexTokens, static (SourceProductionContext spc, MetaParserContext context) =>
         {
-            if (context?.ComplexTokens.Length <= 0) return;
+            if (context?.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumerLogic = new Builders.TokenConsumers.Complex.PatternBasedConsumer();
-
-            var consumer = context.Get_Token_Consumer(context.ComplexTokenConsumerFunctionName, consumerLogic);
+            var consumer = context.Get_Token_Consumer(context.ComplexTokenConsumerFunctionName, DetectAndConsumeLogic.Instance);
             new ClassBuilder(context.ClassAccessKeywords, context.ClassName, consumer)
                 .WriteTo(context);
 
@@ -189,7 +202,7 @@ public partial class Generator : IIncrementalGenerator
 
         // Enums
         context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, MetaParserContext context) => {
-            if (context?.DefinedTokens.Length <= 0) return;
+            if (context?.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
@@ -200,10 +213,11 @@ public partial class Generator : IIncrementalGenerator
             writer.Indent++;
             writer.WriteLine($"Unknown = ({context.IdTypeName}) 0,");
 
-            foreach (var token in context.DefinedTokens)
+            var distinct = context.Tokens.WorkingSet.ToImmutableSortedSet(new ConsumerComparer());
+            foreach (var token in distinct)
             {
-                var enumName = context.Format_TokenId(token.Name!);
-                writer.WriteLine($"{enumName} = ({context.IdTypeName}) {token.Index},");
+                var enumName = context.Format_TokenId(token.IdName);
+                writer.WriteLine($"{enumName} = ({context.IdTypeName}) {token.TokenIndex},");
             }
 
             writer.Indent--;
@@ -215,7 +229,7 @@ public partial class Generator : IIncrementalGenerator
         // Constants
         context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, MetaParserContext context) =>
         {
-            if (context?.DefinedTokens.Length <= 0) return;
+            if (context?.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
@@ -226,9 +240,10 @@ public partial class Generator : IIncrementalGenerator
             writer.Indent++;
             writer.WriteLine($"public const {context.IdTypeName} {context.Format_TokenId("unknown")} = 0;");
 
-            foreach (var token in context.DefinedTokens)
+            var distinct = context.Tokens.WorkingSet.ToImmutableSortedSet(new ConsumerComparer());
+            foreach (var token in distinct)
             {
-                writer.WriteLine($"public const {context.IdTypeName} {context.Format_TokenId(token.Name!)} = {token.Index};");
+                writer.WriteLine($"public const {context.IdTypeName} {context.Format_TokenId(token.IdName)} = {token.TokenIndex};");
             }
 
             writer.Indent--;

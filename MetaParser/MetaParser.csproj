@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="..\Schemas\schema-01.json" Link="Resources\schema-01.json" />
+    <EmbeddedResource Include="..\Schemas\schema-02.json" Link="Resources\schema.json" />
     <EmbeddedResource Include="Resources\Parser.cs" />
   </ItemGroup>
 
