@@ -2,10 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using System.Linq;
 using System.Reflection;
 
-namespace MetaParser.Schemas.Structs
+namespace MetaParser.Json.JsonTypeConverters
 {
     internal class JsonOneOrManyConverter : JsonConverterFactory
     {
@@ -48,7 +47,7 @@ namespace MetaParser.Schemas.Structs
                         }
                     case JsonTokenType.StartArray:
                         {
-                            LinkedList<T> retList = new();
+                            List<T> retList = new();
                             while (reader.Read())
                             {
                                 switch (reader.TokenType)
@@ -62,7 +61,7 @@ namespace MetaParser.Schemas.Structs
                                             var val = _valueConverter.Read(ref reader, _type, options);
                                             if (val is not null)
                                             {
-                                                retList.AddLast(val);
+                                                retList.Add(val);
                                             }
                                             break;
                                         }

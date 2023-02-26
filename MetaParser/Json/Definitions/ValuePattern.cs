@@ -1,0 +1,197 @@
+﻿using System.Text.Json.Serialization;
+using System.Text.Json;
+using System;
+using MetaParser.Contexts;
+using MetaParser.Exceptions;
+using Microsoft.CodeAnalysis.CSharp;
+using System.Linq;
+using System.Collections.Generic;
+using MetaParser.Patternization;
+
+namespace MetaParser.Json.Definitions;
+
+[JsonConverter(typeof(ValuePatternConverter))]
+internal abstract record ValuePattern : PatternDefinition;
+
+internal record ValuePatternConst: ValuePattern
+{
+    public string value;
+
+    [JsonConstructor]
+    public ValuePatternConst(string value)
+    {
+        this.value = value;
+    }
+
+    public override Pattern Resolve(MetaParserContext context)
+    {
+        return new PatternConst(SymbolDisplay.FormatLiteral(value, true));
+    }
+}
+
+internal record ValuePatternRange : ValuePattern
+{
+    public char begin;
+    public char end;
+
+    [JsonConstructor]
+    public ValuePatternRange(char start, char end)
+    {
+        this.begin = start;
+        this.end = end;
+    }
+
+    public override Pattern Resolve(MetaParserContext context)
+    {
+        var start = SymbolDisplay.FormatLiteral(begin, true);
+        var stop = SymbolDisplay.FormatLiteral(end, true);
+        return new PatternRange(start, stop);
+    }
+}
+
+internal record ValuePatternAlias : ValuePattern
+{
+    public string name;
+
+    [JsonConstructor]
+    public ValuePatternAlias(string name)
+    {
+        this.name = name;
+    }
+
+    public override Pattern Resolve(MetaParserContext context)
+    {
+        // Lookup alias in contexts patterns list
+        // Write switch case pattern
+        if (!context.Patterns.TryGetValue(name, out var patternList))
+        {
+            throw new PatternNotFoundException($"The specified pattern ('{name}') is not in the pattern definitions list!");
+        }
+
+        if (patternList.Length == 1)
+        {
+            return patternList.Single().Resolve(context);
+        }
+        else
+        {
+            List<Pattern> resolved = new(patternList.Length);
+            for (int i = 0; i < patternList.Length; i++)
+            {
+                var definition = patternList[i];
+                if (definition is not ValuePattern pattern)
+                {
+                    throw new Exception($"The pattern ('{name}') references the wrong pattern type, a value-type pattern is required");
+                }
+
+                resolved.Add(pattern.Resolve(context));
+            }
+
+            return new PatternGroup(EPatternCondition.Any, resolved.ToArray());
+        }
+    }
+}
+
+
+internal class ValuePatternConverter : JsonConverter<ValuePattern>
+{
+    public override ValuePattern? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.StartObject:
+                {
+                    if (!reader.Read())
+                        throw new JsonException();
+
+                    if (reader.TokenType != JsonTokenType.PropertyName)
+                    {
+                        throw new JsonException("Expected property name for json object");
+                    }
+
+                    var propertyName = reader.GetString();
+                    switch (propertyName)
+                    {
+                        case "range":
+                            {
+                                return consume_range_pattern(ref reader);
+                            }
+                        case "pattern":
+                            {
+                                return consume_alias_pattern(ref reader);
+                            }
+                        default:
+                            {
+                                throw new JsonException("Expected 'range' property for item in compound token");
+                            }
+                    }
+                }
+            case JsonTokenType.String:
+                {
+                    var val = reader.GetString();
+                    return val is not null ? new ValuePatternConst(val) : null;
+                }
+            default:
+                {
+                    throw new JsonException();
+                }
+        }
+
+        throw new JsonException();
+    }
+
+    private ValuePatternRange consume_range_pattern(ref Utf8JsonReader reader)
+    {
+        reader.Read();
+        if (reader.TokenType != JsonTokenType.StartArray)
+        {
+            throw new JsonException("Expected array of strings for 'range' property");
+        }
+
+        reader.Read();
+        var item1 = reader.GetString() ?? string.Empty;
+        reader.Read();
+        var item2 = reader.GetString() ?? string.Empty;
+
+        reader.Read();
+        if (reader.TokenType != JsonTokenType.EndArray)
+        {
+            throw new JsonException("Too many items in 'range' array, this property only takes two items: [start, end]");
+        }
+
+        reader.Read();
+        if (reader.TokenType != JsonTokenType.EndObject)
+        {
+            throw new JsonException("Invalid property in 'range' item");
+        }
+
+        return new ValuePatternRange(item1[0], item2[0]);
+
+    }
+
+    private ValuePatternAlias consume_alias_pattern(ref Utf8JsonReader reader)
+    {
+        reader.Read();
+        if (reader.TokenType != JsonTokenType.String)
+        {
+            throw new JsonException("Expected string for 'pattern' property");
+        }
+
+        var item1 = reader.GetString() ?? string.Empty;
+
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonTokenType.EndObject)
+            {
+                break;
+            }
+        }
+
+        return new ValuePatternAlias(item1);
+
+    }
+
+    public override void Write(Utf8JsonWriter writer, ValuePattern value, JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
+    }
+}
