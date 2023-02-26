@@ -33,7 +33,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             wr.Indent++;
 
             // If we have an escape set, then check that
-            if (consumer.Escape is not null)
+            if (consumer.Escape is not null && consumer.Stop is not null)
             {
                 wr.Write("if (buffer ");
                 ConsumerSpanSeqBuilder.WriteTo(context, consumer.Escape);
@@ -114,15 +114,10 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             {
                 if (consumer.Stop is not null)// To avoid infinite loops we just do this sanity check here to make sure we dont produce conditionless itteration
                 {
-
 #if DEBUG
                     wr.WriteLine("// Token doesn't specify any consumables, thus ALL items are considered valid consumables");
 #endif
                     wr.WriteLine("buffer = buffer.Slice(1);");
-                }
-                else
-                {
-                    throw new System.Exception($@"Faulty consumer logic for token ""{consumer.IdName}"" (tokens must specify either a restricted set of consumable items OR an explicit stop sequence)");
                 }
             }
 

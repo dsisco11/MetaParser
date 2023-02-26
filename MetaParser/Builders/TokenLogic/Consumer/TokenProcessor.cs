@@ -3,9 +3,9 @@ using MetaParser.Contexts;
 
 namespace MetaParser.Builders.TokenLogic.Consumer
 {
-    internal class DetectAndConsumeLogic : IMetaCodeBuilder
+    internal class TokenProcessor : IMetaCodeBuilder
     {
-        public static IMetaCodeBuilder Instance = new DetectAndConsumeLogic();
+        public static IMetaCodeBuilder Instance = new TokenProcessor();
 
         public void WriteTo(MetaParserContext context)
         {
@@ -29,7 +29,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             {
                 workingContext.Tokens.WorkingSet[0] = consumer;
                 // generate consumer functions
-                wr.WriteLine($"bool {workingContext.Get_Token_Consumer_Function_Name(consumer.ConsumerIndex)}()");
+                wr.WriteLine($"bool {MetaParserContext.Get_Token_Consumer_Function_Name(consumer.ConsumerIndex)}()");
                 wr.WriteLine("{");
                 ConsumeAndThen.Instance.WriteTo(workingContext);
                 wr.WriteLine("}");

@@ -25,6 +25,10 @@ namespace MetaParser.Builders.TokenLogic.Consumer
 
             foreach (PatternConsumer consumer in context.Tokens.WorkingSet)
             {
+                if (consumer.Start is null)
+                {
+                    continue;
+                }
                 workContext.Tokens.WorkingSet[0] = consumer;
 
                 wr.Write("case ");
