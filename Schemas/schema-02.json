@@ -1,0 +1,221 @@
+﻿{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "/MetaParser/parser/schema-01",
+  "title": "Parser Definition Structure",
+  "description": "A definition for an auto-generated meta-parser",
+  "type": "object",
+  "properties": {
+    "namespace": {
+      "type": "string",
+      "description": "Namespace for the generated code to reside in"
+    },
+    "classname": {
+      "type": "string",
+      "description": "Name of the generated parser class"
+    },
+    "$type": {
+      "type": "string",
+      "description": "Determines the parsing system strategy for consuming data"
+    },
+    "patterns": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^([\\w-]*)$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/ref:pattern"
+      }
+    },
+    "definitions": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^([\\w-]*)$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [ "$type" ],
+        "$ref": "#/$defs/def:token:one_or_many"
+      }
+    },
+    "required": ["namespace", "definitions"]
+  },
+  "$defs": {
+    "def:token": {
+      "oneOf": [
+        { "$ref": "#/$defs/def:token:type:constant" },
+        { "$ref": "#/$defs/def:token:type:compound" }
+      ]
+    },
+    "def:token:array": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/def:token" }
+    },
+    "def:token:one_or_many": {
+      "oneOf": [
+        { "$ref": "#/$defs/def:token" },
+        { "$ref": "#/$defs/def:token:array" }
+      ]
+    },
+    "def:token:type:constant": {
+      "properties": {
+        "$type": { "const": "constant" },
+        "$ref": "#/$defs/ref:value:one_or_many"
+      },
+      "additionalProperties": false
+    },
+    "def:token:type:compound": {
+      "properties": {
+        "$type": { "const": "compound" },
+        "$ref": "#/$defs/ref:tokenid:one_or_many"
+      },
+      "additionalProperties": false
+    },
+    "def:consumer:base": {
+      "type": "object",
+      "oneOf": [
+        { "required": [ "start" ] },
+        { "required": [ "consume" ] }
+      ],
+      "dependentRequired": {
+        "escape": [ "stop" ],
+        "stop": [ "consume" ]
+      }
+    },
+    "def:consumer:values": {
+      "$ref": "#/$defs/def:consumer:base",
+      "properties": {
+        "start": {
+          "description": "Sequence which begins consumption",
+          "$ref": "#/$defs/ref:value:one_or_many"
+        },
+        "consume": {
+          "description": "Set of items which will be consumed as a single contiguous series",
+          "$ref": "#/$defs/ref:value:one_or_many"
+        },
+        "stop": {
+          "description": "Sequence which halts consumption",
+          "$ref": "#/$defs/ref:value:one_or_many"
+        },
+        "escape": {
+          "description": "Sequence which causes the consumer to ignore an occurance of its stopping sequence",
+          "$ref": "#/$defs/ref:value:one_or_many"
+        },
+        "additionalProperties": false
+      }
+    },
+    "def:consumer:tokens": {
+      "$ref": "#/$defs/def:consumer:base",
+      "properties": {
+        "start": {
+          "description": "Sequence which begins consumption",
+          "$ref": "#/$defs/ref:tokenid:one_or_many"
+        },
+        "consume": {
+          "description": "Set of items which will be consumed as a single contiguous series",
+          "$ref": "#/$defs/ref:tokenid:one_or_many"
+        },
+        "stop": {
+          "description": "Sequence which halts consumption",
+          "$ref": "#/$defs/ref:tokenid:one_or_many"
+        },
+        "escape": {
+          "description": "Sequence which causes the consumer to ignore an occurance of its stopping sequence",
+          "$ref": "#/$defs/ref:tokenid:one_or_many"
+        },
+        "additionalProperties": false
+      }
+    },
+    "def:consumer:values:array": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/def:consumer:values" },
+      "minItems": 1
+    },
+    "def:consumer:tokens:array": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/def:consumer:tokens" },
+      "minItems": 1
+    },
+    "def:consumer:values:one_or_many": {
+      "oneOf": [
+        { "$ref": "#/$defs/def:consumer:values" },
+        { "$ref": "#/$defs/def:consumer:values:array" }
+      ]
+    },
+    "def:consumer:tokens:one_or_many": {
+      "oneOf": [
+        { "$ref": "#/$defs/def:consumer:tokens" },
+        { "$ref": "#/$defs/def:consumer:tokens:array" }
+      ]
+    },
+    "ref:pattern": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          { "$ref": "#/$defs/ref:value:type:const" },
+          { "$ref": "#/$defs/ref:value:type:range" }
+        ]
+      }
+    },
+    "ref:value": {
+      "oneOf": [
+        { "$ref": "#/$defs/ref:value:type:const" },
+        { "$ref": "#/$defs/ref:value:type:range" },
+        { "$ref": "#/$defs/ref:value:type:alias" }
+      ]
+    },
+    "ref:value:array": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ref:value" },
+      "minItems": 1
+    },
+    "ref:value:one_or_many": {
+      "oneOf": [
+        { "$ref": "#/$defs/ref:value" },
+        { "$ref": "#/$defs/ref:value:array" }
+      ]
+    },
+    "ref:value:type:const": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ref:value:type:alias": {
+      "description": "Name of an item defined in the patterns section",
+      "type": "string",
+      "pattern": "^([\\w-]*)$",
+      "minLength": 1
+    },
+    "ref:value:type:range": {
+      "type": "object",
+      "properties": {
+        "range": {
+          "type": "array",
+          "items": {
+            {
+              "type": "string",
+              "maxLength": 1
+            }
+          },
+          "maxItems": 2,
+          "minItems": 2
+        }
+      },
+      "additionalProperties": false
+    },
+    "ref:tokenid": {
+      "description": "A token identifier",
+      "type": "string",
+      "pattern": "^([\\w-]*)$"
+    },
+    "ref:tokenid:array": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ref:tokenid" },
+      "minItems": 1
+    },
+    "ref:tokenid:one_or_many": {
+      "oneOf": [
+        { "$ref": "#/$defs/ref:tokenid" },
+        { "$ref": "#/$defs/ref:tokenid:array" }
+      ]
+    }
+  }
+}
