@@ -128,12 +128,7 @@ public partial class Generator : IIncrementalGenerator
                             throw new IllegalTokenException($@"Illegal token (""{def.Key}"") (tokens must specify either a restricted set of consumable items OR an explicit start/stop sequence)");
                         }
 
-                        if (!Enum.TryParse<ETokenType>(consumer.Type, out var consumerType))
-                        {
-                            throw new IllegalTokenException($@"Unrecognized token type (""{consumer.Type}"")");
-                        }
-
-                        var token = new PatternConsumer(consumerType, tokenIndex, consumerIndex, def.Key, startClause, consumeClause, stopClause, escapeClause);
+                        var token = new PatternConsumer(consumer.Type, tokenIndex, consumerIndex, def.Key, startClause, consumeClause, stopClause, escapeClause);
                         Tokens.Add(token);
                     }
                 }
