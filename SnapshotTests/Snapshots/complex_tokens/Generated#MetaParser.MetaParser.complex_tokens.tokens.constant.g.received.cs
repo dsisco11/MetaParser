@@ -57,84 +57,69 @@ public sealed partial class Parser
         
         bool consume_1()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
-        }
-        
-        consumed = start.Length - buffer.Length;
+            var start = source;
+            id = TokenId.Keyword_Var;
+            buffer = start.Slice(1);
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_2()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
-        }
-        
-        consumed = start.Length - buffer.Length;
+            var start = source;
+            id = TokenId.Keyword_Function;
+            buffer = start.Slice(1);
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_3()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
-        }
-        
-        consumed = start.Length - buffer.Length;
+            var start = source;
+            id = TokenId.Char_Open_Bracket;
+            buffer = start.Slice(1);
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_4()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
-        }
-        
-        consumed = start.Length - buffer.Length;
+            var start = source;
+            id = TokenId.Char_Close_Bracket;
+            buffer = start.Slice(1);
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_5()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
-        }
-        
-        consumed = start.Length - buffer.Length;
+            var start = source;
+            id = TokenId.Char_Asterisk;
+            buffer = start.Slice(1);
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_6()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
-        }
-        
-        consumed = start.Length - buffer.Length;
+            var start = source;
+            id = TokenId.Char_Solidus;
+            buffer = start.Slice(1);
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_7()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
-        }
-        
-        consumed = start.Length - buffer.Length;
+            var start = source;
+            id = TokenId.Char_Reverse_Solidus;
+            buffer = start.Slice(1);
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_8()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
+            var start = source;
+            id = TokenId.Whitespace;
+            buffer = start.Slice(1);
             
             while (buffer.Length > 0)
             {
-                if (buffer is [ " " or "\t" or "\f", ..])
+                if (buffer.StartsWith(stackalloc []{ " " or "\t" or "\f"}))
                 /* If we have a set of valid consume targets, then try and consume as many as possible (the stop seq should be mutually exclusive with the set of consumables) */
                 {
                     buffer = buffer.Slice(1);
@@ -146,20 +131,18 @@ public sealed partial class Parser
                 break;
             }
             
-        }
-        
-        consumed = start.Length - buffer.Length;
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_9()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
+            var start = source;
+            id = TokenId.Digits;
+            buffer = start.Slice(1);
             
             while (buffer.Length > 0)
             {
-                if (buffer .StartsWith(stackalloc []{ (>='0' and <='9')}))
+                if (buffer is [ (>='0' and <='9'), ..])
                 /* If we have a set of valid consume targets, then try and consume as many as possible (the stop seq should be mutually exclusive with the set of consumables) */
                 {
                     buffer = buffer.Slice(1);
@@ -171,20 +154,18 @@ public sealed partial class Parser
                 break;
             }
             
-        }
-        
-        consumed = start.Length - buffer.Length;
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_10()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
+            var start = source;
+            id = TokenId.Letters;
+            buffer = start.Slice(1);
             
             while (buffer.Length > 0)
             {
-                if (buffer .StartsWith(stackalloc []{ (>='a' and <='z') or (>='A' and <='Z')}))
+                if (buffer is [ (>='a' and <='z') or (>='A' and <='Z'), ..])
                 /* If we have a set of valid consume targets, then try and consume as many as possible (the stop seq should be mutually exclusive with the set of consumables) */
                 {
                     buffer = buffer.Slice(1);
@@ -196,20 +177,18 @@ public sealed partial class Parser
                 break;
             }
             
-        }
-        
-        consumed = start.Length - buffer.Length;
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_11()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
+            var start = source;
+            id = TokenId.Newline;
+            buffer = start.Slice(1);
             
             while (buffer.Length > 0)
             {
-                if (buffer is [ "\n", ..])
+                if (buffer.StartsWith(stackalloc []{ "\n"}))
                 /* If we have a set of valid consume targets, then try and consume as many as possible (the stop seq should be mutually exclusive with the set of consumables) */
                 {
                     buffer = buffer.Slice(1);
@@ -221,9 +200,8 @@ public sealed partial class Parser
                 break;
             }
             
-        }
-        
-        consumed = start.Length - buffer.Length;
+            length = start.Length - buffer.Length;
+            return true;
         }
     }
 }

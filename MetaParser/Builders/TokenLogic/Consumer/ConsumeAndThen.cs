@@ -17,13 +17,13 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             //wr.WriteLine($"static bool {context.Get_Token_Consumer_Function_Name(token.Name)} ({CodeCommon.FormatReadOnlySpanBuffer(context.IdType)} start, out {CodeCommon.Format(SpecialType.System_Int32)} consumed)");
             //wr.WriteLine("{");
             //wr.Indent++;
+            wr.WriteLine("var start = source;");
+            wr.WriteLine($"id = {context.Get_TokenId_Ref(consumer.IdName)};");
 
             if (consumer.Start is not null)
             {
-                wr.WriteLine($"var buffer = start.Slice({consumer.Start.Length});");// Skip ahead of the token start
+                wr.WriteLine($"buffer = start.Slice({consumer.Start.Length});");// Skip ahead of the token start
             }
-
-            wr.WriteLine();
 
             if (consumer.Stop is not null)
             {
@@ -34,7 +34,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 // If we have an escape set, then check that
                 if (consumer.Escape is not null && consumer.Stop is not null)
                 {
-                    wr.Write("if (buffer ");
+                    wr.Write("if (buffer");
                     ConsumerSpanSeqBuilder.WriteTo(context, consumer.Escape);
                     wr.WriteLine(")");
                     wr.WriteLine("{");
@@ -62,7 +62,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
 
                 if (consumer.Stop is not null)
                 {
-                    wr.Write($"if (buffer ");
+                    wr.Write($"if (buffer");
                     ConsumerSpanSeqBuilder.WriteTo(context, consumer.Stop);
                     wr.WriteLine(")");
 #if DEBUG
@@ -86,7 +86,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 wr.WriteLine("while (buffer.Length > 0)");
                 wr.WriteLine("{");
                 wr.Indent++;
-                wr.Write($"if (buffer ");
+                wr.Write($"if (buffer");
                 ConsumerSpanSeqBuilder.WriteTo(context, consumer.Consume);
                 wr.WriteLine(")");
 #if DEBUG
@@ -134,16 +134,20 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 wr.WriteLine(")");
                 wr.WriteLine("{");
                 wr.Indent++;
-                wr.WriteLine($"consumed = {consumer.Stop.Length} + (start.Length - buffer.Length);");
+                wr.WriteLine($"length = {consumer.Stop.Length} + (start.Length - buffer.Length);");
+                wr.WriteLine("return true;");
                 wr.Indent--;
                 wr.WriteLine("}");
                 wr.WriteLine();
-                wr.WriteLine("consumed = default;");
+                wr.WriteLine("length = default;");
+                wr.WriteLine("return false;");
             }
             else
             {
-                wr.WriteLine("consumed = start.Length - buffer.Length;");
+                wr.WriteLine("length = start.Length - buffer.Length;");
+                wr.WriteLine("return true;");
             }
+
         }
 
 

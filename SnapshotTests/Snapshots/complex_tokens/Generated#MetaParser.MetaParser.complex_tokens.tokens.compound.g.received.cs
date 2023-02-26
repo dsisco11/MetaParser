@@ -21,14 +21,13 @@ public sealed partial class Parser
         
         bool consume_12()
         {
-        var buffer = start.Slice(1);
-        
-        while (buffer.Length > 0)
-        {
+            var start = source;
+            id = TokenId.Identifier;
+            buffer = start.Slice(1);
             
             while (buffer.Length > 0)
             {
-                if (buffer is [ TokenId.Letters or TokenId.Digits, ..])
+                if (buffer.StartsWith(stackalloc []{ TokenId.Letters or TokenId.Digits}))
                 /* If we have a set of valid consume targets, then try and consume as many as possible (the stop seq should be mutually exclusive with the set of consumables) */
                 {
                     buffer = buffer.Slice(1);
@@ -40,33 +39,35 @@ public sealed partial class Parser
                 break;
             }
             
-        }
-        
-        consumed = start.Length - buffer.Length;
+            length = start.Length - buffer.Length;
+            return true;
         }
         bool consume_13()
         {
-        var buffer = start.Slice(2);
-        
-        while (buffer.Length > 0)
-        {
-            if (buffer is [ TokenId.Char_Asterisk, TokenId.Char_Solidus, ..])
-            /* If we have a stop sequence, check for it */
+            var start = source;
+            id = TokenId.Comment;
+            buffer = start.Slice(2);
+            while (buffer.Length > 0)
             {
-                /* end consumption */
-                break;
+                if (buffer.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
+                /* If we have a stop sequence, check for it */
+                {
+                    /* end consumption */
+                    break;
+                }
+                
+                // Token doesn't specify any consumables, thus ALL items are considered valid consumables
+                buffer = buffer.Slice(1);
             }
             
-            // Token doesn't specify any consumables, thus ALL items are considered valid consumables
-            buffer = buffer.Slice(1);
-        }
-        
-        if (buffer is [ TokenId.Char_Asterisk, TokenId.Char_Solidus, ..])
-        {
-            consumed = 2 + (start.Length - buffer.Length);
-        }
-        
-        consumed = default;
+            if (buffer .StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
+            {
+                length = 2 + (start.Length - buffer.Length);
+                return true;
+            }
+            
+            length = default;
+            return false;
         }
     }
 }
