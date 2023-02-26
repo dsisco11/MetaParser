@@ -6,35 +6,49 @@ public sealed partial class Parser
     {
         switch (source)
         {
-            case [ "var", ..]:
+            case [ 'v', 'a', 'r', ..]:
             {
-                return consume_1();
+                id = TokenId.Keyword_Var;
+                length = 3;
+                return true;
             }
-            case [ "function", ..]:
+            case [ 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ..]:
             {
-                return consume_2();
+                id = TokenId.Keyword_Function;
+                length = 8;
+                return true;
             }
-            case [ "{", ..]:
+            case [ '{', ..]:
             {
-                return consume_3();
+                id = TokenId.Char_Open_Bracket;
+                length = 1;
+                return true;
             }
-            case [ "}", ..]:
+            case [ '}', ..]:
             {
-                return consume_4();
+                id = TokenId.Char_Close_Bracket;
+                length = 1;
+                return true;
             }
-            case [ "*", ..]:
+            case [ '*', ..]:
             {
-                return consume_5();
+                id = TokenId.Char_Asterisk;
+                length = 1;
+                return true;
             }
-            case [ "/", ..]:
+            case [ '/', ..]:
             {
-                return consume_6();
+                id = TokenId.Char_Solidus;
+                length = 1;
+                return true;
             }
-            case [ "\\", ..]:
+            case [ '\\', ..]:
             {
-                return consume_7();
+                id = TokenId.Char_Reverse_Solidus;
+                length = 1;
+                return true;
             }
-            case [ " " or "\t" or "\f", ..]:
+            case [ ' ' or '\t' or '\f', ..]:
             {
                 return consume_8();
             }
@@ -46,7 +60,7 @@ public sealed partial class Parser
             {
                 return consume_10();
             }
-            case [ "\n", ..]:
+            case [ '\n', ..]:
             {
                 return consume_11();
             }
@@ -55,62 +69,6 @@ public sealed partial class Parser
         length = default;
         return false;
         
-        bool consume_1()
-        {
-            var start = source;
-            id = TokenId.Keyword_Var;
-            buffer = start.Slice(1);
-            length = start.Length - buffer.Length;
-            return true;
-        }
-        bool consume_2()
-        {
-            var start = source;
-            id = TokenId.Keyword_Function;
-            buffer = start.Slice(1);
-            length = start.Length - buffer.Length;
-            return true;
-        }
-        bool consume_3()
-        {
-            var start = source;
-            id = TokenId.Char_Open_Bracket;
-            buffer = start.Slice(1);
-            length = start.Length - buffer.Length;
-            return true;
-        }
-        bool consume_4()
-        {
-            var start = source;
-            id = TokenId.Char_Close_Bracket;
-            buffer = start.Slice(1);
-            length = start.Length - buffer.Length;
-            return true;
-        }
-        bool consume_5()
-        {
-            var start = source;
-            id = TokenId.Char_Asterisk;
-            buffer = start.Slice(1);
-            length = start.Length - buffer.Length;
-            return true;
-        }
-        bool consume_6()
-        {
-            var start = source;
-            id = TokenId.Char_Solidus;
-            buffer = start.Slice(1);
-            length = start.Length - buffer.Length;
-            return true;
-        }
-        bool consume_7()
-        {
-            var start = source;
-            id = TokenId.Char_Reverse_Solidus;
-            buffer = start.Slice(1);
-            length = start.Length - buffer.Length;
-            return true;
-        }
         bool consume_8()
         {
             var start = source;
@@ -119,7 +77,7 @@ public sealed partial class Parser
             
             while (buffer.Length > 0)
             {
-                if (buffer.StartsWith(stackalloc []{ " " or "\t" or "\f"}))
+                if (buffer.StartsWith(stackalloc []{ ' ' or '\t' or '\f'}))
                 /* If we have a set of valid consume targets, then try and consume as many as possible (the stop seq should be mutually exclusive with the set of consumables) */
                 {
                     buffer = buffer.Slice(1);
@@ -188,7 +146,7 @@ public sealed partial class Parser
             
             while (buffer.Length > 0)
             {
-                if (buffer.StartsWith(stackalloc []{ "\n"}))
+                if (buffer.StartsWith(stackalloc []{ '\n'}))
                 /* If we have a set of valid consume targets, then try and consume as many as possible (the stop seq should be mutually exclusive with the set of consumables) */
                 {
                     buffer = buffer.Slice(1);

@@ -28,6 +28,10 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             foreach (var consumer in context.Tokens.WorkingSet)
             {
                 workingContext.Tokens.WorkingSet[0] = consumer;
+                if (consumer.IsConstantLength)
+                {
+                    continue;// skip constant length patterns as they get an inline fast-path
+                }
                 // generate consumer functions
                 wr.WriteLine($"bool {MetaParserContext.Get_Token_Consumer_Function_Name(consumer.ConsumerIndex)}()");
                 wr.WriteLine("{");

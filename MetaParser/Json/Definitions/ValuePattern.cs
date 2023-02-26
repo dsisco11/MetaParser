@@ -29,7 +29,18 @@ internal record ValuePatternConst : ValuePattern
 
     public override Pattern Resolve(MetaParserContext context)
     {
-        return new PatternConst(SymbolDisplay.FormatLiteral(value, true));
+        if (string.IsNullOrEmpty(value))
+        {
+            return Pattern.Empty;
+        }
+
+        if (value.Length == 1)
+        {
+            return new PatternConst(SymbolDisplay.FormatLiteral(value.ToCharArray()[0], true));
+        }
+
+        var consts = value.ToCharArray().Select(ch => new PatternConst(SymbolDisplay.FormatLiteral(ch, true))).ToArray();
+        return new PatternGroup(EPatternCondition.All, consts);
     }
 }
 
