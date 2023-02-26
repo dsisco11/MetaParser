@@ -22,19 +22,19 @@ public class CodeGeneratorFixture
             references: references); // 👈 pass the references to the compilation
     }
 
-    public GeneratorDriver Generate(string filePath, string fileContent)
+    public GeneratorDriver GetDriver<T>(string filePath, string fileContent) where T : IIncrementalGenerator, new()
     {
         var fileName = Path.GetFileNameWithoutExtension(filePath);
         var sourceText = new JsonAdditionalText($"{fileName}.metaparser.json", fileContent);
-        var generator = new MetaParser.Generator();
+        T generator = new();
         var gen = CSharpGeneratorDriver.Create(new[] { generator.AsSourceGenerator() }, additionalTexts: new[] { sourceText });
         return gen.RunGenerators(compilation);
     }
 
 
-    public Task Verify(string filePath, string fileContent)
+    public Task Verify<T>(string filePath, string fileContent) where T : IIncrementalGenerator, new()
     {
-        var driver = Generate(filePath, fileContent);
+        var driver = GetDriver<T>(filePath, fileContent);
 
         return Verifier
             .Verify(driver)

@@ -4,96 +4,96 @@
   "definitions": {
     "keyword_var": {
       "$type": "constant",
-      "value": "var"
+      "start": "var"
     },
     "keyword_function": {
       "$type": "constant",
-      "value": "function"
+      "start": "function"
     },
     "keyword_byte": {
       "$type": "constant",
-      "value": "byte"
+      "start": "byte"
     },
     "keyword_short": {
       "$type": "constant",
-      "value": "short"
+      "start": "short"
     },
     "keyword_int": {
       "$type": "constant",
-      "value": "int"
+      "start": "int"
     },
     "keyword_float": {
       "$type": "constant",
-      "value": "float"
+      "start": "float"
     },
     "char_open_bracket": {
       "$type": "constant",
-      "value": "{"
+      "start": "{"
     },
     "char_close_bracket": {
       "$type": "constant",
-      "value": "}"
+      "start": "}"
     },
     "char_open_sqbracket": {
       "$type": "constant",
-      "value": "["
+      "start": "["
     },
     "char_close_sqbracket": {
       "$type": "constant",
-      "value": "]"
+      "start": "]"
     },
     "char_open_parenthesis": {
       "$type": "constant",
-      "value": "("
+      "start": "("
     },
     "char_close_parenthesis": {
       "$type": "constant",
-      "value": ")"
+      "start": ")"
     },
     "char_asterisk": {
       "$type": "constant",
-      "value": "*"
+      "start": "*"
     },
     "char_solidus": {
       "$type": "constant",
-      "value": "/"
+      "start": "/"
     },
     "char_reverse_solidus": {
       "$type": "constant",
-      "value": "\\"
+      "start": "\\"
     },
     "whitespace": {
-      "$type": "compound",
+      "$type": "constant",
       "consume": [ " ", "\t", "\f" ]
     },
     "digits": {
-      "$type": "compound",
+      "$type": "constant",
       "consume": { "range": [ "0", "9" ] }
     },
     "letters": {
-      "$type": "compound",
+      "$type": "constant",
       "consume": [
         { "range": [ "a", "z" ] },
         { "range": [ "A", "Z" ] }
       ]
     },
     "newline": {
-      "$type": "compound",
+      "$type": "constant",
       "consume": "\n"
     },
     "identifier": {
-      "$type": "complex",
+      "$type": "compound",
       "start": [ "letters" ],
       "consume": [ "letters", "digits" ]
     },
     "comment": {
-      "$type": "complex",
+      "$type": "compound",
       "start": [ "char_solidus", "char_asterisk" ],
       "stop": [ "char_asterisk", "char_solidus" ],
       "escape": [ "char_reverse_solidus" ]
     },
     "codeblock": {
-      "$type": "complex",
+      "$type": "compound",
       "start": [ "char_open_bracket" ],
       "stop": [ "char_close_bracket" ]
     }

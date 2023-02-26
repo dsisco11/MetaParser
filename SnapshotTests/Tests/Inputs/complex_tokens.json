@@ -1,61 +1,61 @@
 ﻿{
-  "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-01.json",
+  "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-02.json",
   "namespace": "Foo.Bar.Tokens",
   "definitions": {
     "keyword_var": {
       "$type": "constant",
-      "value": "var"
+      "start": "var"
     },
     "keyword_function": {
       "$type": "constant",
-      "value": "function"
+      "start": "function"
     },
     "char_open_bracket": {
       "$type": "constant",
-      "value": "{"
+      "start": "{"
     },
     "char_close_bracket": {
       "$type": "constant",
-      "value": "}"
+      "start": "}"
     },
     "char_asterisk": {
       "$type": "constant",
-      "value": "*"
+      "start": "*"
     },
     "char_solidus": {
       "$type": "constant",
-      "value": "/"
+      "start": "/"
     },
     "char_reverse_solidus": {
       "$type": "constant",
-      "value": "\\"
+      "start": "\\"
     },
     "whitespace": {
-      "$type": "compound",
+      "$type": "constant",
       "consume": [ " ", "\t", "\f" ]
     },
     "digits": {
-      "$type": "compound",
+      "$type": "constant",
       "consume": { "range": [ "0", "9" ] }
     },
     "letters": {
-      "$type": "compound",
+      "$type": "constant",
       "consume": [
         { "range": [ "a", "z" ] },
         { "range": [ "A", "Z" ] }
       ]
     },
     "newline": {
-      "$type": "compound",
+      "$type": "constant",
       "consume": "\n"
     },
     "identifier": {
-      "$type": "complex",
+      "$type": "compound",
       "start": [ "letters" ],
       "consume": [ "letters", "digits" ]
     },
     "comment": {
-      "$type": "complex",
+      "$type": "compound",
       "start": [ "char_solidus", "char_asterisk" ],
       "stop": [ "char_asterisk", "char_solidus" ]
     }

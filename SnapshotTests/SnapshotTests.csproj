@@ -10,20 +10,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Tests\Inputs\bad_tokens.json" />
     <None Remove="Tests\Inputs\complex_tokens.json" />
     <None Remove="Tests\Inputs\complex_tokens.parser.json" />
-    <None Remove="Tests\Inputs\compound_tokens.json" />
-    <None Remove="Tests\Inputs\constant_tokens.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Tests\Inputs\bad_tokens.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tests\Inputs\complex_tokens.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tests\Inputs\compound_tokens.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tests\Inputs\constant_tokens.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
