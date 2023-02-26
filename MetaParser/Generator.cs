@@ -216,7 +216,7 @@ public partial class Generator : IIncrementalGenerator
         // Enums
         context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) => 
         {
-            if (context.Tokens.WorkingSet.Length <= 0) return;
+            if (context.Tokens.CompleteSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
@@ -227,7 +227,7 @@ public partial class Generator : IIncrementalGenerator
             writer.Indent++;
             writer.WriteLine($"Unknown = ({context.IdTypeName}) 0,");
 
-            var distinct = context.Tokens.WorkingSet.ToImmutableSortedSet(new ConsumerComparer());
+            var distinct = context.Tokens.CompleteSet.ToImmutableSortedSet(new ConsumerComparer());
             foreach (var token in distinct)
             {
                 var enumName = MetaParserContext.Format_TokenId(token.IdName);
@@ -243,7 +243,7 @@ public partial class Generator : IIncrementalGenerator
         // Constants
         context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context.Tokens.WorkingSet.Length <= 0) return;
+            if (context.Tokens.CompleteSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
@@ -254,7 +254,7 @@ public partial class Generator : IIncrementalGenerator
             writer.Indent++;
             writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId("unknown")} = 0;");
 
-            var distinct = context.Tokens.WorkingSet.ToImmutableSortedSet(new ConsumerComparer());
+            var distinct = context.Tokens.CompleteSet.ToImmutableSortedSet(new ConsumerComparer());
             foreach (var token in distinct)
             {
                 writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId(token.IdName)} = {token.TokenIndex};");
