@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "/MetaParser/parser/schema-01",
+  "$id": "/MetaParser/schema-02",
   "title": "Parser Definition Structure",
   "description": "A definition for an auto-generated meta-parser",
   "type": "object",
@@ -37,7 +37,7 @@
         "$ref": "#/$defs/def:token:one_or_many"
       }
     },
-    "required": ["namespace", "definitions"]
+    "required": [ "namespace", "definitions" ]
   },
   "$defs": {
     "def:token": {
@@ -190,10 +190,8 @@
         "range": {
           "type": "array",
           "items": {
-            {
-              "type": "string",
-              "maxLength": 1
-            }
+            "type": "string",
+            "maxLength": 1
           },
           "maxItems": 2,
           "minItems": 2
