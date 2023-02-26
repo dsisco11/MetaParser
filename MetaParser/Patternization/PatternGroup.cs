@@ -24,7 +24,7 @@ internal record PatternGroup : Pattern
         this.items = items;
     }
 
-    public override bool IsConstant => items.Any(x => !x.IsConstant);
+    public override bool IsConstant => !items.Any(x => !x.IsConstant);
     public override int Length
     {
         get => condition switch
