@@ -31,7 +31,9 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 // generate consumer functions
                 wr.WriteLine($"bool {MetaParserContext.Get_Token_Consumer_Function_Name(consumer.ConsumerIndex)}()");
                 wr.WriteLine("{");
+                wr.Indent++;
                 ConsumeAndThen.Instance.WriteTo(workingContext);
+                wr.Indent--;
                 wr.WriteLine("}");
             }
         }

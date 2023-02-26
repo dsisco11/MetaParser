@@ -20,7 +20,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             }
             else
             {
-                wr.Write("is [ ");
+                wr.Write(" is [ ");
                 wr.Write(Translate(context, pattern));
                 wr.Write(", ..]");
             }
