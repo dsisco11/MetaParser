@@ -10,12 +10,13 @@ using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Immutable;
+using System.IO;
 
 namespace MetaParser.Contexts
 {
     internal record MetaParserContext : ICodeBuilderContext
     {
-        public IndentedTextWriter writer { get; set; }
+        public IndentedTextWriter writer { get; set; } = new IndentedTextWriter(new StringWriter());
         public string BaseFileName { get; set; } = string.Empty;
         public string Namespace { get; set; } = string.Empty;
         public string? ClassName { get; set; } = "Parser";
@@ -44,9 +45,9 @@ namespace MetaParser.Contexts
         #endregion
 
         #region Utility Functions
-        public string Format_TokenId(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.ToLowerInvariant());
+        public static string Format_TokenId(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.ToLowerInvariant());
         public string Get_TokenId_Ref(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : $"{TokenConsts}.{Format_TokenId(name)}";
-        public string Get_Token_Consumer_Function_Name(int consumerIndex) => $"consume_{consumerIndex}";
+        public static string Get_Token_Consumer_Function_Name(int consumerIndex) => $"consume_{consumerIndex}";
         #endregion
 
         #region Builders

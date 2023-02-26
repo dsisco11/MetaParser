@@ -1,7 +1,4 @@
-﻿using MetaParser.Json.Definitions;
-using MetaParser.Json.JsonTypeConverters;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
@@ -18,10 +15,8 @@ internal record ParserDefinition
     public string? ParserType { get; set; }
 
     [JsonPropertyName("patterns")]
-    [JsonConverter(typeof(JsonOneOrManyConverter))]
-    public IReadOnlyDictionary<string, PatternDefinition[]>? Patterns { get; set; }
+    public Dictionary<string, IEnumerable<PatternDefinition>>? Patterns { get; set; }
 
     [JsonPropertyName("definitions")]
-    [JsonConverter(typeof(JsonOneOrManyConverter))]
-    public IReadOnlyDictionary<string, IConsumerDefinition[]>? Definitions { get; set; }
+    public Dictionary<string, IEnumerable<IConsumerDefinition>>? Definitions { get; set; }
 }

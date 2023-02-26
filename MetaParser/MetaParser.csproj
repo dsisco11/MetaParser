@@ -27,16 +27,11 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Resources\Parser.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="Resources\schema.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="..\Schemas\schema-02.json" Link="Resources\schema.json" />
-    <EmbeddedResource Include="Resources\Parser.cs" />
   </ItemGroup>
 
   <ItemGroup>

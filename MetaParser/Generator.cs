@@ -16,6 +16,9 @@ using MetaParser.Json.Definitions;
 using MetaParser.Structs;
 using MetaParser.Patternization;
 using MetaParser.Builders.TokenLogic.Consumer;
+using JetBrains.Annotations;
+using MetaParser.Exceptions;
+using MetaParser.Json.JsonTypeConverters;
 
 namespace MetaParser;
 
@@ -44,11 +47,15 @@ public partial class Generator : IIncrementalGenerator
         {
             FileData file = data.Item1;
             JsonDocument jsonDoc = data.Item2;
-            var schema = jsonDoc.Deserialize<ParserDefinition>(MetaParserJsonSerializer.Default.ParserDefinition);
+            var deserializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
+            deserializerOptions.Converters.Add(new JsonEnumerableConverter());
+            deserializerOptions.AddContext<MetaParserJsonSerializer>();
+
+            var schema = jsonDoc.Deserialize<ParserDefinition>(deserializerOptions);
 
             if (schema is null || schema.Definitions is null)
             {
-                throw new Exception($"MetaParser schema ({file.Path}) is malformed!");
+                throw new MalformedSchemaException($"MetaParser schema ({file.Path}) is malformed!");
             }
 
             return (file, schema!);
@@ -106,17 +113,27 @@ public partial class Generator : IIncrementalGenerator
                     {
                         consumerIndex++;
 
-                        var startClause = consumer.Start.Length == 0 ? null : new PatternGroup(EPatternCondition.All, consumer.Start.Select(o => o.Resolve(context)).ToArray());
-                        var consumeClause = consumer.Consume.Length == 0 ? null : new PatternGroup(EPatternCondition.Any, consumer.Consume.Select(o => o.Resolve(context)).ToArray());
-                        var stopClause = consumer.Stop.Length == 0 ? null : new PatternGroup(EPatternCondition.All, consumer.Stop.Select(o => o.Resolve(context)).ToArray());
-                        var escapeClause = consumer.Escape.Length == 0 ? null : new PatternGroup(EPatternCondition.All, consumer.Escape.Select(o => o.Resolve(context)).ToArray());
+                        var startClause = consumer.Start.Any() ? new PatternGroup(EPatternCondition.All, consumer.Start.Select(o => o.Resolve(context)).ToArray()) : null;
+                        var consumeClause = consumer.Consume.Any() ? new PatternGroup(EPatternCondition.Any, consumer.Consume.Select(o => o.Resolve(context)).ToArray()) : null;
+                        var stopClause = consumer.Stop.Any() ? new PatternGroup(EPatternCondition.All, consumer.Stop.Select(o => o.Resolve(context)).ToArray()) : null;
+                        var escapeClause = consumer.Escape.Any() ? new PatternGroup(EPatternCondition.All, consumer.Escape.Select(o => o.Resolve(context)).ToArray()) : null;
 
                         if (startClause is null && consumeClause is not null)
                         {
                             startClause = new PatternGroup(EPatternCondition.Any, consumer.Consume.Select(o => o.Resolve(context)).ToArray());
                         }
 
-                        var token = new PatternConsumer(consumer.Type, tokenIndex, consumerIndex, def.Key, startClause, consumeClause, stopClause, escapeClause);
+                        if (startClause is null && stopClause is null && consumeClause is null)
+                        {
+                            throw new IllegalTokenException($@"Illegal token (""{def.Key}"") (tokens must specify either a restricted set of consumable items OR an explicit start/stop sequence)");
+                        }
+
+                        if (!Enum.TryParse<ETokenType>(consumer.Type, out var consumerType))
+                        {
+                            throw new IllegalTokenException($@"Unrecognized token type (""{consumer.Type}"")");
+                        }
+
+                        var token = new PatternConsumer(consumerType, tokenIndex, consumerIndex, def.Key, startClause, consumeClause, stopClause, escapeClause);
                         Tokens.Add(token);
                     }
                 }
@@ -133,65 +150,66 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         // Parser Class
-        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, MetaParserContext context) =>
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with {  writer = writer  };
 
-            new ClassBuilder(context.ClassAccessKeywords, context.ClassName, new ParsingLogic(), new ConsumeNextToken())
+            new ClassBuilder(context.ClassAccessKeywords, context.ClassName!, new ParsingLogic(), new ConsumeNextToken())
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.parser.class", writer.InnerWriter.ToString());
         });
 
         // Constant-Type Tokens
-        context.RegisterSourceOutput(constantTokens, static (SourceProductionContext spc, MetaParserContext context) =>
+        context.RegisterSourceOutput(constantTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context?.Tokens.WorkingSet.Length <= 0) return;
+            if (context.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_ValueToken_Consumer(context.ConstantTokenConsumerFunctionName, DetectAndConsumeLogic.Instance);
-            new ClassBuilder(context.ClassAccessKeywords, context.ClassName, consumer)
+            var consumer = context.Get_ValueToken_Consumer(context.ConstantTokenConsumerFunctionName, TokenProcessor.Instance);
+            new ClassBuilder(context.ClassAccessKeywords, context.ClassName!, consumer)
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.tokens.constant", writer.InnerWriter.ToString());
         });
 
         // Compound-Type Tokens
-        context.RegisterSourceOutput(compoundTokens, static (SourceProductionContext spc, MetaParserContext context) =>
+        context.RegisterSourceOutput(compoundTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context?.Tokens.WorkingSet.Length <= 0) return;
+            if (context.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_ValueToken_Consumer(context.CompoundTokenConsumerFunctionName, DetectAndConsumeLogic.Instance);
-            new ClassBuilder(context.ClassAccessKeywords, context.ClassName, consumer)
+            var consumer = context.Get_ValueToken_Consumer(context.CompoundTokenConsumerFunctionName, TokenProcessor.Instance);
+            new ClassBuilder(context.ClassAccessKeywords, context.ClassName!, consumer)
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.tokens.compound", writer.InnerWriter.ToString());
         });
 
         // Complex-Type Tokens
-        context.RegisterSourceOutput(complexTokens, static (SourceProductionContext spc, MetaParserContext context) =>
+        context.RegisterSourceOutput(complexTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context?.Tokens.WorkingSet.Length <= 0) return;
+            if (context.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_Token_Consumer(context.ComplexTokenConsumerFunctionName, DetectAndConsumeLogic.Instance);
-            new ClassBuilder(context.ClassAccessKeywords, context.ClassName, consumer)
+            var consumer = context.Get_Token_Consumer(context.ComplexTokenConsumerFunctionName, TokenProcessor.Instance);
+            new ClassBuilder(context.ClassAccessKeywords, context.ClassName!, consumer)
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.tokens.complex", writer.InnerWriter.ToString());
         });
 
         // Token Structure
-        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, MetaParserContext context) =>
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
+            if (context is null) return;
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
@@ -201,13 +219,14 @@ public partial class Generator : IIncrementalGenerator
         });
 
         // Enums
-        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, MetaParserContext context) => {
-            if (context?.Tokens.WorkingSet.Length <= 0) return;
+        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) => 
+        {
+            if (context.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            writer.WriteLine($"namespace {context?.Namespace};");
+            writer.WriteLine($"namespace {context.Namespace};");
             writer.WriteLine($"public enum {context.TokenEnum} : {context.IdTypeName}");
             writer.WriteLine("{");
             writer.Indent++;
@@ -216,7 +235,7 @@ public partial class Generator : IIncrementalGenerator
             var distinct = context.Tokens.WorkingSet.ToImmutableSortedSet(new ConsumerComparer());
             foreach (var token in distinct)
             {
-                var enumName = context.Format_TokenId(token.IdName);
+                var enumName = MetaParserContext.Format_TokenId(token.IdName);
                 writer.WriteLine($"{enumName} = ({context.IdTypeName}) {token.TokenIndex},");
             }
 
@@ -227,23 +246,23 @@ public partial class Generator : IIncrementalGenerator
         });
 
         // Constants
-        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, MetaParserContext context) =>
+        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context?.Tokens.WorkingSet.Length <= 0) return;
+            if (context.Tokens.WorkingSet.Length <= 0) return;
 
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            writer.WriteLine($"namespace {context?.Namespace};");
+            writer.WriteLine($"namespace {context.Namespace};");
             writer.WriteLine($"internal static class {context.TokenConsts}");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"public const {context.IdTypeName} {context.Format_TokenId("unknown")} = 0;");
+            writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId("unknown")} = 0;");
 
             var distinct = context.Tokens.WorkingSet.ToImmutableSortedSet(new ConsumerComparer());
             foreach (var token in distinct)
             {
-                writer.WriteLine($"public const {context.IdTypeName} {context.Format_TokenId(token.IdName)} = {token.TokenIndex};");
+                writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId(token.IdName)} = {token.TokenIndex};");
             }
 
             writer.Indent--;

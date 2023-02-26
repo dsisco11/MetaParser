@@ -6,10 +6,9 @@ using MetaParser.Patternization;
 
 namespace MetaParser.Json.Definitions;
 
+[JsonConverter(typeof(TokenPatternConverter))]
 internal record TokenPattern : PatternDefinition
 {
-    [JsonIgnore]
-    public bool IsResolved => true;
     [JsonInclude]
     public string id;
     [JsonInclude]

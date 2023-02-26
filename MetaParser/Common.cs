@@ -1,7 +1,6 @@
 ﻿using Json.Schema;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 
 using System;
 using System.CodeDom.Compiler;
@@ -21,7 +20,7 @@ namespace MetaParser
         public const string MetaParserFileExtension = ".metaparser.json";
 
         #region Schema
-        const string Schema_File_Resource = "MetaParser.Resources.schema-01.json";
+        const string Schema_File_Resource = "MetaParser.Resources.schema.json";
         public static ValidationOptions SchemaOptions
         {
             get
@@ -37,7 +36,12 @@ namespace MetaParser
         public static JsonSchema Get_Parser_Schema()
         {
             var jsonStr = Get_Embedded_File_Contents(Schema_File_Resource);
-            return JsonSchema.FromText(jsonStr, JsonSerializerOptions.Default);
+            if (string.IsNullOrWhiteSpace(jsonStr))
+            {
+                throw new FileLoadException($"Unable to load embedded metaparser schema file!");
+            }
+
+            return JsonSchema.FromText(jsonStr);
         }
         #endregion
 
@@ -80,7 +84,7 @@ namespace MetaParser
             var stream = assembly.GetManifestResourceStream(resourceName);
             if (stream is null)
             {
-                throw new Exception($"Unable to load embedded schema definition resource from assembly!");
+                throw new FileLoadException($"Unable to load embedded schema definition resource from assembly!");
             }
 
             return stream;

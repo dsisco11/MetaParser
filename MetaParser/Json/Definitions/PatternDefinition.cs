@@ -1,6 +1,7 @@
 ﻿using MetaParser.Contexts;
+using MetaParser.Json.JsonTypeConverters;
 using MetaParser.Patternization;
-
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
@@ -14,3 +15,8 @@ internal abstract record PatternDefinition
     public ETokenType Type { get; set; }
     public abstract Pattern Resolve(MetaParserContext context);
 }
+
+//[JsonConverter(typeof(JsonOneToManyDictionaryConverter))]
+//internal class PatternDefinitionList : List<PatternDefinition>
+//{
+//}

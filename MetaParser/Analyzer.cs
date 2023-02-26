@@ -8,6 +8,7 @@ using System.Threading;
 using Json.Schema;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Text;
+using System.IO;
 
 namespace MetaParser;
 
@@ -36,6 +37,11 @@ public partial class Analyzer : IIncrementalGenerator
             FileData file = data.file;
             JsonDocument jsonDoc = data.jsonDoc;
             var schema = Common.Get_Parser_Schema();
+            if (schema is null)
+            {
+                throw new FileLoadException($"Unable to load embedded metaparser schema file!");
+            }
+
             var result = schema.Validate(jsonDoc, Common.SchemaOptions);
             if (!result.IsValid)
             {

@@ -1,10 +1,25 @@
-﻿namespace MetaParser.Json.Definitions;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
+namespace MetaParser.Json.Definitions;
+
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "$type")]
+[JsonDerivedType(typeof(ValueConsumerDeclaration), typeDiscriminator: "constant")]
+[JsonDerivedType(typeof(TokenConsumerDeclaration), typeDiscriminator: "compound")]
 internal interface IConsumerDefinition
 {
-    ETokenType Type { get; }
-    public PatternDefinition[] Start { get; }
-    public PatternDefinition[] Consume { get; }
-    public PatternDefinition[] Stop { get; }
-    public PatternDefinition[] Escape { get; }
+    [JsonPropertyName("$type")]
+    string Type { get; }
+
+    [JsonPropertyName("start")]
+    public IEnumerable<PatternDefinition> Start { get; }
+
+    [JsonPropertyName("consume")]
+    public IEnumerable<PatternDefinition> Consume { get; }
+
+    [JsonPropertyName("stop")]
+    public IEnumerable<PatternDefinition> Stop { get; }
+
+    [JsonPropertyName("escape")]
+    public IEnumerable<PatternDefinition> Escape { get; }
 }

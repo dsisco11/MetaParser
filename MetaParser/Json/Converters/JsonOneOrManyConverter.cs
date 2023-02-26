@@ -10,25 +10,30 @@ namespace MetaParser.Json.JsonTypeConverters
     {
         public override bool CanConvert(Type typeToConvert)
         {
-            return !typeToConvert.IsGenericType;
+            return !typeToConvert.IsGenericType && typeToConvert.HasElementType;
         }
 
         public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
+            if (!typeToConvert.HasElementType)
+            {
+                throw new ArgumentException($"The [{nameof(JsonOneOrManyConverter)}] cannot convert type ({typeToConvert}) as it is not an array");
+            }
+
             var elementType = typeToConvert.GetElementType();
             return (JsonConverter)Activator.CreateInstance(
-                typeof(JsonOneOrManyConverterInner<>).MakeGenericType(elementType),
+                typeof(ConverterInner<>).MakeGenericType(elementType),
                 BindingFlags.Instance | BindingFlags.Public,
                 binder: null,
                 args: new object[] { options },
                 culture: null)!;
         }
 
-        private class JsonOneOrManyConverterInner<T> : JsonConverter<T[]>
+        private class ConverterInner<T> : JsonConverter<T[]>
         {
             private readonly JsonConverter<T> _valueConverter;
             private readonly Type _type;
-            public JsonOneOrManyConverterInner(JsonSerializerOptions options)
+            public ConverterInner(JsonSerializerOptions options)
             {
                 // For performance, use the existing converter.
                 _valueConverter = (JsonConverter<T>)options

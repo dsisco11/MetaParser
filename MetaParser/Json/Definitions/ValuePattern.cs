@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using System.Text.Json;
 using System;
 using MetaParser.Contexts;
 using MetaParser.Exceptions;
@@ -7,13 +6,18 @@ using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
 using System.Collections.Generic;
 using MetaParser.Patternization;
+using System.Text.Json;
 
 namespace MetaParser.Json.Definitions;
 
 [JsonConverter(typeof(ValuePatternConverter))]
+//[JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor)]
+//[JsonDerivedType(typeof(ValuePatternConst))]
+//[JsonDerivedType(typeof(ValuePatternRange), "range")]
+//[JsonDerivedType(typeof(ValuePatternAlias), "pattern")]
 internal abstract record ValuePattern : PatternDefinition;
 
-internal record ValuePatternConst: ValuePattern
+internal record ValuePatternConst : ValuePattern
 {
     public string value;
 
@@ -91,7 +95,6 @@ internal record ValuePatternAlias : ValuePattern
     }
 }
 
-
 internal class ValuePatternConverter : JsonConverter<ValuePattern>
 {
     public override ValuePattern? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -139,7 +142,7 @@ internal class ValuePatternConverter : JsonConverter<ValuePattern>
         throw new JsonException();
     }
 
-    private ValuePatternRange consume_range_pattern(ref Utf8JsonReader reader)
+    private static ValuePatternRange consume_range_pattern(ref Utf8JsonReader reader)
     {
         reader.Read();
         if (reader.TokenType != JsonTokenType.StartArray)
@@ -168,7 +171,7 @@ internal class ValuePatternConverter : JsonConverter<ValuePattern>
 
     }
 
-    private ValuePatternAlias consume_alias_pattern(ref Utf8JsonReader reader)
+    private static ValuePatternAlias consume_alias_pattern(ref Utf8JsonReader reader)
     {
         reader.Read();
         if (reader.TokenType != JsonTokenType.String)
