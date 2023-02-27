@@ -16,7 +16,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
 
             if (consumer.Start is not null)
             {
-                writer.WriteLine($"{MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMajor}.Slice({consumer.Start.Length});");// Skip ahead of the token {VarStart}
+                writer.WriteLine($"var {MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMajor}.Slice({consumer.Start.Length});");// Skip ahead of the token {VarStart}
             }
 
             if (consumer.Stop is not null)
