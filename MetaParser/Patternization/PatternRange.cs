@@ -1,6 +1,6 @@
 ﻿namespace MetaParser.Patternization;
 
-internal record PatternRange : Pattern
+internal sealed record PatternRange : Pattern
 {
     public readonly string begin;
     public readonly string end;
@@ -11,6 +11,7 @@ internal record PatternRange : Pattern
         this.end = end;
     }
 
-    public override bool IsConstant => false;
+    public override bool IsRawValues => false;
+    public override bool IsConstantLength => false;
     public override int Length => (string.IsNullOrEmpty(begin) && string.IsNullOrEmpty(end)) ? 0 : 1;
 }

@@ -58,14 +58,13 @@ namespace MetaParser.Contexts
         #region Utility Functions
         public static string Format_TokenId(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.ToLowerInvariant());
         public string Get_TokenId_Ref(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : $"{TokenConsts}.{Format_TokenId(name)}";
-        public static string Get_Token_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
+        public static string Format_Pattern_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
         #endregion
 
         #region Builders
-        public FunctionDefinition Get_Token_Processor_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out {IdTypeName} id, out int length"), body);
-
         public SyntaxToken Get_Consumer_Data_Type(ETokenType type) => SyntaxFactory.ParseToken(type == ETokenType.Constant ? InputTypeName : IdTypeName);
         public TypeSyntax Get_Token_Buffer_Type(ETokenType type) => SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlySpan}<{Get_Consumer_Data_Type(type)}>");
+        public FunctionDefinition Get_Token_Processor_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out {IdTypeName} id, out int length"), body);
         public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(null, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
         #endregion
 

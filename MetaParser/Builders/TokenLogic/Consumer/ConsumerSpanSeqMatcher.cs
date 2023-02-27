@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer
 {
-    internal static class ConsumerSpanSeqBuilder
+    internal static class ConsumerSpanSeqMatcher
     {
         public static void WriteTo(MetaParserContext context, Pattern pattern)
         {
             var wr = context.writer;
-            if (pattern.IsConstant)
+            if (pattern.IsRawValues)
             {
                 wr.Write(".StartsWith(");
                 wr.Write("stackalloc []{ ");

@@ -23,14 +23,26 @@ internal record PatternGroup : Pattern
         this.condition = condition;
         this.items = items;
     }
-
-    public override bool IsConstant => !items.Any(x => !x.IsConstant);
     public override int Length
     {
         get => condition switch
         {
-            EPatternCondition.Any => items.Length == 0 ? 0 : 1,// For 'any' type patterns, which describe a sequence of alternate options, the length is always 1 or 0
+            EPatternCondition.Any => items.Length > 0 ? items.Max(x => x.Length) : 0,// For 'any' type patterns, which describe a sequence of alternate options, the length is always 1 or 0
             _ => items.Sum((Pattern p) => p.Length)
         };
     }
+
+    public override bool IsRawValues
+    {
+        get
+        {
+            return condition switch
+            {
+                EPatternCondition.All => !items.Any(x => !x.IsRawValues),
+                EPatternCondition.Any => false,
+                _ => false
+            };
+        }
+    }
+    public override bool IsConstantLength => !items.Any(x => !x.IsConstantLength);
 }

@@ -1,6 +1,6 @@
 ﻿namespace MetaParser.Patternization;
 
-internal record PatternConst : Pattern
+internal sealed record PatternConst : Pattern
 {
     public readonly string value;
 
@@ -9,6 +9,7 @@ internal record PatternConst : Pattern
         this.value = value;
     }
 
-    public override bool IsConstant => true;
+    public override bool IsRawValues => true;
+    public override bool IsConstantLength => true;
     public override int Length => string.IsNullOrEmpty(value) ? 0 : 1;
 }

@@ -28,7 +28,7 @@ public partial class Generator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        #region Pipeline
+        #region Loading
         // find all additional files that end with .parser-meta.json
         IncrementalValuesProvider<AdditionalText> ctxFileNames = context.AdditionalTextsProvider.Where(static file => file.Path.EndsWith(Common.MetaParserFileExtension, StringComparison.InvariantCultureIgnoreCase));
 
@@ -93,6 +93,9 @@ public partial class Generator : IIncrementalGenerator
         {
             return data.Item1;
         });
+        #endregion
+
+        #region Resolving
 
         IncrementalValuesProvider<MetaParserContext> ctxParserTokens = ctxFull.Select(static (ValueTuple<MetaParserContext, ParserDefinition> data, CancellationToken cancellationToken) =>
         {
@@ -112,24 +115,7 @@ public partial class Generator : IIncrementalGenerator
                     foreach (var consumer in def.Value)
                     {
                         consumerIndex++;
-
-                        var startClause = consumer.Start.Any() ? new PatternGroup(EPatternCondition.All, consumer.Start.Select(o => o.Resolve(context)).ToArray()) : null;
-                        var consumeClause = consumer.Consume.Any() ? new PatternGroup(EPatternCondition.Any, consumer.Consume.Select(o => o.Resolve(context)).ToArray()) : null;
-                        var stopClause = consumer.Stop.Any() ? new PatternGroup(EPatternCondition.All, consumer.Stop.Select(o => o.Resolve(context)).ToArray()) : null;
-                        var escapeClause = consumer.Escape.Any() ? new PatternGroup(EPatternCondition.All, consumer.Escape.Select(o => o.Resolve(context)).ToArray()) : null;
-
-                        if (startClause is null && consumeClause is not null)
-                        {
-                            startClause = new PatternGroup(EPatternCondition.Any, consumer.Consume.Select(o => o.Resolve(context)).ToArray());
-                        }
-
-                        if (startClause is null && stopClause is null && consumeClause is null)
-                        {
-                            throw new IllegalTokenException($@"Illegal token (""{def.Key}"") (tokens must specify either a restricted set of consumable items OR an explicit start/stop sequence)");
-                        }
-
-                        var token = new PatternConsumer(consumer.Type, tokenIndex, consumerIndex, def.Key, startClause, consumeClause, stopClause, escapeClause);
-                        Tokens.Add(token);
+                        Tokens.Add(PatternConsumer.From(context, consumer, def.Key, tokenIndex, consumerIndex));
                     }
                 }
 
@@ -230,7 +216,7 @@ public partial class Generator : IIncrementalGenerator
             var distinct = context.Tokens.CompleteSet.ToImmutableSortedSet(new ConsumerComparer());
             foreach (var token in distinct)
             {
-                var enumName = MetaParserContext.Format_TokenId(token.IdName);
+                var enumName = MetaParserContext.Format_TokenId(token.TokenName);
                 writer.WriteLine($"{enumName} = ({context.IdTypeName}) {token.TokenIndex},");
             }
 
@@ -257,7 +243,7 @@ public partial class Generator : IIncrementalGenerator
             var distinct = context.Tokens.CompleteSet.ToImmutableSortedSet(new ConsumerComparer());
             foreach (var token in distinct)
             {
-                writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId(token.IdName)} = {token.TokenIndex};");
+                writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId(token.TokenName)} = {token.TokenIndex};");
             }
 
             writer.Indent--;
