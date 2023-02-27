@@ -10,7 +10,7 @@ namespace MetaParser.CodeGen.Base
 {
     internal class FunctionDefinition : IMetaCodeBuilder
     {
-        public FunctionDefinition(SyntaxTokenList modifiers, TypeSyntax returnType, string name, ArgumentListSyntax arguments, IMetaCodeBuilder body)
+        public FunctionDefinition(SyntaxTokenList? modifiers, TypeSyntax returnType, string name, ArgumentListSyntax arguments, IMetaCodeBuilder body)
         {
             Modifiers = modifiers;
             ReturnType = returnType;
@@ -19,7 +19,7 @@ namespace MetaParser.CodeGen.Base
             Body = body;
         }
 
-        public SyntaxTokenList Modifiers { get; }
+        public SyntaxTokenList? Modifiers { get; }
         public TypeSyntax ReturnType { get; }
         public NameSyntax Name { get; }
         public ArgumentListSyntax Arguments { get; }
@@ -28,14 +28,17 @@ namespace MetaParser.CodeGen.Base
         public void WriteTo(MetaParserContext context)
         {
             var writer = context.writer;
-            foreach (var mod in Modifiers)
+            if (Modifiers is not null)
             {
-                mod.WriteTo(writer);
-            }
+                foreach (var mod in Modifiers)
+                {
+                    mod.WriteTo(writer);
+                }
 
-            if (Modifiers.Count > 0)
-            {
-                writer.Write(" ");
+                if (Modifiers?.Count > 0)
+                {
+                    writer.Write(" ");
+                }
             }
 
             ReturnType.WriteTo(writer);

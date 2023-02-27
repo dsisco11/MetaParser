@@ -10,13 +10,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
         public void WriteTo(MetaParserContext context)
         {
             var wr = context.writer;
-            /** STEPS
-             * 1) Find token type via switch block pattern
-             * 2) Jump to token specific consumer function
-             * 3) Consume start block (elements can be optional)
-             * 4) 
-             */
-            new DetectTokensAndThen(new ConsumeTokenAndReturn()).WriteTo(context);
+            new DetectTokensAndThen(ConsumeTokenAndReturn.Instance).WriteTo(context);
 
             // return failure
             wr.WriteLine("id = default;");
@@ -32,13 +26,11 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 {
                     continue;// skip constant length patterns as they get an inline fast-path
                 }
+
                 // generate consumer functions
-                wr.WriteLine($"bool {MetaParserContext.Get_Token_Consumer_Function_Name(consumer.ConsumerIndex)}()");
-                wr.WriteLine("{");
-                wr.Indent++;
-                ConsumeAndThen.Instance.WriteTo(workingContext);
-                wr.Indent--;
-                wr.WriteLine("}");
+                var consumerFuncName = MetaParserContext.Get_Token_Consumer_Function_Name(consumer.ConsumerIndex);
+                var consumeFunc = context.Get_Local_Token_Consumer_Function_Definition(consumer.Type, consumerFuncName, ConsumeAndThen.Instance);
+                consumeFunc.WriteTo(workingContext);
             }
         }
     }

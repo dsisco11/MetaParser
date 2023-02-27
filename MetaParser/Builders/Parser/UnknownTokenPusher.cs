@@ -3,22 +3,19 @@ using MetaParser.Contexts;
 
 namespace MetaParser.Builders
 {
-    internal class UnknownTokenPusher : ICodeBuilder<MetaParserContext>
+    internal class UnknownTokenPusher : IMetaCodeBuilder
     {
-        const string VarBuffer = "buffer";
-        const string VarReader = "reader";
-
         public void WriteTo(MetaParserContext context)
         {
             var wr = context.writer;
-            wr.WriteLine($"if ({VarBuffer}.Length != {VarReader}.Length)");
+            wr.WriteLine($"if ({MetaParserContext.VarNameBufferMinor}.Length != {MetaParserContext.VarNameBufferLocal}.Length)");
             wr.WriteLine("{");
             wr.Indent++;
-            wr.WriteLine($"var unk_content_size = {VarBuffer}.Length - {VarReader}.Length;");
-            wr.WriteLine($"var unk_content = {VarBuffer}.Slice(0, unk_content_size);");
-            wr.WriteLine($"valueTokens.Add(new ValueToken({context.Get_TokenId_Ref(context.UnknownToken)}, unk_content));");
-            wr.WriteLine($"{VarBuffer} = {VarBuffer}.Slice(unk_content_size);");
-            wr.WriteLine($"{VarReader} = {VarBuffer}.Span;");
+            wr.WriteLine($"var unk_content_size = {MetaParserContext.VarNameBufferMinor}.Length - {MetaParserContext.VarNameBufferLocal}.Length;");
+            wr.WriteLine($"var unk_content = {MetaParserContext.VarNameBufferMinor}.Slice(0, unk_content_size);");
+            wr.WriteLine($"valueTokens.Add(new ValueToken({context.Get_TokenId_Ref(MetaParserContext.UnknownToken)}, unk_content));");
+            wr.WriteLine($"{MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMinor}.Slice(unk_content_size);");
+            wr.WriteLine($"{MetaParserContext.VarNameBufferLocal} = {MetaParserContext.VarNameBufferMinor}.Span;");
             wr.Indent--;
             wr.WriteLine("}");
         }

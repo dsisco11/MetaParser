@@ -7,6 +7,8 @@ namespace MetaParser.Builders.TokenLogic.Consumer;
 
 internal class ConsumeTokenAndReturn : IMetaCodeBuilder
 {
+    public static ConsumeTokenAndReturn Instance = new ConsumeTokenAndReturn();
+
     public void WriteTo(MetaParserContext context)
     {
         var wr = context.writer;
@@ -22,7 +24,8 @@ internal class ConsumeTokenAndReturn : IMetaCodeBuilder
         {
             var consumerId = consumer.ConsumerIndex;
             var consumerFunc = MetaParserContext.Get_Token_Consumer_Function_Name(consumerId);
-            wr.WriteLine($"return {consumerFunc}();");
+            wr.WriteLine($"id = {context.Get_TokenId_Ref(consumer.IdName)};");
+            wr.WriteLine($"return {consumerFunc}(stream, out length);");
         }
     }
 }

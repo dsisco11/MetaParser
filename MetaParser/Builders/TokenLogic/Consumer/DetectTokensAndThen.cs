@@ -16,7 +16,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
         public void WriteTo(MetaParserContext context)
         {
             var wr = context.writer;
-            wr.WriteLine("switch (source)");
+            wr.WriteLine($"switch ({MetaParserContext.VarNameBufferMajor})");
             wr.WriteLine("{");
             wr.Indent++;
 

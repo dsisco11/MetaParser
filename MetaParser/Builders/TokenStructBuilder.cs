@@ -11,7 +11,7 @@ namespace MetaParser.Builders
             var wr = context.writer;
 
             wr.WriteLine($"namespace {context.Namespace};");
-            wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({context.TokenEnum})Id}}"")]");
+            wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({MetaParserContext.TokenEnum})Id}}"")]");
             wr.WriteLine($"public readonly record struct ValueToken({context.IdTypeName} Id, {CodeCommon.FormatReadOnlyMemoryBuffer(context.InputType)} Data)");
             wr.WriteLine("{");
             wr.Indent++;
@@ -24,8 +24,8 @@ namespace MetaParser.Builders
             wr.Indent--;
             wr.WriteLine("}");
             wr.WriteLine();
-            wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{this.ToString()}}"", Name = ""{{({context.TokenEnum})Id}}"")]");
-            wr.WriteLine($"public sealed record Token({context.TokenEnum} Id, ValueToken[] Values)");
+            wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{this.ToString()}}"", Name = ""{{({MetaParserContext.TokenEnum})Id}}"")]");
+            wr.WriteLine($"public sealed record Token({MetaParserContext.TokenEnum} Id, ValueToken[] Values)");
             wr.WriteLine("{");
             wr.Indent++;
             wr.WriteLine("public override string ToString()");

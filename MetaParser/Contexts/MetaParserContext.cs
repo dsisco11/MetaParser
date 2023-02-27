@@ -6,6 +6,7 @@ using MetaParser.Structs;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
 using System.CodeDom.Compiler;
@@ -33,26 +34,39 @@ namespace MetaParser.Contexts
         #endregion
 
         #region Constants
-        public readonly string ClassAccessKeywords = "public sealed partial";
+        public const string TokenEnum = "ETokenType";
+        public const string TokenConsts = "TokenId";
+        public const string UnknownToken = "Unknown";
 
-        public readonly string TokenEnum = "ETokenType";
-        public readonly string TokenConsts = "TokenId";
-        public readonly string UnknownToken = "Unknown";
+        /// <summary>Name of first buffer used in any method</summary>
+        public const string VarNameBufferMajor = "stream";
+        /// <summary>Name of second buffer used in any method</summary>
+        public const string VarNameBufferMinor = "buffer";
+        /// <summary>Name of third buffer used in any method</summary>
+        public const string VarNameBufferLocal = "reader";
 
-        public readonly string ConstantTokenConsumerFunctionName = "consume_constant_token";
-        public readonly string CompoundTokenConsumerFunctionName = "consume_compound_token";
-        public readonly string ComplexTokenConsumerFunctionName = "consume_complex_token";
+        public const string ConstantTokenProcessorFunctionName = "process_constant_tokens";
+        public const string CompoundTokenProcessorFunctionName = "process_compound_tokens";
+        public const string ComplexTokenProcessorFunctionName = "process_complex_tokens";
+        #endregion
+
+        #region Statics
+        public static SyntaxTokenList ParserClassModifiers = SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("public sealed partial"));
         #endregion
 
         #region Utility Functions
         public static string Format_TokenId(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.ToLowerInvariant());
         public string Get_TokenId_Ref(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : $"{TokenConsts}.{Format_TokenId(name)}";
-        public static string Get_Token_Consumer_Function_Name(int consumerIndex) => $"consume_{consumerIndex}";
+        public static string Get_Token_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
         #endregion
 
         #region Builders
-        public FunctionDefinition Get_ValueToken_Consumer(string name, IMetaCodeBuilder body) => new(SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static")), SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{CodeCommon.ReadOnlySpan}<{InputTypeName}> source, out {IdTypeName} id, out int length"), body);
-        public FunctionDefinition Get_Token_Consumer(string name, IMetaCodeBuilder body) => new(SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static")), SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{CodeCommon.ReadOnlySpan}<{IdTypeName}> source, out {IdTypeName} id, out int length"), body);
+        public FunctionDefinition Get_ValueToken_Consumer(string name, IMetaCodeBuilder body) => new(SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static")), SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{CodeCommon.ReadOnlySpan}<{InputTypeName}> {VarNameBufferMajor}, out {IdTypeName} id, out int length"), body);
+        public FunctionDefinition Get_Token_Consumer(string name, IMetaCodeBuilder body) => new(SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static")), SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{CodeCommon.ReadOnlySpan}<{IdTypeName}> {VarNameBufferMajor}, out {IdTypeName} id, out int length"), body);
+
+        public SyntaxToken Get_Consumer_Data_Type(ETokenType type) => SyntaxFactory.ParseToken(type == ETokenType.Constant ? InputTypeName : IdTypeName);
+        public TypeSyntax Get_Consumer_Buffer_Type(ETokenType type) => SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlySpan}<{Get_Consumer_Data_Type(type)}>");
+        public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(null, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Consumer_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
         #endregion
 
     }
