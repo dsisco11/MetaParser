@@ -40,7 +40,7 @@ internal record ValuePatternConst : ValuePattern
         }
 
         var consts = value.ToCharArray().Select(ch => new PatternConst(SymbolDisplay.FormatLiteral(ch, true))).ToArray();
-        return new PatternGroup(EPatternCondition.All, consts);
+        return new PatternGroup(EPatternCondition.AllOf, consts);
     }
 }
 
@@ -101,7 +101,7 @@ internal record ValuePatternAlias : ValuePattern
                 resolved.Add(pattern.Resolve(context));
             }
 
-            return new PatternGroup(EPatternCondition.Any, resolved.ToArray());
+            return new PatternGroup(EPatternCondition.OneOf, resolved.ToArray());
         }
     }
 }

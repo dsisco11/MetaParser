@@ -5,15 +5,15 @@ namespace MetaParser.Patternization;
 internal record PatternGroup : Pattern
 {
     public readonly Pattern[] items;
-    public readonly EPatternCondition condition = EPatternCondition.All;
+    public readonly EPatternCondition condition = EPatternCondition.AllOf;
 
     public string ConditionJoiner
     {
         get => condition switch
         {
-            EPatternCondition.Single => string.Empty,
-            EPatternCondition.All => ", ",
-            EPatternCondition.Any => " or ",
+            EPatternCondition.Only => string.Empty,
+            EPatternCondition.AllOf => ", ",
+            EPatternCondition.OneOf => " or ",
             _ => throw new System.NotImplementedException()
         };
     }
@@ -23,11 +23,21 @@ internal record PatternGroup : Pattern
         this.condition = condition;
         this.items = items;
     }
+
     public override int Length
     {
         get => condition switch
         {
-            EPatternCondition.Any => items.Length > 0 ? items.Max(x => x.Length) : 0,// For 'any' type patterns, which describe a sequence of alternate options, the length is always 1 or 0
+            EPatternCondition.OneOf => items.Length > 0 ? items.Max(x => x.Length) : 0,
+            _ => items.Sum((Pattern p) => p.Length)
+        };
+    }
+
+    public int MinLength
+    {
+        get => condition switch
+        {
+            EPatternCondition.OneOf => items.Length > 0 ? items.Min(x => x.Length) : 0,
             _ => items.Sum((Pattern p) => p.Length)
         };
     }
@@ -38,8 +48,8 @@ internal record PatternGroup : Pattern
         {
             return condition switch
             {
-                EPatternCondition.All => !items.Any(x => !x.IsRawValues),
-                EPatternCondition.Any => false,
+                EPatternCondition.AllOf => !items.Any(x => !x.IsRawValues),
+                EPatternCondition.OneOf => false,
                 _ => false
             };
         }

@@ -5,13 +5,13 @@ public enum EPatternCondition
     /// <summary>
     /// [ 'a', 'b', 'c' ]
     /// </summary>
-    All,
+    AllOf,
     /// <summary>
     /// ['x' or 'y']
     /// </summary>
-    Any,
+    OneOf,
     /// <summary>
     /// 'foo'
     /// </summary>
-    Single
+    Only
 };

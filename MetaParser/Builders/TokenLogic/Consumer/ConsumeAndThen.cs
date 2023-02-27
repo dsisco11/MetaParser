@@ -1,6 +1,7 @@
 ﻿using MetaParser.CodeGen.Core;
 using MetaParser.Contexts;
 
+using System;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer
@@ -26,7 +27,11 @@ namespace MetaParser.Builders.TokenLogic.Consumer
 #if DEBUG
                 writer.WriteLine("/* Consume the START sequence which got us here in the first place, we already know its part of the token */");
 #endif
-                writer.WriteLine($"var {MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMajor}.Slice({consumer.Start.Length});");
+                if (!consumer.Start.IsConstantLength)
+                {
+                    writer.WriteLine("/* WARNING: consumer START sequence is of uncertain length, it is possible this could cause token parsing discrepancies */");
+                }
+                writer.Write($"var {MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMajor}.Slice({Math.Max(1, consumer.Start.MinLength)});");
             }
 
             if (consumer.Stop is not null)

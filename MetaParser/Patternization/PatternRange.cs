@@ -12,6 +12,6 @@ internal sealed record PatternRange : Pattern
     }
 
     public override bool IsRawValues => false;
-    public override bool IsConstantLength => false;
+    public override bool IsConstantLength => begin.Length == end.Length;
     public override int Length => (string.IsNullOrEmpty(begin) && string.IsNullOrEmpty(end)) ? 0 : 1;
 }
