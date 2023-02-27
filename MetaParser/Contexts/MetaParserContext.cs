@@ -52,6 +52,7 @@ namespace MetaParser.Contexts
 
         #region Statics
         public static SyntaxTokenList ParserClassModifiers = SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("public sealed partial"));
+        public static SyntaxTokenList SyntaxPrivateStatic = SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static"));
         #endregion
 
         #region Utility Functions
@@ -61,12 +62,11 @@ namespace MetaParser.Contexts
         #endregion
 
         #region Builders
-        public FunctionDefinition Get_ValueToken_Consumer(string name, IMetaCodeBuilder body) => new(SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static")), SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{CodeCommon.ReadOnlySpan}<{InputTypeName}> {VarNameBufferMajor}, out {IdTypeName} id, out int length"), body);
-        public FunctionDefinition Get_Token_Consumer(string name, IMetaCodeBuilder body) => new(SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static")), SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{CodeCommon.ReadOnlySpan}<{IdTypeName}> {VarNameBufferMajor}, out {IdTypeName} id, out int length"), body);
+        public FunctionDefinition Get_Token_Processor_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out {IdTypeName} id, out int length"), body);
 
         public SyntaxToken Get_Consumer_Data_Type(ETokenType type) => SyntaxFactory.ParseToken(type == ETokenType.Constant ? InputTypeName : IdTypeName);
-        public TypeSyntax Get_Consumer_Buffer_Type(ETokenType type) => SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlySpan}<{Get_Consumer_Data_Type(type)}>");
-        public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(null, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Consumer_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
+        public TypeSyntax Get_Token_Buffer_Type(ETokenType type) => SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlySpan}<{Get_Consumer_Data_Type(type)}>");
+        public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(null, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
         #endregion
 
     }

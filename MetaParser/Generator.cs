@@ -164,7 +164,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_ValueToken_Consumer(MetaParserContext.ConstantTokenProcessorFunctionName, TokenProcessor.Instance);
+            var consumer = context.Get_Token_Processor_Function_Definition(ETokenType.Constant, MetaParserContext.ConstantTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
@@ -179,7 +179,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_ValueToken_Consumer(MetaParserContext.CompoundTokenProcessorFunctionName, TokenProcessor.Instance);
+            var consumer = context.Get_Token_Processor_Function_Definition(ETokenType.Compound, MetaParserContext.CompoundTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
@@ -194,7 +194,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_Token_Consumer(MetaParserContext.ComplexTokenProcessorFunctionName, TokenProcessor.Instance);
+            var consumer = context.Get_Token_Processor_Function_Definition(ETokenType.Complex, MetaParserContext.ComplexTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
