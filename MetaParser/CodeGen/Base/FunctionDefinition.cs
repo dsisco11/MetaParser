@@ -6,24 +6,49 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+using System.Collections.Generic;
+
 namespace MetaParser.CodeGen.Base
 {
     internal class FunctionDefinition : IMetaCodeBuilder
     {
-        public FunctionDefinition(SyntaxTokenList? modifiers, TypeSyntax returnType, string name, ArgumentListSyntax arguments, IMetaCodeBuilder body)
+        #region Properties
+        public SyntaxTokenList? Modifiers { get; } = null;
+        public TypeSyntax ReturnType { get; }
+        public NameSyntax Name { get; }
+        public ArgumentListSyntax Arguments { get; }
+        public IMetaCodeBuilder Body { get; }
+
+        #endregion
+
+        #region Constructors
+        public FunctionDefinition(TypeSyntax returnType, string name, ArgumentListSyntax arguments, IMetaCodeBuilder body)
         {
-            Modifiers = modifiers;
             ReturnType = returnType;
             Name = SyntaxFactory.ParseName(name);
             Arguments = arguments;
             Body = body;
         }
 
-        public SyntaxTokenList? Modifiers { get; }
-        public TypeSyntax ReturnType { get; }
-        public NameSyntax Name { get; }
-        public ArgumentListSyntax Arguments { get; }
-        public IMetaCodeBuilder Body { get; }
+        //public FunctionDefinition(SyntaxTokenList modifiers, TypeSyntax returnType, string name, ArgumentListSyntax arguments, IMetaCodeBuilder body)
+        //{
+        //    Modifiers = modifiers;
+        //    ReturnType = returnType;
+        //    Name = SyntaxFactory.ParseName(name);
+        //    Arguments = arguments;
+        //    Body = body;
+        //}
+
+        public FunctionDefinition(IEnumerable<SyntaxToken> modifiers, TypeSyntax returnType, string name, ArgumentListSyntax arguments, IMetaCodeBuilder body)
+        {
+            Modifiers = SyntaxFactory.TokenList(modifiers);
+            ReturnType = returnType;
+            Name = SyntaxFactory.ParseName(name);
+            Arguments = arguments;
+            Body = body;
+        }
+
+        #endregion
 
         public void WriteTo(MetaParserContext context)
         {

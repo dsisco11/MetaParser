@@ -19,6 +19,7 @@ using MetaParser.Builders.TokenLogic.Consumer;
 using JetBrains.Annotations;
 using MetaParser.Exceptions;
 using MetaParser.Json.JsonTypeConverters;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MetaParser;
 
@@ -119,15 +120,15 @@ public partial class Generator : IIncrementalGenerator
                     }
                 }
 
-                context.Tokens = new TokenDeclarationsList() { CompleteSet = Tokens.ToImmutableArray() };
+                context.Consumers = new PatternConsumerList() { CompleteSet = Tokens.ToImmutableArray() };
             }
 
             return context;
         });
 
-        var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Tokens = parser.Tokens with { WorkingSet = parser.Tokens.CompleteSet.Where(o => o.Type == ETokenType.Constant).ToArray() } }));
-        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Tokens = parser.Tokens with { WorkingSet = parser.Tokens.CompleteSet.Where(o => o.Type == ETokenType.Compound).ToArray() } }));
-        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Tokens = parser.Tokens with { WorkingSet = parser.Tokens.CompleteSet.Where(o => o.Type == ETokenType.Complex).ToArray() } }));
+        var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(o => o.Type == ETokenType.Constant).ToArray() } }));
+        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(o => o.Type == ETokenType.Compound).ToArray() } }));
+        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(o => o.Type == ETokenType.Complex).ToArray() } }));
         #endregion
 
         // Parser Class
@@ -136,7 +137,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with {  writer = writer  };
 
-            new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, new ParsingLogic(), new ConsumeNextToken())
+            new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, new ParsingLogic(), ConstantTokenStage.Instance, CompoundTokenStage.Instance, ComplexTokenStage.Instance)
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.parser.class", writer.InnerWriter.ToString());
@@ -145,8 +146,6 @@ public partial class Generator : IIncrementalGenerator
         // Constant-Type Tokens
         context.RegisterSourceOutput(constantTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context.Tokens.WorkingSet.Length <= 0) return;
-
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
@@ -160,8 +159,6 @@ public partial class Generator : IIncrementalGenerator
         // Compound-Type Tokens
         context.RegisterSourceOutput(compoundTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context.Tokens.WorkingSet.Length <= 0) return;
-
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
@@ -175,8 +172,6 @@ public partial class Generator : IIncrementalGenerator
         // Complex-Type Tokens
         context.RegisterSourceOutput(complexTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context.Tokens.WorkingSet.Length <= 0) return;
-
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
@@ -190,7 +185,6 @@ public partial class Generator : IIncrementalGenerator
         // Token Structure
         context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context is null) return;
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
@@ -202,8 +196,6 @@ public partial class Generator : IIncrementalGenerator
         // Enums
         context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) => 
         {
-            if (context.Tokens.CompleteSet.Length <= 0) return;
-
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
@@ -211,14 +203,8 @@ public partial class Generator : IIncrementalGenerator
             writer.WriteLine($"public enum {MetaParserContext.TokenEnum} : {context.IdTypeName}");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"Unknown = ({context.IdTypeName}) 0,");
 
-            var distinct = context.Tokens.CompleteSet.ToImmutableSortedSet(new ConsumerComparer());
-            foreach (var token in distinct)
-            {
-                var enumName = MetaParserContext.Format_TokenId(token.TokenName);
-                writer.WriteLine($"{enumName} = ({context.IdTypeName}) {token.TokenIndex},");
-            }
+            TokenIDEnumBuilder.Instance.WriteTo(context);
 
             writer.Indent--;
             writer.WriteLine("}");
@@ -229,25 +215,11 @@ public partial class Generator : IIncrementalGenerator
         // Constants
         context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            if (context.Tokens.CompleteSet.Length <= 0) return;
-
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            writer.WriteLine($"namespace {context.Namespace};");
-            writer.WriteLine($"internal static class {MetaParserContext.TokenConsts}");
-            writer.WriteLine("{");
-            writer.Indent++;
-            writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId("unknown")} = 0;");
-
-            var distinct = context.Tokens.CompleteSet.ToImmutableSortedSet(new ConsumerComparer());
-            foreach (var token in distinct)
-            {
-                writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId(token.TokenName)} = {token.TokenIndex};");
-            }
-
-            writer.Indent--;
-            writer.WriteLine("}");
+            new ClassBuilder(SyntaxFactory.ParseTokens("internal static"), MetaParserContext.TokenConsts, TokenIDConstBuilder.Instance)
+                .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.constants", writer.InnerWriter.ToString());
         });

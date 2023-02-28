@@ -2,121 +2,80 @@
 namespace Foo.Bar.Tokens;
 public sealed partial class Parser
 {
-    private static bool consume_compound_token(global::System.ReadOnlySpan<char> source, out byte id, out int length)
+    private static bool TryProcessCompound(global::System.ReadOnlySpan<byte> stream, out byte id, out int length)
     {
-        switch (source[0])
+        switch (stream)
         {
-            case ' ':
-            case '\t':
-            case '\f':
+            case [ TokenId.Letters, ..]:
             {
-                id = TokenId.Whitespace;
-                length = consume_whitespace (source);
-                return true;
-                
+                id = TokenId.Identifier;
+                return consume_pattern_12(stream, out length);
             }
-            case (>= '0' and <= '9'):
+            case [ TokenId.Char_Solidus, TokenId.Char_Asterisk, ..]:
             {
-                id = TokenId.Digits;
-                length = consume_digits (source);
-                return true;
-                
-            }
-            case (>= 'a' and <= 'z'):
-            case (>= 'A' and <= 'Z'):
-            {
-                id = TokenId.Letters;
-                length = consume_letters (source);
-                return true;
-                
-            }
-            case '\n':
-            {
-                id = TokenId.Newline;
-                length = consume_newline (source);
-                return true;
-                
+                id = TokenId.Comment;
+                return consume_pattern_13(stream, out length);
             }
         }
-        
         id = default;
         length = default;
         return false;
         
-        static int consume_whitespace (global::System.ReadOnlySpan<char> buffer)
+        bool consume_pattern_12(global::System.ReadOnlySpan<byte> stream, out int length)
         {
-            int consumed = 0;
-            while (buffer.Length > consumed)
+            /*
+            * TokenID: identifier (#12)
+            * ==[ CONSUMER_DATA ]==
+            * PatternConsumer { Type = Compound, TokenIndex = 12, TokenName = identifier, ConsumerIndex = 12, Start = PatternGroup { Length = 1, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 1 }, Consume = PatternGroup { Length = 1, IsRawValues = False, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = OneOf, ConditionJoiner =  or , MinLength = 1 }, Stop = , Escape = , IsOpenEnded = True }
+            */
+            /* Consume the START sequence which got us here in the first place, we already know its part of the token */
+            var buffer = stream.Slice(1);
+            while (buffer.Length > 0)
             {
-                switch (buffer[consumed])
+                if (buffer is [ (TokenId.Letters or TokenId.Digits), ..])
+                /* If we have a set of valid CONSUME targets, then try and consume as many as possible (STOP sequence should be mutually exclusive with CONSUME sequence) */
                 {
-                    case ' ':
-                    case '\t':
-                    case '\f':
-                    {
-                        consumed++;
-                        continue;
-                    }
-                    default: return consumed;
+                    buffer = buffer.Slice(1);
+                    /* consumer forces moving on to next loop */
+                    continue;
                 }
+                
+                /* otherwise, default behaviour is to exit loop */
+                break;
             }
-            return consumed;
+            
+            length = stream.Length - buffer.Length;
+            return true;
         }
-        
-        static int consume_digits (global::System.ReadOnlySpan<char> buffer)
+        bool consume_pattern_13(global::System.ReadOnlySpan<byte> stream, out int length)
         {
-            int consumed = 0;
-            while (buffer.Length > consumed)
+            /*
+            * TokenID: comment (#13)
+            * ==[ CONSUMER_DATA ]==
+            * PatternConsumer { Type = Compound, TokenIndex = 13, TokenName = comment, ConsumerIndex = 13, Start = PatternGroup { Length = 2, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 2 }, Consume = , Stop = PatternGroup { Length = 2, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 2 }, Escape = , IsOpenEnded = True }
+            */
+            /* Consume the START sequence which got us here in the first place, we already know its part of the token */
+            var buffer = stream.Slice(2);while (buffer.Length > 0)
             {
-                switch (buffer[consumed])
+                if (buffer.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
+                /* If we have a STOP sequence, check for it */
                 {
-                    case (>= '0' and <= '9'):
-                    {
-                        consumed++;
-                        continue;
-                    }
-                    default: return consumed;
+                    /* end */
+                    break;
                 }
+                
+                /* Token doesn't specify any explicit consumables, so ALL items are considered valid consumables */
+                buffer = buffer.Slice(1);
             }
-            return consumed;
-        }
-        
-        static int consume_letters (global::System.ReadOnlySpan<char> buffer)
-        {
-            int consumed = 0;
-            while (buffer.Length > consumed)
+            
+            if (buffer .StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
             {
-                switch (buffer[consumed])
-                {
-                    case (>= 'a' and <= 'z'):
-                    case (>= 'A' and <= 'Z'):
-                    {
-                        consumed++;
-                        continue;
-                    }
-                    default: return consumed;
-                }
+                length = 2 + (stream.Length - buffer.Length);
+                return true;
             }
-            return consumed;
+            
+            length = default;
+            return false;
         }
-        
-        static int consume_newline (global::System.ReadOnlySpan<char> buffer)
-        {
-            int consumed = 0;
-            while (buffer.Length > consumed)
-            {
-                switch (buffer[consumed])
-                {
-                    case '\n':
-                    {
-                        consumed++;
-                        continue;
-                    }
-                    default: return consumed;
-                }
-            }
-            return consumed;
-        }
-        
     }
 }

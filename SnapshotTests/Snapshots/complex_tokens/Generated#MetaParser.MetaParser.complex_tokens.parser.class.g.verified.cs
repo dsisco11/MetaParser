@@ -2,28 +2,35 @@
 namespace Foo.Bar.Tokens;
 public sealed partial class Parser
 {
-    public global::System.Collections.Generic.List<Token> Parse(global::System.ReadOnlyMemory<char> Input)
+    public Token[] Parse(global::System.ReadOnlyMemory<char> stream)
     {
-        var buffer = Input;
-        var reader = buffer.Span;
-        var valueTokens = new global::System.Collections.Generic.List<ValueToken>();
+        var tokensArray = Parse_Constant(stream);
+        var tokensBuffer = new global::System.ReadOnlyMemory<ValueToken>( tokensArray );
+        return Parse_Compound(tokensBuffer);
         
-        do
+    }
+    private static ValueToken[] Parse_Constant(global::System.ReadOnlyMemory<char> stream)
+    {
+        var buffer = stream;
+        var reader = buffer.Span;
+        var results = new global::System.Collections.Generic.List<ValueToken>();
+        
+        while (reader.Length > 0)
         {
-            if (TryConsume(reader, out var outId, out var outLen))
+            if (TryProcessConstant(reader, out var outId, out var outLength))
             {
                 if (buffer.Length != reader.Length)
                 {
                     var unk_content_size = buffer.Length - reader.Length;
                     var unk_content = buffer.Slice(0, unk_content_size);
-                    valueTokens.Add(new ValueToken(TokenId.Unknown, unk_content));
+                    results.Add(new ValueToken(TokenId.Unknown, unk_content));
                     buffer = buffer.Slice(unk_content_size);
                     reader = buffer.Span;
                 }
                 
-                var consumed = buffer.Slice(0, outLen);
-                valueTokens.Add( new ValueToken(outId, consumed) );
-                buffer = buffer.Slice(outLen);
+                var consumed = buffer.Slice(0, outLength);
+                results.Add( new ValueToken(outId, consumed) );
+                buffer = buffer.Slice(outLength);
                 reader = buffer.Span;
             }
             else
@@ -31,68 +38,57 @@ public sealed partial class Parser
                 reader = reader.Slice(1);
             }
         }
-        while (reader.Length > 0);
         
         if (buffer.Length != reader.Length)
         {
             var unk_content_size = buffer.Length - reader.Length;
             var unk_content = buffer.Slice(0, unk_content_size);
-            valueTokens.Add(new ValueToken(TokenId.Unknown, unk_content));
+            results.Add(new ValueToken(TokenId.Unknown, unk_content));
             buffer = buffer.Slice(unk_content_size);
             reader = buffer.Span;
         }
         
-        var idValues = new byte[valueTokens.Count];
-        for (int i = 0; i < valueTokens.Count; i++)
+        return results.ToArray();
+    }
+    private static Token[] Parse_Compound(global::System.ReadOnlyMemory<ValueToken> stream)
+    {
+        var idValues = new byte[stream.Length];
+        for (int i = 0; i < stream.Length; i++)
         {
-            idValues[i] = valueTokens[i].Id;
+            idValues[i] = stream.Span[i].Id;
         }
-        var idSource = new global::System.ReadOnlyMemory<byte>( idValues );
         
+        var buffer = new global::System.ReadOnlyMemory<byte>( idValues );
+        var reader = buffer.Span;
+        var results = new global::System.Collections.Generic.List<Token>();
         int offset = 0;
-        var idBuffer = idSource;
-        System.Collections.Generic.List<Token> results = new();
-        do
+        
+        while (reader.Length > 0)
         {
-            if (consume_complex_token(idBuffer.Span, out var outId, out var outLength))
+            if (TryProcessCompound(reader, out var outId, out var outLength))
             {
-                var values = new ValueToken[outLength];
-                valueTokens.CopyTo(offset, values, 0, outLength);
-                results.Add(new Token((ETokenType) outId, values));
+                
+                var consumed = stream.Slice(offset, outLength).ToArray();
+                results.Add(new Token((ETokenType) outId, consumed) );
                 
                 offset += outLength;
-                idBuffer = idBuffer.Slice(outLength);
-                continue;
+                buffer = buffer.Slice(outLength);
+                reader = buffer.Span;
             }
-            
-            // Proxy the current value-token
-            var proxyValue = valueTokens[offset];
-            var token = new Token((ETokenType) proxyValue.Id, new[] { proxyValue });
-            results.Add(token);
-            offset += 1;
-            idBuffer = idBuffer.Slice(1);
+            else
+            {
+                /* Proxy the current token as it has no special compound behavior */
+                var proxyValue = stream.Span[offset];
+                results.Add(new Token((ETokenType) proxyValue.Id, new[] { proxyValue }));
+                offset += 1;
+                reader = reader.Slice(1);
+            }
         }
-        while (idBuffer.Length > 0);
         
-        return results;
+        return results.ToArray();
     }
-    private static bool TryConsume(global::System.ReadOnlySpan<char> source, out byte Id, out int Length)
+    private static Token[] Parse_Complex(global::System.ReadOnlyMemory<Token> stream)
     {
-        if (consume_constant_token(source, out var constId, out var constLen))
-        {
-            Id = constId;
-            Length = constLen;
-            return true;
-        }
-        else if (consume_compound_token(source, out var compId, out var compLen))
-        {
-            Id = compId;
-            Length = compLen;
-            return true;
-        }
-        
-        Id = default;
-        Length = default;
-        return false;
+        return Array.Empty<Token>();
     }
 }

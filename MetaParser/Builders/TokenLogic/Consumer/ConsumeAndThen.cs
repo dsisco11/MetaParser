@@ -13,7 +13,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
         public void WriteTo(MetaParserContext context)
         {
             var writer = context.writer;
-            var consumer = context.Tokens.WorkingSet.Single();
+            var consumer = context.Consumers.WorkingSet.Single();
 #if DEBUG
             writer.WriteLine($"/*");
             writer.WriteLine($"* TokenID: {consumer.TokenName} (#{consumer.TokenIndex})");
@@ -44,7 +44,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 if (consumer.Escape is not null && consumer.Stop is not null)
                 {
                     writer.Write($"if ({MetaParserContext.VarNameBufferMinor}");
-                    ConsumerSpanSeqMatcher.WriteTo(context, consumer.Escape);
+                    ConsumerPatternMatcher.WriteTo(context, consumer.Escape, true, true);
                     writer.WriteLine(")");
                     writer.WriteLine("{");
                     writer.Indent++;
@@ -52,13 +52,13 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                     writer.WriteLine("/* look past the ESCAPE sequence */");
 #endif
                     writer.WriteLine($"var {MetaParserContext.VarNameBufferLocal} = {MetaParserContext.VarNameBufferMinor}.Slice({consumer.Escape.Length});");
-                    writer.Write($"if ({MetaParserContext.VarNameBufferLocal} ");
-                    ConsumerSpanSeqMatcher.WriteTo(context, consumer.Stop);
-                    writer.WriteLine(")");
-                    writer.WriteLine("{");
 #if DEBUG
                     writer.WriteLine("/* if the stop sequence immediately follows the ESCAPE sequence then they are consumed */");
 #endif
+                    writer.Write($"if ({MetaParserContext.VarNameBufferLocal} ");
+                    ConsumerPatternMatcher.WriteTo(context, consumer.Stop, true, true);
+                    writer.WriteLine(")");
+                    writer.WriteLine("{");
                     writer.Indent++;
                     writer.WriteLine($"{MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferLocal}.Slice({consumer.Stop.Length});");
                     writer.WriteLine($"continue;");
@@ -72,7 +72,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 if (consumer.Stop is not null)
                 {
                     writer.Write($"if ({MetaParserContext.VarNameBufferMinor}");
-                    ConsumerSpanSeqMatcher.WriteTo(context, consumer.Stop);
+                    ConsumerPatternMatcher.WriteTo(context, consumer.Stop, true, true);
                     writer.WriteLine(")");
 #if DEBUG
                     writer.WriteLine("/* If we have a STOP sequence, check for it */");
@@ -96,7 +96,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 writer.WriteLine("{");
                 writer.Indent++;
                 writer.Write($"if ({MetaParserContext.VarNameBufferMinor}");
-                ConsumerSpanSeqMatcher.WriteTo(context, consumer.Consume);
+                ConsumerPatternMatcher.WriteTo(context, consumer.Consume, true, true);
                 writer.WriteLine(")");
 #if DEBUG
                 writer.WriteLine("/* If we have a set of valid CONSUME targets, then try and consume as many as possible (STOP sequence should be mutually exclusive with CONSUME sequence) */");
@@ -139,7 +139,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 writer.WriteLine();
 
                 writer.Write($"if ({MetaParserContext.VarNameBufferMinor} ");
-                ConsumerSpanSeqMatcher.WriteTo(context, consumer.Stop);
+                ConsumerPatternMatcher.WriteTo(context, consumer.Stop, true, true);
                 writer.WriteLine(")");
                 writer.WriteLine("{");
                 writer.Indent++;

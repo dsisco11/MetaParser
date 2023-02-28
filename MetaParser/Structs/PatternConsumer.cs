@@ -27,9 +27,9 @@ internal record PatternConsumer
     private bool HasConstLenStop => (Stop is null || Stop.IsConstantLength);
     private bool HasConstLenEscape => (Escape is null || Escape.IsConstantLength);
     /// <summary>
-    /// Returns true/false whether the pattern has a constant length and will always match a consistent number of items
+    /// Returns if the pattern is "open-ended" and involves consuming a variable number of elements
     /// </summary>
-    public bool IsConstantLength => (HasConstLenStart && HasConstLenConsume && HasConstLenStop && HasConstLenEscape);
+    public bool IsOpenEnded => (Consume is not null || Stop is not null);
     #endregion
 
     public PatternConsumer(ETokenType type, int tokenIndex, int consumerIndex, string idName, PatternGroup? start, PatternGroup? consume, PatternGroup? stop, PatternGroup? escape)

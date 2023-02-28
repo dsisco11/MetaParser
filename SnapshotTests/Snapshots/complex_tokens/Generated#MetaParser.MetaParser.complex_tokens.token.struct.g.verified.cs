@@ -1,6 +1,7 @@
 ﻿//HintName: MetaParser.MetaParser.complex_tokens.token.struct.g.cs
 namespace Foo.Bar.Tokens;
 [System.Diagnostics.DebuggerDisplay("{Data}", Name = "{(ETokenType)Id}")]
+[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
 public readonly record struct ValueToken(byte Id, global::System.ReadOnlyMemory<char> Data)
 {
     public override string ToString()

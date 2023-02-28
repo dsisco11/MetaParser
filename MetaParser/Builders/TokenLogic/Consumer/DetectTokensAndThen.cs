@@ -20,19 +20,19 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             wr.WriteLine("{");
             wr.Indent++;
 
-            var workTokens = context.Tokens with { WorkingSet = new PatternConsumer[1] };
-            var workContext = context with { Tokens = workTokens };
+            var workTokens = context.Consumers with { WorkingSet = new PatternConsumer[1] };
+            var workContext = context with { Consumers = workTokens };
 
-            foreach (PatternConsumer consumer in context.Tokens.WorkingSet)
+            foreach (PatternConsumer consumer in context.Consumers.WorkingSet)
             {
                 if (consumer.Start is null)
                 {
                     continue;
                 }
-                workContext.Tokens.WorkingSet[0] = consumer;
+                workContext.Consumers.WorkingSet[0] = consumer;
 
                 wr.Write("case ");
-                InlineConsumerListPatternBuilder.WriteTo(workContext, consumer.Start);
+                ConsumerPatternMatcher.WriteTo(context, consumer.Start);
                 wr.WriteLine(":");
                 wr.WriteLine("{");
                 wr.Indent++;

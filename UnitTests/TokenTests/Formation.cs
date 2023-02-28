@@ -62,7 +62,7 @@ public class Formation
         var parser = new Parser();
         var results = parser.Parse(input.AsMemory());
 
-        Assert.True(results.Count > indice);
+        Assert.True(results.Length > indice);
         Assert.NotNull(results[indice]);
         var token = results[indice];
         Assert.Equal(id, token.Id);

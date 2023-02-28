@@ -23,7 +23,7 @@ namespace MetaParser.Contexts
         public string? ClassName { get; set; } = "Parser";
         public string? ParserType { get; set; }
         public ImmutableDictionary<string, ImmutableArray<PatternDefinition>> Patterns { get; set; } = ImmutableDictionary<string, ImmutableArray<PatternDefinition>>.Empty;
-        public TokenDeclarationsList Tokens { get; set; } = new();
+        public PatternConsumerList Consumers { get; set; } = new();
 
         public SpecialType IdType { get; set; } = SpecialType.System_Int32;
         public SpecialType InputType { get; set; } = SpecialType.System_Char;
@@ -36,7 +36,11 @@ namespace MetaParser.Contexts
         #region Constants
         public const string TokenEnum = "ETokenType";
         public const string TokenConsts = "TokenId";
-        public const string UnknownToken = "Unknown";
+        public const string UnknownToken = "unknown";
+
+        public const string TokenDataClassName = "TokenData";
+        public const string TokenValueClassName = "ValueToken";
+        public const string TokenClassName = "Token";
 
         /// <summary>Name of first buffer used in any method</summary>
         public const string VarNameBufferMajor = "stream";
@@ -45,9 +49,9 @@ namespace MetaParser.Contexts
         /// <summary>Name of third buffer used in any method</summary>
         public const string VarNameBufferLocal = "reader";
 
-        public const string ConstantTokenProcessorFunctionName = "process_constant_tokens";
-        public const string CompoundTokenProcessorFunctionName = "process_compound_tokens";
-        public const string ComplexTokenProcessorFunctionName = "process_complex_tokens";
+        public const string ConstantTokenProcessorFunctionName = "TryProcessConstant";
+        public const string CompoundTokenProcessorFunctionName = "TryProcessCompound";
+        public const string ComplexTokenProcessorFunctionName = "TryProcessComplex";
         #endregion
 
         #region Statics
@@ -65,12 +69,12 @@ namespace MetaParser.Contexts
         public SyntaxToken Get_Consumer_Data_Type(ETokenType type) => SyntaxFactory.ParseToken(type == ETokenType.Constant ? InputTypeName : IdTypeName);
         public TypeSyntax Get_Token_Buffer_Type(ETokenType type) => SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlySpan}<{Get_Consumer_Data_Type(type)}>");
         public FunctionDefinition Get_Token_Processor_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out {IdTypeName} id, out int length"), body);
-        public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(null, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
+        public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
         #endregion
 
     }
 
-    internal sealed record TokenDeclarationsList
+    internal sealed record PatternConsumerList
     {
         /// <summary>
         /// Complete list of all tokens defined

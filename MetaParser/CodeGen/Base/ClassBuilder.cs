@@ -3,23 +3,41 @@ using MetaParser.CodeGen.Core;
 using MetaParser.Contexts;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+
+using System.Collections.Generic;
 
 namespace MetaParser.CodeGen.Base;
 
 internal class ClassBuilder : IMetaCodeBuilder
 {
     #region Properties
-    public SyntaxTokenList? Modifiers { get; }
+    public SyntaxTokenList? Modifiers { get; } = null;
     public string Name { get; }
     public IMetaCodeBuilder[] Contents { get; }
     #endregion
 
-    public ClassBuilder(SyntaxTokenList? modifiers, string name, params IMetaCodeBuilder[] contents)
+    #region Constructors
+    public ClassBuilder(SyntaxTokenList modifiers, string name, params IMetaCodeBuilder[] contents)
     {
         Modifiers = modifiers;
         Name = name;
         Contents = contents;
     }
+
+    public ClassBuilder(IEnumerable<SyntaxToken> modifiers, string name, params IMetaCodeBuilder[] contents)
+    {
+        Modifiers = SyntaxFactory.TokenList(modifiers);
+        Name = name;
+        Contents = contents;
+    }
+
+    public ClassBuilder(string name, params IMetaCodeBuilder[] contents)
+    {
+        Name = name;
+        Contents = contents;
+    }
+    #endregion
 
     public void WriteTo(MetaParserContext context)
     {

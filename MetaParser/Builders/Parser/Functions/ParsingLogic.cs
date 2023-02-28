@@ -1,8 +1,6 @@
 ﻿using MetaParser.CodeGen;
 using MetaParser.CodeGen.Core;
 using MetaParser.Contexts;
-
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace MetaParser.Builders.Parser.Functions
@@ -11,99 +9,24 @@ namespace MetaParser.Builders.Parser.Functions
     {
         public void WriteTo(MetaParserContext context)
         {
-            const string VarNameArrayMajor = "tokenValues";
-            const string VarNameArrayMinor = "idValues";
-            const string VarNameBuffer4th = "idBuffer";
+            const string VarNameValueTokensArray = "tokensArray";
+            const string VarNameValueTokensBuffer = "tokensBuffer";
             var wr = context.writer;
 
             var tyInputBuffer = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{context.InputTypeName}>");
-            var tyTokenList = SyntaxFactory.ParseTypeName($"{CodeCommon.List}<Token>");
-            var tyValueTokenList = SyntaxFactory.ParseTypeName($"{CodeCommon.List}<ValueToken>");
-
-            ConsumeNextToken funcConsumeNext = new();
-            UnknownTokenPusher unkPush = new();
-
-            //SyntaxFactory.MethodDeclaration(default, default, tyTokenList, default, SyntaxFactory.Identifier("Parse"), default, SyntaxFactory.TypeParameterList(SyntaxFactory.SeparatedList())) );
-            //FunctionDefinition parseFunction = new(tyTokenList, "Parse", )
+            var tyTokenList = SyntaxFactory.ParseTypeName($"{MetaParserContext.TokenClassName}[]");
             
 
             wr.Write("public ");
             wr.WriteLine($"{tyTokenList} Parse({tyInputBuffer} {MetaParserContext.VarNameBufferMajor})");
             wr.WriteLine("{");
             wr.Indent++;
-            wr.WriteLine($"var {MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMajor};");
-            wr.WriteLine($"var {MetaParserContext.VarNameBufferLocal} = {MetaParserContext.VarNameBufferMinor}.Span;");
-            wr.WriteLine($"var valueTokens = new {tyValueTokenList}();");
+            // constant-tokens
+            wr.WriteLine($"var {VarNameValueTokensArray} = {ConstantTokenStage.FunctionName}({MetaParserContext.VarNameBufferMajor});");
+            // compound-tokens
+            wr.WriteLine($"var {VarNameValueTokensBuffer} = new {CodeCommon.ReadOnlyMemory}<{MetaParserContext.TokenValueClassName}>( {VarNameValueTokensArray} );");
+            wr.WriteLine($"return {CompoundTokenStage.FunctionName}({VarNameValueTokensBuffer});");
             wr.WriteLine();
-            wr.WriteLine("do");
-            wr.WriteLine("{");
-            wr.Indent++;
-            wr.WriteLine($"if (TryConsume({MetaParserContext.VarNameBufferLocal}, out var outId, out var outLen))");
-            wr.WriteLine("{");
-            wr.Indent++;
-            // Be sure to push unknown token if its lingering
-            unkPush.WriteTo(context);
-            wr.WriteLine();
-            wr.WriteLine($"var consumed = {MetaParserContext.VarNameBufferMinor}.Slice(0, outLen);");
-            wr.WriteLine("valueTokens.Add( new ValueToken(outId, consumed) );");
-            wr.WriteLine($"{MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMinor}.Slice(outLen);");
-            wr.WriteLine($"{MetaParserContext.VarNameBufferLocal} = {MetaParserContext.VarNameBufferMinor}.Span;");
-            wr.Indent--;
-            wr.WriteLine("}");
-            wr.WriteLine("else");
-            wr.WriteLine("{");
-            wr.Indent++;
-            wr.WriteLine($"{MetaParserContext.VarNameBufferLocal} = {MetaParserContext.VarNameBufferLocal}.Slice(1);");
-            wr.Indent--;
-            wr.WriteLine("}");// end else
-            wr.Indent--;
-            wr.WriteLine("}");// end while
-            wr.WriteLine($"while ({MetaParserContext.VarNameBufferLocal}.Length > 0);");
-            wr.WriteLine();
-            // Be sure to push unknown token if its lingering
-            unkPush.WriteTo(context);
-            wr.WriteLine();
-            // Copy all of our value token ids into a uniform array in memory
-            wr.WriteLine($"var {VarNameArrayMinor} = new {context.IdTypeName}[valueTokens.Count];");
-            wr.WriteLine("for (int i = 0; i < valueTokens.Count; i++)");
-            wr.WriteLine("{");
-            wr.Indent++;
-            wr.WriteLine($"{VarNameArrayMinor}[i] = valueTokens[i].Id;");
-            wr.Indent--;
-            wr.WriteLine("}");
-            wr.WriteLine($"var idSource = new {CodeCommon.FormatReadOnlyMemoryBuffer(context.IdType)}( {VarNameArrayMinor} );");
-            // complex-tokens
-            wr.WriteLine();
-            wr.WriteLine($"{CodeCommon.Format(SpecialType.System_Int32)} offset = 0;");
-            wr.WriteLine($"var {VarNameBuffer4th} = idSource;");
-            wr.WriteLine("System.Collections.Generic.List<Token> results = new();");
-            wr.WriteLine("do");
-            wr.WriteLine("{");
-            wr.Indent++;
-            wr.WriteLine($"if ({MetaParserContext.ComplexTokenProcessorFunctionName}({VarNameBuffer4th}.Span, out var outId, out var outLength))");
-            wr.WriteLine("{");
-            wr.Indent++;
-            wr.WriteLine("var values = new ValueToken[outLength];");
-            wr.WriteLine("valueTokens.CopyTo(offset, values, 0, outLength);");
-            wr.WriteLine($"results.Add(new Token(({MetaParserContext.TokenEnum}) outId, values));");
-            wr.WriteLine();
-            wr.WriteLine("offset += outLength;");
-            wr.WriteLine($"{VarNameBuffer4th} = {VarNameBuffer4th}.Slice(outLength);");
-            wr.WriteLine("continue;");
-            wr.Indent--;
-            wr.WriteLine("}");
-            wr.WriteLine();
-            wr.WriteLine("// Proxy the current value-token");
-            wr.WriteLine("var proxyValue = valueTokens[offset];");
-            wr.WriteLine($"var token = new Token(({MetaParserContext.TokenEnum}) proxyValue.Id, new[] {{ proxyValue }});");
-            wr.WriteLine("results.Add(token);");
-            wr.WriteLine("offset += 1;");
-            wr.WriteLine($"{VarNameBuffer4th} = {VarNameBuffer4th}.Slice(1);");
-            wr.Indent--;
-            wr.WriteLine("}");
-            wr.WriteLine($"while ({VarNameBuffer4th}.Length > 0);");
-            wr.WriteLine();
-            wr.WriteLine("return results;");
 
             wr.Indent--;
             wr.WriteLine("}");// end function

@@ -18,13 +18,13 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             wr.WriteLine("return false;");
             wr.WriteLine();
 
-            var workingContext = context with { Tokens = context.Tokens with { WorkingSet = new Structs.PatternConsumer[1] } };
-            foreach (var consumer in context.Tokens.WorkingSet)
+            var workingContext = context with { Consumers = context.Consumers with { WorkingSet = new Structs.PatternConsumer[1] } };
+            foreach (var consumer in context.Consumers.WorkingSet)
             {
-                workingContext.Tokens.WorkingSet[0] = consumer;
-                if (consumer.IsConstantLength)
+                workingContext.Consumers.WorkingSet[0] = consumer;
+                if (!consumer.IsOpenEnded)
                 {
-                    continue;// skip constant length patterns as they get an inline fast-path
+                    continue;// skip const patterns as they get an inline fast-path
                 }
 
                 // generate consumer functions

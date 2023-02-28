@@ -12,7 +12,8 @@ namespace MetaParser.Builders
 
             wr.WriteLine($"namespace {context.Namespace};");
             wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({MetaParserContext.TokenEnum})Id}}"")]");
-            wr.WriteLine($"public readonly record struct ValueToken({context.IdTypeName} Id, {CodeCommon.FormatReadOnlyMemoryBuffer(context.InputType)} Data)");
+            wr.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]");
+            wr.WriteLine($"public readonly record struct {MetaParserContext.TokenValueClassName}({context.IdTypeName} Id, {CodeCommon.FormatReadOnlyMemoryBuffer(context.InputType)} Data)");
             wr.WriteLine("{");
             wr.Indent++;
             wr.WriteLine("public override string ToString()");
@@ -25,7 +26,7 @@ namespace MetaParser.Builders
             wr.WriteLine("}");
             wr.WriteLine();
             wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{this.ToString()}}"", Name = ""{{({MetaParserContext.TokenEnum})Id}}"")]");
-            wr.WriteLine($"public sealed record Token({MetaParserContext.TokenEnum} Id, ValueToken[] Values)");
+            wr.WriteLine($"public sealed record {MetaParserContext.TokenClassName}({MetaParserContext.TokenEnum} Id, {MetaParserContext.TokenValueClassName}[] Values)");
             wr.WriteLine("{");
             wr.Indent++;
             wr.WriteLine("public override string ToString()");
