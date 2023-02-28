@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MetaParser.Structs;
+
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -8,7 +10,7 @@ internal sealed record TokenConsumerDefinition : IConsumerDefinition
 {
     #region Properties
     [JsonPropertyName("$type")]
-    public ETokenType Type => ETokenType.Compound;
+    public EConsumerType Type => EConsumerType.Token;
 
     [JsonPropertyName("start")]
     public IEnumerable<TokenPattern> Start { get; set; }

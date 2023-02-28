@@ -4,21 +4,20 @@ using MetaParser.Json.Definitions;
 using MetaParser.Patternization;
 using System.Linq;
 
-using System.Security.Cryptography;
-
 namespace MetaParser.Structs;
 
 internal record PatternConsumer
 {
     #region Properties
-    public ETokenType Type;
-    public int TokenIndex;
-    public string TokenName;
-    public int ConsumerIndex;
-    public PatternGroup? Start;
-    public PatternGroup? Consume;
-    public PatternGroup? Stop;
-    public PatternGroup? Escape;
+    public readonly ETokenType TokenType;
+    public readonly EConsumerType ConsumerType;
+    public readonly int TokenIndex;
+    public readonly string TokenName;
+    public readonly int ConsumerIndex;
+    public readonly PatternGroup? Start;
+    public readonly PatternGroup? Consume;
+    public readonly PatternGroup? Stop;
+    public readonly PatternGroup? Escape;
     #endregion
 
     #region Utility
@@ -32,9 +31,10 @@ internal record PatternConsumer
     public bool IsOpenEnded => (Consume is not null || Stop is not null);
     #endregion
 
-    public PatternConsumer(ETokenType type, int tokenIndex, int consumerIndex, string idName, PatternGroup? start, PatternGroup? consume, PatternGroup? stop, PatternGroup? escape)
+    public PatternConsumer(ETokenType tokenType, EConsumerType consumerType, int tokenIndex, int consumerIndex, string idName, PatternGroup? start, PatternGroup? consume, PatternGroup? stop, PatternGroup? escape)
     {
-        Type = type;
+        TokenType = tokenType;
+        ConsumerType = consumerType;
         TokenIndex = tokenIndex;
         ConsumerIndex = consumerIndex;
         TokenName = idName;
@@ -61,6 +61,9 @@ internal record PatternConsumer
             startClause = new PatternGroup(EPatternCondition.OneOf, consumer.Consume.Select(o => o.Resolve(context)).ToArray());
         }
 
-        return new PatternConsumer(consumer.Type, tokenIndex, consumerIndex, tokenName, startClause, consumeClause, stopClause, escapeClause);
+        ETokenType tokenType = consumer.Type == EConsumerType.Data ? ETokenType.Constant : ETokenType.Compound;
+        // TODO: IF PATTERN CONSUMES TOKENS AND REFERENCES A TOKEN WHICH HAS A CONSUMER WHICH ALSO CONSUMES TOKENS, THEN IT IS A 'COMPLEX' TYPE
+
+        return new PatternConsumer(tokenType, consumer.Type, tokenIndex, consumerIndex, tokenName, startClause, consumeClause, stopClause, escapeClause);
     }
 }

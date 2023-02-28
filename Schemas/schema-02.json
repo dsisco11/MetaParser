@@ -58,14 +58,14 @@
     },
     "def:token:type:constant": {
       "properties": {
-        "$type": { "const": "constant" },
+        "$type": { "const": "data" },
         "$ref": "#/$defs/ref:value:one_or_many"
       },
       "additionalProperties": false
     },
     "def:token:type:compound": {
       "properties": {
-        "$type": { "const": "compound" },
+        "$type": { "const": "tokens" },
         "$ref": "#/$defs/ref:tokenid:one_or_many"
       },
       "additionalProperties": false

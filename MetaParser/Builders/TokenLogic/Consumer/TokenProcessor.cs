@@ -29,7 +29,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
 
                 // generate consumer functions
                 var consumerFuncName = MetaParserContext.Format_Pattern_Consumer_Function_Name(consumer.ConsumerIndex);
-                var consumeFunc = context.Get_Local_Token_Consumer_Function_Definition(consumer.Type, consumerFuncName, ConsumeAndThen.Instance);
+                var consumeFunc = context.Get_Local_Token_Consumer_Function_Definition(consumer.TokenType, consumerFuncName, ConsumeAndThen.Instance);
                 consumeFunc.WriteTo(workingContext);
             }
         }

@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace MetaParser
+﻿namespace MetaParser
 {
     internal enum ETokenType
     {
