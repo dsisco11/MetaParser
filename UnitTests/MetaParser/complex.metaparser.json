@@ -3,87 +3,87 @@
   "namespace": "UnitTestParser",
   "definitions": {
     "keyword_var": {
-      "$type": "constant",
+      "$type": "data",
       "start": "var"
     },
     "keyword_function": {
-      "$type": "constant",
+      "$type": "data",
       "start": "function"
     },
     "keyword_byte": {
-      "$type": "constant",
+      "$type": "data",
       "start": "byte"
     },
     "keyword_short": {
-      "$type": "constant",
+      "$type": "data",
       "start": "short"
     },
     "keyword_int": {
-      "$type": "constant",
+      "$type": "data",
       "start": "int"
     },
     "keyword_float": {
-      "$type": "constant",
+      "$type": "data",
       "start": "float"
     },
     "char_open_bracket": {
-      "$type": "constant",
+      "$type": "data",
       "start": "{"
     },
     "char_close_bracket": {
-      "$type": "constant",
+      "$type": "data",
       "start": "}"
     },
     "char_open_sqbracket": {
-      "$type": "constant",
+      "$type": "data",
       "start": "["
     },
     "char_close_sqbracket": {
-      "$type": "constant",
+      "$type": "data",
       "start": "]"
     },
     "char_open_parenthesis": {
-      "$type": "constant",
+      "$type": "data",
       "start": "("
     },
     "char_close_parenthesis": {
-      "$type": "constant",
+      "$type": "data",
       "start": ")"
     },
     "char_asterisk": {
-      "$type": "constant",
+      "$type": "data",
       "start": "*"
     },
     "char_solidus": {
-      "$type": "constant",
+      "$type": "data",
       "start": "/"
     },
     "char_reverse_solidus": {
-      "$type": "constant",
+      "$type": "data",
       "start": "\\"
     },
     "whitespace": {
-      "$type": "constant",
+      "$type": "data",
       "consume": [ " ", "\t", "\f" ]
     },
     "digits": {
-      "$type": "constant",
+      "$type": "data",
       "consume": { "range": [ "0", "9" ] }
     },
     "letters": {
-      "$type": "constant",
+      "$type": "data",
       "consume": [
         { "range": [ "a", "z" ] },
         { "range": [ "A", "Z" ] }
       ]
     },
     "newline": {
-      "$type": "constant",
+      "$type": "data",
       "consume": [ "\r", "\n" ]
     },
     "identifier": [
       {
-        "$type": "constant",
+        "$type": "data",
         "start": [
           {
             "or": [
@@ -105,40 +105,40 @@
         ]
       },
       {
-        "$type": "compound",
+        "$type": "tokens",
         "start": [ "identifier" ]
       }
     ],
     "typename": [
       {
-        "$type": "compound",
+        "$type": "tokens",
         "start": "keyword_var"
       },
       {
-        "$type": "compound",
+        "$type": "tokens",
         "start": "keyword_byte"
       },
       {
-        "$type": "compound",
+        "$type": "tokens",
         "start": "keyword_short"
       },
       {
-        "$type": "compound",
+        "$type": "tokens",
         "start": "keyword_int"
       },
       {
-        "$type": "compound",
+        "$type": "tokens",
         "start": "keyword_float"
       }
     ],
     "comment": {
-      "$type": "compound",
+      "$type": "tokens",
       "start": [ "char_solidus", "char_asterisk" ],
       "stop": [ "char_asterisk", "char_solidus" ],
       "escape": [ "char_reverse_solidus" ]
     },
     "codeblock": {
-      "$type": "compound",
+      "$type": "tokens",
       "start": [ "char_open_bracket" ],
       "stop": [ "char_close_bracket" ]
     }
