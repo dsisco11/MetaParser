@@ -6,19 +6,12 @@ using System;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Reflection;
-using System.Text.Json;
 
 namespace MetaParser
 {
     public static class Common
     {
-
-        private static AssemblyName _assemblyName = typeof(Common).Assembly.GetName();
-        internal static readonly string s_generatedCodeAttributeSource = $@"
-[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{_assemblyName.Name}"", ""{_assemblyName.Version}"")]
-";
         public const string MetaParserFileExtension = ".metaparser.json";
-
         #region Schema
         const string Schema_File_Resource = "MetaParser.Resources.schema.json";
         public static ValidationOptions SchemaOptions

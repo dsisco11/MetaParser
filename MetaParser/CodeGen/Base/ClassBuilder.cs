@@ -43,7 +43,11 @@ internal class ClassBuilder : IMetaCodeBuilder
     {
         var writer = context.writer;
         writer.WriteLine($"namespace {context.Namespace};");
-        //wr.WriteLine(Common.s_generatedCodeAttributeSource);
+        writer.WriteLine("{");
+        writer.Indent++;
+#if !DEBUG
+        writer.WriteLine(CodeCommon.s_generatedCodeAttributeSource);
+#endif
 
         if (Modifiers is not null)
         {
@@ -69,5 +73,8 @@ internal class ClassBuilder : IMetaCodeBuilder
 
         writer.Indent--;
         writer.WriteLine("}");// end class
+
+        writer.Indent--;
+        writer.WriteLine("}");// end namespace
     }
 }
