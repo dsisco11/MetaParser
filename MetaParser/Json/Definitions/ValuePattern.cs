@@ -1,10 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using System;
 using MetaParser.Contexts;
-using MetaParser.Exceptions;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
-using System.Collections.Generic;
 using MetaParser.Patternization;
 using System.Text.Json;
 using MetaParser.Json.Attributes;
@@ -15,7 +13,6 @@ namespace MetaParser.Json.Definitions;
 [JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor)]
 [JsonDerivedType(typeof(ValuePatternConst))]
 [JsonDerivedType(typeof(ValuePatternRange), "range")]
-[JsonDerivedType(typeof(ValuePatternAlias), "pattern")]
 internal abstract record ValuePattern : PatternDeclaration;
 
 internal sealed record ValuePatternConst : ValuePattern
@@ -60,48 +57,6 @@ internal sealed record ValuePatternRange : ValuePattern
     }
 }
 
-internal sealed record ValuePatternAlias : ValuePattern
-{
-    public readonly string name;
-
-    [JsonConstructor]
-    public ValuePatternAlias(string name)
-    {
-        this.name = name;
-    }
-
-    public override Pattern Resolve(MetaParserContext context)
-    {
-        // Lookup alias in contexts patterns list
-        // Write switch case pattern
-        if (!context.Patterns.TryGetValue(name, out var patternList))
-        {
-            throw new PatternNotFoundException($"The specified pattern ('{name}') is not in the pattern definitions list!");
-        }
-
-        if (patternList.Length == 1)
-        {
-            return patternList.Single().Resolve(context);
-        }
-        else
-        {
-            List<Pattern> resolved = new(patternList.Length);
-            for (int i = 0; i < patternList.Length; i++)
-            {
-                var definition = patternList[i];
-                if (definition is not ValuePattern pattern)
-                {
-                    throw new Exception($"The pattern ('{name}') references the wrong pattern type, a value-type pattern is required");
-                }
-
-                resolved.Add(pattern.Resolve(context));
-            }
-
-            return new PatternGroup(EPatternCondition.OneOf, resolved.ToArray());
-        }
-    }
-}
-
 internal class ValuePatternConverter : JsonConverter<ValuePattern>
 {
     public override ValuePattern? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -125,20 +80,11 @@ internal class ValuePatternConverter : JsonConverter<ValuePattern>
                             {
                                 return consume_range_pattern(ref reader);
                             }
-                        case "pattern":
-                            {
-                                return consume_alias_pattern(ref reader);
-                            }
                         default:
                             {
                                 throw new NotImplementedException($"Unrecognized property name({propertyName}) when deserializing '{nameof(ValuePattern)}' type");
                             }
                     }
-                }
-            case JsonTokenType.String:
-                {
-                    var val = reader.GetString();
-                    return val is not null ? new ValuePatternConst(val) : null;
                 }
             default:
                 {
@@ -174,29 +120,7 @@ internal class ValuePatternConverter : JsonConverter<ValuePattern>
             throw new JsonException("Invalid property in 'range' item");
         }
 
-        return new ValuePatternRange(item1[0], item2[0]);
-
-    }
-
-    private static ValuePatternAlias consume_alias_pattern(ref Utf8JsonReader reader)
-    {
-        reader.Read();
-        if (reader.TokenType != JsonTokenType.String)
-        {
-            throw new JsonException("Expected string for 'pattern' property");
-        }
-
-        var item1 = reader.GetString() ?? string.Empty;
-
-        while (reader.Read())
-        {
-            if (reader.TokenType == JsonTokenType.EndObject)
-            {
-                break;
-            }
-        }
-
-        return new ValuePatternAlias(item1);
+        return new ValuePatternRange(new[] { item1, item2 });
 
     }
 
