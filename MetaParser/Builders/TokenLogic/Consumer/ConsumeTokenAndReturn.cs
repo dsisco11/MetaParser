@@ -18,12 +18,12 @@ internal class ConsumeTokenAndReturn : IMetaCodeBuilder
         {
             var consumerId = consumer.ConsumerIndex;
             var consumerFunc = MetaParserContext.Format_Pattern_Consumer_Function_Name(consumerId);
-            wr.WriteLine($"id = {context.Get_TokenId_Ref(consumer.TokenName)};");
+            wr.WriteLine($"id = {MetaParserContext.Get_TokenId_Ref(consumer.TokenName)};");
             wr.WriteLine($"return {consumerFunc}(stream, out length);");
         }
         else
         {
-            wr.WriteLine($"id = {context.Get_TokenId_Ref(consumer.TokenName)};");
+            wr.WriteLine($"id = {MetaParserContext.Get_TokenId_Ref(consumer.TokenName)};");
             wr.WriteLine($"length = {consumer.Start.Length};");
             wr.WriteLine($"return true;");
         }

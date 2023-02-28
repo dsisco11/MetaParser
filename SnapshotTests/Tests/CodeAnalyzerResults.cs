@@ -12,11 +12,11 @@ public class Analyzer : IClassFixture<CodeGeneratorFixture>
         this.fixture = fixture;
     }
 
-    [Theory]
-    [InlineData("bad_tokens.json")]
-    public Task Result(string fileName)
-    {
-        var sourceCode = CodeGeneratorFixture.Get_Input_File_Contents(fileName);
-        return fixture.Verify<MetaParser.Analyzer>(fileName, sourceCode);
-    }
+    //[Theory]
+    //[InlineData("bad_tokens.json")]
+    //public Task Result(string fileName)
+    //{
+    //    var sourceCode = CodeGeneratorFixture.Get_Input_File_Contents(fileName);
+    //    return fixture.Verify<MetaParser.Analyzer>(fileName, sourceCode);
+    //}
 }

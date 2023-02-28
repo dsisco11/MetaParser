@@ -61,27 +61,26 @@ public sealed partial class Parser
         var buffer = new global::System.ReadOnlyMemory<byte>( idValues );
         var reader = buffer.Span;
         var results = new global::System.Collections.Generic.List<Token>();
-        int offset = 0;
         
         while (reader.Length > 0)
         {
             if (TryProcessCompound(reader, out var outId, out var outLength))
             {
-                
-                var consumed = stream.Slice(offset, outLength).ToArray();
+                var consumed = stream.Slice(0, outLength).ToArray();
                 results.Add(new Token((ETokenType) outId, consumed) );
                 
-                offset += outLength;
+                stream = stream.Slice(outLength);
                 buffer = buffer.Slice(outLength);
                 reader = buffer.Span;
             }
             else
             {
                 /* Proxy the current token as it has no special compound behavior */
-                var proxyValue = stream.Span[offset];
-                results.Add(new Token((ETokenType) proxyValue.Id, new[] { proxyValue }));
-                offset += 1;
-                reader = reader.Slice(1);
+                var consumed = stream.Span[0];
+                results.Add(new Token((ETokenType) consumed.Id, new[] { consumed }));
+                stream = stream.Slice(1);
+                buffer = buffer.Slice(1);
+                reader = buffer.Span;
             }
         }
         

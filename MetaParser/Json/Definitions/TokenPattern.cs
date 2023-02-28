@@ -23,7 +23,7 @@ internal record TokenPattern : PatternDefinition
 
     public override Pattern Resolve(MetaParserContext context)
     {
-        return new PatternConst(context.Get_TokenId_Ref(id));
+        return new PatternConst(MetaParserContext.Get_TokenId_Ref(id));
     }
 }
 

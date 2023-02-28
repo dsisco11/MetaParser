@@ -12,7 +12,7 @@ namespace MetaParser.CodeGen.Base;
 internal class ClassBuilder : IMetaCodeBuilder
 {
     #region Properties
-    public SyntaxTokenList? Modifiers { get; } = null;
+    public SyntaxTokenList? Modifiers { get; }
     public string Name { get; }
     public IMetaCodeBuilder[] Contents { get; }
     #endregion
