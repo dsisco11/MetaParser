@@ -13,7 +13,7 @@ internal class JsonPrimaryPropertyConverter : JsonConverterFactory
     {
         return typeToConvert.GetProperties(BindingFlags.Public | BindingFlags.SetProperty)
                                            .Where(c => c.GetCustomAttribute<JsonPrimaryPropertyAttribute>() is not null)
-                                           .SingleOrDefault(null);
+                                           .SingleOrDefault();
     }
 
     public override bool CanConvert(Type typeToConvert)
@@ -23,9 +23,9 @@ internal class JsonPrimaryPropertyConverter : JsonConverterFactory
 
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-        var propertyType = GetMarkedProperty(typeToConvert) ?? throw new Exception($"Unable to find marked property for deserializing type: {typeToConvert}");
+        var propertyInfo = GetMarkedProperty(typeToConvert) ?? throw new Exception($"Unable to find marked property for deserializing type: {typeToConvert}");
         return (JsonConverter)Activator.CreateInstance(
-            typeof(ConverterInner<,>).MakeGenericType(typeToConvert, propertyType),
+            typeof(ConverterInner<,>).MakeGenericType(typeToConvert, propertyInfo.PropertyType),
             BindingFlags.Instance | BindingFlags.Public,
             binder: null,
             args: new object[] { options },

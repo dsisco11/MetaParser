@@ -94,22 +94,6 @@ namespace MetaParser
             using StreamReader rd = new StreamReader(stream);
             return rd.ReadToEnd();
         }
-
-        internal static string Get_Embedded_File_With_Generated_Header(string resourceName, bool includeGeneratedCodeAttribute)
-        {
-            var contents = Get_Embedded_File_Contents(resourceName);
-            using StringWriter baseWriter = new();
-            using IndentedTextWriter writer = new(baseWriter);
-
-            writer.WriteLine($"namespace {nameof(MetaParser)};");
-            if (includeGeneratedCodeAttribute)
-            {
-                writer.WriteLine(s_generatedCodeAttributeSource);
-            }
-            writer.Write(contents);
-
-            return writer.InnerWriter.ToString();
-        }
         #endregion
     }
 }
