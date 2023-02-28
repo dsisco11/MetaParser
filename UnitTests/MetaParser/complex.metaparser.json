@@ -79,13 +79,58 @@
     },
     "newline": {
       "$type": "constant",
-      "consume": "\n"
+      "consume": [ "\r", "\n" ]
     },
-    "identifier": {
-      "$type": "compound",
-      "start": [ "letters" ],
-      "consume": [ "letters", "digits" ]
-    },
+    "identifier": [
+      {
+        "$type": "constant",
+        "start": [
+          {
+            "or": [
+              { "range": [ "a", "z" ] },
+              { "range": [ "A", "Z" ] }
+            ]
+          }
+        ],
+        "consume": [
+          {
+            "or": [
+              { "range": [ "a", "z" ] },
+              { "range": [ "A", "Z" ] }
+            ]
+          },
+          { "range": [ "0", "9" ] },
+          "-",
+          "_"
+        ]
+      },
+      {
+        "$type": "compound",
+        "start": [ "identifier" ]
+      }
+    ],
+    "typename": [
+      {
+        "$type": "compound",
+        "start": "keyword_var"
+      },
+      {
+        "$type": "compound",
+        "start": "keyword_byte"
+      },
+      {
+        "$type": "compound",
+        "start": "keyword_short"
+      },
+      {
+        "$type": "compound",
+        "start": "keyword_int"
+      },
+      {
+        "$type": "compound",
+        "start": "keyword_float"
+      }
+    ],
     "comment": {
       "$type": "compound",
       "start": [ "char_solidus", "char_asterisk" ],
