@@ -7,25 +7,21 @@ using System.Linq;
 using System.Collections.Generic;
 using MetaParser.Patternization;
 using System.Text.Json;
+using MetaParser.Json.Attributes;
 
 namespace MetaParser.Json.Definitions;
 
-[JsonConverter(typeof(ValuePatternConverter))]
-//[JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor)]
-//[JsonDerivedType(typeof(ValuePatternConst))]
-//[JsonDerivedType(typeof(ValuePatternRange), "range")]
-//[JsonDerivedType(typeof(ValuePatternAlias), "pattern")]
+//[JsonConverter(typeof(ValuePatternConverter))]
+[JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor)]
+[JsonDerivedType(typeof(ValuePatternConst))]
+[JsonDerivedType(typeof(ValuePatternRange), "range")]
+[JsonDerivedType(typeof(ValuePatternAlias), "pattern")]
 internal abstract record ValuePattern : PatternDeclaration;
 
 internal sealed record ValuePatternConst : ValuePattern
 {
-    public string value;
-
-    [JsonConstructor]
-    public ValuePatternConst(string value)
-    {
-        this.value = value;
-    }
+    [JsonPrimaryProperty]
+    public string value { get; set; }
 
     public override Pattern Resolve(MetaParserContext context)
     {
@@ -50,10 +46,10 @@ internal sealed record ValuePatternRange : ValuePattern
     public readonly char end;
 
     [JsonConstructor]
-    public ValuePatternRange(char start, char end)
+    public ValuePatternRange(string[] range)
     {
-        this.begin = start;
-        this.end = end;
+        this.begin = range[0].ToCharArray()[0];
+        this.end = range[0].ToCharArray()[1];
     }
 
     public override Pattern Resolve(MetaParserContext context)
