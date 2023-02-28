@@ -15,7 +15,7 @@ namespace MetaParser.Json.Definitions;
 //[JsonDerivedType(typeof(ValuePatternConst))]
 //[JsonDerivedType(typeof(ValuePatternRange), "range")]
 //[JsonDerivedType(typeof(ValuePatternAlias), "pattern")]
-internal abstract record ValuePattern : PatternDefinition;
+internal abstract record ValuePattern : PatternDeclaration;
 
 internal sealed record ValuePatternConst : ValuePattern
 {
@@ -135,7 +135,7 @@ internal class ValuePatternConverter : JsonConverter<ValuePattern>
                             }
                         default:
                             {
-                                throw new JsonException("Expected 'range' property for item in compound token");
+                                throw new NotImplementedException($"Unrecognized property name({propertyName}) when deserializing '{nameof(ValuePattern)}' type");
                             }
                     }
                 }

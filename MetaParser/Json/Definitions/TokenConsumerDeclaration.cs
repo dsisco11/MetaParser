@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
-internal sealed record TokenConsumerDefinition : IConsumerDefinition
+internal sealed record TokenConsumerDeclaration : IConsumerDeclaration
 {
     #region Properties
     [JsonPropertyName("$type")]
@@ -26,14 +26,14 @@ internal sealed record TokenConsumerDefinition : IConsumerDefinition
     #endregion
 
     #region IConsumerDefinition
-    IEnumerable<PatternDefinition> IConsumerDefinition.Start => Start as IEnumerable<PatternDefinition>;
-    IEnumerable<PatternDefinition> IConsumerDefinition.Consume => Consume as IEnumerable<PatternDefinition>;
-    IEnumerable<PatternDefinition> IConsumerDefinition.Stop => Stop as IEnumerable<PatternDefinition>;
-    IEnumerable<PatternDefinition> IConsumerDefinition.Escape => Escape as IEnumerable<PatternDefinition>;
+    IEnumerable<PatternDeclaration> IConsumerDeclaration.Start => Start as IEnumerable<PatternDeclaration>;
+    IEnumerable<PatternDeclaration> IConsumerDeclaration.Consume => Consume as IEnumerable<PatternDeclaration>;
+    IEnumerable<PatternDeclaration> IConsumerDeclaration.Stop => Stop as IEnumerable<PatternDeclaration>;
+    IEnumerable<PatternDeclaration> IConsumerDeclaration.Escape => Escape as IEnumerable<PatternDeclaration>;
     #endregion
 
     [JsonConstructor]
-    public TokenConsumerDefinition(IEnumerable<TokenPattern>? start, IEnumerable<TokenPattern>? consume, IEnumerable<TokenPattern>? stop, IEnumerable<TokenPattern>? escape)
+    public TokenConsumerDeclaration(IEnumerable<TokenPattern>? start, IEnumerable<TokenPattern>? consume, IEnumerable<TokenPattern>? stop, IEnumerable<TokenPattern>? escape)
     {
         Start = start ?? Array.Empty<TokenPattern>();
         Consume = consume ?? Array.Empty<TokenPattern>();

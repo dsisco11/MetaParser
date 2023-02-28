@@ -5,10 +5,10 @@ namespace MetaParser.Contexts;
 
 [JsonSerializable(typeof(ParserDefinition))]
 [JsonSerializable(typeof(ETokenType))]
-[JsonSerializable(typeof(IConsumerDefinition))]
-[JsonSerializable(typeof(PatternDefinition))]
-[JsonSerializable(typeof(ValueConsumerDefinition))]
-[JsonSerializable(typeof(TokenConsumerDefinition))]
+[JsonSerializable(typeof(IConsumerDeclaration))]
+[JsonSerializable(typeof(PatternDeclaration))]
+[JsonSerializable(typeof(ValueConsumerDeclaration))]
+[JsonSerializable(typeof(TokenConsumerDeclaration))]
 internal partial class MetaParserJsonSerializer : JsonSerializerContext
 {
 }

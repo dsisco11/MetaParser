@@ -5,7 +5,7 @@ using MetaParser.Json.Attributes;
 
 namespace MetaParser.Json.Definitions;
 
-internal record TokenPattern : PatternDefinition
+internal record TokenPattern : PatternDeclaration
 {
     [JsonInclude]
     [JsonPrimaryProperty]

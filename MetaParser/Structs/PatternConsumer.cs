@@ -44,7 +44,7 @@ internal record PatternConsumer
         Escape = escape;
     }
 
-    public static PatternConsumer From(MetaParserContext context, IConsumerDefinition consumer, string tokenName, int tokenIndex, int consumerIndex)
+    public static PatternConsumer From(MetaParserContext context, IConsumerDeclaration consumer, string tokenName, int tokenIndex, int consumerIndex)
     {
         var startClause = consumer.Start.Any() ? new PatternGroup(EPatternCondition.AllOf, consumer.Start.Select(o => o.Resolve(context)).ToArray()) : null;
         var consumeClause = consumer.Consume.Any() ? new PatternGroup(EPatternCondition.OneOf, consumer.Consume.Select(o => o.Resolve(context)).ToArray()) : null;
