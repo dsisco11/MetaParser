@@ -17,7 +17,7 @@ namespace MetaParser.Json.Definitions;
 //[JsonDerivedType(typeof(ValuePatternAlias), "pattern")]
 internal abstract record ValuePattern : PatternDefinition;
 
-internal record ValuePatternConst : ValuePattern
+internal sealed record ValuePatternConst : ValuePattern
 {
     public string value;
 
@@ -44,10 +44,10 @@ internal record ValuePatternConst : ValuePattern
     }
 }
 
-internal record ValuePatternRange : ValuePattern
+internal sealed record ValuePatternRange : ValuePattern
 {
-    public char begin;
-    public char end;
+    public readonly char begin;
+    public readonly char end;
 
     [JsonConstructor]
     public ValuePatternRange(char start, char end)
@@ -64,9 +64,9 @@ internal record ValuePatternRange : ValuePattern
     }
 }
 
-internal record ValuePatternAlias : ValuePattern
+internal sealed record ValuePatternAlias : ValuePattern
 {
-    public string name;
+    public readonly string name;
 
     [JsonConstructor]
     public ValuePatternAlias(string name)

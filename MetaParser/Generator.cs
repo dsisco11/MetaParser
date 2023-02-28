@@ -20,6 +20,7 @@ using JetBrains.Annotations;
 using MetaParser.Exceptions;
 using MetaParser.Json.JsonTypeConverters;
 using Microsoft.CodeAnalysis.CSharp;
+using MetaParser.Json.Converters;
 
 namespace MetaParser;
 
@@ -50,6 +51,8 @@ public partial class Generator : IIncrementalGenerator
             JsonDocument jsonDoc = data.Item2;
             var deserializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
             deserializerOptions.Converters.Add(new JsonEnumerableConverter());
+            deserializerOptions.Converters.Add(new JsonPrimaryPropertyConverter());
+
             deserializerOptions.AddContext<MetaParserJsonSerializer>();
 
             var schema = jsonDoc.Deserialize<ParserDefinition>(deserializerOptions);
