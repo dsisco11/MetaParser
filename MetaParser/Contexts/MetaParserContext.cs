@@ -24,7 +24,6 @@ namespace MetaParser.Contexts
         public string Namespace { get; set; } = string.Empty;
         public string? ClassName { get; set; } = "Parser";
         public string? ParserType { get; set; }
-        public ImmutableDictionary<string, ImmutableArray<PatternDeclaration>> Patterns { get; set; } = ImmutableDictionary<string, ImmutableArray<PatternDeclaration>>.Empty;
         public PatternConsumerList Consumers { get; set; } = new();
 
         public SpecialType IdType { get; set; } = SpecialType.System_Int32;

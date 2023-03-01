@@ -14,9 +14,6 @@ internal record ParserDefinition
     [JsonPropertyName("$type")]
     public string? ParserType { get; set; }
 
-    [JsonPropertyName("patterns")]
-    public Dictionary<string, IEnumerable<PatternDeclaration>>? Patterns { get; set; }
-
     [JsonPropertyName("definitions")]
     public Dictionary<string, IEnumerable<IConsumerDeclaration>>? Definitions { get; set; }
 }
