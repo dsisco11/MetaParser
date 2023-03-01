@@ -2,40 +2,76 @@
 using MetaParser.Json.Attributes;
 using MetaParser.Patternization;
 
+using System;
 using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
-[JsonPolymorphic(UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FallBackToNearestAncestor)]
-[JsonDerivedType(typeof(PatternAndSequenceDeclaration), "and")]
-[JsonDerivedType(typeof(PatternOrSequenceDeclaration), "or")]
-internal abstract record PatternDeclaration
+internal record PatternDeclaration
 {
-    public abstract Pattern Resolve(MetaParserContext context);
-}
+    #region Fields
+    private EPatternCondition? _condition;
+    private PatternDeclaration[] _items = Array.Empty<PatternDeclaration>();
+    #endregion
 
-internal sealed record PatternAndSequenceDeclaration : PatternDeclaration
-{
-    [JsonPropertyName("and")]
+    #region Properties
     [JsonPrimaryProperty]
-    public PatternDeclaration[] items { get; set; }
-
-    public override Pattern Resolve(MetaParserContext context)
+    [JsonPropertyName("and")]
+    public PatternDeclaration[]? and_items 
     {
-        var resolvedItems = items.Select(o => o.Resolve(context)).ToArray();
-        return new PatternGroup(EPatternCondition.AllOf, resolvedItems);
+        get 
+        {
+            return _condition switch
+            {
+                EPatternCondition.AllOf => _items,
+                _ => null
+            }; 
+        }
+        set 
+        { 
+            if (value is null) 
+                return; 
+            _items = value; 
+            _condition = EPatternCondition.AllOf; 
+        } 
     }
-}
 
-internal sealed record PatternOrSequenceDeclaration : PatternDeclaration
-{
     [JsonPropertyName("or")]
-    public PatternDeclaration[] items { get; set; }
-
-    public override Pattern Resolve(MetaParserContext context)
+    public PatternDeclaration[]? or_items
     {
-        var resolvedItems = items.Select(o => o.Resolve(context)).ToArray();
-        return new PatternGroup(EPatternCondition.OneOf, resolvedItems);
+        get
+        {
+            return _condition switch
+            {
+                EPatternCondition.OneOf => _items,
+                _ => null
+            };
+        }
+        set
+        {
+            if (value is null)
+                return;
+            _items = value;
+            _condition = EPatternCondition.OneOf;
+        }
+    }
+    #endregion
+
+    public PatternDeclaration(PatternDeclaration[]? and_items = null, PatternDeclaration[]? or_items = null)
+    {
+        this.and_items = and_items;
+        this.or_items = or_items;
+    }
+
+    public virtual Pattern Resolve(MetaParserContext context)
+    {
+        if (_items is not null && _items.Length > 0)
+        {
+            var resolvedItems = _items.Select(o => o.Resolve(context)).ToArray();
+            return new PatternGroup(_condition.Value, resolvedItems);
+        }
+
+        return Pattern.Empty;
     }
 }

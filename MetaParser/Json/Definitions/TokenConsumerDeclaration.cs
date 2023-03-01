@@ -1,11 +1,22 @@
 ﻿using MetaParser.Structs;
 
-using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
+internal sealed record TokenConsumerDeclaration : ConsumerDeclaration<TokenPattern>
+{
+    [JsonPropertyName("$type")]
+    public override EConsumerType Type { get => EConsumerType.Token; set { } }
+
+    [JsonConstructor]
+    public TokenConsumerDeclaration(IEnumerable<TokenPattern>? start, IEnumerable<TokenPattern>? consume, IEnumerable<TokenPattern>? stop, IEnumerable<TokenPattern>? escape) : base(start, consume, stop, escape)
+    {
+    }
+}
+
+#if false
 internal sealed record TokenConsumerDeclaration : IConsumerDeclaration
 {
     #region Properties
@@ -41,3 +52,4 @@ internal sealed record TokenConsumerDeclaration : IConsumerDeclaration
         Escape = escape ?? Array.Empty<TokenPattern>();
     }
 }
+#endif

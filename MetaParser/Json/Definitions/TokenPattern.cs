@@ -5,20 +5,27 @@ using MetaParser.Json.Attributes;
 
 namespace MetaParser.Json.Definitions;
 
-internal record TokenPattern : PatternDeclaration
+internal sealed record TokenPattern : PatternDeclaration
 {
-    [JsonInclude]
+    #region Properties
     [JsonPrimaryProperty]
-    public string id { get; set; }
+    [JsonPropertyName("id")]
+    public string? id { get; set; }
+    #endregion
 
     [JsonConstructor]
-    public TokenPattern(string id)
+    public TokenPattern(string? id)
     {
         this.id = id;
     }
 
     public override Pattern Resolve(MetaParserContext context)
     {
-        return new PatternConst(MetaParserContext.Get_TokenId_Ref(id));
+        if (id is not null)
+        {
+            return new PatternConst(MetaParserContext.Get_TokenId_Ref(id));
+        }
+
+        return base.Resolve(context);
     }
 }
