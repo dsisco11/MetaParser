@@ -7,7 +7,7 @@ using MetaParser.Json.Attributes;
 
 namespace MetaParser.Json.Definitions;
 
-internal sealed record ValuePattern : PatternDeclaration
+internal sealed record ValuePatternDeclaration : PatternDeclaration
 {
     #region Properties
     [JsonPrimaryProperty]
@@ -19,7 +19,7 @@ internal sealed record ValuePattern : PatternDeclaration
     #endregion
 
     [JsonConstructor]
-    public ValuePattern(string? value = null, string[]? range = null)
+    public ValuePatternDeclaration(string? value = null, string[]? range = null)
     {
         this.value = value;
         this.range = range;

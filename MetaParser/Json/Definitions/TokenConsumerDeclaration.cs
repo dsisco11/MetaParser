@@ -5,13 +5,13 @@ using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
-internal sealed record TokenConsumerDeclaration : ConsumerDeclaration<TokenPattern>
+internal sealed record TokenConsumerDeclaration : ConsumerDeclaration<TokenPatternDeclaration>
 {
     [JsonPropertyName("$type")]
     public override EConsumerType Type { get => EConsumerType.Token; set { } }
 
     [JsonConstructor]
-    public TokenConsumerDeclaration(IEnumerable<TokenPattern>? start, IEnumerable<TokenPattern>? consume, IEnumerable<TokenPattern>? stop, IEnumerable<TokenPattern>? escape) : base(start, consume, stop, escape)
+    public TokenConsumerDeclaration(IEnumerable<TokenPatternDeclaration>? start, IEnumerable<TokenPatternDeclaration>? consume, IEnumerable<TokenPatternDeclaration>? stop, IEnumerable<TokenPatternDeclaration>? escape) : base(start, consume, stop, escape)
     {
     }
 }

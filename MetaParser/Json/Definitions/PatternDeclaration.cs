@@ -8,6 +8,9 @@ using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
+[JsonPolymorphic]
+[JsonDerivedType(typeof(ValuePatternDeclaration))]
+[JsonDerivedType(typeof(TokenPatternDeclaration))]
 internal record PatternDeclaration
 {
     #region Fields

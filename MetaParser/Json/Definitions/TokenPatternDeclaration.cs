@@ -5,7 +5,7 @@ using MetaParser.Json.Attributes;
 
 namespace MetaParser.Json.Definitions;
 
-internal sealed record TokenPattern : PatternDeclaration
+internal sealed record TokenPatternDeclaration : PatternDeclaration
 {
     #region Properties
     [JsonPrimaryProperty]
@@ -14,7 +14,7 @@ internal sealed record TokenPattern : PatternDeclaration
     #endregion
 
     [JsonConstructor]
-    public TokenPattern(string? id)
+    public TokenPatternDeclaration(string? id)
     {
         this.id = id;
     }
