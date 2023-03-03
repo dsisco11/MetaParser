@@ -2,6 +2,8 @@
 using MetaParser.Contexts;
 using MetaParser.Structs;
 
+using System.Linq;
+
 namespace MetaParser.Builders.TokenLogic.Consumer
 {
     internal class DetectTokensAndThen : IMetaCodeBuilder
@@ -23,7 +25,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             var workTokens = context.Consumers with { WorkingSet = new PatternConsumer[1] };
             var workContext = context with { Consumers = workTokens };
 
-            foreach (PatternConsumer consumer in context.Consumers.WorkingSet)
+            foreach (PatternConsumer consumer in context.Consumers.WorkingSet.OrderByDescending(x => x.Start.Length))
             {
                 if (consumer.Start is null)
                 {

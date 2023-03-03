@@ -2,6 +2,11 @@
 using MetaParser.Exceptions;
 using MetaParser.Json.Definitions;
 using MetaParser.Patternization;
+
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Structs;
@@ -58,6 +63,14 @@ internal record PatternConsumer
             case null when consumeClause is not null:
                 {// If pattern has no START condition, then we use the CONSUME pattern as an implicit starting condition
                     startClause = new PatternGroup(EPatternCondition.OneOf, consumer.Consume.Select(o => o.Resolve(context)).ToArray());
+                    break;
+                }
+            case not null when consumeClause is not null:
+                {// add the consume clause item to the end of the start clause so the parser only consumes this token if its possible for it to actually consume items
+                    var concat = new List<Pattern>(startClause.items);
+                    concat.Add(consumeClause);
+
+                    startClause = new PatternGroup(EPatternCondition.AllOf, concat.ToArray());
                     break;
                 }
         }
