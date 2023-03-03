@@ -1,5 +1,5 @@
 ﻿//HintName: MetaParser.MetaParser.complex_tokens.tokens.compound.g.cs
-namespace UnitTestParser;
+namespace UnitTestParser
 {
     public sealed partial class Parser
     {
@@ -7,6 +7,11 @@ namespace UnitTestParser;
         {
             switch (stream)
             {
+                case [ TokenId.Char_Solidus, TokenId.Char_Asterisk, ..]:
+                {
+                    id = TokenId.Comment;
+                    return consume_pattern_27(stream, out length);
+                }
                 case [ TokenId.Identifier, ..]:
                 {
                     id = TokenId.Identifier;
@@ -42,11 +47,6 @@ namespace UnitTestParser;
                     id = TokenId.Typename;
                     length = 1;
                     return true;
-                }
-                case [ TokenId.Char_Solidus, TokenId.Char_Asterisk, ..]:
-                {
-                    id = TokenId.Comment;
-                    return consume_pattern_27(stream, out length);
                 }
                 case [ TokenId.Char_Open_Bracket, ..]:
                 {

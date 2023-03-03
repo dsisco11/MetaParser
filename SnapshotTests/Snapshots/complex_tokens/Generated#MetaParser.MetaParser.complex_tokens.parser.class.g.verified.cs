@@ -1,5 +1,5 @@
 ﻿//HintName: MetaParser.MetaParser.complex_tokens.parser.class.g.cs
-namespace UnitTestParser;
+namespace UnitTestParser
 {
     public sealed partial class Parser
     {

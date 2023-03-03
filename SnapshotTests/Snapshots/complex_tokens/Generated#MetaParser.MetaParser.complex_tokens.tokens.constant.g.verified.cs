@@ -1,5 +1,5 @@
 ﻿//HintName: MetaParser.MetaParser.complex_tokens.tokens.constant.g.cs
-namespace UnitTestParser;
+namespace UnitTestParser
 {
     public sealed partial class Parser
     {
@@ -7,22 +7,10 @@ namespace UnitTestParser;
         {
             switch (stream)
             {
-                case [ 'v', 'a', 'r', ..]:
-                {
-                    id = TokenId.Keyword_Var;
-                    length = 3;
-                    return true;
-                }
                 case [ 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ..]:
                 {
                     id = TokenId.Keyword_Function;
                     length = 8;
-                    return true;
-                }
-                case [ 'b', 'y', 't', 'e', ..]:
-                {
-                    id = TokenId.Keyword_Byte;
-                    length = 4;
                     return true;
                 }
                 case [ 's', 'h', 'o', 'r', 't', ..]:
@@ -31,17 +19,34 @@ namespace UnitTestParser;
                     length = 5;
                     return true;
                 }
+                case [ 'f', 'l', 'o', 'a', 't', ..]:
+                {
+                    id = TokenId.Keyword_Float;
+                    length = 5;
+                    return true;
+                }
+                case [ 'b', 'y', 't', 'e', ..]:
+                {
+                    id = TokenId.Keyword_Byte;
+                    length = 4;
+                    return true;
+                }
+                case [ 'v', 'a', 'r', ..]:
+                {
+                    id = TokenId.Keyword_Var;
+                    length = 3;
+                    return true;
+                }
                 case [ 'i', 'n', 't', ..]:
                 {
                     id = TokenId.Keyword_Int;
                     length = 3;
                     return true;
                 }
-                case [ 'f', 'l', 'o', 'a', 't', ..]:
+                case [ ((>='a' and <='z') or (>='A' and <='Z')), (((>='a' and <='z') or (>='A' and <='Z')) or (>='0' and <='9') or '-' or '_'), ..]:
                 {
-                    id = TokenId.Keyword_Float;
-                    length = 5;
-                    return true;
+                    id = TokenId.Identifier;
+                    return consume_pattern_20(stream, out length);
                 }
                 case [ '{', ..]:
                 {
@@ -116,11 +121,6 @@ namespace UnitTestParser;
                 {
                     id = TokenId.Newline;
                     return consume_pattern_19(stream, out length);
-                }
-                case [ ((>='a' and <='z') or (>='A' and <='Z')), ..]:
-                {
-                    id = TokenId.Identifier;
-                    return consume_pattern_20(stream, out length);
                 }
             }
             id = default;
@@ -240,10 +240,10 @@ namespace UnitTestParser;
                 /*
                 * TokenID: identifier (#20)
                 * ==[ CONSUMER_DATA ]==
-                * PatternConsumer { TokenType = Constant, ConsumerType = Data, TokenIndex = 20, TokenName = identifier, ConsumerIndex = 20, Start = PatternGroup { Length = 1, IsRawValues = False, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 1 }, Consume = PatternGroup { Length = 1, IsRawValues = False, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = OneOf, ConditionJoiner =  or , MinLength = 1 }, Stop = , Escape = , HasConstLenStart = True, HasConstLenConsume = True, HasConstLenStop = True, HasConstLenEscape = True, IsOpenEnded = True }
+                * PatternConsumer { TokenType = Constant, ConsumerType = Data, TokenIndex = 20, TokenName = identifier, ConsumerIndex = 20, Start = PatternGroup { Length = 2, IsRawValues = False, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 2 }, Consume = PatternGroup { Length = 1, IsRawValues = False, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = OneOf, ConditionJoiner =  or , MinLength = 1 }, Stop = , Escape = , HasConstLenStart = True, HasConstLenConsume = True, HasConstLenStop = True, HasConstLenEscape = True, IsOpenEnded = True }
                 */
                 /* Consume the START sequence which got us here in the first place, we already know its part of the token */
-                var buffer = stream.Slice(1);
+                var buffer = stream.Slice(2);
                 
                 while (buffer.Length > 0)
                 {
