@@ -12,11 +12,3 @@ internal abstract record Pattern
     /// </summary>
     public abstract bool IsConstantLength { get; }
 }
-
-internal record PatternEmpty : Pattern
-{
-    public override int Length => 0;
-    public override bool IsRawValues => true;
-    public override bool IsConstantLength => true;
-
-}
