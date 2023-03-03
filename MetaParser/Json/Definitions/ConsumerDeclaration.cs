@@ -1,4 +1,5 @@
-﻿using MetaParser.Structs;
+﻿using MetaParser.Json.JsonTypeConverters;
+using MetaParser.Structs;
 
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace MetaParser.Json.Definitions;
 
 internal abstract record ConsumerDeclaration<T> : IConsumerDeclaration
-    where T : PatternDeclaration
+    where T : IPatternDeclaration
 {
     #region Properties
     [JsonPropertyName("$type")]
@@ -25,10 +26,10 @@ internal abstract record ConsumerDeclaration<T> : IConsumerDeclaration
     [JsonPropertyName("escape")]
     public IEnumerable<T> Escape { get; set; }
 
-    IEnumerable<PatternDeclaration> IConsumerDeclaration.Start => Start as IEnumerable<PatternDeclaration>;
-    IEnumerable<PatternDeclaration> IConsumerDeclaration.Consume => Consume as IEnumerable<PatternDeclaration>;
-    IEnumerable<PatternDeclaration> IConsumerDeclaration.Stop => Stop as IEnumerable<PatternDeclaration>;
-    IEnumerable<PatternDeclaration> IConsumerDeclaration.Escape => Escape as IEnumerable<PatternDeclaration>;
+    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Start => Start as IEnumerable<IPatternDeclaration>;
+    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Consume => Consume as IEnumerable<IPatternDeclaration>;
+    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Stop => Stop as IEnumerable<IPatternDeclaration>;
+    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Escape => Escape as IEnumerable<IPatternDeclaration>;
     #endregion
 
     [JsonConstructor]
