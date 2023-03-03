@@ -22,11 +22,11 @@ public class Detection
     [InlineData(")", ETokenType.Char_Close_Parenthesis)]
     [InlineData("/", ETokenType.Char_Solidus)]
     [InlineData("\\", ETokenType.Char_Reverse_Solidus)]
-    [InlineData("var", ETokenType.Keyword_Var)]
-    [InlineData("byte", ETokenType.Keyword_Byte)]
-    [InlineData("short", ETokenType.Keyword_Short)]
-    [InlineData("int", ETokenType.Keyword_Int)]
-    [InlineData("float", ETokenType.Keyword_Float)]
+    [InlineData("var", ETokenType.Typename)]
+    [InlineData("byte", ETokenType.Typename)]
+    [InlineData("short", ETokenType.Typename)]
+    [InlineData("int", ETokenType.Typename)]
+    [InlineData("float", ETokenType.Typename)]
     [InlineData("function", ETokenType.Keyword_Function)]
     public void Single(string input, ETokenType expected)
     {

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace MetaParser.Patternization;
 
@@ -55,4 +56,26 @@ internal record PatternGroup : Pattern
         }
     }
     public override bool IsConstantLength => !items.Any(x => !x.IsConstantLength);
+    public override bool ContainsItems => true;
+
+
+    public override IEnumerable<Pattern> GetSubPatterns()
+    {
+        foreach(var item in items)
+        {
+            if (item.ContainsItems)
+            {
+                foreach (var o in item.GetSubPatterns())
+                {
+                    yield return o;
+                }
+            }
+            else
+            {
+                yield return item;
+            }
+        }
+
+        yield break;
+    }
 }

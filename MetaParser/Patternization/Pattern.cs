@@ -1,4 +1,6 @@
-﻿namespace MetaParser.Patternization;
+﻿using System.Collections.Generic;
+
+namespace MetaParser.Patternization;
 internal abstract record Pattern
 {
     public static Pattern Empty = new PatternEmpty();
@@ -11,4 +13,7 @@ internal abstract record Pattern
     /// Indicates whether the pattern will always match a predetermined count of items, or if the patterns length can vary
     /// </summary>
     public abstract bool IsConstantLength { get; }
+    public abstract bool ContainsItems { get; }
+
+    public abstract IEnumerable<Pattern> GetSubPatterns();
 }

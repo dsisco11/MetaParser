@@ -1,4 +1,6 @@
-﻿namespace MetaParser.Patternization;
+﻿using System.Collections.Generic;
+
+namespace MetaParser.Patternization;
 
 internal sealed record PatternConst : Pattern
 {
@@ -12,4 +14,10 @@ internal sealed record PatternConst : Pattern
     public override bool IsRawValues => true;
     public override bool IsConstantLength => true;
     public override int Length => string.IsNullOrEmpty(value) ? 0 : 1;
+    public override bool ContainsItems => false;
+
+    public override IEnumerable<Pattern> GetSubPatterns()
+    {
+        yield break;
+    }
 }

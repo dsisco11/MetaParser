@@ -49,7 +49,7 @@ internal record PatternConsumer
         Escape = escape;
     }
 
-    public static PatternConsumer From(MetaParserContext context, IConsumerDeclaration consumer, string tokenName, int tokenIndex, int consumerIndex)
+    public static PatternConsumer From(MetaParserContext context, IReadOnlyDictionary<string, ETokenType> tokenTypes, IConsumerDeclaration consumer, string tokenName, int tokenIndex, int consumerIndex)
     {
         var startClause = consumer.Start.Any() ? new PatternGroup(EPatternCondition.AllOf, consumer.Start.Select(o => o.Resolve(context)).ToArray()) : null;
         var consumeClause = consumer.Consume.Any() ? new PatternGroup(EPatternCondition.OneOf, consumer.Consume.Select(o => o.Resolve(context)).ToArray()) : null;
@@ -76,7 +76,27 @@ internal record PatternConsumer
         }
 
         ETokenType tokenType = consumer.Type == EConsumerType.Data ? ETokenType.Constant : ETokenType.Compound;
-        // TODO: IF PATTERN CONSUMES TOKENS AND REFERENCES A TOKEN WHICH HAS A CONSUMER WHICH ALSO CONSUMES TOKENS, THEN IT IS A 'COMPLEX' TYPE
+        // Any 'compound' token which consumes another 'compound' token is a 'complex' token
+        bool isComplex = false;
+        if (startClause is not null)
+        {
+            isComplex |= startClause.GetSubPatterns().OfType<PatternConst>().Any(c => tokenTypes.TryGetValue(c.value, out ETokenType outType) && outType == ETokenType.Compound);
+        }
+
+        if (!isComplex && consumeClause is not null)
+        {
+            isComplex |= consumeClause.GetSubPatterns().OfType<PatternConst>().Any(c => tokenTypes.TryGetValue(c.value, out ETokenType outType) && outType == ETokenType.Compound);
+        }
+
+        if (!isComplex && stopClause is not null)
+        {
+            isComplex |= stopClause.GetSubPatterns().OfType<PatternConst>().Any(c => tokenTypes.TryGetValue(c.value, out ETokenType outType) && outType == ETokenType.Compound);
+        }
+
+        if (isComplex)
+        {
+            tokenType = ETokenType.Complex;
+        }
 
         return new PatternConsumer(tokenType, consumer.Type, tokenIndex, consumerIndex, tokenName, startClause!, consumeClause, stopClause, escapeClause);
     }

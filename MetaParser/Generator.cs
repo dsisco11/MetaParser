@@ -107,9 +107,11 @@ public partial class Generator : IIncrementalGenerator
 
             if (schema?.Definitions is not null)
             {
+                // translate our list of token definitions into a map of token ids to effective token class
+                var tokenTypes = schema.Definitions.ToImmutableDictionary((x) => MetaParserContext.Get_TokenId_Ref(x.Key), (x) => x.Value.Any(c => c.Type == EConsumerType.Token) ? ETokenType.Compound : ETokenType.Constant);
                 int tokenIndex = 0;
                 int consumerIndex = 0;
-                var Tokens = new List<PatternConsumer>();
+                var Consumers = new List<PatternConsumer>();
                 foreach (var def in schema.Definitions)
                 {
                     var Name = def.Key;
@@ -118,11 +120,11 @@ public partial class Generator : IIncrementalGenerator
                     foreach (var consumer in def.Value)
                     {
                         consumerIndex++;
-                        Tokens.Add(PatternConsumer.From(context, consumer, def.Key, tokenIndex, consumerIndex));
+                        Consumers.Add(PatternConsumer.From(context, tokenTypes, consumer, def.Key, tokenIndex, consumerIndex));
                     }
                 }
 
-                context.Consumers = new PatternConsumerList() { CompleteSet = Tokens.ToImmutableArray() };
+                context.Consumers = new PatternConsumerList() { CompleteSet = Consumers.ToImmutableArray() };
             }
 
             return context;
