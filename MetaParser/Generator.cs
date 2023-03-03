@@ -14,13 +14,11 @@ using MetaParser.Builders.Parser.Functions;
 using MetaParser.CodeGen.Base;
 using MetaParser.Json.Definitions;
 using MetaParser.Structs;
-using MetaParser.Patternization;
 using MetaParser.Builders.TokenLogic.Consumer;
 using JetBrains.Annotations;
 using MetaParser.Exceptions;
 using MetaParser.Json.JsonTypeConverters;
 using Microsoft.CodeAnalysis.CSharp;
-using MetaParser.Json.Converters;
 
 namespace MetaParser;
 
@@ -51,7 +49,8 @@ public partial class Generator : IIncrementalGenerator
             JsonDocument jsonDoc = data.Item2;
             var deserializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
             deserializerOptions.Converters.Add(new JsonEnumerableConverter());
-            deserializerOptions.Converters.Add(new JsonPrimaryPropertyConverter());
+            deserializerOptions.Converters.Add(new ValuePatternDeclarationConverterFactory());
+            deserializerOptions.Converters.Add(new TokenPatternDeclarationConverterFactory());
 
             deserializerOptions.AddContext<MetaParserJsonSerializer>();
 
@@ -203,7 +202,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { writer = writer };
 
             writer.WriteLine($"namespace {context.Namespace};");
-            writer.WriteLine($"public enum {MetaParserContext.TokenEnum} : {context.IdTypeName}");
+            writer.WriteLine($"public enum {MetaParserContext.TokenEnum} : {context.IdType}");
             writer.WriteLine("{");
             writer.Indent++;
 
