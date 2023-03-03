@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-02.json",
-  "namespace": "Foo.Bar.Tokens",
+  "namespace": "UnitTestParser",
   "definitions": {
     "keyword_var": {
       "$type": "data",
@@ -10,6 +10,22 @@
       "$type": "data",
       "start": "function"
     },
+    "keyword_byte": {
+      "$type": "data",
+      "start": "byte"
+    },
+    "keyword_short": {
+      "$type": "data",
+      "start": "short"
+    },
+    "keyword_int": {
+      "$type": "data",
+      "start": "int"
+    },
+    "keyword_float": {
+      "$type": "data",
+      "start": "float"
+    },
     "char_open_bracket": {
       "$type": "data",
       "start": "{"
@@ -17,6 +33,22 @@
     "char_close_bracket": {
       "$type": "data",
       "start": "}"
+    },
+    "char_open_sqbracket": {
+      "$type": "data",
+      "start": "["
+    },
+    "char_close_sqbracket": {
+      "$type": "data",
+      "start": "]"
+    },
+    "char_open_parenthesis": {
+      "$type": "data",
+      "start": "("
+    },
+    "char_close_parenthesis": {
+      "$type": "data",
+      "start": ")"
     },
     "char_asterisk": {
       "$type": "data",
@@ -47,17 +79,68 @@
     },
     "newline": {
       "$type": "data",
-      "consume": "\n"
+      "consume": [ "\r", "\n" ]
     },
-    "identifier": {
-      "$type": "tokens",
-      "start": [ "letters" ],
-      "consume": [ "letters", "digits" ]
-    },
+    "identifier": [
+      {
+        "$type": "data",
+        "start": [
+          {
+            "oneof": [
+              { "range": [ "a", "z" ] },
+              { "range": [ "A", "Z" ] }
+            ]
+          }
+        ],
+        "consume": [
+          {
+            "oneof": [
+              { "range": [ "a", "z" ] },
+              { "range": [ "A", "Z" ] }
+            ]
+          },
+          { "range": [ "0", "9" ] },
+          "-",
+          "_"
+        ]
+      },
+      {
+        "$type": "tokens",
+        "start": [ "identifier" ]
+      }
+    ],
+    "typename": [
+      {
+        "$type": "tokens",
+        "start": "keyword_var"
+      },
+      {
+        "$type": "tokens",
+        "start": "keyword_byte"
+      },
+      {
+        "$type": "tokens",
+        "start": "keyword_short"
+      },
+      {
+        "$type": "tokens",
+        "start": "keyword_int"
+      },
+      {
+        "$type": "tokens",
+        "start": "keyword_float"
+      }
+    ],
     "comment": {
       "$type": "tokens",
       "start": [ "char_solidus", "char_asterisk" ],
-      "stop": [ "char_asterisk", "char_solidus" ]
+      "stop": [ "char_asterisk", "char_solidus" ],
+      "escape": [ "char_reverse_solidus" ]
+    },
+    "codeblock": {
+      "$type": "tokens",
+      "start": [ "char_open_bracket" ],
+      "stop": [ "char_close_bracket" ]
     }
   }
 }

@@ -1,81 +1,137 @@
 ﻿//HintName: MetaParser.MetaParser.complex_tokens.tokens.compound.g.cs
-namespace Foo.Bar.Tokens;
-public sealed partial class Parser
+namespace UnitTestParser;
 {
-    private static bool TryProcessCompound(global::System.ReadOnlySpan<byte> stream, out byte id, out int length)
+    public sealed partial class Parser
     {
-        switch (stream)
+        private static bool TryProcessCompound(global::System.ReadOnlySpan<byte> stream, out byte id, out int length)
         {
-            case [ TokenId.Letters, ..]:
+            switch (stream)
             {
-                id = TokenId.Identifier;
-                return consume_pattern_12(stream, out length);
-            }
-            case [ TokenId.Char_Solidus, TokenId.Char_Asterisk, ..]:
-            {
-                id = TokenId.Comment;
-                return consume_pattern_13(stream, out length);
-            }
-        }
-        id = default;
-        length = default;
-        return false;
-        
-        bool consume_pattern_12(global::System.ReadOnlySpan<byte> stream, out int length)
-        {
-            /*
-            * TokenID: identifier (#12)
-            * ==[ CONSUMER_DATA ]==
-            * PatternConsumer { Type = Compound, TokenIndex = 12, TokenName = identifier, ConsumerIndex = 12, Start = PatternGroup { Length = 1, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 1 }, Consume = PatternGroup { Length = 1, IsRawValues = False, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = OneOf, ConditionJoiner =  or , MinLength = 1 }, Stop = , Escape = , IsOpenEnded = True }
-            */
-            /* Consume the START sequence which got us here in the first place, we already know its part of the token */
-            var buffer = stream.Slice(1);
-            while (buffer.Length > 0)
-            {
-                if (buffer is [ (TokenId.Letters or TokenId.Digits), ..])
-                /* If we have a set of valid CONSUME targets, then try and consume as many as possible (STOP sequence should be mutually exclusive with CONSUME sequence) */
+                case [ TokenId.Identifier, ..]:
                 {
-                    buffer = buffer.Slice(1);
-                    /* consumer forces moving on to next loop */
-                    continue;
+                    id = TokenId.Identifier;
+                    length = 1;
+                    return true;
                 }
-                
-                /* otherwise, default behaviour is to exit loop */
-                break;
-            }
-            
-            length = stream.Length - buffer.Length;
-            return true;
-        }
-        bool consume_pattern_13(global::System.ReadOnlySpan<byte> stream, out int length)
-        {
-            /*
-            * TokenID: comment (#13)
-            * ==[ CONSUMER_DATA ]==
-            * PatternConsumer { Type = Compound, TokenIndex = 13, TokenName = comment, ConsumerIndex = 13, Start = PatternGroup { Length = 2, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 2 }, Consume = , Stop = PatternGroup { Length = 2, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 2 }, Escape = , IsOpenEnded = True }
-            */
-            /* Consume the START sequence which got us here in the first place, we already know its part of the token */
-            var buffer = stream.Slice(2);while (buffer.Length > 0)
-            {
-                if (buffer.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
-                /* If we have a STOP sequence, check for it */
+                case [ TokenId.Keyword_Var, ..]:
                 {
-                    /* end */
-                    break;
+                    id = TokenId.Typename;
+                    length = 1;
+                    return true;
                 }
-                
-                /* Token doesn't specify any explicit consumables, so ALL items are considered valid consumables */
-                buffer = buffer.Slice(1);
+                case [ TokenId.Keyword_Byte, ..]:
+                {
+                    id = TokenId.Typename;
+                    length = 1;
+                    return true;
+                }
+                case [ TokenId.Keyword_Short, ..]:
+                {
+                    id = TokenId.Typename;
+                    length = 1;
+                    return true;
+                }
+                case [ TokenId.Keyword_Int, ..]:
+                {
+                    id = TokenId.Typename;
+                    length = 1;
+                    return true;
+                }
+                case [ TokenId.Keyword_Float, ..]:
+                {
+                    id = TokenId.Typename;
+                    length = 1;
+                    return true;
+                }
+                case [ TokenId.Char_Solidus, TokenId.Char_Asterisk, ..]:
+                {
+                    id = TokenId.Comment;
+                    return consume_pattern_27(stream, out length);
+                }
+                case [ TokenId.Char_Open_Bracket, ..]:
+                {
+                    id = TokenId.Codeblock;
+                    return consume_pattern_28(stream, out length);
+                }
             }
-            
-            if (buffer .StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
-            {
-                length = 2 + (stream.Length - buffer.Length);
-                return true;
-            }
-            
+            id = default;
             length = default;
             return false;
+            
+            bool consume_pattern_27(global::System.ReadOnlySpan<byte> stream, out int length)
+            {
+                /*
+                * TokenID: comment (#22)
+                * ==[ CONSUMER_DATA ]==
+                * PatternConsumer { TokenType = Compound, ConsumerType = Token, TokenIndex = 22, TokenName = comment, ConsumerIndex = 27, Start = PatternGroup { Length = 2, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 2 }, Consume = , Stop = PatternGroup { Length = 2, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 2 }, Escape = PatternGroup { Length = 1, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 1 }, HasConstLenStart = True, HasConstLenConsume = True, HasConstLenStop = True, HasConstLenEscape = True, IsOpenEnded = True }
+                */
+                /* Consume the START sequence which got us here in the first place, we already know its part of the token */
+                var buffer = stream.Slice(2);
+                while (buffer.Length > 0)
+                {
+                    if (buffer.StartsWith(stackalloc []{ TokenId.Char_Reverse_Solidus}))
+                    {
+                        /* look past the ESCAPE sequence */
+                        var reader = buffer.Slice(1);
+                        /* if the stop sequence immediately follows the ESCAPE sequence then they are consumed */
+                        if (reader.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
+                        {
+                            buffer = reader.Slice(2);
+                            continue;
+                        }
+                    }
+                    
+                    if (buffer.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
+                    /* If we have a STOP sequence, check for it */
+                    {
+                        /* end */
+                        break;
+                    }
+                    
+                    /* Token doesn't specify any explicit consumables, so ALL items are considered valid consumables */
+                    buffer = buffer.Slice(1);
+                }
+                
+                if (buffer.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
+                {
+                    length = 2 + (stream.Length - buffer.Length);
+                    return true;
+                }
+                
+                length = default;
+                return false;
+            }
+            bool consume_pattern_28(global::System.ReadOnlySpan<byte> stream, out int length)
+            {
+                /*
+                * TokenID: codeblock (#23)
+                * ==[ CONSUMER_DATA ]==
+                * PatternConsumer { TokenType = Compound, ConsumerType = Token, TokenIndex = 23, TokenName = codeblock, ConsumerIndex = 28, Start = PatternGroup { Length = 1, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 1 }, Consume = , Stop = PatternGroup { Length = 1, IsRawValues = True, IsConstantLength = True, items = MetaParser.Patternization.Pattern[], condition = AllOf, ConditionJoiner = , , MinLength = 1 }, Escape = , HasConstLenStart = True, HasConstLenConsume = True, HasConstLenStop = True, HasConstLenEscape = True, IsOpenEnded = True }
+                */
+                /* Consume the START sequence which got us here in the first place, we already know its part of the token */
+                var buffer = stream.Slice(1);
+                while (buffer.Length > 0)
+                {
+                    if (buffer.StartsWith(stackalloc []{ TokenId.Char_Close_Bracket}))
+                    /* If we have a STOP sequence, check for it */
+                    {
+                        /* end */
+                        break;
+                    }
+                    
+                    /* Token doesn't specify any explicit consumables, so ALL items are considered valid consumables */
+                    buffer = buffer.Slice(1);
+                }
+                
+                if (buffer.StartsWith(stackalloc []{ TokenId.Char_Close_Bracket}))
+                {
+                    length = 1 + (stream.Length - buffer.Length);
+                    return true;
+                }
+                
+                length = default;
+                return false;
+            }
         }
     }
 }

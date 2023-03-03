@@ -1,15 +1,17 @@
 ﻿//HintName: MetaParser.MetaParser.complex_tokens.tokens.complex.g.cs
-namespace Foo.Bar.Tokens;
-public sealed partial class Parser
+namespace UnitTestParser;
 {
-    private static bool TryProcessComplex(global::System.ReadOnlySpan<byte> stream, out byte id, out int length)
+    public sealed partial class Parser
     {
-        switch (stream)
+        private static bool TryProcessComplex(global::System.ReadOnlySpan<byte> stream, out byte id, out int length)
         {
+            switch (stream)
+            {
+            }
+            id = default;
+            length = default;
+            return false;
+            
         }
-        id = default;
-        length = default;
-        return false;
-        
     }
 }

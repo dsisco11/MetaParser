@@ -1,5 +1,5 @@
 ﻿{
-  "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-01.json",
+  "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-02.json",
   "namespace": "UnitTestParser",
   "definitions": {
     "keyword_var": {
@@ -86,7 +86,7 @@
         "$type": "data",
         "start": [
           {
-            "or": [
+            "oneof": [
               { "range": [ "a", "z" ] },
               { "range": [ "A", "Z" ] }
             ]
@@ -94,7 +94,7 @@
         ],
         "consume": [
           {
-            "or": [
+            "oneof": [
               { "range": [ "a", "z" ] },
               { "range": [ "A", "Z" ] }
             ]

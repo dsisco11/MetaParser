@@ -28,7 +28,14 @@ public class CodeGeneratorFixture
         var sourceText = new JsonAdditionalText($"{fileName}.metaparser.json", fileContent);
         T generator = new();
         var gen = CSharpGeneratorDriver.Create(new[] { generator.AsSourceGenerator() }, additionalTexts: new[] { sourceText });
-        return gen.RunGenerators(compilation);
+        try
+        {
+            return gen.RunGenerators(compilation);
+        }
+        catch
+        {
+            throw;
+        }
     }
 
 
