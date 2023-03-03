@@ -22,7 +22,7 @@ internal class CompoundTokenStage : IMetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
         // Copy all of our value token ids into a uniform array in memory
-        writer.WriteLine($"var {VarNameIdBuffer} = new {context.IdTypeName}[{MetaParserContext.VarNameBufferMajor}.Length];");
+        writer.WriteLine($"var {VarNameIdBuffer} = new {context.IdType}[{MetaParserContext.VarNameBufferMajor}.Length];");
         writer.WriteLine($"for (int i = 0; i < {MetaParserContext.VarNameBufferMajor}.Length; i++)");
         writer.WriteLine("{");
         writer.Indent++;
@@ -31,7 +31,7 @@ internal class CompoundTokenStage : IMetaCodeBuilder
         writer.WriteLine("}");
         writer.WriteLine();
 
-        writer.WriteLine($"var {MetaParserContext.VarNameBufferMinor} = new {CodeCommon.FormatReadOnlyMemoryBuffer(context.IdType)}( {VarNameIdBuffer} );");
+        writer.WriteLine($"var {MetaParserContext.VarNameBufferMinor} = new {CodeCommon.ReadOnlyMemory}<{context.IdType}>( {VarNameIdBuffer} );");
         writer.WriteLine($"var {MetaParserContext.VarNameBufferLocal} = {MetaParserContext.VarNameBufferMinor}.Span;");
         writer.WriteLine($"var {VarNameResults} = new {resultsBuilderType}();");
         writer.WriteLine();

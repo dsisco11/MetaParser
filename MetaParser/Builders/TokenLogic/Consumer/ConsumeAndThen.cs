@@ -31,7 +31,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 {
                     writer.WriteLine("/* WARNING: consumer START sequence is of uncertain length, it is possible this could cause token parsing discrepancies */");
                 }
-                writer.Write($"var {MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMajor}.Slice({Math.Max(1, consumer.Start.MinLength)});");
+                writer.WriteLine($"var {MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMajor}.Slice({Math.Max(1, consumer.Start.MinLength)});");
             }
 
             // Check for escape sequence

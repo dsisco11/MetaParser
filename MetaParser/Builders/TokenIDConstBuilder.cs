@@ -12,12 +12,12 @@ internal class TokenIDConstBuilder : IMetaCodeBuilder
     public void WriteTo(MetaParserContext context)
     {
         var writer = context.writer;
-        writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId(MetaParserContext.UnknownToken)} = 0;");
+        writer.WriteLine($"public const {context.IdType} {MetaParserContext.Format_TokenId(MetaParserContext.UnknownToken)} = 0;");
 
         var distinct = context.Consumers.CompleteSet.ToImmutableSortedSet(ConsumerComparer.Instance);
         foreach (var token in distinct)
         {
-            writer.WriteLine($"public const {context.IdTypeName} {MetaParserContext.Format_TokenId(token.TokenName)} = {token.TokenIndex};");
+            writer.WriteLine($"public const {context.IdType} {MetaParserContext.Format_TokenId(token.TokenName)} = {token.TokenIndex};");
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using MetaParser.CodeGen;
 using MetaParser.CodeGen.Base;
 using MetaParser.CodeGen.Core;
-using MetaParser.Json.Definitions;
 using MetaParser.Structs;
 
 using Microsoft.CodeAnalysis;
@@ -10,8 +9,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
 using System.CodeDom.Compiler;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 
@@ -26,12 +23,10 @@ namespace MetaParser.Contexts
         public string? ParserType { get; set; }
         public PatternConsumerList Consumers { get; set; } = new();
 
-        public SpecialType IdType { get; set; } = SpecialType.System_Int32;
-        public SpecialType InputType { get; set; } = SpecialType.System_Char;
+        public TypeSyntax IdType { get; set; } = SyntaxFactory.ParseTypeName("int");
+        public TypeSyntax InputType { get; set; } = SyntaxFactory.ParseTypeName("char");
 
         #region Accessors
-        public string IdTypeName => CodeCommon.Format(IdType);
-        public string InputTypeName => CodeCommon.Format(InputType);
         #endregion
 
         #region Constants
@@ -67,9 +62,9 @@ namespace MetaParser.Contexts
         #endregion
 
         #region Builders
-        public SyntaxToken Get_Consumer_Data_Type(ETokenType type) => SyntaxFactory.ParseToken(type == ETokenType.Constant ? InputTypeName : IdTypeName);
+        public TypeSyntax Get_Consumer_Data_Type(ETokenType type) => (type == ETokenType.Constant ? InputType : IdType);
         public TypeSyntax Get_Token_Buffer_Type(ETokenType type) => SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlySpan}<{Get_Consumer_Data_Type(type)}>");
-        public FunctionDefinition Get_Token_Processor_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out {IdTypeName} id, out int length"), body);
+        public FunctionDefinition Get_Token_Processor_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out {IdType} id, out int length"), body);
         public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
         #endregion
 

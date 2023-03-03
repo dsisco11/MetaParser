@@ -1,6 +1,8 @@
 ﻿using Json.Schema;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
 using System.CodeDom.Compiler;
@@ -44,30 +46,30 @@ namespace MetaParser
             return source.Slice(0, source.Length - remove.Length).ToString();
         }
 
-        internal static SpecialType Get_Integer_Type(long maxValue)
+        internal static TypeSyntax Get_Integer_Type(long maxValue)
         {
             if (maxValue < byte.MaxValue)
             {
-                return SpecialType.System_Byte;
+                return SyntaxFactory.ParseTypeName("byte");
             }
             else if (maxValue < short.MaxValue)
             {
-                return SpecialType.System_Int16;
+                return SyntaxFactory.ParseTypeName("short");
             }
             else if (maxValue < ushort.MaxValue)
             {
-                return SpecialType.System_UInt16;
+                return SyntaxFactory.ParseTypeName("ushort");
             }
             else if (maxValue < int.MaxValue)
             {
-                return SpecialType.System_Int32;
+                return SyntaxFactory.ParseTypeName("int");
             }
             else if (maxValue < uint.MaxValue)
             {
-                return SpecialType.System_UInt32;
+                return SyntaxFactory.ParseTypeName("uint");
             }
 
-            return SpecialType.System_Int64;
+            return SyntaxFactory.ParseTypeName("long");
         }
 
         #region Resource Helpers

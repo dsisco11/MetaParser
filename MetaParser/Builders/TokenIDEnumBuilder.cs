@@ -12,13 +12,13 @@ internal class TokenIDEnumBuilder : IMetaCodeBuilder
     public void WriteTo(MetaParserContext context)
     {
         var writer = context.writer;
-        writer.WriteLine($"{MetaParserContext.Format_TokenId(MetaParserContext.UnknownToken)} = ({context.IdTypeName}) 0,");
+        writer.WriteLine($"{MetaParserContext.Format_TokenId(MetaParserContext.UnknownToken)} = ({context.IdType}) 0,");
 
         var distinct = context.Consumers.CompleteSet.ToImmutableSortedSet(ConsumerComparer.Instance);
         foreach (var token in distinct)
         {
             var enumName = MetaParserContext.Format_TokenId(token.TokenName);
-            writer.WriteLine($"{enumName} = ({context.IdTypeName}) {token.TokenIndex},");
+            writer.WriteLine($"{enumName} = ({context.IdType}) {token.TokenIndex},");
         }
     }
 }

@@ -2,6 +2,8 @@
 using MetaParser.CodeGen.Core;
 using MetaParser.Contexts;
 
+using Microsoft.CodeAnalysis.CSharp;
+
 namespace MetaParser.Builders
 {
     internal class TokenStructBuilder : ICodeBuilder<MetaParserContext>
@@ -13,7 +15,7 @@ namespace MetaParser.Builders
             wr.WriteLine($"namespace {context.Namespace};");
             wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({MetaParserContext.TokenEnum})Id}}"")]");
             wr.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]");
-            wr.WriteLine($"public readonly record struct {MetaParserContext.TokenValueClassName}({context.IdTypeName} Id, {CodeCommon.FormatReadOnlyMemoryBuffer(context.InputType)} Data)");
+            wr.WriteLine($"public readonly record struct {MetaParserContext.TokenValueClassName}({context.IdType} Id, {CodeCommon.ReadOnlyMemory}<{context.InputType}> Data)");
             wr.WriteLine("{");
             wr.Indent++;
             wr.WriteLine("public override string ToString()");
