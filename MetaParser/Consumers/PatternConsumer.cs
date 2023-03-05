@@ -50,45 +50,48 @@ internal record PatternConsumer
         ConsumerType = data.Type;
         ConsumerIndex = data.Index;
 
-        Start = data.Start;
-        Consume = data.Consume;
-        Stop = data.Stop;
-        Escape = data.Escape;
+        TokenType = data.Type == EConsumerType.Data ? ETokenType.Constant : ETokenType.Compound;
 
-        switch (Start)
+        if (data.Consume is not null)
         {
-            case null when Consume is null:
+            // Any 'compound' token which consumes another 'compound' token is a 'complex' token
+            bool isComplex = data.Consume.GetSubPatterns().OfType<PatternConst>().Any(c => tokenTypes.TryGetValue(c.value, out ETokenType outType) && outType == ETokenType.Compound);
+
+            if (isComplex)
+            {
+                TokenType = ETokenType.Complex;
+            }
+        }
+
+        switch (data.Start)
+        {
+            case null when data.Consume is null:
                 throw new IllegalTokenException($@"Illegal token definition (""{tokenName}"") (tokens require at minimum either a START or CONSUME sequence)");
-            case null when Consume is not null:
+            case null when data.Consume is not null:
                 {// If pattern has no START condition, then we use the CONSUME pattern as an implicit starting condition
-                    Start = new PatternGroup(EPatternCondition.OneOf, Consume);
+                    Start = new PatternGroup(EPatternCondition.OneOf, data.Consume);
                     break;
                 }
-            case not null when Consume is not null && Stop is null:
+            case not null when data.Consume is not null && data.Stop is null:
                 {// add the consume clause item to the end of the start clause so the parser only consumes this token if its possible for it to actually consume items
-                    var concat = new List<Pattern>(Start.items)
+                    var concat = new List<Pattern>(data.Start.items)
                     {
-                        Consume
+                        data.Consume
                     };
 
                     Start = new PatternGroup(EPatternCondition.AllOf, concat.ToArray());
                     break;
                 }
+            default:
+                {
+                    Start = data.Start!;
+                    break;
+                }
         }
 
-        TokenType = data.Type == EConsumerType.Data ? ETokenType.Constant : ETokenType.Compound;
-        // Any 'compound' token which consumes another 'compound' token is a 'complex' token
-        bool isComplex = false;
-
-        if (Consume is not null)
-        {
-            isComplex = Consume.GetSubPatterns().OfType<PatternConst>().Any(c => tokenTypes.TryGetValue(c.value, out ETokenType outType) && outType == ETokenType.Compound);
-        }
-
-        if (isComplex)
-        {
-            TokenType = ETokenType.Complex;
-        }
+        Consume = data.Consume;
+        Stop = data.Stop;
+        Escape = data.Escape;
     }
     #endregion
 
