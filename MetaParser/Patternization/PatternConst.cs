@@ -16,6 +16,11 @@ internal sealed record PatternConst : Pattern
     public override int Length => string.IsNullOrEmpty(value) ? 0 : 1;
     public override bool ContainsItems => false;
 
+    public override Pattern Combine(Pattern other)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public override IEnumerable<Pattern> GetSubPatterns()
     {
         yield break;

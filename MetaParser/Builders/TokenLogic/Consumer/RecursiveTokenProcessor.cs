@@ -4,7 +4,7 @@ using MetaParser.Contexts;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
 
-internal class TokenProcessor : IMetaCodeBuilder
+internal class RecursiveTokenProcessor : IMetaCodeBuilder
 {
     public static IMetaCodeBuilder Instance = new TokenProcessor();
 

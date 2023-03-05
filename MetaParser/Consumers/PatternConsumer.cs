@@ -2,6 +2,7 @@
 using MetaParser.Exceptions;
 using MetaParser.Patternization;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,15 +18,20 @@ internal record PatternConsumer
     public readonly int ConsumerIndex;
     public readonly EConsumerType ConsumerType;
 
-    public readonly PatternGroup Start;
+    public readonly PatternGroup? Start;
     public readonly PatternGroup? Consume;
     public readonly PatternGroup? Stop;
     public readonly PatternGroup? Escape;
     #endregion
 
     #region Accessors
+    public Pattern EffectiveStart => Start ?? Consume ?? throw new NotImplementedException();
+    /// <summary> A consumer is considered open if it is dynamic and has no STOP criteria. </summary>
     public bool IsOpen => IsDynamic && Stop is null;
-    /// <summary> Returns if the pattern is "dynamic" and involves consuming a variable number of elements </summary>
+    /// <summary> 
+    /// A consumer is considered dynamic if it is not constant, specifically if it has either a CONSUME or STOP criteria.
+    /// So a consumer is "dynamic" if it involves consuming a variable number of elements.
+    /// </summary>
     public bool IsDynamic => Consume is not null || Stop is not null;
     #endregion
 
@@ -63,32 +69,12 @@ internal record PatternConsumer
             }
         }
 
-        switch (data.Start)
+        if (data.Start is null && data.Consume is null)
         {
-            case null when data.Consume is null:
-                throw new IllegalTokenException($@"Illegal token definition (""{tokenName}"") (tokens require at minimum either a START or CONSUME sequence)");
-            case null when data.Consume is not null:
-                {// If pattern has no START condition, then we use the CONSUME pattern as an implicit starting condition
-                    Start = new PatternGroup(EPatternCondition.OneOf, data.Consume);
-                    break;
-                }
-            case not null when data.Consume is not null && data.Stop is null:
-                {// add the consume clause item to the end of the start clause so the parser only consumes this token if its possible for it to actually consume items
-                    var concat = new List<Pattern>(data.Start.items)
-                    {
-                        data.Consume
-                    };
-
-                    Start = new PatternGroup(EPatternCondition.AllOf, concat.ToArray());
-                    break;
-                }
-            default:
-                {
-                    Start = data.Start!;
-                    break;
-                }
+            throw new IllegalTokenException($@"Illegal token definition (""{tokenName}"") (tokens require at minimum either a START or CONSUME sequence)");
         }
 
+        Start = data.Start;
         Consume = data.Consume;
         Stop = data.Stop;
         Escape = data.Escape;

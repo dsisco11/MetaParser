@@ -17,6 +17,12 @@ internal sealed record PatternRange : Pattern
     public override bool IsConstantLength => begin.Length == end.Length;
     public override int Length => (string.IsNullOrEmpty(begin) && string.IsNullOrEmpty(end)) ? 0 : 1;
     public override bool ContainsItems => false;
+
+    public override Pattern Combine(Pattern other)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public override IEnumerable<Pattern> GetSubPatterns()
     {
         yield break;

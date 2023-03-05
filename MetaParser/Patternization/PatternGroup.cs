@@ -78,4 +78,14 @@ internal record PatternGroup : Pattern
 
         yield break;
     }
+
+    public override Pattern Combine(Pattern other)
+    {
+        List<Pattern> patterns = new List<Pattern>(items)
+        {
+            other
+        };
+
+        return new PatternGroup(condition, patterns.ToArray());
+    }
 }

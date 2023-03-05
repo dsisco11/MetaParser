@@ -22,3 +22,14 @@ This implies a certain _open endedness_ for the token, and is relevant to how it
 ### Closed
 A consumer is considered _closed_ if it is either _constant_ OR is _dynamic_ AND has a _stop_ criteria.
 This implies that the token has a definite and known stopping point.
+
+
+
+
+    bool IsNext(Span<byte> stream, ETokenType type)
+    {
+        return type switch
+        {
+
+        };
+    }

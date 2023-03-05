@@ -16,4 +16,5 @@ internal abstract record Pattern
     public abstract bool ContainsItems { get; }
 
     public abstract IEnumerable<Pattern> GetSubPatterns();
+    public abstract Pattern Combine(Pattern other);
 }
