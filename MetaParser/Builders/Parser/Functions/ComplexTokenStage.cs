@@ -3,6 +3,8 @@ using MetaParser.CodeGen.Core;
 using MetaParser.Contexts;
 using Microsoft.CodeAnalysis.CSharp;
 
+using System;
+
 namespace MetaParser.Builders.Parser.Functions;
 
 internal class ComplexTokenStage : IMetaCodeBuilder
@@ -12,13 +14,13 @@ internal class ComplexTokenStage : IMetaCodeBuilder
 
     public void WriteTo(MetaParserContext context)
     {
-        var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{MetaParserContext.TokenClassName}>");
+        var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{MetaParserContext.TokenRecordTypeName}>");
         var writer = context.writer;
 
-        writer.WriteLine($"private static {MetaParserContext.TokenClassName}[] {FunctionName}({argumentType} {MetaParserContext.VarNameBufferMajor})");
+        writer.WriteLine($"private static {MetaParserContext.TokenRecordTypeName}[] {FunctionName}({argumentType} {MetaParserContext.VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"return Array.Empty<{MetaParserContext.TokenClassName}>();");
+        writer.WriteLine($"return Array.Empty<{MetaParserContext.TokenRecordTypeName}>();");
         writer.Indent--;
         writer.WriteLine("}");// end function
     }

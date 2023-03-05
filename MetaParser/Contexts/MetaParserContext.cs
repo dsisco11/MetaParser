@@ -35,11 +35,11 @@ namespace MetaParser.Contexts
         public const string UnknownToken = "unknown";
 
         public const string TokenDataClassName = "TokenData";
-        public const string TokenValueClassName = "ValueToken";
-        public const string TokenClassName = "Token";
+        public const string TokenValueStructName = "ValueToken";
+        public const string TokenRecordTypeName = "Token";
 
         /// <summary>Name of first buffer used in any method</summary>
-        public const string VarNameBufferMajor = "stream";
+        public const string VarNameBufferMajor = "input";
         /// <summary>Name of second buffer used in any method</summary>
         public const string VarNameBufferMinor = "buffer";
         /// <summary>Name of third buffer used in any method</summary>

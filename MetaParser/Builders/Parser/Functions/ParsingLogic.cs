@@ -14,7 +14,7 @@ namespace MetaParser.Builders.Parser.Functions
             var wr = context.writer;
 
             var tyInputBuffer = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{context.InputType}>");
-            var tyTokenList = SyntaxFactory.ParseTypeName($"{MetaParserContext.TokenClassName}[]");
+            var tyTokenList = SyntaxFactory.ParseTypeName($"{MetaParserContext.TokenRecordTypeName}[]");
             
 
             wr.Write("public ");
@@ -24,7 +24,7 @@ namespace MetaParser.Builders.Parser.Functions
             // constant-tokens
             wr.WriteLine($"var {VarNameValueTokensArray} = {ConstantTokenStage.FunctionName}({MetaParserContext.VarNameBufferMajor});");
             // compound-tokens
-            wr.WriteLine($"var {VarNameValueTokensBuffer} = new {CodeCommon.ReadOnlyMemory}<{MetaParserContext.TokenValueClassName}>( {VarNameValueTokensArray} );");
+            wr.WriteLine($"var {VarNameValueTokensBuffer} = new {CodeCommon.ReadOnlyMemory}<{MetaParserContext.TokenValueStructName}>( {VarNameValueTokensArray} );");
             wr.WriteLine($"return {CompoundTokenStage.FunctionName}({VarNameValueTokensBuffer});");
             wr.WriteLine();
 

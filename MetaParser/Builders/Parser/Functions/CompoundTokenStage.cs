@@ -12,13 +12,13 @@ internal class CompoundTokenStage : IMetaCodeBuilder
 
     public void WriteTo(MetaParserContext context)
     {
-        var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{MetaParserContext.TokenValueClassName}>");
-        var resultsBuilderType = SyntaxFactory.ParseTypeName($"{CodeCommon.List}<{MetaParserContext.TokenClassName}>");
+        var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{MetaParserContext.TokenValueStructName}>");
+        var resultsBuilderType = SyntaxFactory.ParseTypeName($"{CodeCommon.List}<{MetaParserContext.TokenRecordTypeName}>");
         const string VarNameIdBuffer = "idValues";
         const string VarNameResults = "results";
         var writer = context.writer;
 
-        writer.WriteLine($"private static {MetaParserContext.TokenClassName}[] {FunctionName}({argumentType} {MetaParserContext.VarNameBufferMajor})");
+        writer.WriteLine($"private static {MetaParserContext.TokenRecordTypeName}[] {FunctionName}({argumentType} {MetaParserContext.VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
         // Copy all of our value token ids into a uniform array in memory
@@ -43,7 +43,7 @@ internal class CompoundTokenStage : IMetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
         writer.WriteLine($"var consumed = {MetaParserContext.VarNameBufferMajor}.Slice(0, outLength).ToArray();");
-        writer.WriteLine($"{VarNameResults}.Add(new {MetaParserContext.TokenClassName}(({MetaParserContext.TokenEnum}) outId, consumed) );");
+        writer.WriteLine($"{VarNameResults}.Add(new {MetaParserContext.TokenRecordTypeName}(({MetaParserContext.TokenEnum}) outId, consumed) );");
         writer.WriteLine();
         writer.WriteLine($"{MetaParserContext.VarNameBufferMajor} = {MetaParserContext.VarNameBufferMajor}.Slice(outLength);");
         writer.WriteLine($"{MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMinor}.Slice(outLength);");
@@ -57,7 +57,7 @@ internal class CompoundTokenStage : IMetaCodeBuilder
         writer.WriteLine("/* Proxy the current token as it has no special compound behavior */");
 #endif
         writer.WriteLine($"var consumed = {MetaParserContext.VarNameBufferMajor}.Span[0];");
-        var createNewToken = $"new {MetaParserContext.TokenClassName}(({MetaParserContext.TokenEnum}) consumed.Id, new[] {{ consumed }})";
+        var createNewToken = $"new {MetaParserContext.TokenRecordTypeName}(({MetaParserContext.TokenEnum}) consumed.Id, new[] {{ consumed }})";
         writer.WriteLine($"{VarNameResults}.Add({createNewToken});");
         writer.WriteLine($"{MetaParserContext.VarNameBufferMajor} = {MetaParserContext.VarNameBufferMajor}.Slice(1);");
         writer.WriteLine($"{MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMinor}.Slice(1);");

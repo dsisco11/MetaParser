@@ -14,11 +14,11 @@ internal class ConstantTokenStage : IMetaCodeBuilder
     public void WriteTo(MetaParserContext context)
     {
         var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{context.Get_Consumer_Data_Type(ETokenType.Constant)}>");
-        var resultsBuilderType = SyntaxFactory.ParseTypeName($"{CodeCommon.List}<{MetaParserContext.TokenValueClassName}>");
+        var resultsBuilderType = SyntaxFactory.ParseTypeName($"{CodeCommon.List}<{MetaParserContext.TokenValueStructName}>");
         const string VarNameResults = "results";
         var writer = context.writer;
 
-        writer.WriteLine($"private static {MetaParserContext.TokenValueClassName}[] {FunctionName}({argumentType} {MetaParserContext.VarNameBufferMajor})");
+        writer.WriteLine($"private static {MetaParserContext.TokenValueStructName}[] {FunctionName}({argumentType} {MetaParserContext.VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
         writer.WriteLine($"var {MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMajor};");
@@ -36,7 +36,7 @@ internal class ConstantTokenStage : IMetaCodeBuilder
         UnknownTokenPusher.Instance.WriteTo(context);
         writer.WriteLine();
         writer.WriteLine($"var consumed = {MetaParserContext.VarNameBufferMinor}.Slice(0, outLength);");
-        writer.WriteLine($"{VarNameResults}.Add( new {MetaParserContext.TokenValueClassName}(outId, consumed) );");
+        writer.WriteLine($"{VarNameResults}.Add( new {MetaParserContext.TokenValueStructName}(outId, consumed) );");
         writer.WriteLine($"{MetaParserContext.VarNameBufferMinor} = {MetaParserContext.VarNameBufferMinor}.Slice(outLength);");
         writer.WriteLine($"{MetaParserContext.VarNameBufferLocal} = {MetaParserContext.VarNameBufferMinor}.Span;");
         writer.Indent--;
