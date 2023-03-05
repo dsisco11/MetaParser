@@ -13,12 +13,12 @@ using MetaParser.Builders;
 using MetaParser.Builders.Parser.Functions;
 using MetaParser.CodeGen.Base;
 using MetaParser.Json.Definitions;
-using MetaParser.Structs;
 using MetaParser.Builders.TokenLogic.Consumer;
 using JetBrains.Annotations;
 using MetaParser.Exceptions;
 using MetaParser.Json.JsonTypeConverters;
 using Microsoft.CodeAnalysis.CSharp;
+using MetaParser.Consumers;
 
 namespace MetaParser;
 
@@ -120,7 +120,8 @@ public partial class Generator : IIncrementalGenerator
                     foreach (var consumer in def.Value)
                     {
                         consumerIndex++;
-                        Consumers.Add(PatternConsumer.From(context, tokenTypes, consumer, def.Key, tokenIndex, consumerIndex));
+                        var consumerData = new ConsumerData(context, consumer, consumerIndex);
+                        Consumers.Add(new PatternConsumer(consumerData, tokenTypes, def.Key, tokenIndex));
                     }
                 }
 

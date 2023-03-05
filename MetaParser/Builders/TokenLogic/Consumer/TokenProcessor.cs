@@ -1,4 +1,5 @@
 ﻿using MetaParser.CodeGen.Core;
+using MetaParser.Consumers;
 using MetaParser.Contexts;
 
 namespace MetaParser.Builders.TokenLogic.Consumer
@@ -18,11 +19,11 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             wr.WriteLine("return false;");
             wr.WriteLine();
 
-            var workingContext = context with { Consumers = context.Consumers with { WorkingSet = new Structs.PatternConsumer[1] } };
+            var workingContext = context with { Consumers = context.Consumers with { WorkingSet = new PatternConsumer[1] } };
             foreach (var consumer in context.Consumers.WorkingSet)
             {
                 workingContext.Consumers.WorkingSet[0] = consumer;
-                if (!consumer.IsOpenEnded)
+                if (!consumer.IsDynamic)
                 {
                     continue;// skip const patterns as they get an inline fast-path
                 }

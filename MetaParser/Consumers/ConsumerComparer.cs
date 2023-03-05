@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using MetaParser.Consumers;
 
-namespace MetaParser.Structs
+using System.Collections.Generic;
+
+namespace MetaParser.Consumers
 {
     internal class ConsumerComparer : IComparer<PatternConsumer>
     {

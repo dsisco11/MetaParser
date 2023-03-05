@@ -131,12 +131,26 @@
         "start": "keyword_float"
       }
     ],
-    "comment": {
-      "$type": "tokens",
-      "start": [ "char_solidus", "char_asterisk" ],
-      "stop": [ "char_asterisk", "char_solidus" ],
-      "escape": [ "char_reverse_solidus" ]
-    },
+
+    "comment": [
+      {
+        "$type": "data",
+        "start": [ "/*" ],
+        "stop": [ "*/" ],
+        "escape": [ "\\" ]
+      },
+      {
+        "$type": "tokens",
+        "start": [ "char_solidus", "char_solidus" ],
+        "stop": [ { "id": "newline" } ]
+      },
+      {
+        "$type": "tokens",
+        "start": [ "char_solidus", "char_asterisk" ],
+        "stop": [ "char_asterisk", "char_solidus" ],
+        "escape": [ "char_reverse_solidus" ]
+      }
+    ],
     "codeblock": {
       "$type": "tokens",
       "start": [ "char_open_bracket" ],

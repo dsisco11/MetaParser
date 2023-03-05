@@ -14,7 +14,7 @@ internal class ConsumeTokenAndReturn : IMetaCodeBuilder
         var wr = context.writer;
         var consumer = context.Consumers.WorkingSet.Single();
 
-        if (consumer.IsOpenEnded)
+        if (consumer.IsDynamic)
         {
             var consumerId = consumer.ConsumerIndex;
             var consumerFunc = MetaParserContext.Format_Pattern_Consumer_Function_Name(consumerId);

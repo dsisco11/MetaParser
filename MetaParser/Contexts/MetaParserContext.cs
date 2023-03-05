@@ -1,7 +1,7 @@
 ﻿using MetaParser.CodeGen;
 using MetaParser.CodeGen.Base;
 using MetaParser.CodeGen.Core;
-using MetaParser.Structs;
+using MetaParser.Consumers;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

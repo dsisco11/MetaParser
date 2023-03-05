@@ -11,11 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="MetaParser\complex.metaparser.json" />
+    <None Remove="MetaParser\tokens.metaparser.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="MetaParser\complex.metaparser.json">
+    <AdditionalFiles Include="MetaParser\tokens.metaparser.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>

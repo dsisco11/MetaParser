@@ -1,4 +1,4 @@
-﻿using MetaParser.Structs;
+﻿using MetaParser.Consumers;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -10,8 +10,8 @@ namespace MetaParser.Json.Definitions;
 internal interface IConsumerDeclaration
 {
     EConsumerType Type { get; }
-    public IEnumerable<IPatternDeclaration> Start { get; }
-    public IEnumerable<IPatternDeclaration> Consume { get; }
-    public IEnumerable<IPatternDeclaration> Stop { get; }
-    public IEnumerable<IPatternDeclaration> Escape { get; }
+    IEnumerable<IPatternDeclaration> Start { get; }
+    IEnumerable<IPatternDeclaration> Consume { get; }
+    IEnumerable<IPatternDeclaration> Stop { get; }
+    IEnumerable<IPatternDeclaration> Escape { get; }
 }

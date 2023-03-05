@@ -1,5 +1,4 @@
-﻿using MetaParser.Json.JsonTypeConverters;
-using MetaParser.Structs;
+﻿using MetaParser.Consumers;
 
 using System;
 using System.Collections.Generic;

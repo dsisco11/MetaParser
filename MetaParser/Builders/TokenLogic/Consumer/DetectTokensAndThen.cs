@@ -1,6 +1,6 @@
 ﻿using MetaParser.CodeGen.Core;
+using MetaParser.Consumers;
 using MetaParser.Contexts;
-using MetaParser.Structs;
 
 using System.Linq;
 
