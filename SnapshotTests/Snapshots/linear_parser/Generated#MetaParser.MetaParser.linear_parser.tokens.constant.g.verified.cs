@@ -55,55 +55,55 @@ namespace UnitTestParser
                 }
                 case [ '{', ..]:
                 {
-                    id = TokenId.Char_Open_Bracket;
+                    id = TokenId.Open_Bracket;
                     length = 1;
                     return true;
                 }
                 case [ '}', ..]:
                 {
-                    id = TokenId.Char_Close_Bracket;
+                    id = TokenId.Close_Bracket;
                     length = 1;
                     return true;
                 }
                 case [ '[', ..]:
                 {
-                    id = TokenId.Char_Open_Sqbracket;
+                    id = TokenId.Open_Sqbracket;
                     length = 1;
                     return true;
                 }
                 case [ ']', ..]:
                 {
-                    id = TokenId.Char_Close_Sqbracket;
+                    id = TokenId.Close_Sqbracket;
                     length = 1;
                     return true;
                 }
                 case [ '(', ..]:
                 {
-                    id = TokenId.Char_Open_Parenthesis;
+                    id = TokenId.Open_Parenthesis;
                     length = 1;
                     return true;
                 }
                 case [ ')', ..]:
                 {
-                    id = TokenId.Char_Close_Parenthesis;
+                    id = TokenId.Close_Parenthesis;
                     length = 1;
                     return true;
                 }
                 case [ '*', ..]:
                 {
-                    id = TokenId.Char_Asterisk;
+                    id = TokenId.Asterisk;
                     length = 1;
                     return true;
                 }
                 case [ '/', ..]:
                 {
-                    id = TokenId.Char_Solidus;
+                    id = TokenId.Solidus;
                     length = 1;
                     return true;
                 }
                 case [ '\\', ..]:
                 {
-                    id = TokenId.Char_Reverse_Solidus;
+                    id = TokenId.Reverse_Solidus;
                     length = 1;
                     return true;
                 }

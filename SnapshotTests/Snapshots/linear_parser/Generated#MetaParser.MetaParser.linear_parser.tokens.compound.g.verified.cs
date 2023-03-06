@@ -7,12 +7,12 @@ namespace UnitTestParser
         {
             switch (input)
             {
-                case [ TokenId.Char_Solidus, TokenId.Char_Solidus, ..]:
+                case [ TokenId.Solidus, TokenId.Solidus, ..]:
                 {
                     id = TokenId.Comment;
                     return consume_pattern_27(input, out length);
                 }
-                case [ TokenId.Char_Solidus, TokenId.Char_Asterisk, ..]:
+                case [ TokenId.Solidus, TokenId.Asterisk, ..]:
                 {
                     id = TokenId.Comment;
                     return consume_pattern_28(input, out length);
@@ -47,7 +47,7 @@ namespace UnitTestParser
                     length = 1;
                     return true;
                 }
-                case [ TokenId.Char_Open_Bracket, ..]:
+                case [ TokenId.Open_Bracket, ..]:
                 {
                     id = TokenId.Codeblock;
                     return consume_pattern_29(input, out length);
@@ -99,19 +99,19 @@ namespace UnitTestParser
                 var buffer = input.Slice(2);
                 while (buffer.Length > 0)
                 {
-                    if (buffer.StartsWith(stackalloc []{ TokenId.Char_Reverse_Solidus}))
+                    if (buffer.StartsWith(stackalloc []{ TokenId.Reverse_Solidus}))
                     {
                         /* look past the ESCAPE sequence */
                         var reader = buffer.Slice(1);
                         /* if the stop sequence immediately follows the ESCAPE sequence then they are consumed */
-                        if (reader.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
+                        if (reader.StartsWith(stackalloc []{ TokenId.Asterisk, TokenId.Solidus}))
                         {
                             buffer = reader.Slice(2);
                             continue;
                         }
                     }
                     
-                    if (buffer.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
+                    if (buffer.StartsWith(stackalloc []{ TokenId.Asterisk, TokenId.Solidus}))
                     /* If we have a STOP sequence, check for it */
                     {
                         /* end */
@@ -122,7 +122,7 @@ namespace UnitTestParser
                     buffer = buffer.Slice(1);
                 }
                 
-                if (buffer.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus}))
+                if (buffer.StartsWith(stackalloc []{ TokenId.Asterisk, TokenId.Solidus}))
                 {
                     length = 2 + (input.Length - buffer.Length);
                     return true;
@@ -142,7 +142,7 @@ namespace UnitTestParser
                 var buffer = input.Slice(1);
                 while (buffer.Length > 0)
                 {
-                    if (buffer.StartsWith(stackalloc []{ TokenId.Char_Close_Bracket}))
+                    if (buffer.StartsWith(stackalloc []{ TokenId.Close_Bracket}))
                     /* If we have a STOP sequence, check for it */
                     {
                         /* end */
@@ -153,7 +153,7 @@ namespace UnitTestParser
                     buffer = buffer.Slice(1);
                 }
                 
-                if (buffer.StartsWith(stackalloc []{ TokenId.Char_Close_Bracket}))
+                if (buffer.StartsWith(stackalloc []{ TokenId.Close_Bracket}))
                 {
                     length = 1 + (input.Length - buffer.Length);
                     return true;

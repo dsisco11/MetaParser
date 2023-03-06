@@ -14,6 +14,7 @@ public class Generation : IClassFixture<CodeGeneratorFixture>
 
     [Theory]
     [InlineData("linear_parser.json")]
+    [InlineData("recursive_parser.json")]
     public Task Result(string fileName)
     {
         var sourceCode = CodeGeneratorFixture.Get_Input_File_Contents(fileName);

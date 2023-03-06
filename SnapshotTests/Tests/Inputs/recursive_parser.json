@@ -2,29 +2,13 @@
   "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-02.json",
   "namespace": "UnitTestParser",
   "definitions": {
-    "keyword_var": {
+    "colon": {
       "$type": "data",
-      "start": "var"
+      "start": ":"
     },
-    "keyword_function": {
+    "semicolon": {
       "$type": "data",
-      "start": "function"
-    },
-    "keyword_byte": {
-      "$type": "data",
-      "start": "byte"
-    },
-    "keyword_short": {
-      "$type": "data",
-      "start": "short"
-    },
-    "keyword_int": {
-      "$type": "data",
-      "start": "int"
-    },
-    "keyword_float": {
-      "$type": "data",
-      "start": "float"
+      "start": ";"
     },
     "open_bracket": {
       "$type": "data",
@@ -50,32 +34,9 @@
       "$type": "data",
       "start": ")"
     },
-    "asterisk": {
-      "$type": "data",
-      "start": "*"
-    },
-    "solidus": {
-      "$type": "data",
-      "start": "/"
-    },
-    "reverse_solidus": {
-      "$type": "data",
-      "start": "\\"
-    },
     "whitespace": {
       "$type": "data",
       "consume": [ " ", "\t", "\f" ]
-    },
-    "digits": {
-      "$type": "data",
-      "consume": { "range": [ "0", "9" ] }
-    },
-    "letters": {
-      "$type": "data",
-      "consume": [
-        { "range": [ "a", "z" ] },
-        { "range": [ "A", "Z" ] }
-      ]
     },
     "newline": {
       "$type": "data",
@@ -101,28 +62,6 @@
         ]
       }
     ],
-    "typename": [
-      {
-        "$type": "tokens",
-        "start": "keyword_var"
-      },
-      {
-        "$type": "tokens",
-        "start": "keyword_byte"
-      },
-      {
-        "$type": "tokens",
-        "start": "keyword_short"
-      },
-      {
-        "$type": "tokens",
-        "start": "keyword_int"
-      },
-      {
-        "$type": "tokens",
-        "start": "keyword_float"
-      }
-    ],
     "comment": [
       {
         "$type": "data",
@@ -137,17 +76,17 @@
           { "id": "solidus" }
         ],
         "stop": [ { "id": "newline" } ]
-      },
-      {
-        "$type": "tokens",
-        "start": [ "solidus", "asterisk" ],
-        "stop": [ "asterisk", "solidus" ],
-        "escape": [ "reverse_solidus" ]
       }
     ],
+    "declaration": {
+      "$type": "tokens",
+      "start": [ "identifier", "colon" ],
+      "stop": [ "semicolon" ]
+    },
     "codeblock": {
       "$type": "tokens",
       "start": [ "open_bracket" ],
+      "consume": [ "declaration" ],
       "stop": [ "close_bracket" ]
     }
   }
