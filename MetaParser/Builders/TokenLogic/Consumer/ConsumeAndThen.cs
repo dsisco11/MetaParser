@@ -16,7 +16,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
             var consumer = context.Consumers.WorkingSet.Single();
 #if DEBUG
             writer.WriteLine($"/*");
-            writer.WriteLine($"* TokenID: {consumer.TokenName} (#{consumer.TokenIndex})");
+            writer.WriteLine($"* TokenID: {consumer.Token.Name} (#{consumer.Token.Index})");
             writer.WriteLine($"* ==[ CONSUMER_DATA ]==");
             writer.WriteLine($"* {consumer}");
             writer.WriteLine($"*/");

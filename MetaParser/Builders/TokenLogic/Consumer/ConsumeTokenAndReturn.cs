@@ -11,21 +11,25 @@ internal class ConsumeTokenAndReturn : IMetaCodeBuilder
 
     public void WriteTo(MetaParserContext context)
     {
-        var wr = context.writer;
+        var writer = context.writer;
         var consumer = context.Consumers.WorkingSet.Single();
 
-        if (consumer.IsDynamic)
+        if (consumer.IsConstant)
         {
-            var consumerId = consumer.ConsumerIndex;
+            writer.WriteLine($"id = {MetaParserContext.Get_TokenId_Ref(consumer.Token.Name)};");
+            writer.WriteLine($"length = {consumer.Start!.Length};");
+            writer.WriteLine($"return true;");
+        }
+        else if (consumer.IsDynamic)
+        {
+            var consumerId = consumer.Index;
             var consumerFunc = MetaParserContext.Format_Pattern_Consumer_Function_Name(consumerId);
-            wr.WriteLine($"id = {MetaParserContext.Get_TokenId_Ref(consumer.TokenName)};");
-            wr.WriteLine($"return {consumerFunc}(stream, out length);");
+            writer.WriteLine($"id = {MetaParserContext.Get_TokenId_Ref(consumer.Token.Name)};");
+            writer.WriteLine($"return {consumerFunc}({MetaParserContext.VarNameBufferMajor}, out length);");
         }
         else
         {
-            wr.WriteLine($"id = {MetaParserContext.Get_TokenId_Ref(consumer.TokenName)};");
-            wr.WriteLine($"length = {consumer.Start.Length};");
-            wr.WriteLine($"return true;");
+            throw new System.NotImplementedException();
         }
     }
 }

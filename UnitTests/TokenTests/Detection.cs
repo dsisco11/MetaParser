@@ -33,7 +33,7 @@ public class Detection
         var parser = new Parser();
         var results = parser.Parse(input.AsMemory());
         Assert.Single(results);
-        Assert.Equal<ETokenType>(expected, results.Single().Id);
+        Assert.Equal(expected, results.Single().Id);
     }
 
     [Theory]
@@ -49,6 +49,6 @@ public class Detection
     {
         var parser = new Parser();
         var results = parser.Parse(input.AsMemory());
-        Assert.Equal<ETokenType>(expected, results.Select(o => o.Id));
+        Assert.Equal(expected, results.Select(o => o.Id));
     }
 }

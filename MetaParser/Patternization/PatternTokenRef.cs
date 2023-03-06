@@ -1,27 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using MetaParser.Tokens;
+
+using System;
+using System.Collections.Generic;
 
 namespace MetaParser.Patternization;
 
-internal sealed record PatternConst : Pattern
+internal sealed record PatternTokenRef : Pattern
 {
     #region Fields
-    private readonly string _value;
+    private readonly WeakReference<TokenInfo> _token;
     #endregion
 
     #region Properties
-    public string Value => _value;
+    public TokenInfo? Token => _token.TryGetTarget(out var outPtr) ? outPtr : null;
     #endregion
 
     #region Constructors
-    public PatternConst(string value)
+    public PatternTokenRef(TokenInfo value)
     {
-        this._value = value;
+        this._token = new (value);
     }
     #endregion
 
+    public override int Length => 1;
     public override bool IsRawValues => true;
     public override bool IsConstantLength => true;
-    public override int Length => string.IsNullOrEmpty(Value) ? 0 : 1;
     public override bool HasChildren => false;
 
 

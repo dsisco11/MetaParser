@@ -1,16 +1,14 @@
-﻿using MetaParser.Consumers;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace MetaParser.Consumers
 {
-    internal class ConsumerComparer : IComparer<PatternConsumer>
+    internal class ConsumerComparer : IComparer<ConsumerInfo>
     {
         public static ConsumerComparer Instance = new ConsumerComparer();
 
-        public int Compare(PatternConsumer x, PatternConsumer y)
+        public int Compare(ConsumerInfo x, ConsumerInfo y)
         {
-            return x.TokenIndex.CompareTo(y.TokenIndex);
+            return x.Token.Index.CompareTo(y.Token.Index);
         }
     }
 }

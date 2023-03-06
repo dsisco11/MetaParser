@@ -1,6 +1,7 @@
 ﻿using MetaParser.CodeGen.Core;
-using MetaParser.Consumers;
 using MetaParser.Contexts;
+using MetaParser.Tokens;
+
 using System.Collections.Immutable;
 
 namespace MetaParser.Builders;
@@ -14,11 +15,10 @@ internal class TokenIDEnumBuilder : IMetaCodeBuilder
         var writer = context.writer;
         writer.WriteLine($"{MetaParserContext.Format_TokenId(MetaParserContext.UnknownToken)} = ({context.IdType}) 0,");
 
-        var distinct = context.Consumers.CompleteSet.ToImmutableSortedSet(ConsumerComparer.Instance);
-        foreach (var token in distinct)
+        foreach (var token in context.Tokens.Values.ToImmutableSortedSet(TokenInfoComparer.Instance))
         {
-            var enumName = MetaParserContext.Format_TokenId(token.TokenName);
-            writer.WriteLine($"{enumName} = ({context.IdType}) {token.TokenIndex},");
+            var enumName = MetaParserContext.Format_TokenId(token.Name);
+            writer.WriteLine($"{enumName} = ({context.IdType}) {token.Index},");
         }
     }
 }

@@ -4,19 +4,29 @@ namespace MetaParser.Patternization;
 
 internal sealed record PatternRange : Pattern
 {
-    public readonly string begin;
-    public readonly string end;
+    #region Fields
+    private readonly string _begin;
+    private readonly string _end;
+    #endregion
 
-    public PatternRange(string start, string end)
+    #region Properties
+    public string Begin => _begin;
+    public string End => _end;
+
+    #endregion
+
+    #region Constructors
+    public PatternRange(string begin, string end)
     {
-        this.begin = start;
-        this.end = end;
+        _begin = begin;
+        _end = end;
     }
+    #endregion
 
     public override bool IsRawValues => false;
-    public override bool IsConstantLength => begin.Length == end.Length;
-    public override int Length => (string.IsNullOrEmpty(begin) && string.IsNullOrEmpty(end)) ? 0 : 1;
-    public override bool ContainsItems => false;
+    public override bool IsConstantLength => Begin.Length == End.Length;
+    public override int Length => (string.IsNullOrEmpty(Begin) && string.IsNullOrEmpty(End)) ? 0 : 1;
+    public override bool HasChildren => false;
 
     public override Pattern Combine(Pattern other)
     {

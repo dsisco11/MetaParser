@@ -19,7 +19,7 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
     {
         if (id is not null)
         {
-            return ResolveConst(context);
+            return ResolveToken(context);
         }
         else if (oneof is not null)
         {
@@ -28,11 +28,11 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
 
         return Pattern.Empty;
     }
-    private Pattern ResolveConst(MetaParserContext context)
+    private Pattern ResolveToken(MetaParserContext context)
     {
-        if (id is not null)
+        if (id is not null && context.Tokens.TryGetValue(id, out var token))
         {
-            return new PatternConst(MetaParserContext.Get_TokenId_Ref(id));
+            return new PatternTokenRef(token);
         }
 
         return Pattern.Empty;

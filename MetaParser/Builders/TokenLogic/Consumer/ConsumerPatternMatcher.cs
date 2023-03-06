@@ -35,11 +35,12 @@ namespace MetaParser.Builders.TokenLogic.Consumer
         {
             return pattern switch
             {
-                PatternConst c => c.value,
-                PatternRange r => $"(>={r.begin} and <={r.end})",
-                PatternGroup g when (g.condition == EPatternCondition.OneOf && g.items.Length > 1) => $"({string.Join(g.ConditionJoiner, g.items.Select(o => Translate(context, o)))})",
-                PatternGroup g => string.Join(g.ConditionJoiner, g.items.Select(o => Translate(context, o))),
+                PatternConst c => c.Value,
+                PatternRange r => $"(>={r.Begin} and <={r.End})",
+                PatternGroup g when (g.Condition == EPatternCondition.OneOf && g.Items.Length > 1) => $"({string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o)))})",
+                PatternGroup g => string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o))),
                 PatternEmpty _ => string.Empty,
+                PatternTokenRef t => MetaParserContext.Get_TokenId_Ref(t.Token),
                 _ => throw new NotImplementedException()
             };
         }

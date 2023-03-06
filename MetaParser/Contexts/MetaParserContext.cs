@@ -1,7 +1,11 @@
-﻿using MetaParser.CodeGen;
+﻿using JetBrains.Annotations;
+
+using MetaParser.CodeGen;
 using MetaParser.CodeGen.Base;
 using MetaParser.CodeGen.Core;
 using MetaParser.Consumers;
+using MetaParser.DepsGraph;
+using MetaParser.Tokens;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -11,6 +15,7 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections.Immutable;
 using System.IO;
+using System.Xml.Linq;
 
 namespace MetaParser.Contexts
 {
@@ -21,6 +26,8 @@ namespace MetaParser.Contexts
         public string Namespace { get; set; } = string.Empty;
         public string? ClassName { get; set; } = "Parser";
         public string? ParserType { get; set; }
+        public DependencyGraph TokenGraph { get; set; }
+        public ImmutableDictionary<string, TokenInfo> Tokens = ImmutableDictionary<string, TokenInfo>.Empty;
         public PatternConsumerList Consumers { get; set; } = new();
 
         public TypeSyntax IdType { get; set; } = SyntaxFactory.ParseTypeName("int");
@@ -57,15 +64,16 @@ namespace MetaParser.Contexts
 
         #region Utility Functions
         public static string Format_TokenId(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.ToLowerInvariant());
-        public static string Get_TokenId_Ref(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : $"{TokenConsts}.{Format_TokenId(name)}";
+        public static string Get_TokenId_Ref(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : $"{TokenConsts}.{Format_TokenId(token.Name)}";
+        public static string Get_TokenId_Ref(string? name) => $"{TokenConsts}.{Format_TokenId(name)}";
         public static string Format_Pattern_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
         #endregion
 
         #region Builders
-        public TypeSyntax Get_Consumer_Data_Type(ETokenType type) => (type == ETokenType.Constant ? InputType : IdType);
-        public TypeSyntax Get_Token_Buffer_Type(ETokenType type) => SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlySpan}<{Get_Consumer_Data_Type(type)}>");
-        public FunctionDefinition Get_Token_Processor_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out {IdType} id, out int length"), body);
-        public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(ETokenType type, string name, IMetaCodeBuilder body) => new(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
+        public TypeSyntax Get_Consumer_Data_Type(EConsumerType type) => (type == EConsumerType.Data? InputType : IdType);
+        public TypeSyntax Get_Token_Buffer_Type(EConsumerType type) => SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlySpan}<{Get_Consumer_Data_Type(type)}>");
+        public FunctionDefinition Get_Token_Processor_Function_Definition(EConsumerType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out {IdType} id, out int length"), body);
+        public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(EConsumerType type, string name, IMetaCodeBuilder body) => new(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
         #endregion
 
     }
@@ -75,11 +83,11 @@ namespace MetaParser.Contexts
         /// <summary>
         /// Complete list of all tokens defined
         /// </summary>
-        public ImmutableArray<PatternConsumer> CompleteSet { get; set; } = ImmutableArray<PatternConsumer>.Empty;
+        public ImmutableArray<ConsumerInfo> CompleteSet { get; set; } = ImmutableArray<ConsumerInfo>.Empty;
 
         /// <summary>
         /// Set of tokens being targeted by the current action
         /// </summary>
-        public PatternConsumer[] WorkingSet { get; set; } = Array.Empty<PatternConsumer>();
+        public ConsumerInfo[] WorkingSet { get; set; } = Array.Empty<ConsumerInfo>();
     }
 }

@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
 
-internal class DetectTokensAndThen : IMetaCodeBuilder
+internal class RecursiveDetectTokensAndThen : IMetaCodeBuilder
 {
     public IMetaCodeBuilder Body { get; }
 
-    public DetectTokensAndThen(IMetaCodeBuilder body)
+    public RecursiveDetectTokensAndThen(IMetaCodeBuilder body)
     {
         Body = body;
     }
@@ -26,9 +26,7 @@ internal class DetectTokensAndThen : IMetaCodeBuilder
         var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
         var workContext = context with { Consumers = workTokens };
 
-        // TODO: COnsumers should be pre-sorted during the resolution stage, along with the dependency graph
-        IOrderedEnumerable<ConsumerInfo> orderedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (x) => x.EffectiveStart.Length);
-        foreach (ConsumerInfo consumer in orderedConsumers)
+        foreach (ConsumerInfo consumer in context.Consumers.WorkingSet.OrderByDescending<ConsumerInfo, int>(x => x.EffectiveStart.Length))
         {
             workContext.Consumers.WorkingSet[0] = consumer;
 
