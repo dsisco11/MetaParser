@@ -11,15 +11,15 @@
 
   <ItemGroup>
     <None Remove="Tests\Inputs\bad_tokens.json" />
-    <None Remove="Tests\Inputs\complex_tokens.json" />
     <None Remove="Tests\Inputs\complex_tokens.parser.json" />
+    <None Remove="Tests\Inputs\linear_parser.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Tests\Inputs\bad_tokens.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tests\Inputs\complex_tokens.json">
+    <EmbeddedResource Include="Tests\Inputs\linear_parser.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

@@ -93,20 +93,12 @@
           }
         ],
         "consume": [
-          {
-            "oneof": [
-              { "range": [ "a", "z" ] },
-              { "range": [ "A", "Z" ] }
-            ]
-          },
+          { "range": [ "a", "z" ] },
+          { "range": [ "A", "Z" ] },
           { "range": [ "0", "9" ] },
           "-",
           "_"
         ]
-      },
-      {
-        "$type": "tokens",
-        "start": [ "identifier" ]
       }
     ],
     "typename": [
@@ -131,7 +123,6 @@
         "start": "keyword_float"
       }
     ],
-
     "comment": [
       {
         "$type": "data",
@@ -141,7 +132,10 @@
       },
       {
         "$type": "tokens",
-        "start": [ "char_solidus", "char_solidus" ],
+        "start": [
+          { "id": "char_solidus" },
+          { "id": "char_solidus" }
+        ],
         "stop": [ { "id": "newline" } ]
       },
       {

@@ -1,4 +1,4 @@
-﻿//HintName: MetaParser.MetaParser.complex_tokens.enum.g.cs
+﻿//HintName: MetaParser.MetaParser.linear_parser.enum.g.cs
 namespace UnitTestParser;
 public enum ETokenType : byte
 {

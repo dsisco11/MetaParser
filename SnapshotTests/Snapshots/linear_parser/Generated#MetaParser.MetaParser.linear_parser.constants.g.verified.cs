@@ -1,4 +1,4 @@
-﻿//HintName: MetaParser.MetaParser.complex_tokens.constants.g.cs
+﻿//HintName: MetaParser.MetaParser.linear_parser.constants.g.cs
 namespace UnitTestParser
 {
     internal static class TokenId

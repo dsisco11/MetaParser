@@ -1,18 +1,18 @@
-﻿//HintName: MetaParser.MetaParser.complex_tokens.parser.class.g.cs
+﻿//HintName: MetaParser.MetaParser.linear_parser.parser.class.g.cs
 namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        public Token[] Parse(global::System.ReadOnlyMemory<char> stream)
+        public Token[] Parse(global::System.ReadOnlyMemory<char> input)
         {
-            var tokensArray = Parse_Constant(stream);
+            var tokensArray = Parse_Constant(input);
             var tokensBuffer = new global::System.ReadOnlyMemory<ValueToken>( tokensArray );
             return Parse_Compound(tokensBuffer);
             
         }
-        private static ValueToken[] Parse_Constant(global::System.ReadOnlyMemory<char> stream)
+        private static ValueToken[] Parse_Constant(global::System.ReadOnlyMemory<char> input)
         {
-            var buffer = stream;
+            var buffer = input;
             var reader = buffer.Span;
             var results = new global::System.Collections.Generic.List<ValueToken>();
             
@@ -51,12 +51,12 @@ namespace UnitTestParser
             
             return results.ToArray();
         }
-        private static Token[] Parse_Compound(global::System.ReadOnlyMemory<ValueToken> stream)
+        private static Token[] Parse_Compound(global::System.ReadOnlyMemory<ValueToken> input)
         {
-            var idValues = new byte[stream.Length];
-            for (int i = 0; i < stream.Length; i++)
+            var idValues = new byte[input.Length];
+            for (int i = 0; i < input.Length; i++)
             {
-                idValues[i] = stream.Span[i].Id;
+                idValues[i] = input.Span[i].Id;
             }
             
             var buffer = new global::System.ReadOnlyMemory<byte>( idValues );
@@ -67,19 +67,19 @@ namespace UnitTestParser
             {
                 if (TryProcessCompound(reader, out var outId, out var outLength))
                 {
-                    var consumed = stream.Slice(0, outLength).ToArray();
+                    var consumed = input.Slice(0, outLength).ToArray();
                     results.Add(new Token((ETokenType) outId, consumed) );
                     
-                    stream = stream.Slice(outLength);
+                    input = input.Slice(outLength);
                     buffer = buffer.Slice(outLength);
                     reader = buffer.Span;
                 }
                 else
                 {
                     /* Proxy the current token as it has no special compound behavior */
-                    var consumed = stream.Span[0];
+                    var consumed = input.Span[0];
                     results.Add(new Token((ETokenType) consumed.Id, new[] { consumed }));
-                    stream = stream.Slice(1);
+                    input = input.Slice(1);
                     buffer = buffer.Slice(1);
                     reader = buffer.Span;
                 }
@@ -87,7 +87,7 @@ namespace UnitTestParser
             
             return results.ToArray();
         }
-        private static Token[] Parse_Complex(global::System.ReadOnlyMemory<Token> stream)
+        private static Token[] Parse_Complex(global::System.ReadOnlyMemory<Token> input)
         {
             return Array.Empty<Token>();
         }
