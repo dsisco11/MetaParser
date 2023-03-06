@@ -63,10 +63,13 @@ namespace MetaParser.Contexts
         #endregion
 
         #region Utility Functions
-        public static string Format_TokenId(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name.ToLowerInvariant());
-        public static string Get_TokenId_Ref(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : $"{TokenConsts}.{Format_TokenId(token.Name)}";
-        public static string Get_TokenId_Ref(string? name) => $"{TokenConsts}.{Format_TokenId(name)}";
+        public static string Format_Token_Key(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : name.ToLowerInvariant();
+        public static string Format_Token_Id(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name);
+        public static string Get_TokenId_Ref(string? name) => $"{TokenConsts}.{Format_Token_Id(name)}";
         public static string Format_Pattern_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
+
+        public static string Get_Token_Key(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : Format_Token_Key(token.Name);
+        public static string Get_TokenId_Ref(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : $"{TokenConsts}.{Format_Token_Id(token.Name)}";
         #endregion
 
         #region Builders

@@ -116,7 +116,7 @@ public partial class Generator : IIncrementalGenerator
 
                 foreach (var def in schema.Definitions)
                 {
-                    var token = new TokenInfo(++tokenIndex, def.Key);
+                    var token = new TokenInfo(++tokenIndex, MetaParserContext.Format_Token_Key(def.Key));
                     Tokens.Add(token);
 
                     foreach (var consumerDeclaration in def.Value)
@@ -136,7 +136,7 @@ public partial class Generator : IIncrementalGenerator
                 // So now we can go through and properly resolve the types of each consumer
                 foreach (var consumer in Consumers)
                 {
-                    consumer.ResolveStage(context.TokenGraph);
+                    consumer.Resolve(context.TokenGraph);
                 }
 
                 context.Consumers = new PatternConsumerList() { CompleteSet = Consumers.ToImmutableArray() };

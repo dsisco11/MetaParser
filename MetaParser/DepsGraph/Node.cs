@@ -10,7 +10,7 @@ namespace MetaParser.DepsGraph
     {
         #region Properties
         public readonly string Id;
-        public WeakReference<ParentNode>? Parent { get; private set; }
+        public WeakReference<ParentNode> Parent { get; private set; }
         /// <summary> Nodes linking TO this one </summary>
         public readonly HashSet<Node> Incoming = new();
         /// <summary> Nodes linked to BY this one </summary>
@@ -18,14 +18,17 @@ namespace MetaParser.DepsGraph
         #endregion
 
         #region Constructors
-        public Node(string id, ParentNode? parent = null)
+        public Node(string id)
         {
             Id = id;
-            if (parent is not null)
-            {
-                Parent = new (parent);
-                parent.Add(id, this);
-            }
+            Parent = new (null!);
+        }
+
+        public Node(string id, ParentNode parent)
+        {
+            Id = id;
+            Parent = new (parent);
+            parent.Add(id, this);
         }
         #endregion
 
@@ -44,6 +47,11 @@ namespace MetaParser.DepsGraph
         #region Links
         public bool Link(Node other)
         {
+            if (ReferenceEquals(this, other))
+            {
+                throw new Exception($@"Invalid token dependency: token ""{Id}"" attempts to consume itself.");
+            }
+
             bool success = Outgoing.Add(other);
             if (success)
             {

@@ -30,9 +30,9 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
     }
     private Pattern ResolveToken(MetaParserContext context)
     {
-        if (id is not null && context.Tokens.TryGetValue(id, out var token))
+        if (id is not null)
         {
-            return new PatternTokenRef(token);
+            return new PatternTokenRef(MetaParserContext.Format_Token_Key(id));
         }
 
         return Pattern.Empty;

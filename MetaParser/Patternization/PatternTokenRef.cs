@@ -1,6 +1,4 @@
-﻿using MetaParser.Tokens;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace MetaParser.Patternization;
@@ -8,17 +6,17 @@ namespace MetaParser.Patternization;
 internal sealed record PatternTokenRef : Pattern
 {
     #region Fields
-    private readonly WeakReference<TokenInfo> _token;
+    private readonly string _tokenName;
     #endregion
 
     #region Properties
-    public TokenInfo? Token => _token.TryGetTarget(out var outPtr) ? outPtr : null;
+    public string TokenName => _tokenName;
     #endregion
 
     #region Constructors
-    public PatternTokenRef(TokenInfo value)
+    public PatternTokenRef(string value)
     {
-        this._token = new (value);
+        _tokenName = value;
     }
     #endregion
 
@@ -30,7 +28,7 @@ internal sealed record PatternTokenRef : Pattern
 
     public override Pattern Combine(Pattern other)
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
     public override IEnumerable<Pattern> GetSubPatterns()

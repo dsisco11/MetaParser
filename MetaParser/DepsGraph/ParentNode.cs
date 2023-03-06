@@ -17,7 +17,7 @@ namespace MetaParser.DepsGraph
         #endregion
 
         #region Constructors
-        public ParentNode(string id, ParentNode? parent = null) : base(id, parent)
+        public ParentNode(string id) : base(id)
         {
         }
         #endregion
