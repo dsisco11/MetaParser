@@ -27,34 +27,13 @@ internal class DetectTokensAndThen : IMetaCodeBuilder
         var workContext = context with { Consumers = workTokens };
 
         // TODO: COnsumers should be pre-sorted during the resolution stage, along with the dependency graph
-        IOrderedEnumerable<ConsumerInfo> orderedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (x) => x.EffectiveStart.Length);
+        IOrderedEnumerable<ConsumerInfo> orderedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (x) => x.Start.Length);
         foreach (ConsumerInfo consumer in orderedConsumers)
         {
             workContext.Consumers.WorkingSet[0] = consumer;
 
             writer.Write("case ");
-            switch (consumer.IsOpen)
-            {
-                case true when consumer.Start is null:
-                    {// no start condition, only a CONSUME criteria
-                        ConsumerPatternMatcher.WriteTo(context, consumer.Consume!);
-                        break;
-                    }
-                case true when consumer.Start is not null:
-                    {// for open ended consumers it is implied that their consume criteria is part of their start condition
-                        ConsumerPatternMatcher.WriteTo(context, consumer.Start.Combine(consumer.Consume!));
-                        break;
-                    }
-                case false when consumer.Start is not null:
-                    {
-                        ConsumerPatternMatcher.WriteTo(context, consumer.Start);
-                        break;
-                    }
-                default:
-                    {
-                        throw new NotImplementedException();
-                    }
-            }
+            ConsumerPatternMatcher.WriteTo(context, consumer.Start);
             writer.WriteLine(":");
             writer.WriteLine("{");
             writer.Indent++;

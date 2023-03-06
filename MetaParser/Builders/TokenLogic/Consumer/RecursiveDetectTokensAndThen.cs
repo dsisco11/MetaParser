@@ -26,33 +26,12 @@ internal class RecursiveDetectTokensAndThen : IMetaCodeBuilder
         var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
         var workContext = context with { Consumers = workTokens };
 
-        foreach (ConsumerInfo consumer in context.Consumers.WorkingSet.OrderByDescending<ConsumerInfo, int>(x => x.EffectiveStart.Length))
+        foreach (ConsumerInfo consumer in context.Consumers.WorkingSet.OrderByDescending<ConsumerInfo, int>(x => x.Start.Length))
         {
             workContext.Consumers.WorkingSet[0] = consumer;
 
             writer.Write("case ");
-            switch (consumer.IsOpen)
-            {
-                case true when consumer.Start is null:
-                    {// no start condition, only a CONSUME criteria
-                        ConsumerPatternMatcher.WriteTo(context, consumer.Consume!);
-                        break;
-                    }
-                case true when consumer.Start is not null:
-                    {// for open ended consumers it is implied that their consume criteria is part of their start condition
-                        ConsumerPatternMatcher.WriteTo(context, consumer.Start.Combine(consumer.Consume!));
-                        break;
-                    }
-                case false when consumer.Start is not null:
-                    {
-                        ConsumerPatternMatcher.WriteTo(context, consumer.Start);
-                        break;
-                    }
-                default:
-                    {
-                        throw new NotImplementedException();
-                    }
-            }
+            ConsumerPatternMatcher.WriteTo(context, consumer.Start);
             writer.WriteLine(":");
             writer.WriteLine("{");
             writer.Indent++;
