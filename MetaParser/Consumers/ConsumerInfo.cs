@@ -1,29 +1,31 @@
-﻿using MetaParser.DepsGraph;
+﻿using MetaParser.Contexts;
 using MetaParser.Exceptions;
+using MetaParser.Graphs;
 using MetaParser.Patternization;
 using MetaParser.Tokens;
 
 using System;
+using System.Linq;
 
 namespace MetaParser.Consumers;
 
 internal record ConsumerInfo
 {
     #region Fields
-    private ConsumerClauseInfo assigned;
-    private ConsumerClauseInfo specified;
-    #endregion
+    private readonly ConsumerClauseInfo assigned;
+    private readonly ConsumerClauseInfo specified;
 
-    #region Properties
-    public int Stage { get; private set; }
     public readonly TokenInfo Token;
-
     public readonly int Index;
     public readonly EConsumerType Type;
     #endregion
 
+    #region Properties
+    public ResolvedVertexNode DependencyInfo { get; set; }
+    #endregion
+
     #region Accessors
-    public PatternGroup? Start => specified.Start;
+    public PatternGroup Start => specified.Start!;
     public PatternGroup? Consume => specified.Consume;
     public PatternGroup? Stop => specified.Stop;
     public PatternGroup? Escape => specified.Escape;
@@ -32,6 +34,8 @@ internal record ConsumerInfo
     #region Accessors
     /// <summary> A consumer is considered open if it is dynamic and has no STOP criteria. </summary>
     public bool IsOpen => IsDynamic && assigned.Stop is null;
+    /// <summary> A consumer is considered closed if it is dynamic and has a STOP criteria. </summary>
+    public bool IsClosed => IsDynamic && assigned.Stop is not null;
     /// <summary> 
     /// A consumer is considered dynamic if it is not constant, specifically if it has either a CONSUME or STOP criteria.
     /// So a consumer is "dynamic" if it involves consuming a variable number of elements.
@@ -41,7 +45,7 @@ internal record ConsumerInfo
     #endregion
 
     #region Constructors
-    public ConsumerInfo(TokenInfo token, ConsumerData data)
+    public ConsumerInfo(MetaParserContext context, TokenInfo token, ConsumerData data)
     {
         Token = token;
         Type = data.Type;
@@ -71,21 +75,20 @@ internal record ConsumerInfo
                 true when assigned.Start is not null => assigned.Start.Combine(assigned.Consume!) as PatternGroup,
                 _ => throw new NotImplementedException()
             },
-            Consume = assigned.Consume,
+            Consume = assigned.Consume ?? IsClosed switch
+            {
+                true when Type == EConsumerType.Token => new PatternGroup(EPatternCondition.OneOf, Get_All_Other_Tokens(context)),
+                _ => null,
+            },
             Stop = assigned.Stop,
             Escape = assigned.Escape,
         };
     }
     #endregion
 
-    #region Resolving
-    public void Resolve(DependencyGraph graph)
+    private Pattern[] Get_All_Other_Tokens(MetaParserContext context)
     {
-        // basically check if the node has any outgoing links which make more than two jumps
-        if (graph.TryGetNode(this, out var consumerNode))
-        {
-            Stage = consumerNode!.GetDepth();
-        }
+        var allOthers = context.Tokens.Values.Where((x) => x.Index != Token.Index);
+        return allOthers.Select(static (x) => new PatternTokenRef(x.Name)).ToArray();
     }
-    #endregion
 }

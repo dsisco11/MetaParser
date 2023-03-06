@@ -37,11 +37,11 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
     {
         if (value is not null)
         {
-            return ResolveConst(context);
+            return ResolveConst();
         }
         else if (range is not null)
         {
-            return ResolveRange(context);
+            return ResolveRange();
         }
         else if (oneof is not null)
         {
@@ -51,9 +51,9 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
         return Pattern.Empty;
     }
 
-    private Pattern ResolveConst(MetaParserContext context)
+    private Pattern ResolveConst()
     {
-        if (string.IsNullOrEmpty(value))
+        if (value is null)
         {
             return Pattern.Empty;
         }
@@ -67,7 +67,7 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
         return new PatternGroup(EPatternCondition.AllOf, consts);
     }
 
-    private Pattern ResolveRange(MetaParserContext context)
+    private Pattern ResolveRange()
     {
         var start = SymbolDisplay.FormatLiteral(range[0][0], true);
         var stop = SymbolDisplay.FormatLiteral(range[1][0], true);

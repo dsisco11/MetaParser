@@ -26,7 +26,7 @@ internal class RecursiveDetectTokensAndThen : IMetaCodeBuilder
         var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
         var workContext = context with { Consumers = workTokens };
 
-        foreach (ConsumerInfo consumer in context.Consumers.WorkingSet.OrderByDescending<ConsumerInfo, int>(x => x.Start.Length))
+        foreach (ConsumerInfo consumer in context.Consumers.WorkingSet.OrderByDescending<ConsumerInfo, int>(static (c) => c.DependencyInfo.Order))
         {
             workContext.Consumers.WorkingSet[0] = consumer;
 

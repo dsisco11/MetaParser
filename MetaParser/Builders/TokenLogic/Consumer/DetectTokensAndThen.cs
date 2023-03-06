@@ -26,8 +26,7 @@ internal class DetectTokensAndThen : IMetaCodeBuilder
         var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
         var workContext = context with { Consumers = workTokens };
 
-        // TODO: COnsumers should be pre-sorted during the resolution stage, along with the dependency graph
-        IOrderedEnumerable<ConsumerInfo> orderedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (x) => x.Start.Length);
+        IOrderedEnumerable<ConsumerInfo> orderedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (c) => c.DependencyInfo.Order).ThenByDescending(static (c) => c.Start.Length);
         foreach (ConsumerInfo consumer in orderedConsumers)
         {
             workContext.Consumers.WorkingSet[0] = consumer;

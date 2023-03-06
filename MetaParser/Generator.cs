@@ -20,7 +20,7 @@ using MetaParser.Json.JsonTypeConverters;
 using Microsoft.CodeAnalysis.CSharp;
 using MetaParser.Consumers;
 using MetaParser.Tokens;
-using MetaParser.DepsGraph;
+using MetaParser.Graphs;
 
 namespace MetaParser;
 
@@ -110,34 +110,38 @@ public partial class Generator : IIncrementalGenerator
             if (schema?.Definitions is not null)
             {
                 int tokenIndex = 0;
-                int consumerIndex = 0;
-                var Tokens = new List<TokenInfo>();
-                var Consumers = new List<ConsumerInfo>();
+                context.Tokens = schema.Definitions.ToImmutableDictionary(static (x) => MetaParserContext.Format_Token_Key(x.Key), (x) => new TokenInfo(++tokenIndex, MetaParserContext.Format_Token_Key(x.Key)));
 
+                //var Tokens = new List<TokenInfo>();
+                //foreach (var def in schema.Definitions)
+                //{
+                //    var token = new TokenInfo(++tokenIndex, MetaParserContext.Format_Token_Key(def.Key));
+                //    Tokens.Add(token);
+                //}
+                //context.Tokens = Tokens.ToImmutableDictionary(static (x) => x.Name);
+
+                int consumerIndex = 0;
+                var Consumers = new List<ConsumerInfo>();
                 foreach (var def in schema.Definitions)
                 {
-                    var token = new TokenInfo(++tokenIndex, MetaParserContext.Format_Token_Key(def.Key));
-                    Tokens.Add(token);
+                    var tokenKey = MetaParserContext.Format_Token_Key(def.Key);
+                    if (!context.Tokens.TryGetValue(tokenKey, out var token))
+                    {
+                        throw new Exception($@"Unable to locate token: ""{tokenKey}""");
+                    }
 
                     foreach (var consumerDeclaration in def.Value)
                     {
                         var consumerData = new ConsumerData(context, consumerDeclaration, ++consumerIndex);
-                        var consumer = new ConsumerInfo(token, consumerData);
+                        var consumer = new ConsumerInfo(context, token, consumerData);
 
                         token.Consumers.Add(consumer);
                         Consumers.Add(consumer);
                     }
                 }
 
-                context.Tokens = Tokens.ToImmutableDictionary(static (x) => x.Name);
-                context.TokenGraph = new DependencyGraph(Tokens);
-                
-                // We now have the full consumer dependency graph
-                // So now we can go through and properly resolve the types of each consumer
-                foreach (var consumer in Consumers)
-                {
-                    consumer.Resolve(context.TokenGraph);
-                }
+                DependencyGraph.Build(context);
+                DependencyGraph.Resolve(context);
 
                 context.Consumers = new PatternConsumerList() { CompleteSet = Consumers.ToImmutableArray() };
             }
@@ -145,9 +149,9 @@ public partial class Generator : IIncrementalGenerator
             return context;
         });
 
-        var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(o => o.Stage == 0).ToArray() } }));
-        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(o => o.Stage == 1).ToArray() } }));
-        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(o => o.Stage >= 2).ToArray() } }));
+        var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Data).ToArray() } }));
+        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.Depth <= 1).ToArray() } }));
+        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.Depth > 1).ToArray() } }));
         #endregion
 
         // Parser Class

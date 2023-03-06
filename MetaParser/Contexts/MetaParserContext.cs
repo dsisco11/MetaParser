@@ -1,10 +1,8 @@
-﻿using JetBrains.Annotations;
-
-using MetaParser.CodeGen;
+﻿using MetaParser.CodeGen;
 using MetaParser.CodeGen.Base;
 using MetaParser.CodeGen.Core;
 using MetaParser.Consumers;
-using MetaParser.DepsGraph;
+using MetaParser.Graphs;
 using MetaParser.Tokens;
 
 using Microsoft.CodeAnalysis;
@@ -15,7 +13,6 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections.Immutable;
 using System.IO;
-using System.Xml.Linq;
 
 namespace MetaParser.Contexts
 {
@@ -26,7 +23,7 @@ namespace MetaParser.Contexts
         public string Namespace { get; set; } = string.Empty;
         public string? ClassName { get; set; } = "Parser";
         public string? ParserType { get; set; }
-        public DependencyGraph TokenGraph { get; set; }
+        public VertexGraph TokenGraph { get; set; }
         public ImmutableDictionary<string, TokenInfo> Tokens = ImmutableDictionary<string, TokenInfo>.Empty;
         public PatternConsumerList Consumers { get; set; } = new();
 
