@@ -40,7 +40,7 @@ namespace MetaParser.Builders.TokenLogic.Consumer
                 PatternGroup g when (g.Condition == EPatternCondition.OneOf && g.Items.Length > 1) => $"({string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o)))})",
                 PatternGroup g => string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o))),
                 PatternEmpty _ => string.Empty,
-                PatternTokenRef t => MetaParserContext.Get_TokenId_Ref(t.TokenName),
+                PatternTokenRef t => CodeCommon.Get_TokenId_Ref(t.TokenName),
                 _ => throw new NotImplementedException()
             };
         }

@@ -22,28 +22,10 @@ namespace MetaParser.Core
         public ImmutableDictionary<string, TokenInfo> Tokens = ImmutableDictionary<string, TokenInfo>.Empty;
         public ConsumerList Consumers { get; set; } = new();
 
-        #region Constants
-        #endregion
-
-        #region Statics
-        public static SyntaxTokenList ParserClassModifiers = SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("public sealed partial"));
-        public static SyntaxTokenList SyntaxPrivateStatic = SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static"));
-        #endregion
-
-        #region Utility Functions
-        public static string Format_Token_Key(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : name.ToLowerInvariant();
-        public static string Format_Token_Id(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name);
-        public static string Get_TokenId_Ref(string? name) => $"{CodeCommon.TokenConsts}.{Format_Token_Id(name)}";
-        public static string Format_Pattern_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
-
-        public static string Get_Token_Key(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : Format_Token_Key(token.Name);
-        public static string Get_TokenId_Ref(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : $"{CodeCommon.TokenConsts}.{Format_Token_Id(token.Name)}";
-        #endregion
-
         #region Builders
         public TypeSyntax Get_Consumer_Data_Type(EConsumerType type) => (type == EConsumerType.Data? InputType : IdType);
         public TypeSyntax Get_Token_Buffer_Type(EConsumerType type) => SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlySpan}<{Get_Consumer_Data_Type(type)}>");
-        public FunctionDefinition Get_Token_Processor_Function_Definition(EConsumerType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {CodeCommon.VarNameBufferMajor}, out {IdType} id, out int length"), body);
+        public FunctionDefinition Get_Token_Processor_Function_Definition(EConsumerType type, string name, IMetaCodeBuilder body) => new(CodeCommon.SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {CodeCommon.VarNameBufferMajor}, out {IdType} id, out int length"), body);
         public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(EConsumerType type, string name, IMetaCodeBuilder body) => new(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {CodeCommon.VarNameBufferMajor}, out int length"), body);
         #endregion
 

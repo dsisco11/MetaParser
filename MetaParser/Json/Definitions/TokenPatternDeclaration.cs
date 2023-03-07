@@ -32,7 +32,7 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
     {
         if (id is not null)
         {
-            return new PatternTokenRef(MetaParserContext.Format_Token_Key(id));
+            return new PatternTokenRef(CodeCommon.Format_Token_Key(id));
         }
 
         return Pattern.Empty;

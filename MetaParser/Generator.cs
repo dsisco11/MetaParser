@@ -110,7 +110,7 @@ public partial class Generator : IIncrementalGenerator
             if (schema?.Definitions is not null)
             {
                 int tokenIndex = 0;
-                context.Tokens = schema.Definitions.ToImmutableDictionary(static (x) => MetaParserContext.Format_Token_Key(x.Key), (x) => new TokenInfo(++tokenIndex, MetaParserContext.Format_Token_Key(x.Key)));
+                context.Tokens = schema.Definitions.ToImmutableDictionary(static (x) => CodeCommon.Format_Token_Key(x.Key), (x) => new TokenInfo(++tokenIndex, CodeCommon.Format_Token_Key(x.Key)));
 
                 //var Tokens = new List<TokenInfo>();
                 //foreach (var def in schema.Definitions)
@@ -124,7 +124,7 @@ public partial class Generator : IIncrementalGenerator
                 var Consumers = new List<ConsumerInfo>();
                 foreach (var def in schema.Definitions)
                 {
-                    var tokenKey = MetaParserContext.Format_Token_Key(def.Key);
+                    var tokenKey = CodeCommon.Format_Token_Key(def.Key);
                     if (!context.Tokens.TryGetValue(tokenKey, out var token))
                     {
                         throw new Exception($@"Unable to locate token: ""{tokenKey}""");
@@ -160,7 +160,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with {  writer = writer  };
 
-            new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, new ParsingLogic(), ConstantTokenStage.Instance, CompoundTokenStage.Instance, ComplexTokenStage.Instance)
+            new ClassBuilder(CodeCommon.ParserClassModifiers, context.ClassName!, new ParsingLogic(), ConstantTokenStage.Instance, CompoundTokenStage.Instance, ComplexTokenStage.Instance)
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.parser.class", writer.InnerWriter.ToString());
@@ -173,7 +173,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { writer = writer };
 
             var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Data, CodeCommon.ConstantTokenProcessorFunctionName, TokenProcessor.Instance);
-            new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
+            new ClassBuilder(CodeCommon.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.tokens.constant", writer.InnerWriter.ToString());
@@ -186,7 +186,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { writer = writer };
 
             var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, CodeCommon.CompoundTokenProcessorFunctionName, TokenProcessor.Instance);
-            new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
+            new ClassBuilder(CodeCommon.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.tokens.compound", writer.InnerWriter.ToString());
@@ -199,7 +199,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { writer = writer };
 
             var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, CodeCommon.ComplexTokenProcessorFunctionName, TokenProcessor.Instance);
-            new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
+            new ClassBuilder(CodeCommon.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.tokens.complex", writer.InnerWriter.ToString());

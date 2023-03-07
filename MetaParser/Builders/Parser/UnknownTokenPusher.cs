@@ -15,7 +15,7 @@ namespace MetaParser.Builders
             wr.Indent++;
             wr.WriteLine($"var unk_content_size = {CodeCommon.VarNameBufferMinor}.Length - {CodeCommon.VarNameBufferLocal}.Length;");
             wr.WriteLine($"var unk_content = {CodeCommon.VarNameBufferMinor}.Slice(0, unk_content_size);");
-            wr.WriteLine($"results.Add(new {CodeCommon.TokenValueStructName}({MetaParserContext.Get_TokenId_Ref(CodeCommon.UnknownToken)}, unk_content));");
+            wr.WriteLine($"results.Add(new {CodeCommon.TokenValueStructName}({CodeCommon.Get_TokenId_Ref(CodeCommon.UnknownToken)}, unk_content));");
             wr.WriteLine($"{CodeCommon.VarNameBufferMinor} = {CodeCommon.VarNameBufferMinor}.Slice(unk_content_size);");
             wr.WriteLine($"{CodeCommon.VarNameBufferLocal} = {CodeCommon.VarNameBufferMinor}.Span;");
             wr.Indent--;

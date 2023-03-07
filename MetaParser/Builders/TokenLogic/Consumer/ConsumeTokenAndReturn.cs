@@ -16,15 +16,15 @@ internal class ConsumeTokenAndReturn : IMetaCodeBuilder
 
         if (consumer.IsConstant)
         {
-            writer.WriteLine($"id = {MetaParserContext.Get_TokenId_Ref(consumer.Token.Name)};");
+            writer.WriteLine($"id = {CodeCommon.Get_TokenId_Ref(consumer.Token.Name)};");
             writer.WriteLine($"length = {consumer.Start!.Length};");
             writer.WriteLine($"return true;");
         }
         else if (consumer.IsDynamic)
         {
             var consumerId = consumer.Index;
-            var consumerFunc = MetaParserContext.Format_Pattern_Consumer_Function_Name(consumerId);
-            writer.WriteLine($"id = {MetaParserContext.Get_TokenId_Ref(consumer.Token.Name)};");
+            var consumerFunc = CodeCommon.Format_Pattern_Consumer_Function_Name(consumerId);
+            writer.WriteLine($"id = {CodeCommon.Get_TokenId_Ref(consumer.Token.Name)};");
             writer.WriteLine($"return {consumerFunc}({CodeCommon.VarNameBufferMajor}, out length);");
         }
         else

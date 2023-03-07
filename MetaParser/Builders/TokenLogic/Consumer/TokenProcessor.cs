@@ -29,7 +29,7 @@ internal class TokenProcessor : IMetaCodeBuilder
             }
 
             // generate consumer functions
-            var consumerFuncName = MetaParserContext.Format_Pattern_Consumer_Function_Name(consumer.Index);
+            var consumerFuncName = CodeCommon.Format_Pattern_Consumer_Function_Name(consumer.Index);
             var consumeFunc = context.Get_Local_Token_Consumer_Function_Definition(consumer.Type, consumerFuncName, ConsumeAndThen.Instance);
             consumeFunc.WriteTo(workingContext);
         }
