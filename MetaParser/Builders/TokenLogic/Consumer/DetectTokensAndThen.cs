@@ -30,7 +30,7 @@ internal class DetectTokensAndThen : MetaCodeBuilder
             workContext.Consumers.WorkingSet[0] = consumer;
 
             writer.Write("case ");
-            ConsumerPatternMatcher.WriteTo(context, consumer.Start);
+            ConsumerPatternFormatter.WriteTo(context, consumer.Start);
             writer.WriteLine(":");
             writer.WriteLine("{");
             writer.Indent++;

@@ -7,8 +7,7 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-// TODO: Rename COnsumerPatternFormatter
-internal static class ConsumerPatternMatcher
+internal static class ConsumerPatternFormatter
 {
     public static void WriteTo(MetaParserContext context, Pattern pattern, bool hasBufferAccess = false, bool allowSpanOperations = false)
     {

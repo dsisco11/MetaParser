@@ -45,7 +45,7 @@ internal class ConsumeAndThen : MetaCodeBuilder
             {
                 writer.Write("if (");
                 writer.Write($"{VarNameBufferMinor}");
-                ConsumerPatternMatcher.WriteTo(context, consumer.Escape, true, true);
+                ConsumerPatternFormatter.WriteTo(context, consumer.Escape, true, true);
                 writer.WriteLine(")");
                 writer.WriteLine("{");
                 writer.Indent++;
@@ -59,7 +59,7 @@ internal class ConsumeAndThen : MetaCodeBuilder
                 // Check STOP sequence
                 writer.Write("if (");
                 writer.Write($"{VarNameBufferLocal}");
-                ConsumerPatternMatcher.WriteTo(context, consumer.Stop, true, true);
+                ConsumerPatternFormatter.WriteTo(context, consumer.Stop, true, true);
                 writer.WriteLine(")");
                 writer.WriteLine("{");
                 writer.Indent++;
@@ -76,7 +76,7 @@ internal class ConsumeAndThen : MetaCodeBuilder
             {
                 writer.Write("if (");
                 writer.Write($"{VarNameBufferMinor}");
-                ConsumerPatternMatcher.WriteTo(context, consumer.Stop, true, true);
+                ConsumerPatternFormatter.WriteTo(context, consumer.Stop, true, true);
                 writer.WriteLine(")");
 #if DEBUG
                 writer.WriteLine("/* If we have a STOP sequence, check for it */");
@@ -101,7 +101,7 @@ internal class ConsumeAndThen : MetaCodeBuilder
             writer.Indent++;
             writer.Write("if (");
             writer.Write($"{VarNameBufferMinor}");
-            ConsumerPatternMatcher.WriteTo(context, consumer.Consume, true, true);
+            ConsumerPatternFormatter.WriteTo(context, consumer.Consume, true, true);
             writer.WriteLine(")");
 #if DEBUG
             writer.WriteLine("/* If we have a set of valid CONSUME targets, then try and consume as many as possible (STOP sequence should be mutually exclusive with CONSUME sequence) */");
@@ -145,7 +145,7 @@ internal class ConsumeAndThen : MetaCodeBuilder
 
             writer.Write("if (");
             writer.Write($"{VarNameBufferMinor}");
-            ConsumerPatternMatcher.WriteTo(context, consumer.Stop, true, true);
+            ConsumerPatternFormatter.WriteTo(context, consumer.Stop, true, true);
             writer.WriteLine(")");
             writer.WriteLine("{");
             writer.Indent++;
