@@ -1,6 +1,5 @@
 ﻿using MetaParser.Consumers;
 using MetaParser.Contexts;
-using MetaParser.Patternization;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -21,24 +20,7 @@ namespace MetaParser.Graphs
                 IEnumerable<ConsumerInfo> consumers = token.Consumers.Where(static (c) => c.Type == EConsumerType.Token);
                 foreach (var consumer in consumers)
                 {
-                    if (consumer.Start is not null)
-                    {
-                        link_pattern(context, consumer, consumer.Start);
-                    }
-                    if (consumer.Consume is not null)
-                    {
-                        link_pattern(context, consumer, consumer.Consume);
-                    }
-
-                    if (consumer.Stop is not null)
-                    {
-                        link_pattern(context, consumer, consumer.Stop);
-
-                        if (consumer.Escape is not null)
-                        {
-                            link_pattern(context, consumer, consumer.Escape);
-                        }
-                    }
+                    consumer.Register_Dependencies(context);
                 }
             }
         }
@@ -55,20 +37,5 @@ namespace MetaParser.Graphs
                 }
             }
         }
-
-        #region Utility
-        private static void link_pattern(MetaParserContext context, ConsumerInfo consumer, PatternGroup patternGroup)
-        {
-            foreach (var subPattern in patternGroup.GetSubPatterns().OfType<PatternTokenRef>())
-            {
-                if (!context.Tokens.TryGetValue(subPattern.TokenName, out var subDependencyToken))
-                {
-                    throw new System.Exception($@"Unable to find token: ""{subPattern.TokenName}""");
-                }
-
-                context.TokenGraph.TryLink(consumer.Token.Index, subDependencyToken.Index);
-            }
-        }
-        #endregion
     }
 }

@@ -11,7 +11,7 @@ using System.Collections.Immutable;
 using MetaParser.Contexts;
 using MetaParser.Builders;
 using MetaParser.Builders.Parser.Functions;
-using MetaParser.CodeGen.Base;
+using MetaParser.CodeGen.Core;
 using MetaParser.Json.Definitions;
 using MetaParser.Builders.TokenLogic.Consumer;
 using JetBrains.Annotations;
@@ -150,8 +150,8 @@ public partial class Generator : IIncrementalGenerator
         });
 
         var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Data).ToArray() } }));
-        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.Depth <= 1).ToArray() } }));
-        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.Depth > 1).ToArray() } }));
+        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token).ToArray() } }));
+        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => false).ToArray() } }));
         #endregion
 
         // Parser Class

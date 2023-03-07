@@ -5,6 +5,7 @@ using MetaParser.Patternization;
 using MetaParser.Tokens;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Consumers;
@@ -75,11 +76,7 @@ internal record ConsumerInfo
                 true when assigned.Start is not null => assigned.Start.Combine(assigned.Consume!) as PatternGroup,
                 _ => throw new NotImplementedException()
             },
-            Consume = assigned.Consume ?? IsClosed switch
-            {
-                true when Type == EConsumerType.Token => new PatternGroup(EPatternCondition.OneOf, Get_All_Other_Tokens(context)),
-                _ => null,
-            },
+            Consume = assigned.Consume,
             Stop = assigned.Stop,
             Escape = assigned.Escape,
         };
@@ -91,4 +88,77 @@ internal record ConsumerInfo
         var allOthers = context.Tokens.Values.Where((x) => x.Index != Token.Index);
         return allOthers.Select(static (x) => new PatternTokenRef(x.Name)).ToArray();
     }
+
+    #region Dependencies
+
+    public void Register_Dependencies(MetaParserContext context)
+    {
+        if (Type == EConsumerType.Data)
+        {
+            return;
+        }
+
+        var deps = Get_Dependencies(context);
+        foreach (var tokenName in deps)
+        {
+            if (!context.Tokens.TryGetValue(tokenName, out var token))
+            {
+                throw new Exception($@"Unable to find token: ""{tokenName}""");
+            }
+
+            context.TokenGraph.TryLink(Token.Index, token.Index);
+        }
+    }
+
+    private HashSet<string> Get_Dependencies(MetaParserContext context)
+    {
+        HashSet<string> refs = new HashSet<string>();
+        if (Start is not null)
+        {
+            foreach (var name in Get_Tokens_From_Pattern(Start))
+            {
+                refs.Add(name);
+            }
+        }
+
+        if (Consume is not null)
+        {
+            foreach (var name in Get_Tokens_From_Pattern(Consume))
+            {
+                refs.Add(name);
+            }
+        }
+        else if (IsClosed)
+        {// Closed tokens with an ambiguous consume clause are inherently dependent on all other defined tokens as they can consume anything
+            var allOthers = context.Tokens.Values.Where((x) => x.Index != Token.Index).Select(static (x) => x.Name);
+            foreach (var tokenName in allOthers)
+            {
+                refs.Add(tokenName);
+            }
+        }
+
+        if (Stop is not null)
+        {
+            foreach (var name in Get_Tokens_From_Pattern(Stop))
+            {
+                refs.Add(name);
+            }
+
+            if (Escape is not null)
+            {
+                foreach (var name in Get_Tokens_From_Pattern(Escape))
+                {
+                    refs.Add(name);
+                }
+            }
+        }
+
+        return refs;
+    }
+
+    private IEnumerable<string> Get_Tokens_From_Pattern(Pattern pattern)
+    {
+        return pattern.GetSubPatterns().OfType<PatternTokenRef>().Select(static (x) => x.TokenName);
+    }
+    #endregion
 }
