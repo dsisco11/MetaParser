@@ -5,6 +5,7 @@ using MetaParser.Tokens;
 using System.Collections.Immutable;
 
 namespace MetaParser.Builders;
+using static CodeCommon;
 
 internal class TokenIDEnumBuilder : IMetaCodeBuilder
 {
@@ -13,11 +14,11 @@ internal class TokenIDEnumBuilder : IMetaCodeBuilder
     public void WriteTo(MetaParserContext context)
     {
         var writer = context.writer;
-        writer.WriteLine($"{CodeCommon.Format_Token_Id(CodeCommon.UnknownToken)} = ({context.Config.IdType}) 0,");
+        writer.WriteLine($"{Format_Token_Id(UnknownToken)} = ({context.Config.IdType}) 0,");
 
         foreach (var token in context.Tokens.Values.ToImmutableSortedSet(TokenInfoComparer.Instance))
         {
-            var enumName = CodeCommon.Format_Token_Id(token.Name);
+            var enumName = Format_Token_Id(token.Name);
             writer.WriteLine($"{enumName} = ({context.Config.IdType}) {token.Index},");
         }
     }

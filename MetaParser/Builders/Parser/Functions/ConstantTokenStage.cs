@@ -4,6 +4,7 @@ using MetaParser.Core;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace MetaParser.Builders.Parser.Functions;
+using static CodeCommon;
 
 internal class ConstantTokenStage : IMetaCodeBuilder
 {
@@ -12,38 +13,38 @@ internal class ConstantTokenStage : IMetaCodeBuilder
 
     public void WriteTo(MetaParserContext context)
     {
-        var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{CodeCommon.Get_Consumer_Data_Type(context.Config, Consumers.EConsumerType.Data)}>");
-        var resultsBuilderType = SyntaxFactory.ParseTypeName($"{CodeCommon.List}<{CodeCommon.TokenValueStructName}>");
+        var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, Consumers.EConsumerType.Data)}>");
+        var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenValueStructName}>");
         const string VarNameResults = "results";
         var writer = context.writer;
 
-        writer.WriteLine($"private static {CodeCommon.TokenValueStructName}[] {FunctionName}({argumentType} {CodeCommon.VarNameBufferMajor})");
+        writer.WriteLine($"private static {TokenValueStructName}[] {FunctionName}({argumentType} {VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"var {CodeCommon.VarNameBufferMinor} = {CodeCommon.VarNameBufferMajor};");
-        writer.WriteLine($"var {CodeCommon.VarNameBufferLocal} = {CodeCommon.VarNameBufferMinor}.Span;");
+        writer.WriteLine($"var {VarNameBufferMinor} = {VarNameBufferMajor};");
+        writer.WriteLine($"var {VarNameBufferLocal} = {VarNameBufferMinor}.Span;");
         writer.WriteLine($"var {VarNameResults} = new {resultsBuilderType}();");
         writer.WriteLine();
 
-        writer.WriteLine($"while ({CodeCommon.VarNameBufferLocal}.Length > 0)");
+        writer.WriteLine($"while ({VarNameBufferLocal}.Length > 0)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"if ({CodeCommon.ConstantTokenProcessorFunctionName}({CodeCommon.VarNameBufferLocal}, out var outId, out var outLength))");
+        writer.WriteLine($"if ({ConstantTokenProcessorFunctionName}({VarNameBufferLocal}, out var outId, out var outLength))");
         writer.WriteLine("{");
         writer.Indent++;
         // Be sure to push unknown token if its lingering
         UnknownTokenPusher.Instance.WriteTo(context);
         writer.WriteLine();
-        writer.WriteLine($"var consumed = {CodeCommon.VarNameBufferMinor}.Slice(0, outLength);");
-        writer.WriteLine($"{VarNameResults}.Add( new {CodeCommon.TokenValueStructName}(outId, consumed) );");
-        writer.WriteLine($"{CodeCommon.VarNameBufferMinor} = {CodeCommon.VarNameBufferMinor}.Slice(outLength);");
-        writer.WriteLine($"{CodeCommon.VarNameBufferLocal} = {CodeCommon.VarNameBufferMinor}.Span;");
+        writer.WriteLine($"var consumed = {VarNameBufferMinor}.Slice(0, outLength);");
+        writer.WriteLine($"{VarNameResults}.Add( new {TokenValueStructName}(outId, consumed) );");
+        writer.WriteLine($"{VarNameBufferMinor} = {VarNameBufferMinor}.Slice(outLength);");
+        writer.WriteLine($"{VarNameBufferLocal} = {VarNameBufferMinor}.Span;");
         writer.Indent--;
         writer.WriteLine("}");
         writer.WriteLine("else");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"{CodeCommon.VarNameBufferLocal} = {CodeCommon.VarNameBufferLocal}.Slice(1);");
+        writer.WriteLine($"{VarNameBufferLocal} = {VarNameBufferLocal}.Slice(1);");
         writer.Indent--;
         writer.WriteLine("}");
 
