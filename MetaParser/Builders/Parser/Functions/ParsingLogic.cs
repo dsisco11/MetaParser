@@ -5,30 +5,30 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
 
-internal class ParsingLogic : IMetaCodeBuilder
+internal class ParsingLogic : MetaCodeBuilder
 {
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         const string VarNameValueTokensArray = "tokensArray";
         const string VarNameValueTokensBuffer = "tokensBuffer";
-        var wr = context.writer;
+        var writer = context.writer;
 
         var tyInputBuffer = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{context.Config.InputType}>");
         var tyTokenList = SyntaxFactory.ParseTypeName($"{TokenRecordTypeName}[]");
         
 
-        wr.Write("public ");
-        wr.WriteLine($"{tyTokenList} Parse({tyInputBuffer} {VarNameBufferMajor})");
-        wr.WriteLine("{");
-        wr.Indent++;
+        writer.Write("public ");
+        writer.WriteLine($"{tyTokenList} Parse({tyInputBuffer} {VarNameBufferMajor})");
+        writer.WriteLine("{");
+        writer.Indent++;
         // constant-tokens
-        wr.WriteLine($"var {VarNameValueTokensArray} = {ConstantTokenStage.FunctionName}({VarNameBufferMajor});");
+        writer.WriteLine($"var {VarNameValueTokensArray} = {ConstantTokenStage.FunctionName}({VarNameBufferMajor});");
         // compound-tokens
-        wr.WriteLine($"var {VarNameValueTokensBuffer} = new {ReadOnlyMemory}<{TokenValueStructName}>( {VarNameValueTokensArray} );");
-        wr.WriteLine($"return {CompoundTokenStage.FunctionName}({VarNameValueTokensBuffer});");
-        wr.WriteLine();
+        writer.WriteLine($"var {VarNameValueTokensBuffer} = new {ReadOnlyMemory}<{TokenValueStructName}>( {VarNameValueTokensArray} );");
+        writer.WriteLine($"return {CompoundTokenStage.FunctionName}({VarNameValueTokensBuffer});");
+        writer.WriteLine();
 
-        wr.Indent--;
-        wr.WriteLine("}");// end function
+        writer.Indent--;
+        writer.WriteLine("}");// end function
     }
 }

@@ -6,12 +6,11 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
 
-internal class ConstantTokenStage : IMetaCodeBuilder
+internal class ConstantTokenStage : MetaCodeBuilder
 {
-    public static ConstantTokenStage Instance = new ConstantTokenStage();
     public const string FunctionName = "Parse_Constant";
 
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, Consumers.EConsumerType.Data)}>");
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenValueStructName}>");

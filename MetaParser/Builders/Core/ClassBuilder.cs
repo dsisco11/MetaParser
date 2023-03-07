@@ -9,37 +9,33 @@ using System.Collections.Generic;
 namespace MetaParser.Builders.Core;
 using static CodeCommon;
 
-internal class ClassBuilder : IMetaCodeBuilder
+internal class ClassBuilder : MetaCodeBuilder
 {
     #region Properties
     public SyntaxTokenList? Modifiers { get; }
     public string Name { get; }
-    public IMetaCodeBuilder[] Contents { get; }
     #endregion
 
     #region Constructors
-    public ClassBuilder(SyntaxTokenList modifiers, string name, params IMetaCodeBuilder[] contents)
+    public ClassBuilder(SyntaxTokenList modifiers, string name)
     {
         Modifiers = modifiers;
         Name = name;
-        Contents = contents;
     }
 
-    public ClassBuilder(IEnumerable<SyntaxToken> modifiers, string name, params IMetaCodeBuilder[] contents)
+    public ClassBuilder(IEnumerable<SyntaxToken> modifiers, string name)
     {
         Modifiers = SyntaxFactory.TokenList(modifiers);
         Name = name;
-        Contents = contents;
     }
 
-    public ClassBuilder(string name, params IMetaCodeBuilder[] contents)
+    public ClassBuilder(string name)
     {
         Name = name;
-        Contents = contents;
     }
     #endregion
 
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var writer = context.writer;
         writer.WriteLine($"namespace {context.Config.Namespace}");
@@ -66,10 +62,7 @@ internal class ClassBuilder : IMetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        foreach (var builder in Contents)
-        {
-            builder.WriteTo(context);
-        }
+        base.WriteContent(context);
 
         writer.Indent--;
         writer.WriteLine("}");// end class

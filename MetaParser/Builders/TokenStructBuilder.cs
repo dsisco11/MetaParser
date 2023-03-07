@@ -4,46 +4,46 @@ using MetaParser.Core;
 namespace MetaParser.Builders;
 using static CodeCommon;
 
-internal class TokenStructBuilder : ICodeBuilder<MetaParserContext>
+internal class TokenStructBuilder : MetaCodeBuilder
 {
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
-        var wr = context.writer;
+        var writer = context.writer;
 
-        wr.WriteLine($"namespace {context.Config.Namespace};");
-        wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({TokenEnum})Id}}"")]");
-        wr.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]");
-        wr.WriteLine($"public readonly record struct {TokenValueStructName}({context.Config.IdType} Id, {ReadOnlyMemory}<{context.Config.InputType}> Data)");
-        wr.WriteLine("{");
-        wr.Indent++;
-        wr.WriteLine("public override string ToString()");
-        wr.WriteLine("{");
-        wr.Indent++;
-        wr.WriteLine("return Data.ToString();");
-        wr.Indent--;
-        wr.WriteLine("}");
-        wr.Indent--;
-        wr.WriteLine("}");
-        wr.WriteLine();
-        wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{this.ToString()}}"", Name = ""{{({TokenEnum})Id}}"")]");
-        wr.WriteLine($"public sealed record {TokenRecordTypeName}({TokenEnum} Id, {TokenValueStructName}[] Values)");
-        wr.WriteLine("{");
-        wr.Indent++;
-        wr.WriteLine("public override string ToString()");
-        wr.WriteLine("{");
-        wr.Indent++;
-        wr.WriteLine("var sb = new global::System.Text.StringBuilder();");
-        wr.WriteLine("for (int i=0; i<Values.Length; i++)");
-        wr.WriteLine("{");
-        wr.Indent++;
-        wr.WriteLine("sb.Append(Values[i].Data.ToString());");
-        wr.Indent--;
-        wr.WriteLine("}");
-        wr.WriteLine();
-        wr.WriteLine("return sb.ToString();");
-        wr.Indent--;
-        wr.WriteLine("}");
-        wr.Indent--;
-        wr.WriteLine("}");
+        writer.WriteLine($"namespace {context.Config.Namespace};");
+        writer.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({TokenEnum})Id}}"")]");
+        writer.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]");
+        writer.WriteLine($"public readonly record struct {TokenValueStructName}({context.Config.IdType} Id, {ReadOnlyMemory}<{context.Config.InputType}> Data)");
+        writer.WriteLine("{");
+        writer.Indent++;
+        writer.WriteLine("public override string ToString()");
+        writer.WriteLine("{");
+        writer.Indent++;
+        writer.WriteLine("return Data.ToString();");
+        writer.Indent--;
+        writer.WriteLine("}");
+        writer.Indent--;
+        writer.WriteLine("}");
+        writer.WriteLine();
+        writer.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{this.ToString()}}"", Name = ""{{({TokenEnum})Id}}"")]");
+        writer.WriteLine($"public sealed record {TokenRecordTypeName}({TokenEnum} Id, {TokenValueStructName}[] Values)");
+        writer.WriteLine("{");
+        writer.Indent++;
+        writer.WriteLine("public override string ToString()");
+        writer.WriteLine("{");
+        writer.Indent++;
+        writer.WriteLine("var sb = new global::System.Text.StringBuilder();");
+        writer.WriteLine("for (int i=0; i<Values.Length; i++)");
+        writer.WriteLine("{");
+        writer.Indent++;
+        writer.WriteLine("sb.Append(Values[i].Data.ToString());");
+        writer.Indent--;
+        writer.WriteLine("}");
+        writer.WriteLine();
+        writer.WriteLine("return sb.ToString();");
+        writer.Indent--;
+        writer.WriteLine("}");
+        writer.Indent--;
+        writer.WriteLine("}");
     }
 }

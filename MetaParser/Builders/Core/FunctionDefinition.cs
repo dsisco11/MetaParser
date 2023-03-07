@@ -10,47 +10,34 @@ using System.Collections.Generic;
 namespace MetaParser.Builders.Core;
 using static CodeCommon;
 
-internal class FunctionDefinition : IMetaCodeBuilder
+internal class FunctionDefinition : MetaCodeBuilder
 {
     #region Properties
     public SyntaxTokenList? Modifiers { get; }
     public TypeSyntax ReturnType { get; }
     public NameSyntax Name { get; }
     public ArgumentListSyntax Arguments { get; }
-    public IMetaCodeBuilder Body { get; }
-
     #endregion
 
     #region Constructors
-    public FunctionDefinition(TypeSyntax returnType, string name, ArgumentListSyntax arguments, IMetaCodeBuilder body)
+    public FunctionDefinition(TypeSyntax returnType, string name, ArgumentListSyntax arguments)
     {
         ReturnType = returnType;
         Name = SyntaxFactory.ParseName(name);
         Arguments = arguments;
-        Body = body;
     }
 
-    //public FunctionDefinition(SyntaxTokenList modifiers, TypeSyntax returnType, string name, ArgumentListSyntax arguments, IMetaCodeBuilder body)
-    //{
-    //    Modifiers = modifiers;
-    //    ReturnType = returnType;
-    //    Name = SyntaxFactory.ParseName(name);
-    //    Arguments = arguments;
-    //    Body = body;
-    //}
-
-    public FunctionDefinition(IEnumerable<SyntaxToken> modifiers, TypeSyntax returnType, string name, ArgumentListSyntax arguments, IMetaCodeBuilder body)
+    public FunctionDefinition(IEnumerable<SyntaxToken> modifiers, TypeSyntax returnType, string name, ArgumentListSyntax arguments)
     {
         Modifiers = SyntaxFactory.TokenList(modifiers);
         ReturnType = returnType;
         Name = SyntaxFactory.ParseName(name);
         Arguments = arguments;
-        Body = body;
     }
 
     #endregion
 
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var writer = context.writer;
         if (Modifiers is not null)
@@ -76,7 +63,7 @@ internal class FunctionDefinition : IMetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        Body.WriteTo(context);
+        base.WriteContent(context);
 
         writer.Indent--;
         writer.WriteLine("}");

@@ -5,14 +5,15 @@ using MetaParser.Core;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-internal class TokenProcessor : IMetaCodeBuilder
+internal class TokenProcessor : MetaCodeBuilder
 {
-    public static IMetaCodeBuilder Instance = new TokenProcessor();
-
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var writer = context.writer;
-        new DetectTokensAndThen(ConsumeTokenAndReturn.Instance).WriteTo(context);
+
+        Core.CodeBuilderFactory codeFactory = context.Config.CodeFactory;
+        var tokenDetector = codeFactory.Get_Token_Detection_Logic();
+        tokenDetector.And(new ExecuteConsumerAndReturnResult()).WriteTo(context);
 
         // return failure
         writer.WriteLine("id = default;");
@@ -31,7 +32,7 @@ internal class TokenProcessor : IMetaCodeBuilder
 
             // generate consumer functions
             var consumerFuncName = Format_Pattern_Consumer_Function_Name(consumer.Index);
-            var consumeFunc = Get_Local_Token_Consumer_Function_Definition(context.Config, consumer.Type, consumerFuncName, ConsumeAndThen.Instance);
+            var consumeFunc = Get_Local_Token_Consumer_Function_Definition(context.Config, consumer.Type, consumerFuncName);
             consumeFunc.WriteTo(workingContext);
         }
     }

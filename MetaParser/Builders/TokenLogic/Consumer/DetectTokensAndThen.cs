@@ -6,20 +6,9 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-internal class DetectTokensAndThen : IMetaCodeBuilder
+internal class DetectTokensAndThen : MetaCodeBuilder
 {
-    #region Properties
-    public IMetaCodeBuilder Body { get; }
-    #endregion
-
-    #region Constructors
-    public DetectTokensAndThen(IMetaCodeBuilder body)
-    {
-        Body = body;
-    }
-    #endregion
-
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         // TODO: Detect cyclic tokens and generate different detection & consuming logic
         var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
@@ -46,7 +35,7 @@ internal class DetectTokensAndThen : IMetaCodeBuilder
             writer.WriteLine("{");
             writer.Indent++;
 
-            Body.WriteTo(workContext);
+            base.WriteContent(context);
 
             writer.Indent--;
             writer.WriteLine("}");

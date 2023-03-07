@@ -7,11 +7,9 @@ using System.Collections.Immutable;
 namespace MetaParser.Builders;
 using static CodeCommon;
 
-internal class TokenIDEnumBuilder : IMetaCodeBuilder
+internal class TokenIDEnumBuilder : MetaCodeBuilder
 {
-    public static IMetaCodeBuilder Instance = new TokenIDEnumBuilder();
-
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var writer = context.writer;
         writer.WriteLine($"{Format_Token_Id(UnknownToken)} = ({context.Config.IdType}) 0,");

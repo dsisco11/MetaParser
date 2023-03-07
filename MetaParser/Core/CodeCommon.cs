@@ -66,7 +66,7 @@ internal static class CodeCommon
     #region Builders
     public static TypeSyntax Get_Consumer_Data_Type(MetaParserConfig config, EConsumerType type) => (type == EConsumerType.Data ? config.InputType : config.IdType);
     public static TypeSyntax Get_Token_Buffer_Type(MetaParserConfig config, EConsumerType type) => SyntaxFactory.ParseTypeName($"{ReadOnlySpan}<{Get_Consumer_Data_Type(config, type)}>");
-    public static FunctionDefinition Get_Token_Processor_Function_Definition(MetaParserConfig config, EConsumerType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}, out {config.IdType} id, out int length"), body);
-    public static FunctionDefinition Get_Local_Token_Consumer_Function_Definition(MetaParserConfig config, EConsumerType type, string name, IMetaCodeBuilder body) => new(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}, out int length"), body);
+    public static FunctionDefinition Get_Token_Processor_Function_Definition(MetaParserConfig config, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}, out {config.IdType} id, out int length")).And(config.CodeFactory.Get_Token_Processing_Logic());
+    public static FunctionDefinition Get_Local_Token_Consumer_Function_Definition(MetaParserConfig config, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}, out int length")).And(config.CodeFactory.Get_Token_Consumer_Logic());
     #endregion
 }

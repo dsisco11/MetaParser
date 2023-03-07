@@ -5,12 +5,11 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
 
-internal class CompoundTokenStage : IMetaCodeBuilder
+internal class CompoundTokenStage : MetaCodeBuilder
 {
-    public static CompoundTokenStage Instance = new CompoundTokenStage();
     public const string FunctionName = "Parse_Compound";
 
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{TokenValueStructName}>");
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenRecordTypeName}>");

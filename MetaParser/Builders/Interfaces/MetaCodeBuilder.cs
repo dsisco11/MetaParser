@@ -4,21 +4,57 @@ using System.Collections.Generic;
 
 namespace MetaParser.Builders.Interfaces;
 
-internal abstract class MetaCodeBuilder : IMetaCodeBuilder
+internal abstract class MetaCodeBuilder : IMetaCodeBuilder, ICodeBuilder<MetaParserContext>
 {
-    protected readonly List<IMetaCodeBuilder> _attachments = new(2);
+    #region Fields
+    protected readonly LinkedList<ICodeBuilder<MetaParserContext>> preBuilders = new();
+    protected readonly LinkedList<ICodeBuilder<MetaParserContext>> contentBuilders = new();
+    protected readonly LinkedList<ICodeBuilder<MetaParserContext>> postBuilders = new();
+    #endregion
 
-    public IMetaCodeBuilder Then(IMetaCodeBuilder attachment)
+    protected abstract void Write(MetaParserContext context);
+
+    #region Call Chain Builders
+    public ICodeBuilder<MetaParserContext> Before(ICodeBuilder<MetaParserContext> builder)
     {
-        _attachments.Add(attachment);
+        preBuilders.AddLast(builder);
         return this;
+    }
+
+    public ICodeBuilder<MetaParserContext> After(ICodeBuilder<MetaParserContext> builder)
+    {
+        postBuilders.AddLast(builder);
+        return this;
+    }
+
+    public ICodeBuilder<MetaParserContext> And(ICodeBuilder<MetaParserContext> builder)
+    {
+        contentBuilders.AddLast(builder);
+        return this;
+    }
+    #endregion
+
+    protected void WriteContent(MetaParserContext context)
+    {
+        foreach (var builder in contentBuilders)
+        {
+            builder.WriteTo(context);
+        }
     }
 
     public void WriteTo(MetaParserContext context)
     {
-        foreach (var attachment in _attachments)
+        foreach (var builder in preBuilders)
         {
-            attachment.WriteTo(context);
+            builder.WriteTo(context);
+        }
+
+        Write(context);
+
+        foreach (var builder in postBuilders)
+        {
+            builder.WriteTo(context);
         }
     }
+
 }

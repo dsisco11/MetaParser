@@ -4,11 +4,11 @@ using MetaParser.Core;
 namespace MetaParser.Builders.Parser;
 using static CodeCommon;
 
-internal class UnknownTokenPusher : IMetaCodeBuilder
+internal class UnknownTokenPusher : MetaCodeBuilder
 {
     public static IMetaCodeBuilder Instance = new UnknownTokenPusher();
 
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var wr = context.writer;
         wr.WriteLine($"if ({VarNameBufferMinor}.Length != {VarNameBufferLocal}.Length)");

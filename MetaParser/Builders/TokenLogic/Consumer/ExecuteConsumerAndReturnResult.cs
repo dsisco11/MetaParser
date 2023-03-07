@@ -6,11 +6,9 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-internal class ConsumeTokenAndReturn : IMetaCodeBuilder
+internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
 {
-    public static ConsumeTokenAndReturn Instance = new ConsumeTokenAndReturn();
-
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var writer = context.writer;
         var consumer = context.Consumers.WorkingSet.Single();

@@ -5,12 +5,11 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
 
-internal class ComplexTokenStage : IMetaCodeBuilder
+internal class ComplexTokenStage : MetaCodeBuilder
 {
-    public static ComplexTokenStage Instance = new ComplexTokenStage();
     public const string FunctionName = "Parse_Complex";
 
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{TokenRecordTypeName}>");
         var writer = context.writer;

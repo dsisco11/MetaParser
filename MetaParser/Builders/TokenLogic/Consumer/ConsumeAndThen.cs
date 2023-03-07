@@ -7,11 +7,9 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-internal class ConsumeAndThen : IMetaCodeBuilder
+internal class ConsumeAndThen : MetaCodeBuilder
 {
-    public static ConsumeAndThen Instance = new ConsumeAndThen();
-
-    public void WriteTo(MetaParserContext context)
+    protected override void Write(MetaParserContext context)
     {
         var writer = context.writer;
         var consumer = context.Consumers.WorkingSet.Single();
