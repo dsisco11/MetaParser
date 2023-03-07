@@ -3,6 +3,7 @@ using MetaParser.Consumers;
 using MetaParser.Core;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
+using static CodeCommon;
 
 internal class TokenProcessor : IMetaCodeBuilder
 {
@@ -29,8 +30,8 @@ internal class TokenProcessor : IMetaCodeBuilder
             }
 
             // generate consumer functions
-            var consumerFuncName = CodeCommon.Format_Pattern_Consumer_Function_Name(consumer.Index);
-            var consumeFunc = CodeCommon.Get_Local_Token_Consumer_Function_Definition(context.Config, consumer.Type, consumerFuncName, ConsumeAndThen.Instance);
+            var consumerFuncName = Format_Pattern_Consumer_Function_Name(consumer.Index);
+            var consumeFunc = Get_Local_Token_Consumer_Function_Definition(context.Config, consumer.Type, consumerFuncName, ConsumeAndThen.Instance);
             consumeFunc.WriteTo(workingContext);
         }
     }

@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
+using static CodeCommon;
 
 internal static class ConsumerPatternMatcher
 {
@@ -40,7 +41,7 @@ internal static class ConsumerPatternMatcher
             PatternGroup g when (g.Condition == EPatternCondition.OneOf && g.Items.Length > 1) => $"({string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o)))})",
             PatternGroup g => string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o))),
             PatternEmpty _ => string.Empty,
-            PatternTokenRef t => CodeCommon.Get_TokenId_Ref(t.TokenName),
+            PatternTokenRef t => Get_TokenId_Ref(t.TokenName),
             _ => throw new NotImplementedException()
         };
     }

@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
+using static CodeCommon;
 
 internal class ConsumeAndThen : IMetaCodeBuilder
 {
@@ -31,13 +32,13 @@ internal class ConsumeAndThen : IMetaCodeBuilder
             {
                 writer.WriteLine("/* WARNING: consumer START sequence is of uncertain length, it is possible this could cause token parsing discrepancies */");
             }
-            writer.WriteLine($"var {CodeCommon.VarNameBufferMinor} = {CodeCommon.VarNameBufferMajor}.Slice({Math.Max(1, consumer.Start.MinLength)});");
+            writer.WriteLine($"var {VarNameBufferMinor} = {VarNameBufferMajor}.Slice({Math.Max(1, consumer.Start.MinLength)});");
         }
 
         // Check for escape sequence
         if (consumer.Stop is not null)
         {
-            writer.WriteLine($"while ({CodeCommon.VarNameBufferMinor}.Length > 0)");
+            writer.WriteLine($"while ({VarNameBufferMinor}.Length > 0)");
             writer.WriteLine("{");
             writer.Indent++;
 
@@ -45,7 +46,7 @@ internal class ConsumeAndThen : IMetaCodeBuilder
             if (consumer.Escape is not null)
             {
                 writer.Write("if (");
-                writer.Write($"{CodeCommon.VarNameBufferMinor}");
+                writer.Write($"{VarNameBufferMinor}");
                 ConsumerPatternMatcher.WriteTo(context, consumer.Escape, true, true);
                 writer.WriteLine(")");
                 writer.WriteLine("{");
@@ -53,18 +54,18 @@ internal class ConsumeAndThen : IMetaCodeBuilder
 #if DEBUG
                 writer.WriteLine("/* look past the ESCAPE sequence */");
 #endif
-                writer.WriteLine($"var {CodeCommon.VarNameBufferLocal} = {CodeCommon.VarNameBufferMinor}.Slice({consumer.Escape.Length});");
+                writer.WriteLine($"var {VarNameBufferLocal} = {VarNameBufferMinor}.Slice({consumer.Escape.Length});");
 #if DEBUG
                 writer.WriteLine("/* if the stop sequence immediately follows the ESCAPE sequence then they are consumed */");
 #endif
                 // Check STOP sequence
                 writer.Write("if (");
-                writer.Write($"{CodeCommon.VarNameBufferLocal}");
+                writer.Write($"{VarNameBufferLocal}");
                 ConsumerPatternMatcher.WriteTo(context, consumer.Stop, true, true);
                 writer.WriteLine(")");
                 writer.WriteLine("{");
                 writer.Indent++;
-                writer.WriteLine($"{CodeCommon.VarNameBufferMinor} = {CodeCommon.VarNameBufferLocal}.Slice({consumer.Stop.Length});");
+                writer.WriteLine($"{VarNameBufferMinor} = {VarNameBufferLocal}.Slice({consumer.Stop.Length});");
                 writer.WriteLine($"continue;");
                 writer.Indent--;
                 writer.WriteLine("}");
@@ -76,7 +77,7 @@ internal class ConsumeAndThen : IMetaCodeBuilder
             if (consumer.Stop is not null)
             {
                 writer.Write("if (");
-                writer.Write($"{CodeCommon.VarNameBufferMinor}");
+                writer.Write($"{VarNameBufferMinor}");
                 ConsumerPatternMatcher.WriteTo(context, consumer.Stop, true, true);
                 writer.WriteLine(")");
 #if DEBUG
@@ -97,11 +98,11 @@ internal class ConsumeAndThen : IMetaCodeBuilder
         if (consumer.Consume is not null)
         {
             writer.WriteLine();
-            writer.WriteLine($"while ({CodeCommon.VarNameBufferMinor}.Length > 0)");
+            writer.WriteLine($"while ({VarNameBufferMinor}.Length > 0)");
             writer.WriteLine("{");
             writer.Indent++;
             writer.Write("if (");
-            writer.Write($"{CodeCommon.VarNameBufferMinor}");
+            writer.Write($"{VarNameBufferMinor}");
             ConsumerPatternMatcher.WriteTo(context, consumer.Consume, true, true);
             writer.WriteLine(")");
 #if DEBUG
@@ -109,7 +110,7 @@ internal class ConsumeAndThen : IMetaCodeBuilder
 #endif
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"{CodeCommon.VarNameBufferMinor} = {CodeCommon.VarNameBufferMinor}.Slice({consumer.Consume.Length});");
+            writer.WriteLine($"{VarNameBufferMinor} = {VarNameBufferMinor}.Slice({consumer.Consume.Length});");
 #if DEBUG
             writer.WriteLine("/* consumer forces moving on to next loop */");
 #endif
@@ -132,7 +133,7 @@ internal class ConsumeAndThen : IMetaCodeBuilder
 #if DEBUG
                 writer.WriteLine("/* Token doesn't specify any explicit consumables, so ALL items are considered valid consumables */");
 #endif
-                writer.WriteLine($"{CodeCommon.VarNameBufferMinor} = {CodeCommon.VarNameBufferMinor}.Slice(1);");
+                writer.WriteLine($"{VarNameBufferMinor} = {VarNameBufferMinor}.Slice(1);");
             }
         }
 
@@ -145,12 +146,12 @@ internal class ConsumeAndThen : IMetaCodeBuilder
             writer.WriteLine();
 
             writer.Write("if (");
-            writer.Write($"{CodeCommon.VarNameBufferMinor}");
+            writer.Write($"{VarNameBufferMinor}");
             ConsumerPatternMatcher.WriteTo(context, consumer.Stop, true, true);
             writer.WriteLine(")");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"length = {consumer.Stop.Length} + ({CodeCommon.VarNameBufferMajor}.Length - {CodeCommon.VarNameBufferMinor}.Length);");
+            writer.WriteLine($"length = {consumer.Stop.Length} + ({VarNameBufferMajor}.Length - {VarNameBufferMinor}.Length);");
             writer.WriteLine("return true;");
             writer.Indent--;
             writer.WriteLine("}");
@@ -160,7 +161,7 @@ internal class ConsumeAndThen : IMetaCodeBuilder
         }
         else
         {
-            writer.WriteLine($"length = {CodeCommon.VarNameBufferMajor}.Length - {CodeCommon.VarNameBufferMinor}.Length;");
+            writer.WriteLine($"length = {VarNameBufferMajor}.Length - {VarNameBufferMinor}.Length;");
             writer.WriteLine("return true;");
         }
 

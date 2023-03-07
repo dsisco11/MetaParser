@@ -4,6 +4,7 @@ using MetaParser.Core;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
+using static CodeCommon;
 
 internal class ConsumeTokenAndReturn : IMetaCodeBuilder
 {
@@ -16,16 +17,16 @@ internal class ConsumeTokenAndReturn : IMetaCodeBuilder
 
         if (consumer.IsConstant)
         {
-            writer.WriteLine($"id = {CodeCommon.Get_TokenId_Ref(consumer.Token.Name)};");
+            writer.WriteLine($"id = {Get_TokenId_Ref(consumer.Token.Name)};");
             writer.WriteLine($"length = {consumer.Start!.Length};");
             writer.WriteLine($"return true;");
         }
         else if (consumer.IsDynamic)
         {
             var consumerId = consumer.Index;
-            var consumerFunc = CodeCommon.Format_Pattern_Consumer_Function_Name(consumerId);
-            writer.WriteLine($"id = {CodeCommon.Get_TokenId_Ref(consumer.Token.Name)};");
-            writer.WriteLine($"return {consumerFunc}({CodeCommon.VarNameBufferMajor}, out length);");
+            var consumerFunc = Format_Pattern_Consumer_Function_Name(consumerId);
+            writer.WriteLine($"id = {Get_TokenId_Ref(consumer.Token.Name)};");
+            writer.WriteLine($"return {consumerFunc}({VarNameBufferMajor}, out length);");
         }
         else
         {

@@ -4,6 +4,7 @@ using MetaParser.Core;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
+using static CodeCommon;
 
 internal class DetectTokensAndThen : IMetaCodeBuilder
 {
@@ -18,9 +19,6 @@ internal class DetectTokensAndThen : IMetaCodeBuilder
     }
     #endregion
 
-
-
-
     public void WriteTo(MetaParserContext context)
     {
         // TODO: Detect cyclic tokens and generate different detection & consuming logic
@@ -34,7 +32,7 @@ internal class DetectTokensAndThen : IMetaCodeBuilder
         var sortedRecursiveConsumers = recursiveConsumers.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
 
         var writer = context.writer;
-        writer.WriteLine($"switch ({CodeCommon.VarNameBufferMajor})");
+        writer.WriteLine($"switch ({VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
 
