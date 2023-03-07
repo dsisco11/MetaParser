@@ -3,12 +3,8 @@ using MetaParser.Builders.Interfaces;
 using MetaParser.Consumers;
 using MetaParser.Graphs;
 using MetaParser.Tokens;
-
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-using System;
 using System.CodeDom.Compiler;
 using System.Collections.Immutable;
 using System.IO;
