@@ -12,7 +12,7 @@ namespace MetaParser.Builders.Parser.Functions
             const string VarNameValueTokensBuffer = "tokensBuffer";
             var wr = context.writer;
 
-            var tyInputBuffer = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{context.InputType}>");
+            var tyInputBuffer = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{context.Config.InputType}>");
             var tyTokenList = SyntaxFactory.ParseTypeName($"{CodeCommon.TokenRecordTypeName}[]");
             
 

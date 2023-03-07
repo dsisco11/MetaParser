@@ -21,7 +21,7 @@ internal class CompoundTokenStage : IMetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
         // Copy all of our value token ids into a uniform array in memory
-        writer.WriteLine($"var {VarNameIdBuffer} = new {context.IdType}[{CodeCommon.VarNameBufferMajor}.Length];");
+        writer.WriteLine($"var {VarNameIdBuffer} = new {context.Config.IdType}[{CodeCommon.VarNameBufferMajor}.Length];");
         writer.WriteLine($"for (int i = 0; i < {CodeCommon.VarNameBufferMajor}.Length; i++)");
         writer.WriteLine("{");
         writer.Indent++;
@@ -30,7 +30,7 @@ internal class CompoundTokenStage : IMetaCodeBuilder
         writer.WriteLine("}");
         writer.WriteLine();
 
-        writer.WriteLine($"var {CodeCommon.VarNameBufferMinor} = new {CodeCommon.ReadOnlyMemory}<{context.IdType}>( {VarNameIdBuffer} );");
+        writer.WriteLine($"var {CodeCommon.VarNameBufferMinor} = new {CodeCommon.ReadOnlyMemory}<{context.Config.IdType}>( {VarNameIdBuffer} );");
         writer.WriteLine($"var {CodeCommon.VarNameBufferLocal} = {CodeCommon.VarNameBufferMinor}.Span;");
         writer.WriteLine($"var {VarNameResults} = new {resultsBuilderType}();");
         writer.WriteLine();

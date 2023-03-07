@@ -9,10 +9,10 @@ namespace MetaParser.Builders
         {
             var wr = context.writer;
 
-            wr.WriteLine($"namespace {context.Namespace};");
+            wr.WriteLine($"namespace {context.Config.Namespace};");
             wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({CodeCommon.TokenEnum})Id}}"")]");
             wr.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]");
-            wr.WriteLine($"public readonly record struct {CodeCommon.TokenValueStructName}({context.IdType} Id, {CodeCommon.ReadOnlyMemory}<{context.InputType}> Data)");
+            wr.WriteLine($"public readonly record struct {CodeCommon.TokenValueStructName}({context.Config.IdType} Id, {CodeCommon.ReadOnlyMemory}<{context.Config.InputType}> Data)");
             wr.WriteLine("{");
             wr.Indent++;
             wr.WriteLine("public override string ToString()");

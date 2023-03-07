@@ -41,7 +41,7 @@ internal class ClassBuilder : IMetaCodeBuilder
     public void WriteTo(MetaParserContext context)
     {
         var writer = context.writer;
-        writer.WriteLine($"namespace {context.Namespace}");
+        writer.WriteLine($"namespace {context.Config.Namespace}");
         writer.WriteLine("{");
         writer.Indent++;
 #if !DEBUG
