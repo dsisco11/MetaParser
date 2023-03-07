@@ -143,7 +143,7 @@ public partial class Generator : IIncrementalGenerator
                 DependencyGraph.Build(context);
                 DependencyGraph.Resolve(context);
 
-                context.Consumers = new PatternConsumerList() { CompleteSet = Consumers.ToImmutableArray() };
+                context.Consumers = new ConsumerList() { CompleteSet = Consumers.ToImmutableArray() };
             }
 
             return context;
@@ -198,7 +198,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, MetaParserContext.ComplexTokenProcessorFunctionName, RecursiveTokenProcessor.Instance);
+            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, MetaParserContext.ComplexTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
