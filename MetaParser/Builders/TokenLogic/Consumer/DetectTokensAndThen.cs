@@ -8,9 +8,9 @@ using static CodeCommon;
 
 internal class DetectTokensAndThen : MetaCodeBuilder
 {
+    // TODO: Detect cyclic tokens and generate different detection & consuming logic
     protected override void Write(MetaParserContext context)
     {
-        // TODO: Detect cyclic tokens and generate different detection & consuming logic
         var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
         var workContext = context with { Consumers = workTokens };
 

@@ -112,14 +112,6 @@ public partial class Generator : IIncrementalGenerator
                 int tokenIndex = 0;
                 context.Tokens = schema.Definitions.ToImmutableDictionary(static (x) => CodeCommon.Format_Token_Key(x.Key), (x) => new TokenInfo(++tokenIndex, CodeCommon.Format_Token_Key(x.Key)));
 
-                //var Tokens = new List<TokenInfo>();
-                //foreach (var def in schema.Definitions)
-                //{
-                //    var token = new TokenInfo(++tokenIndex, MetaParserContext.Format_Token_Key(def.Key));
-                //    Tokens.Add(token);
-                //}
-                //context.Tokens = Tokens.ToImmutableDictionary(static (x) => x.Name);
-
                 int consumerIndex = 0;
                 var Consumers = new List<ConsumerInfo>();
                 foreach (var def in schema.Definitions)
