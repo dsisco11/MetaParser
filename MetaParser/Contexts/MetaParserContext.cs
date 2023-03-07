@@ -16,22 +16,12 @@ using System.IO;
 
 namespace MetaParser.Contexts
 {
-    internal record MetaParserContext : ICodeBuilderContext
+    internal record MetaParserContext : MetaParserConfig, ICodeBuilderContext
     {
         public IndentedTextWriter writer { get; set; } = new IndentedTextWriter(new StringWriter());
-        public string BaseFileName { get; set; } = string.Empty;
-        public string Namespace { get; set; } = string.Empty;
-        public string? ClassName { get; set; } = "Parser";
-        public string? ParserType { get; set; }
         public VertexGraph TokenGraph { get; set; }
         public ImmutableDictionary<string, TokenInfo> Tokens = ImmutableDictionary<string, TokenInfo>.Empty;
-        public PatternConsumerList Consumers { get; set; } = new();
-
-        public TypeSyntax IdType { get; set; } = SyntaxFactory.ParseTypeName("int");
-        public TypeSyntax InputType { get; set; } = SyntaxFactory.ParseTypeName("char");
-
-        #region Accessors
-        #endregion
+        public ConsumerList Consumers { get; set; } = new();
 
         #region Constants
         public const string TokenEnum = "ETokenType";
@@ -76,18 +66,5 @@ namespace MetaParser.Contexts
         public FunctionDefinition Get_Local_Token_Consumer_Function_Definition(EConsumerType type, string name, IMetaCodeBuilder body) => new(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(type)} {VarNameBufferMajor}, out int length"), body);
         #endregion
 
-    }
-
-    internal sealed record PatternConsumerList
-    {
-        /// <summary>
-        /// Complete list of all tokens defined
-        /// </summary>
-        public ImmutableArray<ConsumerInfo> CompleteSet { get; set; } = ImmutableArray<ConsumerInfo>.Empty;
-
-        /// <summary>
-        /// Set of tokens being targeted by the current action
-        /// </summary>
-        public ConsumerInfo[] WorkingSet { get; set; } = Array.Empty<ConsumerInfo>();
     }
 }
