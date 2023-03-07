@@ -35,7 +35,7 @@ internal class DetectTokensAndThen : MetaCodeBuilder
             writer.WriteLine("{");
             writer.Indent++;
 
-            base.WriteContent(context);
+            base.WriteContent(workContext);
 
             writer.Indent--;
             writer.WriteLine("}");
