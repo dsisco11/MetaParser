@@ -1,33 +1,44 @@
-﻿using MetaParser.CodeGen.Core;
+﻿using MetaParser.CodeGen.Interfaces;
 using MetaParser.Consumers;
 using MetaParser.Contexts;
-
-using System;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
 
 internal class DetectTokensAndThen : IMetaCodeBuilder
 {
+    #region Properties
     public IMetaCodeBuilder Body { get; }
+    #endregion
 
+    #region Constructors
     public DetectTokensAndThen(IMetaCodeBuilder body)
     {
         Body = body;
     }
+    #endregion
+
+
+
 
     public void WriteTo(MetaParserContext context)
     {
+        // TODO: Detect cyclic tokens and generate different detection & consuming logic
+        var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
+        var workContext = context with { Consumers = workTokens };
+
+        var linearConsumers = context.Consumers.WorkingSet.Where(static (x) => !x.DependencyInfo.IsRecursive);
+        var recursiveConsumers = context.Consumers.WorkingSet.Where(static (x) => !x.DependencyInfo.IsRecursive);
+
+        var sortedLinearConsumers = linearConsumers.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
+        var sortedRecursiveConsumers = recursiveConsumers.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
+
         var writer = context.writer;
         writer.WriteLine($"switch ({MetaParserContext.VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
 
-        var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
-        var workContext = context with { Consumers = workTokens };
-
-        IOrderedEnumerable<ConsumerInfo> orderedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (c) => c.DependencyInfo.Order).ThenByDescending(static (c) => c.Start.Length);
-        foreach (ConsumerInfo consumer in orderedConsumers)
+        foreach (ConsumerInfo consumer in sortedLinearConsumers)
         {
             workContext.Consumers.WorkingSet[0] = consumer;
 
@@ -42,6 +53,7 @@ internal class DetectTokensAndThen : IMetaCodeBuilder
             writer.Indent--;
             writer.WriteLine("}");
         }
+
         writer.Indent--;
         writer.WriteLine("}");// end switch
     }
