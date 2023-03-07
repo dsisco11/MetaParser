@@ -1,5 +1,5 @@
 ﻿using MetaParser.Consumers;
-using MetaParser.Contexts;
+using MetaParser.Core;
 
 using System.Collections.Generic;
 using System.Linq;

@@ -1,5 +1,5 @@
 ﻿using MetaParser.CodeGen.Interfaces;
-using MetaParser.Contexts;
+using MetaParser.Core;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

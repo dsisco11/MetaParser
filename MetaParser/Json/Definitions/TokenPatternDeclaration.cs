@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Text.Json.Serialization;
-using MetaParser.Contexts;
+using MetaParser.Core;
 using MetaParser.Patternization;
 
 namespace MetaParser.Json.Definitions;

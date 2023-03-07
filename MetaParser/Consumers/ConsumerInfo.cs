@@ -1,4 +1,4 @@
-﻿using MetaParser.Contexts;
+﻿using MetaParser.Core;
 using MetaParser.Exceptions;
 using MetaParser.Graphs;
 using MetaParser.Patternization;

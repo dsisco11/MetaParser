@@ -1,5 +1,4 @@
-﻿using MetaParser.CodeGen;
-using MetaParser.CodeGen.Core;
+﻿using MetaParser.CodeGen.Core;
 using MetaParser.CodeGen.Interfaces;
 using MetaParser.Consumers;
 using MetaParser.Graphs;
@@ -14,7 +13,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Immutable;
 using System.IO;
 
-namespace MetaParser.Contexts
+namespace MetaParser.Core
 {
     internal record MetaParserContext : MetaParserConfig, ICodeBuilderContext
     {

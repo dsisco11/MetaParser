@@ -1,5 +1,5 @@
 ﻿using MetaParser.CodeGen.Interfaces;
-using MetaParser.Contexts;
+using MetaParser.Core;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
 

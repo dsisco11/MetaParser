@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.CodeDom.Compiler;
 using System.Collections.Immutable;
-using MetaParser.Contexts;
+using MetaParser.Core;
 using MetaParser.Builders;
 using MetaParser.Builders.Parser.Functions;
 using MetaParser.CodeGen.Core;

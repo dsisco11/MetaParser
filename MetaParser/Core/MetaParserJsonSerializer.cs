@@ -1,7 +1,7 @@
 ﻿using MetaParser.Json.Definitions;
 using System.Text.Json.Serialization;
 
-namespace MetaParser.Contexts;
+namespace MetaParser.Core;
 
 [JsonSerializable(typeof(ParserDefinition))]
 [JsonSerializable(typeof(ETokenType))]

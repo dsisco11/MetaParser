@@ -1,4 +1,4 @@
-﻿using MetaParser.Contexts;
+﻿using MetaParser.Core;
 using MetaParser.Patternization;
 
 namespace MetaParser.Json.Definitions;

@@ -1,6 +1,6 @@
 ﻿using MetaParser.CodeGen.Interfaces;
 using MetaParser.Consumers;
-using MetaParser.Contexts;
+using MetaParser.Core;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;

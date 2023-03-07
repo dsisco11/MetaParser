@@ -1,5 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-using MetaParser.Contexts;
+using MetaParser.Core;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
 using MetaParser.Patternization;
