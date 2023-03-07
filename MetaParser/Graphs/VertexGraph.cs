@@ -144,7 +144,7 @@ internal class VertexGraph
     #endregion
 }
 
-[DebuggerDisplay("Order[{Order}] | MinDepth[{MinDepth}] | MaxDepth[{MaxDepth}] | IsCyclic ({IsCyclic})", Name = "{Id}")]
+[DebuggerDisplay("Order[{Order}] | MinDepth[{MinDepth}] | MaxDepth[{MaxDepth}] | IsRecursive ({IsRecursive})", Name = "{Id}")]
 internal struct ResolvedVertexNode
 {
     public int Id;
