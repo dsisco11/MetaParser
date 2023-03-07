@@ -1,9 +1,8 @@
-﻿namespace MetaParser
+﻿namespace MetaParser;
+
+internal enum ETokenType
 {
-    internal enum ETokenType
-    {
-        Constant,
-        Compound,
-        Complex
-    }
+    Constant,
+    Compound,
+    Complex
 }

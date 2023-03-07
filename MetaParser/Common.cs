@@ -6,93 +6,92 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace MetaParser
+namespace MetaParser;
+
+public static class Common
 {
-    public static class Common
+    public const string MetaParserFileExtension = ".metaparser.json";
+    #region Schema
+    const string Schema_File_Resource = "MetaParser.Resources.schema.json";
+    public static ValidationOptions SchemaOptions
     {
-        public const string MetaParserFileExtension = ".metaparser.json";
-        #region Schema
-        const string Schema_File_Resource = "MetaParser.Resources.schema.json";
-        public static ValidationOptions SchemaOptions
+        get
         {
-            get
+            return new()
             {
-                return new()
-                {
-                    OutputFormat = OutputFormat.Detailed,
-                    //Log = new JsonDebugLogger()
-                };
-            }
+                OutputFormat = OutputFormat.Detailed,
+                //Log = new JsonDebugLogger()
+            };
         }
-
-        public static JsonSchema Get_Parser_Schema()
-        {
-            var jsonStr = Get_Embedded_File_Contents(Schema_File_Resource);
-            if (string.IsNullOrWhiteSpace(jsonStr))
-            {
-                throw new FileLoadException($"Unable to load embedded metaparser schema file!");
-            }
-
-            return JsonSchema.FromText(jsonStr);
-        }
-        #endregion
-
-        internal static string Get_FileName(string str) => Remove_From_End(Path.GetFileName(str).AsSpan(), MetaParserFileExtension.AsSpan());
-        internal static string Remove_From_End(ReadOnlySpan<char> source, ReadOnlySpan<char> remove)
-        {
-            return source.Slice(0, source.Length - remove.Length).ToString();
-        }
-
-        internal static TypeSyntax Get_Integer_Type(long maxValue)
-        {
-            if (maxValue < byte.MaxValue)
-            {
-                return SyntaxFactory.ParseTypeName("byte");
-            }
-            else if (maxValue < short.MaxValue)
-            {
-                return SyntaxFactory.ParseTypeName("short");
-            }
-            else if (maxValue < ushort.MaxValue)
-            {
-                return SyntaxFactory.ParseTypeName("ushort");
-            }
-            else if (maxValue < int.MaxValue)
-            {
-                return SyntaxFactory.ParseTypeName("int");
-            }
-            else if (maxValue < uint.MaxValue)
-            {
-                return SyntaxFactory.ParseTypeName("uint");
-            }
-
-            return SyntaxFactory.ParseTypeName("long");
-        }
-
-        #region Resource Helpers
-        internal static Stream Get_Embedded_Resource_Stream(string resourceName)
-        {
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream(resourceName);
-            if (stream is null)
-            {
-                throw new FileLoadException($"Unable to load embedded schema definition resource from assembly!");
-            }
-
-            return stream;
-        }
-
-        /// <summary>
-        /// Returns the contents of an embedded assembly file as a string
-        /// </summary>
-        /// <param name="resourceName"></param>
-        /// <returns></returns>
-        internal static string Get_Embedded_File_Contents(string resourceName)
-        {
-            using var stream = Get_Embedded_Resource_Stream(resourceName);
-            using StreamReader rd = new StreamReader(stream);
-            return rd.ReadToEnd();
-        }
-        #endregion
     }
+
+    public static JsonSchema Get_Parser_Schema()
+    {
+        var jsonStr = Get_Embedded_File_Contents(Schema_File_Resource);
+        if (string.IsNullOrWhiteSpace(jsonStr))
+        {
+            throw new FileLoadException($"Unable to load embedded metaparser schema file!");
+        }
+
+        return JsonSchema.FromText(jsonStr);
+    }
+    #endregion
+
+    internal static string Get_FileName(string str) => Remove_From_End(Path.GetFileName(str).AsSpan(), MetaParserFileExtension.AsSpan());
+    internal static string Remove_From_End(ReadOnlySpan<char> source, ReadOnlySpan<char> remove)
+    {
+        return source.Slice(0, source.Length - remove.Length).ToString();
+    }
+
+    internal static TypeSyntax Get_Integer_Type(long maxValue)
+    {
+        if (maxValue < byte.MaxValue)
+        {
+            return SyntaxFactory.ParseTypeName("byte");
+        }
+        else if (maxValue < short.MaxValue)
+        {
+            return SyntaxFactory.ParseTypeName("short");
+        }
+        else if (maxValue < ushort.MaxValue)
+        {
+            return SyntaxFactory.ParseTypeName("ushort");
+        }
+        else if (maxValue < int.MaxValue)
+        {
+            return SyntaxFactory.ParseTypeName("int");
+        }
+        else if (maxValue < uint.MaxValue)
+        {
+            return SyntaxFactory.ParseTypeName("uint");
+        }
+
+        return SyntaxFactory.ParseTypeName("long");
+    }
+
+    #region Resource Helpers
+    internal static Stream Get_Embedded_Resource_Stream(string resourceName)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var stream = assembly.GetManifestResourceStream(resourceName);
+        if (stream is null)
+        {
+            throw new FileLoadException($"Unable to load embedded schema definition resource from assembly!");
+        }
+
+        return stream;
+    }
+
+    /// <summary>
+    /// Returns the contents of an embedded assembly file as a string
+    /// </summary>
+    /// <param name="resourceName"></param>
+    /// <returns></returns>
+    internal static string Get_Embedded_File_Contents(string resourceName)
+    {
+        using var stream = Get_Embedded_Resource_Stream(resourceName);
+        using StreamReader rd = new StreamReader(stream);
+        return rd.ReadToEnd();
+    }
+    #endregion
 }

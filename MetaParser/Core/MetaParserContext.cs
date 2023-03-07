@@ -9,14 +9,13 @@ using System.CodeDom.Compiler;
 using System.Collections.Immutable;
 using System.IO;
 
-namespace MetaParser.Core
+namespace MetaParser.Core;
+
+internal record MetaParserContext : ICodeBuilderContext
 {
-    internal record MetaParserContext : ICodeBuilderContext
-    {
-        public IndentedTextWriter writer { get; set; } = new IndentedTextWriter(new StringWriter());
-        public MetaParserConfig Config { get; set; }
-        public VertexGraph TokenGraph { get; set; }
-        public ImmutableDictionary<string, TokenInfo> Tokens = ImmutableDictionary<string, TokenInfo>.Empty;
-        public ConsumerList Consumers { get; set; } = new();
-    }
+    public IndentedTextWriter writer { get; set; } = new IndentedTextWriter(new StringWriter());
+    public MetaParserConfig Config { get; set; }
+    public VertexGraph TokenGraph { get; set; }
+    public ImmutableDictionary<string, TokenInfo> Tokens = ImmutableDictionary<string, TokenInfo>.Empty;
+    public ConsumerList Consumers { get; set; } = new();
 }

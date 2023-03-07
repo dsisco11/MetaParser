@@ -2,15 +2,14 @@
 
 using Json.Schema;
 
-namespace MetaParser
+namespace MetaParser;
+
+class JsonDebugLogger : ILog
 {
-    class JsonDebugLogger : ILog
+    public void Write(Func<string> message, int indent = 0)
     {
-        public void Write(Func<string> message, int indent = 0)
-        {
-            var msg = message();
-            System.Diagnostics.Debug.IndentLevel = indent;
-            System.Diagnostics.Debug.WriteLine(msg);
-        }
+        var msg = message();
+        System.Diagnostics.Debug.IndentLevel = indent;
+        System.Diagnostics.Debug.WriteLine(msg);
     }
 }
