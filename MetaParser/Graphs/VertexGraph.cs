@@ -75,34 +75,31 @@ namespace MetaParser.Graphs
         {
             var count = Count;
             var maxIndex = nodes.Values.Max(static (x) => x.Index);
-
-            var newIndex = ArrayPool<int>.Shared.Rent(maxIndex);
-            var oldIndex = ArrayPool<int>.Shared.Rent(count);
+            var remap = new Reindexer(nodes.Values.Select(static (x) => x.Index).ToArray());
 
             var in_degree = ArrayPool<int>.Shared.Rent(count);
             var resolved = new ResolvedVertexNode[count];
 
-            int indexTracker = 0;
             foreach (var node in nodes)
             {
-                var index = indexTracker++;
-                newIndex[node.Key] = index;
-                oldIndex[index] = node.Key;
+                var index = remap.GetNew(node.Value.Index);
 
                 in_degree[index] = node.Value.Outgoing.Count;
                 resolved[index] = new ResolvedVertexNode()
                 {
                     Id = node.Key,
-                    Depth = node.Value.Incoming.Count
+                    MinDepth = int.MaxValue,
+                    MaxDepth = 0
                 };
             }
 
             var q = new Queue<int>();
-            for (int i = 0; i < count; i++)
+            for (int nidx = 0; nidx < count; nidx++)
             {
-                if (in_degree[i] == 0)
+                if (in_degree[nidx] == 0)
                 {
-                    q.Enqueue(i);
+                    q.Enqueue(nidx);
+                    resolved[nidx].MinDepth = 0;
                 }
             }
 
@@ -110,12 +107,17 @@ namespace MetaParser.Graphs
             while (q.Count > 0)
             {
                 var nIdx = q.Dequeue();
-                var oIdx = oldIndex[nIdx];
+                var oIdx = remap.GetOld(nIdx);
+                var node = resolved[oIdx];
+
                 resolved[oIdx].Order = order++;
                 foreach (var oid in nodes[oIdx].Incoming)
                 {
-                    var nid = newIndex[oid];
+                    var nid = remap.GetNew(oid);
                     in_degree[nid] -= 1;
+                    resolved[nid].MinDepth = Math.Min(resolved[nid].MinDepth, node.MinDepth + 1);
+                    resolved[nid].MaxDepth = Math.Max(resolved[nid].MaxDepth, node.MaxDepth + 1);
+
                     if (in_degree[nid] == 0)
                     {
                         q.Enqueue(nid);
@@ -129,14 +131,12 @@ namespace MetaParser.Graphs
                 {
                     if(in_degree[nIdx] > 0)
                     {
-                        resolved[nIdx].IsCyclic = true;
+                        resolved[nIdx].IsRecursive = true;
                         resolved[nIdx].Order = order+1;
-                    }                    
+                    }
                 }
             }
 
-            ArrayPool<int>.Shared.Return(newIndex);
-            ArrayPool<int>.Shared.Return(oldIndex);
             ArrayPool<int>.Shared.Return(in_degree);
 
             return resolved;
@@ -144,12 +144,13 @@ namespace MetaParser.Graphs
         #endregion
     }
 
-    [DebuggerDisplay("Order ({Order}), Depth ({Depth}), IsCyclic ({IsCyclic})", Name = "{Id}")]
+    [DebuggerDisplay("Order[{Order}] | MinDepth[{MinDepth}] | MaxDepth[{MaxDepth}] | IsCyclic ({IsCyclic})", Name = "{Id}")]
     internal struct ResolvedVertexNode
     {
         public int Id;
         public int Order;
-        public int Depth;
-        public bool IsCyclic;
+        public int MinDepth;
+        public int MaxDepth;
+        public bool IsRecursive;
     }
 }
