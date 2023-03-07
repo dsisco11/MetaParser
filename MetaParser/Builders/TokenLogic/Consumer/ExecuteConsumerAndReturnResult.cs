@@ -1,6 +1,7 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
 
+using System.Diagnostics;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
@@ -10,6 +11,7 @@ internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
+        Debug.Assert(context.Consumers.WorkingSet.Length == 1);
         var writer = context.writer;
         var consumer = context.Consumers.WorkingSet.Single();
 
