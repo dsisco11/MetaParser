@@ -1,5 +1,4 @@
-﻿using MetaParser.CodeGen;
-using MetaParser.CodeGen.Core;
+﻿using MetaParser.CodeGen.Interfaces;
 using MetaParser.Contexts;
 
 using Microsoft.CodeAnalysis;
@@ -7,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 using System.Collections.Generic;
 
-namespace MetaParser.CodeGen.Base;
+namespace MetaParser.CodeGen.Core;
 
 internal class ClassBuilder : IMetaCodeBuilder
 {

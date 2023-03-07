@@ -1,9 +1,7 @@
 ﻿using MetaParser.CodeGen;
-using MetaParser.CodeGen.Core;
+using MetaParser.CodeGen.Interfaces;
 using MetaParser.Contexts;
 using Microsoft.CodeAnalysis.CSharp;
-
-using System;
 
 namespace MetaParser.Builders.Parser.Functions;
 

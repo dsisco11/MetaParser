@@ -1,4 +1,4 @@
-﻿using MetaParser.CodeGen.Core;
+﻿using MetaParser.CodeGen.Interfaces;
 using MetaParser.Contexts;
 
 using System.Linq;

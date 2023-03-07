@@ -1,6 +1,4 @@
 ﻿using MetaParser.Consumers;
-
-using System;
 using System.Collections.Generic;
 
 namespace MetaParser.Tokens;
