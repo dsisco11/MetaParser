@@ -12,7 +12,7 @@ internal class ConstantTokenStage : IMetaCodeBuilder
 
     public void WriteTo(MetaParserContext context)
     {
-        var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{context.Get_Consumer_Data_Type(Consumers.EConsumerType.Data)}>");
+        var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{CodeCommon.Get_Consumer_Data_Type(context.Config, Consumers.EConsumerType.Data)}>");
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{CodeCommon.List}<{CodeCommon.TokenValueStructName}>");
         const string VarNameResults = "results";
         var writer = context.writer;

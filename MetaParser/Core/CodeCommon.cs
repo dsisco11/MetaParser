@@ -1,7 +1,11 @@
-﻿using MetaParser.Tokens;
+﻿using MetaParser.Builders.Core;
+using MetaParser.Builders.Interfaces;
+using MetaParser.Consumers;
+using MetaParser.Tokens;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
 using System.Reflection;
@@ -51,10 +55,18 @@ internal static class CodeCommon
     #region Formatting
     public static string Format_Token_Key(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : name.ToLowerInvariant();
     public static string Format_Token_Id(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name);
-    public static string Get_TokenId_Ref(string? name) => $"{CodeCommon.TokenConsts}.{Format_Token_Id(name)}";
+    public static string Get_TokenId_Ref(string? name) => $"{TokenConsts}.{Format_Token_Id(name)}";
     public static string Format_Pattern_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
 
     public static string Get_Token_Key(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : Format_Token_Key(token.Name);
-    public static string Get_TokenId_Ref(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : $"{CodeCommon.TokenConsts}.{Format_Token_Id(token.Name)}";
+    public static string Get_TokenId_Ref(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : $"{TokenConsts}.{Format_Token_Id(token.Name)}";
+    #endregion
+
+
+    #region Builders
+    public static TypeSyntax Get_Consumer_Data_Type(MetaParserConfig config, EConsumerType type) => (type == EConsumerType.Data ? config.InputType : config.IdType);
+    public static TypeSyntax Get_Token_Buffer_Type(MetaParserConfig config, EConsumerType type) => SyntaxFactory.ParseTypeName($"{ReadOnlySpan}<{Get_Consumer_Data_Type(config, type)}>");
+    public static FunctionDefinition Get_Token_Processor_Function_Definition(MetaParserConfig config, EConsumerType type, string name, IMetaCodeBuilder body) => new(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}, out {config.IdType} id, out int length"), body);
+    public static FunctionDefinition Get_Local_Token_Consumer_Function_Definition(MetaParserConfig config, EConsumerType type, string name, IMetaCodeBuilder body) => new(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}, out int length"), body);
     #endregion
 }

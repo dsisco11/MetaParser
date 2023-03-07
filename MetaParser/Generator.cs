@@ -172,7 +172,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Data, CodeCommon.ConstantTokenProcessorFunctionName, TokenProcessor.Instance);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context.Config, EConsumerType.Data, CodeCommon.ConstantTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!, consumer)
                 .WriteTo(context);
 
@@ -185,7 +185,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, CodeCommon.CompoundTokenProcessorFunctionName, TokenProcessor.Instance);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context.Config, EConsumerType.Token, CodeCommon.CompoundTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!, consumer)
                 .WriteTo(context);
 
@@ -198,7 +198,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, CodeCommon.ComplexTokenProcessorFunctionName, TokenProcessor.Instance);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context.Config, EConsumerType.Token, CodeCommon.ComplexTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!, consumer)
                 .WriteTo(context);
 
