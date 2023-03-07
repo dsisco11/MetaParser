@@ -2,6 +2,10 @@
   "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-02.json",
   "namespace": "UnitTestParser",
   "definitions": {
+    "solidus": {
+      "$type": "data",
+      "start": "/"
+    },
     "colon": {
       "$type": "data",
       "start": ":"
