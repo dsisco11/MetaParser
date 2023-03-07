@@ -1,5 +1,5 @@
-﻿using MetaParser.CodeGen.Core;
-using MetaParser.CodeGen.Interfaces;
+﻿using MetaParser.Builders.Core;
+using MetaParser.Builders.Interfaces;
 using MetaParser.Consumers;
 using MetaParser.Graphs;
 using MetaParser.Tokens;

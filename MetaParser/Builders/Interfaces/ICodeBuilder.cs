@@ -1,4 +1,4 @@
-﻿namespace MetaParser.CodeGen.Interfaces;
+﻿namespace MetaParser.Builders.Interfaces;
 
 internal interface ICodeBuilder<T> where T : ICodeBuilderContext
 {

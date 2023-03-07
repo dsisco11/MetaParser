@@ -1,6 +1,6 @@
 ﻿using MetaParser.Core;
 
-namespace MetaParser.CodeGen.Interfaces;
+namespace MetaParser.Builders.Interfaces;
 
 internal interface IMetaCodeBuilder : ICodeBuilder<MetaParserContext>
 {

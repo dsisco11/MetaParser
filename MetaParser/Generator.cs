@@ -11,7 +11,7 @@ using System.Collections.Immutable;
 using MetaParser.Core;
 using MetaParser.Builders;
 using MetaParser.Builders.Parser.Functions;
-using MetaParser.CodeGen.Core;
+using MetaParser.Builders.Core;
 using MetaParser.Json.Definitions;
 using MetaParser.Builders.TokenLogic.Consumer;
 using JetBrains.Annotations;

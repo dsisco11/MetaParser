@@ -1,6 +1,6 @@
 ﻿using System.CodeDom.Compiler;
 
-namespace MetaParser.CodeGen.Interfaces;
+namespace MetaParser.Builders.Interfaces;
 
 internal interface ICodeBuilderContext
 {

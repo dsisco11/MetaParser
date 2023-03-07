@@ -1,7 +1,7 @@
-﻿using MetaParser.CodeGen.Interfaces;
+﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
 
-namespace MetaParser.CodeGen;
+namespace MetaParser.Builders.Core;
 
 internal abstract class CodeBuilderProviderFactory
 {
