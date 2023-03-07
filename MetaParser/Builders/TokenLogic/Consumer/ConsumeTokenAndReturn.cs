@@ -25,7 +25,7 @@ internal class ConsumeTokenAndReturn : IMetaCodeBuilder
             var consumerId = consumer.Index;
             var consumerFunc = MetaParserContext.Format_Pattern_Consumer_Function_Name(consumerId);
             writer.WriteLine($"id = {MetaParserContext.Get_TokenId_Ref(consumer.Token.Name)};");
-            writer.WriteLine($"return {consumerFunc}({MetaParserContext.VarNameBufferMajor}, out length);");
+            writer.WriteLine($"return {consumerFunc}({CodeCommon.VarNameBufferMajor}, out length);");
         }
         else
         {

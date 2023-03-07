@@ -11,13 +11,13 @@ internal class ComplexTokenStage : IMetaCodeBuilder
 
     public void WriteTo(MetaParserContext context)
     {
-        var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{MetaParserContext.TokenRecordTypeName}>");
+        var argumentType = SyntaxFactory.ParseTypeName($"{CodeCommon.ReadOnlyMemory}<{CodeCommon.TokenRecordTypeName}>");
         var writer = context.writer;
 
-        writer.WriteLine($"private static {MetaParserContext.TokenRecordTypeName}[] {FunctionName}({argumentType} {MetaParserContext.VarNameBufferMajor})");
+        writer.WriteLine($"private static {CodeCommon.TokenRecordTypeName}[] {FunctionName}({argumentType} {CodeCommon.VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"return Array.Empty<{MetaParserContext.TokenRecordTypeName}>();");
+        writer.WriteLine($"return Array.Empty<{CodeCommon.TokenRecordTypeName}>();");
         writer.Indent--;
         writer.WriteLine("}");// end function
     }

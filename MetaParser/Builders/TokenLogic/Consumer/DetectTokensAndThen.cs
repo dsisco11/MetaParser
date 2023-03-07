@@ -34,7 +34,7 @@ internal class DetectTokensAndThen : IMetaCodeBuilder
         var sortedRecursiveConsumers = recursiveConsumers.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
 
         var writer = context.writer;
-        writer.WriteLine($"switch ({MetaParserContext.VarNameBufferMajor})");
+        writer.WriteLine($"switch ({CodeCommon.VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
 

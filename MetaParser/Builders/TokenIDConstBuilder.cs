@@ -12,7 +12,7 @@ internal class TokenIDConstBuilder : IMetaCodeBuilder
     public void WriteTo(MetaParserContext context)
     {
         var writer = context.writer;
-        writer.WriteLine($"public const {context.IdType} {MetaParserContext.Format_Token_Id(MetaParserContext.UnknownToken)} = 0;");
+        writer.WriteLine($"public const {context.IdType} {MetaParserContext.Format_Token_Id(CodeCommon.UnknownToken)} = 0;");
 
         foreach (var token in context.Tokens.Values.ToImmutableSortedSet(TokenInfoComparer.Instance))
         {

@@ -18,6 +18,25 @@ internal static class CodeCommon
 
     public const string ReadOnlySpan = "global::System.ReadOnlySpan";
     public const string ReadOnlyMemory = "global::System.ReadOnlyMemory";
+
+    public const string TokenEnum = "ETokenType";
+    public const string TokenConsts = "TokenId";
+    public const string UnknownToken = "unknown";
+
+    public const string TokenDataClassName = "TokenData";
+    public const string TokenValueStructName = "ValueToken";
+    public const string TokenRecordTypeName = "Token";
+
+    /// <summary>Name of first buffer used in any method</summary>
+    public const string VarNameBufferMajor = "input";
+    /// <summary>Name of second buffer used in any method</summary>
+    public const string VarNameBufferMinor = "buffer";
+    /// <summary>Name of third buffer used in any method</summary>
+    public const string VarNameBufferLocal = "reader";
+
+    public const string ConstantTokenProcessorFunctionName = "TryProcessConstant";
+    public const string CompoundTokenProcessorFunctionName = "TryProcessCompound";
+    public const string ComplexTokenProcessorFunctionName = "TryProcessComplex";
     #endregion
 
 }

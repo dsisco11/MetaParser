@@ -172,7 +172,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Data, MetaParserContext.ConstantTokenProcessorFunctionName, TokenProcessor.Instance);
+            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Data, CodeCommon.ConstantTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
@@ -185,7 +185,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, MetaParserContext.CompoundTokenProcessorFunctionName, TokenProcessor.Instance);
+            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, CodeCommon.CompoundTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
@@ -198,7 +198,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, MetaParserContext.ComplexTokenProcessorFunctionName, TokenProcessor.Instance);
+            var consumer = context.Get_Token_Processor_Function_Definition(EConsumerType.Token, CodeCommon.ComplexTokenProcessorFunctionName, TokenProcessor.Instance);
             new ClassBuilder(MetaParserContext.ParserClassModifiers, context.ClassName!, consumer)
                 .WriteTo(context);
 
@@ -223,7 +223,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { writer = writer };
 
             writer.WriteLine($"namespace {context.Namespace};");
-            writer.WriteLine($"public enum {MetaParserContext.TokenEnum} : {context.IdType}");
+            writer.WriteLine($"public enum {CodeCommon.TokenEnum} : {context.IdType}");
             writer.WriteLine("{");
             writer.Indent++;
 
@@ -241,7 +241,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            new ClassBuilder(SyntaxFactory.ParseTokens("internal static"), MetaParserContext.TokenConsts, TokenIDConstBuilder.Instance)
+            new ClassBuilder(SyntaxFactory.ParseTokens("internal static"), CodeCommon.TokenConsts, TokenIDConstBuilder.Instance)
                 .WriteTo(context);
 
             AddSource(spc, $"{context.BaseFileName}.constants", writer.InnerWriter.ToString());

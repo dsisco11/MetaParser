@@ -10,9 +10,9 @@ namespace MetaParser.Builders
             var wr = context.writer;
 
             wr.WriteLine($"namespace {context.Namespace};");
-            wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({MetaParserContext.TokenEnum})Id}}"")]");
+            wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{Data}}"", Name = ""{{({CodeCommon.TokenEnum})Id}}"")]");
             wr.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]");
-            wr.WriteLine($"public readonly record struct {MetaParserContext.TokenValueStructName}({context.IdType} Id, {CodeCommon.ReadOnlyMemory}<{context.InputType}> Data)");
+            wr.WriteLine($"public readonly record struct {CodeCommon.TokenValueStructName}({context.IdType} Id, {CodeCommon.ReadOnlyMemory}<{context.InputType}> Data)");
             wr.WriteLine("{");
             wr.Indent++;
             wr.WriteLine("public override string ToString()");
@@ -24,8 +24,8 @@ namespace MetaParser.Builders
             wr.Indent--;
             wr.WriteLine("}");
             wr.WriteLine();
-            wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{this.ToString()}}"", Name = ""{{({MetaParserContext.TokenEnum})Id}}"")]");
-            wr.WriteLine($"public sealed record {MetaParserContext.TokenRecordTypeName}({MetaParserContext.TokenEnum} Id, {MetaParserContext.TokenValueStructName}[] Values)");
+            wr.WriteLine($@"[System.Diagnostics.DebuggerDisplay(""{{this.ToString()}}"", Name = ""{{({CodeCommon.TokenEnum})Id}}"")]");
+            wr.WriteLine($"public sealed record {CodeCommon.TokenRecordTypeName}({CodeCommon.TokenEnum} Id, {CodeCommon.TokenValueStructName}[] Values)");
             wr.WriteLine("{");
             wr.Indent++;
             wr.WriteLine("public override string ToString()");
