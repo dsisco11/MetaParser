@@ -16,7 +16,7 @@ internal class UnknownTokenPusher : MetaCodeBuilder
         wr.Indent++;
         wr.WriteLine($"var unk_content_size = {VarNameBufferMinor}.Length - {VarNameBufferLocal}.Length;");
         wr.WriteLine($"var unk_content = {VarNameBufferMinor}.Slice(0, unk_content_size);");
-        wr.WriteLine($"results.Add(new {TokenValueStructName}({Get_TokenId_Ref(UnknownToken)}, unk_content));");
+        wr.WriteLine($"results.Add(new {TokenValueStructName}({Format_Token_Id_Const_Ref(UnknownToken)}, unk_content));");
         wr.WriteLine($"{VarNameBufferMinor} = {VarNameBufferMinor}.Slice(unk_content_size);");
         wr.WriteLine($"{VarNameBufferLocal} = {VarNameBufferMinor}.Span;");
         wr.Indent--;

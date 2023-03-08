@@ -41,7 +41,7 @@ internal static class ConsumerPatternFormatter
             PatternGroup g when (g.Condition == EPatternCondition.OneOf && g.Items.Length > 1) => $"({string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o)))})",
             PatternGroup g => string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o))),
             PatternEmpty _ => string.Empty,
-            PatternTokenRef t => Get_TokenId_Ref(t.TokenName),
+            PatternTokenRef t => Format_Token_Id_Const_Ref(t.TokenName),
             _ => throw new NotImplementedException()
         };
     }

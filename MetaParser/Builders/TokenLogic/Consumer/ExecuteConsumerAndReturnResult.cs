@@ -17,7 +17,7 @@ internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
 
         if (consumer.IsConstant)
         {
-            writer.WriteLine($"id = {Get_TokenId_Ref(consumer.Token.Name)};");
+            writer.WriteLine($"id = {Format_Token_Id_Const_Ref(consumer.Token.Name)};");
             writer.WriteLine($"length = {consumer.Start!.Length};");
             writer.WriteLine($"return true;");
         }
@@ -25,7 +25,7 @@ internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
         {
             var consumerId = consumer.Index;
             var consumerFunc = Format_Pattern_Consumer_Function_Name(consumerId);
-            writer.WriteLine($"id = {Get_TokenId_Ref(consumer.Token.Name)};");
+            writer.WriteLine($"id = {Format_Token_Id_Const_Ref(consumer.Token.Name)};");
             writer.WriteLine($"return {consumerFunc}({VarNameBufferMajor}, out length);");
         }
         else
