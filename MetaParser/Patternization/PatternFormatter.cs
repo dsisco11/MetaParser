@@ -15,7 +15,7 @@ internal static class PatternFormatter
         if (hasBufferAccess && allowSpanOperations && pattern.IsRawValues)
         {
             writer.Write(".StartsWith(stackalloc []{ ");
-            writer.Write(Translate(context, pattern));
+            writer.Write(ToString(pattern));
             writer.Write("})");
         }
         else
@@ -26,19 +26,19 @@ internal static class PatternFormatter
             }
 
             writer.Write("[ ");
-            writer.Write(Translate(context, pattern));
+            writer.Write(ToString(pattern));
             writer.Write(", ..]");
         }
     }
 
-    private static string Translate(MetaParserContext context, Pattern pattern)
+    public static string ToString(Pattern pattern)
     {
         return pattern switch
         {
             PatternConst c => c.Value,
             PatternRange r => $"(>={r.Begin} and <={r.End})",
-            PatternGroup g when g.Condition == EPatternCondition.OneOf && g.Items.Length > 1 => $"({string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o)))})",
-            PatternGroup g => string.Join(g.ConditionJoiner, g.Items.Select(o => Translate(context, o))),
+            PatternGroup g when g.Condition == EPatternCondition.OneOf && g.Items.Length > 1 => $"({string.Join(g.ConditionJoiner, g.Items.Select(o => ToString(o)))})",
+            PatternGroup g => string.Join(g.ConditionJoiner, g.Items.Select(o => ToString(o))),
             PatternEmpty _ => string.Empty,
             PatternTokenRef t => Format_Token_Id_Const_Ref(t.TokenName),
             _ => throw new NotImplementedException()

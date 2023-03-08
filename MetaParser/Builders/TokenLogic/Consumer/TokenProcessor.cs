@@ -18,7 +18,7 @@ internal class TokenProcessor : MetaCodeBuilder
         var consumersRecursive = context.Consumers.WorkingSet.Where(static c => c.DependencyInfo.IsRecursive);
         if (consumersRecursive.Any())
         {
-            context.Config.CodeFactory.Get_Token_Recursive_Detection_Logic()
+            context.Config.CodeFactory.Get_Logic_Detect_Recursive_Token()
                                       .And(new ExecuteConsumerAndReturnResult())
                                       .WriteTo(context with { Consumers = context.Consumers with { WorkingSet = consumersRecursive.ToArray() } });
         }
@@ -26,7 +26,7 @@ internal class TokenProcessor : MetaCodeBuilder
         var consumersLinear = context.Consumers.WorkingSet.Where(static c => !c.DependencyInfo.IsRecursive);
         if (consumersLinear.Any())
         {
-            context.Config.CodeFactory.Get_Token_Linear_Detection_Logic()
+            context.Config.CodeFactory.Get_Logic_Detect_Linear_Token()
                                       .And(new ExecuteConsumerAndReturnResult())
                                       .WriteTo(context with { Consumers = context.Consumers with { WorkingSet = consumersLinear.ToArray() } });
         }
