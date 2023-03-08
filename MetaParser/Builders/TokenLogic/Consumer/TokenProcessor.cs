@@ -2,6 +2,8 @@
 using MetaParser.Consumers;
 using MetaParser.Core;
 
+using System.Linq;
+
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
@@ -11,18 +13,36 @@ internal class TokenProcessor : MetaCodeBuilder
     {
         var writer = context.writer;
 
-        Core.CodeBuilderFactory codeFactory = context.Config.CodeFactory;
-        var tokenDetector = codeFactory.Get_Token_Detection_Logic();
-        tokenDetector.And(new ExecuteConsumerAndReturnResult()).WriteTo(context);
+        #region Token Processing Logic
+
+        var consumersRecursive = context.Consumers.WorkingSet.Where(static c => c.DependencyInfo.IsRecursive);
+        if (consumersRecursive.Any())
+        {
+            context.Config.CodeFactory.Get_Token_Recursive_Detection_Logic()
+                                      .And(new ExecuteConsumerAndReturnResult())
+                                      .WriteTo(context with { Consumers = context.Consumers with { WorkingSet = consumersRecursive.ToArray() } });
+        }
+
+        var consumersLinear = context.Consumers.WorkingSet.Where(static c => !c.DependencyInfo.IsRecursive);
+        if (consumersLinear.Any())
+        {
+            context.Config.CodeFactory.Get_Token_Linear_Detection_Logic()
+                                      .And(new ExecuteConsumerAndReturnResult())
+                                      .WriteTo(context with { Consumers = context.Consumers with { WorkingSet = consumersLinear.ToArray() } });
+        }
 
         // return failure
         writer.WriteLine("id = default;");
         writer.WriteLine("length = default;");
         writer.WriteLine("return false;");
         writer.WriteLine();
+        #endregion
 
+        #region Local Sub-Functions
         var workingContext = context with { Consumers = context.Consumers with { WorkingSet = new TokenConsumer[1] } };
-        foreach (var consumer in context.Consumers.WorkingSet)
+
+        // write recursive consumer function generation 
+        foreach (TokenConsumer consumer in consumersRecursive)
         {
             workingContext.Consumers.WorkingSet[0] = consumer;
             if (consumer.IsConstant)
@@ -30,10 +50,24 @@ internal class TokenProcessor : MetaCodeBuilder
                 continue;// skip const patterns as they get an inline fast-path
             }
 
-            // generate consumer functions
-            var consumerFuncName = Format_Pattern_Consumer_Function_Name(consumer.Index);
-            var consumeFunc = Get_Local_Token_Consumer_Function_Definition(context.Config, consumer.Type, consumerFuncName);
-            consumeFunc.WriteTo(workingContext);
+            var funcName = Format_Pattern_Start_Detection_Function_Name(consumer.Index);
+            var funcDef = Get_Local_Pattern_Start_Detection_Function_Definition(context.Config, consumer.Type, funcName);
+            funcDef.WriteTo(workingContext);
         }
+        
+        // write linear consumer function generation
+        foreach (TokenConsumer consumer in consumersLinear)
+        {
+            workingContext.Consumers.WorkingSet[0] = consumer;
+            if (consumer.IsConstant)
+            {
+                continue;// skip const patterns as they get an inline fast-path
+            }
+
+            var funcName = Format_Pattern_Consumer_Function_Name(consumer.Index);
+            var funcDef = Get_Local_Token_Consumer_Function_Definition(context.Config, consumer.Type, funcName);
+            funcDef.WriteTo(workingContext);
+        }
+        #endregion
     }
 }

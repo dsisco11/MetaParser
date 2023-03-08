@@ -30,7 +30,8 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
 
     public IMetaCodeBuilder Get_Token_Consumer_Logic() => new ConsumeAndThen();
 
-    public IMetaCodeBuilder Get_Token_Detection_Logic() => new DetectTokensAndThen();
+    public IMetaCodeBuilder Get_Token_Linear_Detection_Logic() => new DetectLinearTokensAndThen();
+    public IMetaCodeBuilder Get_Token_Recursive_Detection_Logic() => new DetectRecursiveTokensAndThen();
 
     public IMetaCodeBuilder Get_Token_ID_Constants_Builder() => _token_id_constants_builder;
 
