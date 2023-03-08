@@ -17,7 +17,7 @@ internal static class DependencyGraph
         foreach (var token in items.Where(o => o.Consumers.Any(static (c) => c.Type == EConsumerType.Token)))
         {
             // Link all of the tokens consumers which are 'token' consumers
-            IEnumerable<ConsumerInfo> consumers = token.Consumers.Where(static (c) => c.Type == EConsumerType.Token);
+            IEnumerable<TokenConsumer> consumers = token.Consumers.Where(static (c) => c.Type == EConsumerType.Token);
             foreach (var consumer in consumers)
             {
                 consumer.Register_Dependencies(context);

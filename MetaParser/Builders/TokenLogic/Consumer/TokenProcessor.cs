@@ -21,7 +21,7 @@ internal class TokenProcessor : MetaCodeBuilder
         writer.WriteLine("return false;");
         writer.WriteLine();
 
-        var workingContext = context with { Consumers = context.Consumers with { WorkingSet = new ConsumerInfo[1] } };
+        var workingContext = context with { Consumers = context.Consumers with { WorkingSet = new TokenConsumer[1] } };
         foreach (var consumer in context.Consumers.WorkingSet)
         {
             workingContext.Consumers.WorkingSet[0] = consumer;

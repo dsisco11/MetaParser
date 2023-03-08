@@ -11,7 +11,7 @@ internal class DetectTokensAndThen : MetaCodeBuilder
     // TODO: Detect cyclic tokens and generate different detection & consuming logic
     protected override void Write(MetaParserContext context)
     {
-        var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
+        var workTokens = context.Consumers with { WorkingSet = new TokenConsumer[1] };
         var workContext = context with { Consumers = workTokens };
 
         var sortedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
@@ -21,7 +21,7 @@ internal class DetectTokensAndThen : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        foreach (ConsumerInfo consumer in sortedConsumers)
+        foreach (TokenConsumer consumer in sortedConsumers)
         {
             workContext.Consumers.WorkingSet[0] = consumer;
 

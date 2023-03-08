@@ -8,7 +8,7 @@ internal record TokenInfo
     #region Properties
     public readonly int Index;
     public readonly string Name;
-    public readonly List<ConsumerInfo> Consumers;
+    public readonly List<TokenConsumer> Consumers;
     #endregion
 
     public TokenInfo(int index, string name)

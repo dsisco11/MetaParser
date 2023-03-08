@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace MetaParser.Consumers;
 
-internal record ConsumerInfo
+internal record TokenConsumer
 {
     #region Fields
     private readonly ConsumerClauseInfo assigned;
@@ -46,7 +46,7 @@ internal record ConsumerInfo
     #endregion
 
     #region Constructors
-    public ConsumerInfo(MetaParserContext context, TokenInfo token, ConsumerData data)
+    public TokenConsumer(MetaParserContext context, TokenInfo token, ConsumerData data)
     {
         Token = token;
         Type = data.Type;
