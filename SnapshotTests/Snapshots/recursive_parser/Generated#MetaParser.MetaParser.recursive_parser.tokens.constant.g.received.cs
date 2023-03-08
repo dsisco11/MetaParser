@@ -7,6 +7,11 @@ namespace UnitTestParser
         {
             switch (input)
             {
+                case [ '/', '*', ..]:
+                {
+                    id = TokenId.Comment;
+                    return consume_pattern_13(input, out length);
+                }
                 case [ ((>='a' and <='z') or (>='A' and <='Z')), ((>='a' and <='z') or (>='A' and <='Z') or (>='0' and <='9') or '-' or '_'), ..]:
                 {
                     id = TokenId.Identifier;

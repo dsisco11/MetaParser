@@ -142,8 +142,8 @@ public partial class Generator : IIncrementalGenerator
         });
 
         var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Data).ToArray() } }));
-        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token).ToArray() } }));
-        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => false).ToArray() } }));
+        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MinDepth <= 1).ToArray() } }));
+        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MinDepth > 1).ToArray() } }));
         #endregion
 
         // Parser Class

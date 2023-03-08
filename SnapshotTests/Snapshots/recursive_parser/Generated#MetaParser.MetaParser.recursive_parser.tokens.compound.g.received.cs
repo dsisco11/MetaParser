@@ -7,6 +7,21 @@ namespace UnitTestParser
         {
             switch (input)
             {
+                case [ TokenId.Solidus, TokenId.Solidus, ..]:
+                {
+                    id = TokenId.Comment;
+                    return consume_pattern_14(input, out length);
+                }
+                case [ TokenId.Identifier, TokenId.Colon, ..]:
+                {
+                    id = TokenId.Declaration;
+                    return consume_pattern_15(input, out length);
+                }
+                case [ TokenId.Open_Bracket, ..]:
+                {
+                    id = TokenId.Codeblock;
+                    return consume_pattern_16(input, out length);
+                }
             }
             id = default;
             length = default;

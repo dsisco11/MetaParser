@@ -14,18 +14,14 @@ internal class DetectTokensAndThen : MetaCodeBuilder
         var workTokens = context.Consumers with { WorkingSet = new ConsumerInfo[1] };
         var workContext = context with { Consumers = workTokens };
 
-        var linearConsumers = context.Consumers.WorkingSet.Where(static (x) => !x.DependencyInfo.IsRecursive);
-        var recursiveConsumers = context.Consumers.WorkingSet.Where(static (x) => !x.DependencyInfo.IsRecursive);
-
-        var sortedLinearConsumers = linearConsumers.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
-        var sortedRecursiveConsumers = recursiveConsumers.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
+        var sortedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
 
         var writer = context.writer;
         writer.WriteLine($"switch ({VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
 
-        foreach (ConsumerInfo consumer in sortedLinearConsumers)
+        foreach (ConsumerInfo consumer in sortedConsumers)
         {
             workContext.Consumers.WorkingSet[0] = consumer;
 
