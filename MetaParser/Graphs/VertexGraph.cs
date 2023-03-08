@@ -1,5 +1,8 @@
-﻿using System;
+﻿using MetaParser.Exceptions;
+
+using System;
 using System.Buffers;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -7,25 +10,19 @@ using System.Linq;
 
 namespace MetaParser.Graphs;
 
-internal class VertexGraph
+internal class VertexGraph<T> where T : notnull, IEquatable<T>
 {
     #region Records
     [DebuggerDisplay(@"[In: {Incoming.Count}] [Out: {Outgoing.Count}]", Name = @"{Id}")]
     private record VertexNode
     {
-        public readonly int Index;
-        public readonly HashSet<int> Incoming = new();
-        public readonly HashSet<int> Outgoing = new();
-
-        public VertexNode(int index)
-        {
-            Index = index;
-        }
+        public readonly HashSet<T> Incoming = new();
+        public readonly HashSet<T> Outgoing = new();
     }
     #endregion
 
     #region Fields
-    private readonly ImmutableDictionary<int, VertexNode> nodes = ImmutableDictionary<int, VertexNode>.Empty;
+    private readonly ImmutableDictionary<T, VertexNode> nodes = ImmutableDictionary<T, VertexNode>.Empty;
     #endregion
 
     #region Properties
@@ -36,9 +33,9 @@ internal class VertexGraph
     {
     }
 
-    public VertexGraph(IEnumerable<int> items)
+    public VertexGraph(IEnumerable<T> items)
     {
-        nodes = items.ToImmutableDictionary(static (x) => x, static (x) => new VertexNode(x));
+        nodes = items.ToImmutableDictionary(static (x) => x, static (x) => new VertexNode());
     }
     #endregion
 
@@ -47,20 +44,20 @@ internal class VertexGraph
     #endregion
 
     #region Links
-    public bool TryLink(int leftNodeId, int rightNodeId)
+    public bool TryLink(T leftKey, T rightKey)
     {
-        if(!nodes.TryGetValue(leftNodeId, out var leftNode))
+        if(!nodes.TryGetValue(leftKey, out var leftNode))
         {
-            throw new Exception($@"Unable to locate node with id: {leftNodeId}");
+            throw new UnknownTokenException($@"Unable to locate node with id: {leftKey}");
         }
 
-        if(!nodes.TryGetValue(rightNodeId, out var rightNode))
+        if(!nodes.TryGetValue(rightKey, out var rightNode))
         {
-            throw new Exception($@"Unable to locate node with id: {rightNodeId}");
+            throw new UnknownTokenException($@"Unable to locate node with id: {rightKey}");
         }
 
-        rightNode.Incoming.Add(leftNode.Index);
-        return leftNode.Outgoing.Add(rightNode.Index);
+        rightNode.Incoming.Add(leftKey);
+        return leftNode.Outgoing.Add(rightKey);
     }
     #endregion
 
@@ -71,73 +68,46 @@ internal class VertexGraph
     /// </summary>
     /// <param name="graph"></param>
     /// <returns></returns>
-    public ResolvedVertexNode[] Resolve()
+    public Dictionary<T, ResolvedVertexNode> Resolve()
     {
         var count = Count;
-        var maxIndex = nodes.Values.Max(static (x) => x.Index);
-        var remap = new Reindexer(nodes.Values.Select(static (x) => x.Index).ToArray());
-
-        var in_degree = ArrayPool<int>.Shared.Rent(count);
-        var resolved = new ResolvedVertexNode[count];
-
-        foreach (var node in nodes)
-        {
-            var index = remap.GetNew(node.Value.Index);
-
-            in_degree[index] = node.Value.Outgoing.Count;
-            resolved[index] = new ResolvedVertexNode()
-            {
-                Id = node.Key,
-                MinDepth = int.MaxValue,
-                MaxDepth = 0
-            };
-        }
-
-        var q = new Queue<int>();
-        for (int nidx = 0; nidx < count; nidx++)
-        {
-            if (in_degree[nidx] == 0)
-            {
-                q.Enqueue(nidx);
-                resolved[nidx].MinDepth = 0;
-            }
-        }
+        var in_degrees = nodes.Keys.ToDictionary(static (x) => x, (x) => nodes[x].Outgoing.Count);
+        var resolved = nodes.Keys.ToDictionary(static (x) => x, (x) => new ResolvedVertexNode() { MaxDepth = 0, MinDepth = nodes[x].Outgoing.Count == 0 ? 0 : int.MaxValue });
+        var queue = new Queue<T>(in_degrees.Where(static (x) => x.Value == 0).Select(static (x) => x.Key));
 
         int order = 0;
-        while (q.Count > 0)
+        while (queue.Count > 0)
         {
-            var nIdx = q.Dequeue();
-            var oIdx = remap.GetOld(nIdx);
-            var node = resolved[oIdx];
+            var key = queue.Dequeue();
+            resolved[key].Order = order++;
+            var ancestorNode = resolved[key];
 
-            resolved[oIdx].Order = order++;
-            foreach (var oid in nodes[oIdx].Incoming)
+            foreach (var id in nodes[key].Incoming)
             {
-                var nid = remap.GetNew(oid);
-                in_degree[nid] -= 1;
-                resolved[nid].MinDepth = Math.Min(resolved[nid].MinDepth, node.MinDepth + 1);
-                resolved[nid].MaxDepth = Math.Max(resolved[nid].MaxDepth, node.MaxDepth + 1);
+                in_degrees[id] -= 1;
+                var node = resolved[id];
+                node.MinDepth = Math.Min(node.MinDepth, ancestorNode.MinDepth + 1);
+                node.MaxDepth = Math.Max(node.MaxDepth, ancestorNode.MaxDepth + 1);
 
-                if (in_degree[nid] == 0)
+                if (in_degrees[id] == 0)
                 {
-                    q.Enqueue(nid);
+                    queue.Enqueue(id);
                 }
             }
         }
 
         if (order != count)
         {// Cyclic dependencies exist in this graph
-            for (int nIdx = 0; nIdx < in_degree.Length; nIdx++)
+            foreach (var entry in in_degrees)
             {
-                if(in_degree[nIdx] > 0)
+                if (entry.Value > 0)
                 {
-                    resolved[nIdx].IsRecursive = true;
-                    resolved[nIdx].Order = order+1;
+                    var node = resolved[entry.Key];
+                    node.Order = order + 1;
+                    node.IsRecursive = true;
                 }
             }
         }
-
-        ArrayPool<int>.Shared.Return(in_degree);
 
         return resolved;
     }
@@ -145,11 +115,10 @@ internal class VertexGraph
 }
 
 [DebuggerDisplay("Order[{Order}] | MinDepth[{MinDepth}] | MaxDepth[{MaxDepth}] | IsRecursive ({IsRecursive})", Name = "{Id}")]
-internal struct ResolvedVertexNode
+internal record ResolvedVertexNode
 {
-    public int Id;
     public int Order;
-    public int MinDepth;
+    public int MinDepth = int.MaxValue;
     public int MaxDepth;
     public bool IsRecursive;
 }

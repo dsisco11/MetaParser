@@ -119,7 +119,7 @@ public partial class Generator : IIncrementalGenerator
                     var tokenKey = CodeCommon.Format_Token_Key(def.Key);
                     if (!context.Tokens.TryGetValue(tokenKey, out var token))
                     {
-                        throw new Exception($@"Unable to locate token: ""{tokenKey}""");
+                        throw new UnknownTokenException($@"Unable to locate token: ""{tokenKey}""");
                     }
 
                     foreach (var consumerDeclaration in def.Value)
@@ -132,18 +132,18 @@ public partial class Generator : IIncrementalGenerator
                     }
                 }
 
+                context.Consumers = new ConsumerList() { CompleteSet = Consumers.ToImmutableArray() };
+
                 DependencyGraph.Build(context);
                 DependencyGraph.Resolve(context);
-
-                context.Consumers = new ConsumerList() { CompleteSet = Consumers.ToImmutableArray() };
             }
 
             return context;
         });
 
         var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Data).ToArray() } }));
-        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MinDepth <= 1).ToArray() } }));
-        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MinDepth > 1).ToArray() } }));
+        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MaxDepth <= 1).ToArray() } }));
+        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MaxDepth > 1).ToArray() } }));
         #endregion
 
         // Parser Class

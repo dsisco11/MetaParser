@@ -5,10 +5,11 @@ namespace MetaParser.Tokens;
 
 internal record TokenInfo
 {
-    #region Properties
+    #region Fields
     public readonly int Index;
     public readonly string Name;
     public readonly List<TokenConsumer> Consumers;
+    public readonly TokenGraphId Identity;
     #endregion
 
     public TokenInfo(int index, string name)
@@ -16,5 +17,6 @@ internal record TokenInfo
         Index = index;
         Name = name;
         Consumers = new();
+        Identity = new TokenGraphId(Index, -1);
     }
 }

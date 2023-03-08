@@ -19,6 +19,7 @@ internal record TokenConsumer
     public readonly TokenInfo Token;
     public readonly int Index;
     public readonly EConsumerType Type;
+    public readonly TokenGraphId Identity;
     #endregion
 
     #region Properties
@@ -51,6 +52,7 @@ internal record TokenConsumer
         Token = token;
         Type = data.Type;
         Index = data.Index;
+        Identity = new TokenGraphId(Token.Index, Index);
 
         if (data.Start is null && data.Consume is null)
         {
@@ -103,16 +105,17 @@ internal record TokenConsumer
         {
             if (!context.Tokens.TryGetValue(tokenName, out var token))
             {
-                throw new Exception($@"Unable to find token: ""{tokenName}""");
+                throw new UnknownTokenException($@"Unable to find token: ""{tokenName}""");
             }
 
-            context.TokenGraph.TryLink(Token.Index, token.Index);
+            context.DepsGraph.TryLink(Identity, token.Identity);
+            context.DepsGraph.TryLink(Token.Identity, token.Identity);
         }
     }
 
     private HashSet<string> Get_Dependencies(MetaParserContext context)
     {
-        HashSet<string> refs = new HashSet<string>();
+        HashSet<string> refs = new();
         if (Start is not null)
         {
             foreach (var name in Get_Tokens_From_Pattern(Start))
@@ -156,7 +159,7 @@ internal record TokenConsumer
         return refs;
     }
 
-    private IEnumerable<string> Get_Tokens_From_Pattern(Pattern pattern)
+    private static IEnumerable<string> Get_Tokens_From_Pattern(Pattern pattern)
     {
         return pattern.GetSubPatterns().OfType<PatternTokenRef>().Select(static (x) => x.TokenName);
     }
