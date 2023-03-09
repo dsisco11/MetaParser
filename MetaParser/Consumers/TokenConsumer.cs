@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Consumers;
+using static DirectedGraph<GraphNodeKey>;
 
 internal record TokenConsumer
 {
@@ -19,11 +20,11 @@ internal record TokenConsumer
     public readonly TokenInfo Token;
     public readonly int Index;
     public readonly EConsumerType Type;
-    public readonly TokenGraphId Identity;
+    public readonly GraphNodeKey NodeID;
     #endregion
 
     #region Properties
-    public ResolvedVertexNode DependencyInfo { get; set; }
+    public ResolvedNode DependencyInfo { get; set; }
     #endregion
 
     #region Accessors
@@ -52,7 +53,7 @@ internal record TokenConsumer
         Token = token;
         Type = data.Type;
         Index = data.Index;
-        Identity = new TokenGraphId(Token.Index, Index);
+        NodeID = new GraphNodeKey(GraphNodeType.Consumer, Index, Token.NodeID);
 
         if (data.Start is null && data.Consume is null)
         {
@@ -108,8 +109,8 @@ internal record TokenConsumer
                 throw new UnknownTokenException($@"Unable to find token: ""{tokenName}""");
             }
 
-            context.DepsGraph.TryLink(Identity, token.Identity);
-            context.DepsGraph.TryLink(Token.Identity, token.Identity);
+            context.DepsGraph.TryLink(NodeID, token.NodeID);
+            context.DepsGraph.TryLink(Token.NodeID, token.NodeID);
         }
     }
 

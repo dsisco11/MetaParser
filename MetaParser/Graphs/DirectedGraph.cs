@@ -1,8 +1,6 @@
 ﻿using MetaParser.Exceptions;
 
 using System;
-using System.Buffers;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -10,32 +8,49 @@ using System.Linq;
 
 namespace MetaParser.Graphs;
 
-internal class VertexGraph<T> where T : notnull, IEquatable<T>
+internal class DirectedGraph<T> where T : notnull, IEquatable<T>
 {
     #region Records
     [DebuggerDisplay(@"[In: {Incoming.Count}] [Out: {Outgoing.Count}]", Name = @"{Id}")]
-    private record VertexNode
+    public record Node
     {
         public readonly HashSet<T> Incoming = new();
         public readonly HashSet<T> Outgoing = new();
     }
+
+    [DebuggerDisplay("Order[{Order}] | MinDepth[{MinDepth}] | MaxDepth[{MaxDepth}] | IsRecursive ({IsRecursive})", Name = "{Id}")]
+    public record ResolvedNode
+    {
+        public T Identity;
+        public int Order;
+        public int MinDepth = int.MaxValue;
+        public int MaxDepth;
+        public bool IsRecursive;
+        public ImmutableHashSet<ResolvedNode> Incoming;
+        public ImmutableHashSet<ResolvedNode> Outgoing;
+
+        public ResolvedNode(T identity)
+        {
+            Identity = identity;
+        }
+    }
     #endregion
 
     #region Fields
-    private readonly ImmutableDictionary<T, VertexNode> nodes = ImmutableDictionary<T, VertexNode>.Empty;
+    private readonly ImmutableDictionary<T, Node> nodes = ImmutableDictionary<T, Node>.Empty;
     #endregion
 
     #region Properties
     #endregion
 
     #region Constructors
-    public VertexGraph()
+    public DirectedGraph()
     {
     }
 
-    public VertexGraph(IEnumerable<T> items)
+    public DirectedGraph(IEnumerable<T> items)
     {
-        nodes = items.ToImmutableDictionary(static (x) => x, static (x) => new VertexNode());
+        nodes = items.ToImmutableDictionary(static (x) => x, static (x) => new Node());
     }
     #endregion
 
@@ -48,11 +63,13 @@ internal class VertexGraph<T> where T : notnull, IEquatable<T>
     {
         if(!nodes.TryGetValue(leftKey, out var leftNode))
         {
+            Debug.Fail($@"Unable to locate node with id: {leftKey}");
             throw new UnknownTokenException($@"Unable to locate node with id: {leftKey}");
         }
 
         if(!nodes.TryGetValue(rightKey, out var rightNode))
         {
+            Debug.Fail($@"Unable to locate node with id: {rightKey}");
             throw new UnknownTokenException($@"Unable to locate node with id: {rightKey}");
         }
 
@@ -68,12 +85,20 @@ internal class VertexGraph<T> where T : notnull, IEquatable<T>
     /// </summary>
     /// <param name="graph"></param>
     /// <returns></returns>
-    public Dictionary<T, ResolvedVertexNode> Resolve()
+    public Dictionary<T, ResolvedNode> Resolve()
     {
         var count = Count;
         var in_degrees = nodes.Keys.ToDictionary(static (x) => x, (x) => nodes[x].Outgoing.Count);
-        var resolved = nodes.Keys.ToDictionary(static (x) => x, (x) => new ResolvedVertexNode() { MaxDepth = 0, MinDepth = nodes[x].Outgoing.Count == 0 ? 0 : int.MaxValue });
+        var resolved = nodes.Keys.ToDictionary(static (x) => x, (x) => new ResolvedNode(x));
         var queue = new Queue<T>(in_degrees.Where(static (x) => x.Value == 0).Select(static (x) => x.Key));
+
+        foreach (var item in resolved)
+        {
+            var node = nodes[item.Key];
+            item.Value.Incoming = node.Incoming.Select((k) => resolved[k]).ToImmutableHashSet();
+            item.Value.Outgoing = node.Outgoing.Select((k) => resolved[k]).ToImmutableHashSet();
+            item.Value.MinDepth = node.Outgoing.Count == 0 ? 0 : int.MaxValue;
+        }
 
         int order = 0;
         while (queue.Count > 0)
@@ -112,13 +137,4 @@ internal class VertexGraph<T> where T : notnull, IEquatable<T>
         return resolved;
     }
     #endregion
-}
-
-[DebuggerDisplay("Order[{Order}] | MinDepth[{MinDepth}] | MaxDepth[{MaxDepth}] | IsRecursive ({IsRecursive})", Name = "{Id}")]
-internal record ResolvedVertexNode
-{
-    public int Order;
-    public int MinDepth = int.MaxValue;
-    public int MaxDepth;
-    public bool IsRecursive;
 }

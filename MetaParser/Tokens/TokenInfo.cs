@@ -1,7 +1,10 @@
 ﻿using MetaParser.Consumers;
+using MetaParser.Graphs;
+
 using System.Collections.Generic;
 
 namespace MetaParser.Tokens;
+using static DirectedGraph<GraphNodeKey>;
 
 internal record TokenInfo
 {
@@ -9,7 +12,8 @@ internal record TokenInfo
     public readonly int Index;
     public readonly string Name;
     public readonly List<TokenConsumer> Consumers;
-    public readonly TokenGraphId Identity;
+    public readonly GraphNodeKey NodeID;
+    public ResolvedNode DependencyInfo { get; set; }
     #endregion
 
     public TokenInfo(int index, string name)
@@ -17,6 +21,6 @@ internal record TokenInfo
         Index = index;
         Name = name;
         Consumers = new();
-        Identity = new TokenGraphId(Index, -1);
+        NodeID = new GraphNodeKey(GraphNodeType.Token, Index);
     }
 }

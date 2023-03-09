@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using MetaParser.Graphs;
+
+using System.Collections.Generic;
 
 namespace MetaParser.Patternization;
 internal abstract record Pattern
 {
     public static Pattern Empty = new PatternEmpty();
+    private static int _indexTracker;
 
+    public readonly GraphNodeKey NodeID = new(GraphNodeType.Pattern, _indexTracker++);
     /// <summary>
     /// Indicates the length of this pattern when rendered as a sequence
     /// </summary>
@@ -24,4 +28,5 @@ internal abstract record Pattern
 
     public abstract IEnumerable<Pattern> GetSubPatterns();
     public abstract Pattern Combine(Pattern other);
+
 }
