@@ -1,9 +1,9 @@
-﻿using MetaParser.Core;
+﻿using MetaParser.Parsing.Constructs.Core;
 
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MetaParser.Patternization;
+namespace MetaParser.Parsing.Constructs.Patternization;
 
 internal record PatternGroup : Pattern, IEnumerable<Pattern>
 {
@@ -41,7 +41,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
         get => Condition switch
         {
             EPatternCondition.OneOf => Items.Length > 0 ? Items.Max(x => x.Length) : 0,
-            _ => Items.Sum((Pattern p) => p.Length)
+            _ => Items.Sum((p) => p.Length)
         };
     }
 
@@ -50,7 +50,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
         get => Condition switch
         {
             EPatternCondition.OneOf => Items.Length > 0 ? Items.Min(x => x.Length) : 0,
-            _ => Items.Sum((Pattern p) => p.Length)
+            _ => Items.Sum((p) => p.Length)
         };
     }
 

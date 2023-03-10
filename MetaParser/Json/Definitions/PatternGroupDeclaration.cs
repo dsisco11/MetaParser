@@ -1,5 +1,5 @@
-﻿using MetaParser.Core;
-using MetaParser.Patternization;
+﻿using MetaParser.Parsing.Constructs.Core;
+using MetaParser.Parsing.Constructs.Patternization;
 
 using Microsoft.CodeAnalysis;
 

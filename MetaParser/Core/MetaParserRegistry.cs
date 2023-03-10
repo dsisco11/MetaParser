@@ -1,7 +1,7 @@
-﻿using MetaParser.Consumers;
-using MetaParser.Graphs;
-using MetaParser.Patternization;
-using MetaParser.Tokens;
+﻿using MetaParser.Graphs;
+using MetaParser.Parsing.Constructs.Consumers;
+using MetaParser.Parsing.Constructs.Patternization;
+using MetaParser.Parsing.Constructs.Tokens;
 
 using System;
 using System.Collections.Generic;

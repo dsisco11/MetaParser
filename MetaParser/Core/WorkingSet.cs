@@ -1,6 +1,6 @@
-﻿using MetaParser.Consumers;
-using MetaParser.Patternization;
-using MetaParser.Tokens;
+﻿using MetaParser.Parsing.Constructs.Consumers;
+using MetaParser.Parsing.Constructs.Patternization;
+using MetaParser.Parsing.Constructs.Tokens;
 
 using System;
 

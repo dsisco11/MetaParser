@@ -1,8 +1,8 @@
-﻿using MetaParser.Core;
+﻿using MetaParser.Parsing.Constructs.Core;
 
 using System.Collections.Generic;
 
-namespace MetaParser.Patternization;
+namespace MetaParser.Parsing.Constructs.Patternization;
 
 internal record PatternEmpty : Pattern
 {

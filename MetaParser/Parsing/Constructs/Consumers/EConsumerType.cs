@@ -1,4 +1,4 @@
-﻿namespace MetaParser.Consumers;
+﻿namespace MetaParser.Parsing.Constructs.Consumers;
 
 /// <summary>
 /// Indicates what type of thing a consumer operates on

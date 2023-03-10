@@ -1,6 +1,8 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
-using MetaParser.Patternization;
+using MetaParser.Parsing.Constructs.Consumers;
+using MetaParser.Parsing.Constructs.Core;
+using MetaParser.Parsing.Constructs.Patternization;
 
 using System.Diagnostics;
 using System.Linq;
@@ -30,7 +32,7 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
             writer.WriteLine($"[{Format_Token_Id_Const_Ref(targetToken)}, ..] => true,");
         }
 
-        var tokenConsumers = context.WorkingSet.Consumers.Where(static (c) => c.Type == Consumers.EConsumerType.Token);
+        var tokenConsumers = context.WorkingSet.Consumers.Where(static (c) => c.Type == EConsumerType.Token);
         foreach (var consumer in tokenConsumers)
         {
             writer.Write("[");

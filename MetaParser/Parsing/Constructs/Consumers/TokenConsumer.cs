@@ -1,15 +1,17 @@
-﻿using MetaParser.Core;
+﻿using MetaParser.Consumers;
+using MetaParser.Core;
 using MetaParser.Exceptions;
 using MetaParser.Graphs;
 using MetaParser.Json.Definitions;
-using MetaParser.Patternization;
-using MetaParser.Tokens;
+using MetaParser.Parsing.Constructs.Core;
+using MetaParser.Parsing.Constructs.Patternization;
+using MetaParser.Parsing.Constructs.Tokens;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MetaParser.Consumers;
+namespace MetaParser.Parsing.Constructs.Consumers;
 using static DirectedGraph<GraphNodeKey>;
 
 internal record TokenConsumer
@@ -100,7 +102,7 @@ internal record TokenConsumer
             throw new IllegalTokenException($@"Illegal consumer definition (""{Token.Name}"") (tokens require at minimum either a START or CONSUME sequence)");
         }
 
-        assigned = new ConsumerClauseInfo() 
+        assigned = new ConsumerClauseInfo()
         {
             Start = consumer.Start.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Start.Select(o => o.Resolve(context)).ToArray()) : null,
             Consume = consumer.Consume.Any() ? new PatternGroup(EPatternCondition.OneOf, context, consumer.Consume.Select(o => o.Resolve(context)).ToArray()) : null,

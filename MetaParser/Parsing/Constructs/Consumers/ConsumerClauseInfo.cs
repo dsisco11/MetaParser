@@ -1,6 +1,6 @@
-﻿using MetaParser.Patternization;
+﻿using MetaParser.Parsing.Constructs.Patternization;
 
-namespace MetaParser.Consumers;
+namespace MetaParser.Parsing.Constructs.Consumers;
 
 internal record ConsumerClauseInfo
 {

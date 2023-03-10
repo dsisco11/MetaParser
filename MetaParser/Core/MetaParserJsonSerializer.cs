@@ -4,7 +4,6 @@ using System.Text.Json.Serialization;
 namespace MetaParser.Core;
 
 [JsonSerializable(typeof(ParserDefinition))]
-[JsonSerializable(typeof(ETokenType))]
 // Consumers
 [JsonSerializable(typeof(IConsumerDeclaration))]
 [JsonSerializable(typeof(ValueConsumerDeclaration))]

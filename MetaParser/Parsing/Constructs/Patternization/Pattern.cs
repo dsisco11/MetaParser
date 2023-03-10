@@ -1,11 +1,11 @@
-﻿using MetaParser.Core;
-using MetaParser.Graphs;
+﻿using MetaParser.Graphs;
+using MetaParser.Parsing.Constructs.Core;
 
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MetaParser.Patternization;
+namespace MetaParser.Parsing.Constructs.Patternization;
 using static DirectedGraph<GraphNodeKey>;
 
 internal abstract record Pattern : IEnumerable<Pattern>
@@ -40,7 +40,7 @@ internal abstract record Pattern : IEnumerable<Pattern>
 
     #region Constructors
     protected Pattern()
-    {        
+    {
     }
 
     public Pattern(MetaParserContext context)

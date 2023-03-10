@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using MetaParser.Parsing.Constructs.Consumers;
+
 namespace MetaParser.Consumers;
 
 internal class ConsumerComparer : IComparer<TokenConsumer>

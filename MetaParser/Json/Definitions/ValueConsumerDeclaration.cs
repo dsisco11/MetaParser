@@ -1,4 +1,4 @@
-﻿using MetaParser.Consumers;
+﻿using MetaParser.Parsing.Constructs.Consumers;
 
 using System.Collections.Generic;
 using System.Text.Json.Serialization;

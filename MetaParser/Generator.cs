@@ -19,8 +19,10 @@ using MetaParser.Exceptions;
 using MetaParser.Json.JsonTypeConverters;
 using Microsoft.CodeAnalysis.CSharp;
 using MetaParser.Consumers;
-using MetaParser.Tokens;
 using MetaParser.Graphs;
+using MetaParser.Parsing.Constructs.Tokens;
+using MetaParser.Parsing.Constructs.Core;
+using MetaParser.Parsing.Constructs.Consumers;
 
 namespace MetaParser;
 

@@ -1,13 +1,11 @@
 ﻿using MetaParser.Builders.Interfaces;
+using MetaParser.Core;
 using MetaParser.Graphs;
-using MetaParser.Tokens;
 
-using System;
 using System.CodeDom.Compiler;
-using System.Collections.Immutable;
 using System.IO;
 
-namespace MetaParser.Core;
+namespace MetaParser.Parsing.Constructs.Core;
 
 internal record MetaParserContext : ICodeBuilderContext
 {

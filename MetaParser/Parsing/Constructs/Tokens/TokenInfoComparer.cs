@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MetaParser.Tokens;
+namespace MetaParser.Parsing.Constructs.Tokens;
 
 internal class TokenInfoComparer : IComparer<TokenInfo>
 {

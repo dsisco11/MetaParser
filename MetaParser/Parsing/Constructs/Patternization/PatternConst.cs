@@ -1,36 +1,35 @@
-﻿using MetaParser.Core;
+﻿using MetaParser.Parsing.Constructs.Core;
 
-using System;
 using System.Collections.Generic;
 
-namespace MetaParser.Patternization;
+namespace MetaParser.Parsing.Constructs.Patternization;
 
-internal sealed record PatternTokenRef : Pattern
+internal sealed record PatternConst : Pattern
 {
     #region Fields
-    private readonly string _tokenName;
+    private readonly string _value;
     #endregion
 
     #region Properties
-    public string TokenName => _tokenName;
+    public string Value => _value;
     #endregion
 
     #region Constructors
-    public PatternTokenRef(string value, MetaParserContext context) : base(context)
+    public PatternConst(string value, MetaParserContext context) : base(context)
     {
-        _tokenName = value;
+        _value = value;
     }
     #endregion
 
-    public override int Length => 1;
     public override bool IsRawValues => true;
     public override bool IsConstantLength => true;
+    public override int Length => string.IsNullOrEmpty(Value) ? 0 : 1;
     public override bool HasChildren => false;
 
 
     public override Pattern Combine(Pattern other, MetaParserContext context)
     {
-        throw new NotImplementedException();
+        throw new System.NotImplementedException();
     }
 
     public override IEnumerator<Pattern> GetEnumerator()

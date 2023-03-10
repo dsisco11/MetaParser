@@ -1,7 +1,6 @@
 ﻿using MetaParser.Builders.Core;
-using MetaParser.Builders.Interfaces;
-using MetaParser.Consumers;
-using MetaParser.Tokens;
+using MetaParser.Parsing.Constructs.Consumers;
+using MetaParser.Parsing.Constructs.Tokens;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -15,7 +14,7 @@ namespace MetaParser.Core;
 internal static class CodeCommon
 {
     #region Statics
-    private static AssemblyName _assemblyName = typeof(Common).Assembly.GetName();
+    private static readonly AssemblyName _assemblyName = typeof(Common).Assembly.GetName();
 
     public static SyntaxTokenList ParserClassModifiers = SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("public sealed partial"));
     public static SyntaxTokenList SyntaxPrivateStatic = SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static"));
