@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
-using static DirectedGraph<GraphNodeKey>;
+using static DirectedGraph<NodeKey>;
 
 internal record TokenInfo : IComparable<TokenInfo>
 {
     #region Fields
     public readonly string Name;
-    public readonly GraphNodeKey NodeID;
+    public readonly NodeKey NodeID;
     private readonly WeakReference<MetaParserRegistry> _registry;
     #endregion
 
@@ -29,7 +29,7 @@ internal record TokenInfo : IComparable<TokenInfo>
         if (_registry.TryGetTarget(out MetaParserRegistry registry))
         {
             return DependencyInfo!.Incoming
-                .Where(c => c.Key.Type == GraphNodeType.Consumer && c.Key.Parent == NodeID)
+                .Where(c => c.Key.Type == NodeType.Consumer && c.Key.Parent == NodeID)
                 .Select(c => registry.Consumers[c.Key]);
         }
         else
@@ -44,7 +44,7 @@ internal record TokenInfo : IComparable<TokenInfo>
     {
         _registry = new WeakReference<MetaParserRegistry>(context.Registry);
         Name = name;
-        NodeID = new GraphNodeKey(GraphNodeType.Token, context.Registry.GetNextTokenIndex());
+        NodeID = new NodeKey(NodeType.Token, context.Registry.GetNextTokenIndex());
     }
     #endregion
 

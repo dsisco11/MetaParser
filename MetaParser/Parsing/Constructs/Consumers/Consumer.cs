@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
-using static DirectedGraph<GraphNodeKey>;
+using static DirectedGraph<NodeKey>;
 
 internal record Consumer : IComparable<Consumer>
 {
@@ -18,7 +18,7 @@ internal record Consumer : IComparable<Consumer>
     private readonly ConsumerClauseInfo specified;
 
     public readonly EConsumerType Type;
-    public readonly GraphNodeKey NodeID;
+    public readonly NodeKey NodeID;
     #endregion
 
     #region Properties
@@ -91,7 +91,7 @@ internal record Consumer : IComparable<Consumer>
 
         _registry = new(context.Registry);
         Type = consumer.Type;
-        NodeID = new GraphNodeKey(GraphNodeType.Consumer, context.Registry.GetNextConsumerIndex(), tokenInfo.NodeID);
+        NodeID = new NodeKey(NodeType.Consumer, context.Registry.GetNextConsumerIndex(), tokenInfo.NodeID);
 
         if (consumer.Start is null && consumer.Consume is null)
         {

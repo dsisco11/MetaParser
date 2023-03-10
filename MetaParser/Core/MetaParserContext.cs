@@ -11,6 +11,6 @@ internal record MetaParserContext : ICodeBuilderContext
     public IndentedTextWriter writer { get; set; } = new IndentedTextWriter(new StringWriter());
     public MetaParserConfig Config { get; set; }
     public MetaParserRegistry Registry { get; set; } = new();
-    public DirectedGraph<GraphNodeKey> DepsGraph { get; set; }
+    public DirectedGraph<NodeKey> DepsGraph { get; set; }
     public WorkingSet WorkingSet { get; set; } = new();
 }

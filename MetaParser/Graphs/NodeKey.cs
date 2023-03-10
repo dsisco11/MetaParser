@@ -4,20 +4,20 @@ using System.Diagnostics;
 namespace MetaParser.Graphs;
 
 [DebuggerDisplay("{Type}<{Index}> Parent: [{Parent.Type}:{Parent.Index}]")]
-internal record GraphNodeKey : IComparable<GraphNodeKey>
+internal record NodeKey : IComparable<NodeKey>
 {
-    public readonly GraphNodeKey? Parent;
-    public readonly GraphNodeType Type;
+    public readonly NodeKey? Parent;
+    public readonly NodeType Type;
     public readonly int Index;
 
-    public GraphNodeKey(GraphNodeType type, int index, GraphNodeKey? parent = null)
+    public NodeKey(NodeType type, int index, NodeKey? parent = null)
     {
         Type = type;
         Index = index;
         Parent = parent;
     }
 
-    public int CompareTo(GraphNodeKey other)
+    public int CompareTo(NodeKey other)
     {
         // compare type and index
         int result = Type.CompareTo(other.Type);

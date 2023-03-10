@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
-using static DirectedGraph<GraphNodeKey>;
+using static DirectedGraph<NodeKey>;
 
 internal abstract record Pattern : IEnumerable<Pattern>
 {
@@ -15,7 +15,7 @@ internal abstract record Pattern : IEnumerable<Pattern>
     #endregion
 
     #region Dependency Graph
-    public readonly GraphNodeKey NodeID;
+    public readonly NodeKey NodeID;
     public ResolvedNode? DependencyInfo { get; set; }
     #endregion
 
@@ -45,7 +45,7 @@ internal abstract record Pattern : IEnumerable<Pattern>
 
     public Pattern(MetaParserContext context)
     {
-        NodeID = new(GraphNodeType.Pattern, context.Registry.GetNextPatternIndex(), context.WorkingSet.Consumers.Single().NodeID);
+        NodeID = new(NodeType.Pattern, context.Registry.GetNextPatternIndex(), context.WorkingSet.Consumers.Single().NodeID);
         context.Registry.AddPattern(this);
     }
     #endregion

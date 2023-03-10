@@ -46,7 +46,7 @@ internal class TokenProcessor : MetaCodeBuilder
         // generate token start detection
         if (consumersRecursive.Any())
         {
-            var referencedTokens = consumersRecursive.SelectMany(static (c) => c.DependencyInfo.Outgoing.Where(static (n) => n.Key.Type == Graphs.GraphNodeType.Token)).Distinct();
+            var referencedTokens = consumersRecursive.SelectMany(static (c) => c.DependencyInfo.Outgoing.Where(static (n) => n.Key.Type == Graphs.NodeType.Token)).Distinct();
             var requiredStartDetectors = context.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo!.Incoming.Any(static (n) => n.IsRecursive));
             foreach (var token in requiredStartDetectors)
             {

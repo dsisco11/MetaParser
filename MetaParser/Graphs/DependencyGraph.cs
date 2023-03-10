@@ -6,7 +6,7 @@ internal static class DependencyGraph
 {
     public static void Build(MetaParserContext context)
     {
-        context.DepsGraph = new DirectedGraph<GraphNodeKey>(context.Registry.GetNodeIDs());
+        context.DepsGraph = new DirectedGraph<NodeKey>(context.Registry.GetNodeIDs());
         foreach (var consumer in context.Registry.Consumers.Values)
         {
             consumer.Register_Dependencies(context);
@@ -20,19 +20,19 @@ internal static class DependencyGraph
         {
             switch (entry.Key.Type)
             {
-                case GraphNodeType.Data:
+                case NodeType.Data:
                     break;
-                case GraphNodeType.Pattern:
+                case NodeType.Pattern:
                     {
                         context.Registry.Patterns[entry.Key].DependencyInfo = entry.Value;
                     }
                     break;
-                case GraphNodeType.Consumer:
+                case NodeType.Consumer:
                     {
                         context.Registry.Consumers[entry.Key].DependencyInfo = entry.Value;
                     }
                     break;
-                case GraphNodeType.Token:
+                case NodeType.Token:
                     {
                         context.Registry.Tokens[entry.Key].DependencyInfo = entry.Value;
                     }

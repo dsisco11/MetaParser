@@ -12,15 +12,15 @@ namespace MetaParser.Core;
 internal class MetaParserRegistry
 {
     #region Fields
-    private readonly Dictionary<GraphNodeKey, TokenInfo> _tokens = new();
-    private readonly Dictionary<GraphNodeKey, Consumer> _consumers = new();
-    private readonly Dictionary<GraphNodeKey, Pattern> _patterns = new();
+    private readonly Dictionary<NodeKey, TokenInfo> _tokens = new();
+    private readonly Dictionary<NodeKey, Consumer> _consumers = new();
+    private readonly Dictionary<NodeKey, Pattern> _patterns = new();
     #endregion
 
     #region Accessors
-    public IReadOnlyDictionary<GraphNodeKey, TokenInfo> Tokens => _tokens;
-    public IReadOnlyDictionary<GraphNodeKey, Consumer> Consumers => _consumers;
-    public IReadOnlyDictionary<GraphNodeKey, Pattern> Patterns => _patterns;
+    public IReadOnlyDictionary<NodeKey, TokenInfo> Tokens => _tokens;
+    public IReadOnlyDictionary<NodeKey, Consumer> Consumers => _consumers;
+    public IReadOnlyDictionary<NodeKey, Pattern> Patterns => _patterns;
     #endregion
 
     #region Item Management
@@ -84,7 +84,7 @@ internal class MetaParserRegistry
         return false;
     }
 
-    public IEnumerable<GraphNodeKey> GetNodeIDs()
+    public IEnumerable<NodeKey> GetNodeIDs()
     {
         foreach (var token in _tokens)
         {
