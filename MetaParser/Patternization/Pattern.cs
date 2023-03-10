@@ -38,6 +38,7 @@ internal abstract record Pattern : IEnumerable<Pattern>
     public abstract bool HasChildren { get; }
     #endregion
 
+    #region Constructors
     protected Pattern()
     {        
     }
@@ -47,6 +48,7 @@ internal abstract record Pattern : IEnumerable<Pattern>
         NodeID = new(GraphNodeType.Pattern, context.Registry.GetNextPatternIndex(), context.WorkingSet.Consumers.Single().NodeID);
         context.Registry.AddPattern(this);
     }
+    #endregion
 
     public abstract Pattern Combine(Pattern other, MetaParserContext context);
 

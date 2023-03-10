@@ -2,7 +2,7 @@
 
 namespace MetaParser.Graphs;
 
-[DebuggerDisplay("{Type}<{Index}> Parent:{Parent}")]
+[DebuggerDisplay("{Type}<{Index}> Parent: [{Parent.Type}:{Parent.Index}]")]
 internal record GraphNodeKey
 {
     public readonly GraphNodeKey? Parent;
