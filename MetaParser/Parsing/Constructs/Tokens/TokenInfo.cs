@@ -51,7 +51,7 @@ internal record TokenInfo : IComparable<TokenInfo>
     #region IComparable
     public int CompareTo(TokenInfo other)
     {
-        return NodeID.Index.CompareTo(other.NodeID.Index);
+        return NodeID.CompareTo(other.NodeID);
     }
     #endregion
 }
