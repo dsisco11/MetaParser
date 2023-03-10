@@ -11,7 +11,7 @@ using System.Linq;
 namespace MetaParser.Parsing.Constructs.Tokens;
 using static DirectedGraph<GraphNodeKey>;
 
-internal record TokenInfo
+internal record TokenInfo : IComparable<TokenInfo>
 {
     #region Fields
     public readonly string Name;
@@ -41,10 +41,19 @@ internal record TokenInfo
     }
     #endregion
 
+    #region Constructors
     public TokenInfo(string name, MetaParserContext context)
     {
         _registry = new WeakReference<MetaParserRegistry>(context.Registry);
         Name = name;
         NodeID = new GraphNodeKey(GraphNodeType.Token, context.Registry.GetNextTokenIndex());
     }
+    #endregion
+
+    #region IComparable
+    public int CompareTo(TokenInfo other)
+    {
+        return NodeID.Index.CompareTo(other.NodeID.Index);
+    }
+    #endregion
 }

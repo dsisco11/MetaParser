@@ -15,7 +15,7 @@ internal class TokenIDConstBuilder : MetaCodeBuilder
         var writer = context.writer;
         writer.WriteLine($"public const {context.Config.IdType} {Format_Token_Id(UnknownToken)} = 0;");
 
-        foreach (var token in context.Registry.Tokens.Values.ToImmutableSortedSet(TokenInfoComparer.Instance))
+        foreach (var token in context.Registry.Tokens.Values.ToImmutableSortedSet())
         {
             writer.WriteLine($"public const {context.Config.IdType} {Format_Token_Id(token.Name)} = {token.Index};");
         }
