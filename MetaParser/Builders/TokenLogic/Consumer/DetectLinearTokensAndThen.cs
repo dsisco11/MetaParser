@@ -1,8 +1,7 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
-using MetaParser.Parsing.Constructs.Consumers;
+using MetaParser.Parsing.Constructs;
 using MetaParser.Parsing.Constructs.Core;
-using MetaParser.Parsing.Constructs.Patternization;
 
 using System.Linq;
 
@@ -19,7 +18,7 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
         }
 
         var writer = context.writer;
-        var workContext = context with { WorkingSet = context.WorkingSet with { Consumers = new Parsing.Constructs.Consumers.Consumer[1] } };
+        var workContext = context with { WorkingSet = context.WorkingSet with { Consumers = new Parsing.Constructs.Consumer[1] } };
 
 #if DEBUG
         writer.WriteLine("// Linear consumers");
@@ -29,7 +28,7 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        foreach (Parsing.Constructs.Consumers.Consumer consumer in sortedConsumers)
+        foreach (Parsing.Constructs.Consumer consumer in sortedConsumers)
         {
             workContext.WorkingSet.Consumers[0] = consumer;
 

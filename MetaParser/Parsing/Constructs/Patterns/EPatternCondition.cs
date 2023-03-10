@@ -1,4 +1,4 @@
-﻿namespace MetaParser.Parsing.Constructs.Patternization;
+﻿namespace MetaParser.Parsing.Constructs;
 
 public enum EPatternCondition
 {

@@ -1,7 +1,7 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
+using MetaParser.Parsing.Constructs;
 using MetaParser.Parsing.Constructs.Core;
-using MetaParser.Parsing.Constructs.Tokens;
 
 using System.Linq;
 

@@ -1,8 +1,7 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
-using MetaParser.Parsing.Constructs.Consumers;
+using MetaParser.Parsing.Constructs;
 using MetaParser.Parsing.Constructs.Core;
-using MetaParser.Parsing.Constructs.Patternization;
 
 using System.Diagnostics;
 using System.Linq;

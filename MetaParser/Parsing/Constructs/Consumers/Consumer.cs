@@ -1,17 +1,14 @@
-﻿using MetaParser.Consumers;
-using MetaParser.Core;
+﻿using MetaParser.Core;
 using MetaParser.Exceptions;
 using MetaParser.Graphs;
 using MetaParser.Json.Definitions;
 using MetaParser.Parsing.Constructs.Core;
-using MetaParser.Parsing.Constructs.Patternization;
-using MetaParser.Parsing.Constructs.Tokens;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MetaParser.Parsing.Constructs.Consumers;
+namespace MetaParser.Parsing.Constructs;
 using static DirectedGraph<GraphNodeKey>;
 
 internal record Consumer

@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MetaParser.Parsing.Constructs.Patternization;
+namespace MetaParser.Parsing.Constructs;
 
 internal sealed record PatternTokenRef : Pattern
 {

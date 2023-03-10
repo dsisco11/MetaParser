@@ -8,8 +8,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using System.Collections.Generic;
 
 namespace MetaParser.Builders.Core;
-using static CodeCommon;
-
 internal class ClassBuilder : MetaCodeBuilder
 {
     #region Properties

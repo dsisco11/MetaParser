@@ -1,6 +1,6 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
-using MetaParser.Parsing.Constructs.Consumers;
+using MetaParser.Parsing.Constructs;
 using MetaParser.Parsing.Constructs.Core;
 
 using Microsoft.CodeAnalysis.CSharp;

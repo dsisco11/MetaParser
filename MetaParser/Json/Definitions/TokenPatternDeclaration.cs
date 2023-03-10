@@ -2,8 +2,8 @@
 using System.Text.Json.Serialization;
 
 using MetaParser.Core;
+using MetaParser.Parsing.Constructs;
 using MetaParser.Parsing.Constructs.Core;
-using MetaParser.Parsing.Constructs.Patternization;
 
 namespace MetaParser.Json.Definitions;
 

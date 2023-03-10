@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using MetaParser.Parsing.Constructs.Consumers;
-
-namespace MetaParser.Consumers;
+namespace MetaParser.Parsing.Constructs;
 
 internal class ConsumerComparer : IComparer<Consumer>
 {

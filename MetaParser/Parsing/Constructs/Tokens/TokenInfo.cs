@@ -1,14 +1,13 @@
 ﻿using MetaParser.Core;
 using MetaParser.Exceptions;
 using MetaParser.Graphs;
-using MetaParser.Parsing.Constructs.Consumers;
 using MetaParser.Parsing.Constructs.Core;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MetaParser.Parsing.Constructs.Tokens;
+namespace MetaParser.Parsing.Constructs;
 using static DirectedGraph<GraphNodeKey>;
 
 internal record TokenInfo : IComparable<TokenInfo>

@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace MetaParser.Parsing.Constructs.Patternization;
+namespace MetaParser.Parsing.Constructs;
 
 internal record PatternEmpty : Pattern
 {

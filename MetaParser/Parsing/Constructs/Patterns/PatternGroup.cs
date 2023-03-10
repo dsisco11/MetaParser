@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MetaParser.Parsing.Constructs.Patternization;
+namespace MetaParser.Parsing.Constructs;
 
 internal record PatternGroup : Pattern, IEnumerable<Pattern>
 {

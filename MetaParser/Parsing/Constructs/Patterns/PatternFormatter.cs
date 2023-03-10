@@ -4,7 +4,7 @@ using MetaParser.Parsing.Constructs.Core;
 using System;
 using System.Linq;
 
-namespace MetaParser.Parsing.Constructs.Patternization;
+namespace MetaParser.Parsing.Constructs;
 using static CodeCommon;
 
 internal static class PatternFormatter

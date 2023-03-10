@@ -1,4 +1,4 @@
-﻿using MetaParser.Parsing.Constructs.Consumers;
+﻿using MetaParser.Parsing.Constructs;
 
 using System;
 using System.Collections.Immutable;
