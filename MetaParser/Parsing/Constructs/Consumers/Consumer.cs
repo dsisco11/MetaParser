@@ -10,7 +10,7 @@ using System.Linq;
 namespace MetaParser.Parsing.Constructs;
 using static DirectedGraph<GraphNodeKey>;
 
-internal record Consumer
+internal record Consumer : IComparable<Consumer>
 {
     #region Fields
     private readonly WeakReference<MetaParserRegistry> _registry;
@@ -194,6 +194,13 @@ internal record Consumer
     private static IEnumerable<string> Get_Tokens_From_Pattern(Pattern pattern)
     {
         return pattern.OfType<PatternTokenRef>().Select(static (x) => x.TokenName);
+    }
+    #endregion
+
+    #region IComparable
+    public int CompareTo(Consumer other)
+    {
+        return NodeID.CompareTo(other.NodeID);
     }
     #endregion
 }
