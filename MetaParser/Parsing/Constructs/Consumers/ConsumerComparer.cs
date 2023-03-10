@@ -4,11 +4,11 @@ using MetaParser.Parsing.Constructs.Consumers;
 
 namespace MetaParser.Consumers;
 
-internal class ConsumerComparer : IComparer<TokenConsumer>
+internal class ConsumerComparer : IComparer<Consumer>
 {
     public static ConsumerComparer Instance = new ConsumerComparer();
 
-    public int Compare(TokenConsumer x, TokenConsumer y)
+    public int Compare(Consumer x, Consumer y)
     {
         return x.Token.Index.CompareTo(y.Token.Index);
     }

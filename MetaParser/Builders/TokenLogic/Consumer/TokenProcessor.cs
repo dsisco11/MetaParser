@@ -60,7 +60,7 @@ internal class TokenProcessor : MetaCodeBuilder
             }
         }
 
-        foreach (TokenConsumer consumer in consumersRecursive)
+        foreach (Parsing.Constructs.Consumers.Consumer consumer in consumersRecursive)
         {
             var funcName = Format_Token_Start_Detection_Function_Name(consumer.Token.Name);
             var funcDef = Get_Local_Token_Detection_Function_Definition(context.Config, consumer.Type, funcName);
@@ -69,8 +69,8 @@ internal class TokenProcessor : MetaCodeBuilder
         }
 
         // generate token consumer functions
-        var workingContext = context with { WorkingSet = context.WorkingSet with { Consumers = new TokenConsumer[1] } };
-        foreach (TokenConsumer consumer in context.WorkingSet.Consumers)
+        var workingContext = context with { WorkingSet = context.WorkingSet with { Consumers = new Parsing.Constructs.Consumers.Consumer[1] } };
+        foreach (Parsing.Constructs.Consumers.Consumer consumer in context.WorkingSet.Consumers)
         {
             workingContext.WorkingSet.Consumers[0] = consumer;
             if (consumer.IsConstant)

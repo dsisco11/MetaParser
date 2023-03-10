@@ -15,13 +15,13 @@ internal class MetaParserRegistry
 {
     #region Fields
     private readonly Dictionary<GraphNodeKey, TokenInfo> _tokens = new();
-    private readonly Dictionary<GraphNodeKey, TokenConsumer> _consumers = new();
+    private readonly Dictionary<GraphNodeKey, Consumer> _consumers = new();
     private readonly Dictionary<GraphNodeKey, Pattern> _patterns = new();
     #endregion
 
     #region Accessors
     public IReadOnlyDictionary<GraphNodeKey, TokenInfo> Tokens => _tokens;
-    public IReadOnlyDictionary<GraphNodeKey, TokenConsumer> Consumers => _consumers;
+    public IReadOnlyDictionary<GraphNodeKey, Consumer> Consumers => _consumers;
     public IReadOnlyDictionary<GraphNodeKey, Pattern> Patterns => _patterns;
     #endregion
 
@@ -35,7 +35,7 @@ internal class MetaParserRegistry
         _tokens.Add(token.NodeID, token);
     }
 
-    public void AddConsumer(TokenConsumer consumer)
+    public void AddConsumer(Consumer consumer)
     {
         if (_consumers.ContainsKey(consumer.NodeID))
         {

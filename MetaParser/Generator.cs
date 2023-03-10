@@ -119,7 +119,7 @@ public partial class Generator : IIncrementalGenerator
                 }
 
                 context.WorkingSet.Tokens = new TokenInfo[1];
-                context.WorkingSet.Consumers = new TokenConsumer[1];
+                context.WorkingSet.Consumers = new Consumer[1];
 
                 foreach (var def in schema.Definitions)
                 {
@@ -129,7 +129,7 @@ public partial class Generator : IIncrementalGenerator
 
                     foreach (var consumerDeclaration in def.Value)
                     {
-                        var consumer = new TokenConsumer(context, consumerDeclaration);
+                        var consumer = new Consumer(context, consumerDeclaration);
                         context.Registry.AddConsumer(consumer);
                     }
                 }

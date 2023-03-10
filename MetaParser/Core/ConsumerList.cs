@@ -10,10 +10,10 @@ internal sealed record ConsumerList
     /// <summary>
     /// Complete list of all tokens defined
     /// </summary>
-    public ImmutableArray<TokenConsumer> CompleteSet { get; set; } = ImmutableArray<TokenConsumer>.Empty;
+    public ImmutableArray<Consumer> CompleteSet { get; set; } = ImmutableArray<Consumer>.Empty;
 
     /// <summary>
     /// Set of tokens being targeted by the current action
     /// </summary>
-    public TokenConsumer[] Working { get; set; } = Array.Empty<TokenConsumer>();
+    public Consumer[] Working { get; set; } = Array.Empty<Consumer>();
 }

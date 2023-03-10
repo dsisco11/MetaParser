@@ -19,7 +19,7 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
         }
 
         var writer = context.writer;
-        var workContext = context with { WorkingSet = context.WorkingSet with { Consumers = new TokenConsumer[1] } };
+        var workContext = context with { WorkingSet = context.WorkingSet with { Consumers = new Parsing.Constructs.Consumers.Consumer[1] } };
 
 #if DEBUG
         writer.WriteLine("// Linear consumers");
@@ -29,7 +29,7 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        foreach (TokenConsumer consumer in sortedConsumers)
+        foreach (Parsing.Constructs.Consumers.Consumer consumer in sortedConsumers)
         {
             workContext.WorkingSet.Consumers[0] = consumer;
 

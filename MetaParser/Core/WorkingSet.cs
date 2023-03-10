@@ -12,6 +12,6 @@ namespace MetaParser.Core;
 internal record WorkingSet
 {
     public TokenInfo[] Tokens { get; set; } = Array.Empty<TokenInfo>();
-    public TokenConsumer[] Consumers { get; set; } = Array.Empty<TokenConsumer>();
+    public Consumer[] Consumers { get; set; } = Array.Empty<Consumer>();
     public Pattern[] Patterns { get; set; } = Array.Empty<Pattern>();
 }

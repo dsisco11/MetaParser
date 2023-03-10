@@ -14,7 +14,7 @@ using System.Linq;
 namespace MetaParser.Parsing.Constructs.Consumers;
 using static DirectedGraph<GraphNodeKey>;
 
-internal record TokenConsumer
+internal record Consumer
 {
     #region Fields
     private readonly WeakReference<MetaParserRegistry> _registry;
@@ -88,7 +88,7 @@ internal record TokenConsumer
     #endregion
 
     #region Constructors
-    public TokenConsumer(MetaParserContext context, IConsumerDeclaration consumer)
+    public Consumer(MetaParserContext context, IConsumerDeclaration consumer)
     {
         var tokenInfo = context.WorkingSet.Tokens.Single();
         context.WorkingSet.Consumers[0] = this;

@@ -26,7 +26,7 @@ internal record TokenInfo
     #region Accessors
     public int Index => NodeID.Index;
 
-    public IEnumerable<TokenConsumer> GetConsumers()
+    public IEnumerable<Consumer> GetConsumers()
     {
         if (_registry.TryGetTarget(out MetaParserRegistry registry))
         {
