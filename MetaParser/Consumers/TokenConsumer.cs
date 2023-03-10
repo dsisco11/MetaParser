@@ -1,6 +1,7 @@
 ﻿using MetaParser.Core;
 using MetaParser.Exceptions;
 using MetaParser.Graphs;
+using MetaParser.Json.Definitions;
 using MetaParser.Patternization;
 using MetaParser.Tokens;
 
@@ -14,11 +15,10 @@ using static DirectedGraph<GraphNodeKey>;
 internal record TokenConsumer
 {
     #region Fields
+    private readonly WeakReference<MetaParserRegistry> _registry;
     private readonly ConsumerClauseInfo assigned;
     private readonly ConsumerClauseInfo specified;
 
-    public readonly TokenInfo Token;
-    public readonly int Index;
     public readonly EConsumerType Type;
     public readonly GraphNodeKey NodeID;
     #endregion
@@ -28,13 +28,51 @@ internal record TokenConsumer
     #endregion
 
     #region Accessors
+    public int Index => NodeID.Index;
+    public TokenInfo Token
+    {
+        get
+        {
+            if (NodeID.Parent is null)
+            {
+                throw new MetaParserException($"Cannot resolve token for consumer without parent node: {NodeID}");
+            }
+
+            if (!_registry.TryGetTarget(out var registry))
+            {
+                throw new MetaParserException($"Cannot resolve token for consumer without registry: {NodeID}");
+            }
+
+            return registry.Tokens[NodeID.Parent];
+        }
+    }
     public PatternGroup Start => specified.Start!;
     public PatternGroup? Consume => specified.Consume;
     public PatternGroup? Stop => specified.Stop;
     public PatternGroup? Escape => specified.Escape;
+
+    internal IEnumerable<Pattern> Patterns
+    {
+        get
+        {
+            yield return Start;
+            if (Consume is not null)
+            {
+                yield return Consume;
+            }
+            if (Stop is not null)
+            {
+                yield return Stop;
+            }
+            if (Escape is not null)
+            {
+                yield return Escape;
+            }
+        }
+    }
     #endregion
 
-    #region Accessors
+    #region State
     /// <summary> A consumer is considered open if it is dynamic and has no STOP criteria. </summary>
     public bool IsOpen => IsDynamic && assigned.Stop is null;
     /// <summary> A consumer is considered closed if it is dynamic and has a STOP criteria. </summary>
@@ -48,24 +86,26 @@ internal record TokenConsumer
     #endregion
 
     #region Constructors
-    public TokenConsumer(MetaParserContext context, TokenInfo token, ConsumerData data)
+    public TokenConsumer(MetaParserContext context, IConsumerDeclaration consumer)
     {
-        Token = token;
-        Type = data.Type;
-        Index = data.Index;
-        NodeID = new GraphNodeKey(GraphNodeType.Consumer, Index, Token.NodeID);
+        var tokenInfo = context.WorkingSet.Tokens.Single();
+        context.WorkingSet.Consumers[0] = this;
 
-        if (data.Start is null && data.Consume is null)
+        _registry = new(context.Registry);
+        Type = consumer.Type;
+        NodeID = new GraphNodeKey(GraphNodeType.Consumer, context.Registry.GetNextConsumerIndex(), tokenInfo.NodeID);
+
+        if (consumer.Start is null && consumer.Consume is null)
         {
-            throw new IllegalTokenException($@"Illegal token definition (""{token.Name}"") (tokens require at minimum either a START or CONSUME sequence)");
+            throw new IllegalTokenException($@"Illegal consumer definition (""{Token.Name}"") (tokens require at minimum either a START or CONSUME sequence)");
         }
 
         assigned = new ConsumerClauseInfo() 
         {
-            Start = data.Start,
-            Consume = data.Consume,
-            Stop = data.Stop,
-            Escape = data.Escape,
+            Start = consumer.Start.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Start.Select(o => o.Resolve(context)).ToArray()) : null,
+            Consume = consumer.Consume.Any() ? new PatternGroup(EPatternCondition.OneOf, context, consumer.Consume.Select(o => o.Resolve(context)).ToArray()) : null,
+            Stop = consumer.Stop.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Stop.Select(o => o.Resolve(context)).ToArray()) : null,
+            Escape = consumer.Escape.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Escape.Select(o => o.Resolve(context)).ToArray()) : null,
         };
 
         specified = new ConsumerClauseInfo()
@@ -76,7 +116,7 @@ internal record TokenConsumer
                 // no start condition, only a CONSUME criteria
                 true when assigned.Start is null => assigned.Consume!,
                 // for open ended consumers it is implied that their consume criteria is part of their start condition
-                true when assigned.Start is not null => assigned.Start.Combine(assigned.Consume!) as PatternGroup,
+                true when assigned.Start is not null => assigned.Start.Combine(assigned.Consume!, context) as PatternGroup,
                 _ => throw new NotImplementedException()
             },
             Consume = assigned.Consume,
@@ -86,14 +126,7 @@ internal record TokenConsumer
     }
     #endregion
 
-    private Pattern[] Get_All_Other_Tokens(MetaParserContext context)
-    {
-        var allOthers = context.Tokens.Values.Where((x) => x.Index != Token.Index);
-        return allOthers.Select(static (x) => new PatternTokenRef(x.Name)).ToArray();
-    }
-
     #region Dependencies
-
     public void Register_Dependencies(MetaParserContext context)
     {
         if (Type == EConsumerType.Data)
@@ -104,7 +137,7 @@ internal record TokenConsumer
         var deps = Get_Dependencies(context);
         foreach (var tokenName in deps)
         {
-            if (!context.Tokens.TryGetValue(tokenName, out var token))
+            if (!context.Registry.TryGetToken(tokenName, out var token))
             {
                 throw new UnknownTokenException($@"Unable to find token: ""{tokenName}""");
             }
@@ -134,7 +167,7 @@ internal record TokenConsumer
         }
         else if (IsClosed)
         {// Closed tokens with an ambiguous consume clause are inherently dependent on all other defined tokens as they can consume anything
-            var allOthers = context.Tokens.Values.Where((x) => x.Index != Token.Index).Select(static (x) => x.Name);
+            var allOthers = context.Registry.Tokens.Values.Where((x) => x.Index != Token.Index).Select(static (x) => x.Name);
             foreach (var tokenName in allOthers)
             {
                 refs.Add(tokenName);
@@ -162,7 +195,7 @@ internal record TokenConsumer
 
     private static IEnumerable<string> Get_Tokens_From_Pattern(Pattern pattern)
     {
-        return pattern.GetSubPatterns().OfType<PatternTokenRef>().Select(static (x) => x.TokenName);
+        return pattern.OfType<PatternTokenRef>().Select(static (x) => x.TokenName);
     }
     #endregion
 }

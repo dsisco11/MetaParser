@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MetaParser.Core;
+
+using System;
 using System.Collections.Generic;
 
 namespace MetaParser.Patternization;
@@ -14,7 +16,7 @@ internal sealed record PatternTokenRef : Pattern
     #endregion
 
     #region Constructors
-    public PatternTokenRef(string value)
+    public PatternTokenRef(string value, MetaParserContext context) : base(context)
     {
         _tokenName = value;
     }
@@ -26,12 +28,12 @@ internal sealed record PatternTokenRef : Pattern
     public override bool HasChildren => false;
 
 
-    public override Pattern Combine(Pattern other)
+    public override Pattern Combine(Pattern other, MetaParserContext context)
     {
         throw new NotImplementedException();
     }
 
-    public override IEnumerable<Pattern> GetSubPatterns()
+    public override IEnumerator<Pattern> GetEnumerator()
     {
         yield break;
     }

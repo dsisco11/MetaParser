@@ -5,6 +5,7 @@ namespace UnitTestParser
     {
         private static bool TryProcessCompound(global::System.ReadOnlySpan<byte> input, out byte id, out int length)
         {
+            // Linear consumers
             switch (input)
             {
                 case [ TokenId.Keyword_Var, ..]:

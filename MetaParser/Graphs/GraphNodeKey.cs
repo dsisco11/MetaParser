@@ -1,4 +1,8 @@
-﻿namespace MetaParser.Graphs;
+﻿using System.Diagnostics;
+
+namespace MetaParser.Graphs;
+
+[DebuggerDisplay("{Type}<{Index}> Parent:{Parent}")]
 internal record GraphNodeKey
 {
     public readonly GraphNodeKey? Parent;

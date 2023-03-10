@@ -21,7 +21,7 @@ internal class DirectedGraph<T> where T : notnull, IEquatable<T>
     [DebuggerDisplay("Order[{Order}] | MinDepth[{MinDepth}] | MaxDepth[{MaxDepth}] | IsRecursive ({IsRecursive})", Name = "{Id}")]
     public record ResolvedNode
     {
-        public T Identity;
+        public T Key;
         public int Order;
         public int MinDepth = int.MaxValue;
         public int MaxDepth;
@@ -29,9 +29,9 @@ internal class DirectedGraph<T> where T : notnull, IEquatable<T>
         public ImmutableHashSet<ResolvedNode> Incoming;
         public ImmutableHashSet<ResolvedNode> Outgoing;
 
-        public ResolvedNode(T identity)
+        public ResolvedNode(T key)
         {
-            Identity = identity;
+            Key = key;
         }
     }
     #endregion

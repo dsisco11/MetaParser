@@ -37,11 +37,11 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
     {
         if (value is not null)
         {
-            return ResolveConst();
+            return ResolveConst(context);
         }
         else if (range is not null)
         {
-            return ResolveRange();
+            return ResolveRange(context);
         }
         else if (oneof is not null)
         {
@@ -51,7 +51,7 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
         return Pattern.Empty;
     }
 
-    private Pattern ResolveConst()
+    private Pattern ResolveConst(MetaParserContext context)
     {
         if (value is null)
         {
@@ -60,18 +60,18 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
 
         if (value.Length == 1)
         {
-            return new PatternConst(SymbolDisplay.FormatLiteral(value[0], true));
+            return new PatternConst(SymbolDisplay.FormatLiteral(value[0], true), context);
         }
         // A string value is matched as a sequence of chars
-        var consts = value.ToCharArray().Select(ch => new PatternConst(SymbolDisplay.FormatLiteral(ch, true))).ToArray();
-        return new PatternGroup(EPatternCondition.AllOf, consts);
+        var consts = value.ToCharArray().Select(ch => new PatternConst(SymbolDisplay.FormatLiteral(ch, true), context)).ToArray();
+        return new PatternGroup(EPatternCondition.AllOf, context, consts);
     }
 
-    private Pattern ResolveRange()
+    private Pattern ResolveRange(MetaParserContext context)
     {
         var start = SymbolDisplay.FormatLiteral(range[0][0], true);
         var stop = SymbolDisplay.FormatLiteral(range[1][0], true);
-        return new PatternRange(start, stop);
+        return new PatternRange(start, stop, context);
     }
 
     private Pattern ResolveOneOf(MetaParserContext context)
@@ -87,6 +87,6 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
         }
 
         var consts = oneof.Select(o => o.Resolve(context)).ToArray();
-        return new PatternGroup(EPatternCondition.OneOf, consts);
+        return new PatternGroup(EPatternCondition.OneOf, context, consts);
     }
 }

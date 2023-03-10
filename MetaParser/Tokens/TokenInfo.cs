@@ -1,7 +1,11 @@
 ﻿using MetaParser.Consumers;
+using MetaParser.Core;
+using MetaParser.Exceptions;
 using MetaParser.Graphs;
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MetaParser.Tokens;
 using static DirectedGraph<GraphNodeKey>;
@@ -9,18 +13,37 @@ using static DirectedGraph<GraphNodeKey>;
 internal record TokenInfo
 {
     #region Fields
-    public readonly int Index;
     public readonly string Name;
-    public readonly List<TokenConsumer> Consumers;
     public readonly GraphNodeKey NodeID;
-    public ResolvedNode DependencyInfo { get; set; }
+    private readonly WeakReference<MetaParserRegistry> _registry;
     #endregion
 
-    public TokenInfo(int index, string name)
+    #region Dependency Info
+    public ResolvedNode? DependencyInfo { get; set; }
+    #endregion
+
+    #region Accessors
+    public int Index => NodeID.Index;
+
+    public IEnumerable<TokenConsumer> GetConsumers()
     {
-        Index = index;
+        if (_registry.TryGetTarget(out MetaParserRegistry registry))
+        {
+            return DependencyInfo!.Incoming
+                .Where(c => c.Key.Type == GraphNodeType.Consumer && c.Key.Parent == NodeID)
+                .Select(c => registry.Consumers[c.Key]);
+        }
+        else
+        {
+            throw new MetaParserException($"Cannot resolve consumers for token without registry: {NodeID}");
+        }
+    }
+    #endregion
+
+    public TokenInfo(string name, MetaParserContext context)
+    {
+        _registry = new WeakReference<MetaParserRegistry>(context.Registry);
         Name = name;
-        Consumers = new();
-        NodeID = new GraphNodeKey(GraphNodeType.Token, Index);
+        NodeID = new GraphNodeKey(GraphNodeType.Token, context.Registry.GetNextTokenIndex());
     }
 }

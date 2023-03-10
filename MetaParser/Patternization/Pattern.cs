@@ -1,14 +1,25 @@
-﻿using MetaParser.Graphs;
+﻿using MetaParser.Core;
+using MetaParser.Graphs;
 
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MetaParser.Patternization;
-internal abstract record Pattern
-{
-    public static Pattern Empty = new PatternEmpty();
-    private static int _indexTracker;
+using static DirectedGraph<GraphNodeKey>;
 
-    public readonly GraphNodeKey NodeID = new(GraphNodeType.Pattern, _indexTracker++);
+internal abstract record Pattern : IEnumerable<Pattern>
+{
+    #region Statics
+    public static Pattern Empty = new PatternEmpty();
+    #endregion
+
+    #region Dependency Graph
+    public readonly GraphNodeKey NodeID;
+    public ResolvedNode? DependencyInfo { get; set; }
+    #endregion
+
+    #region Accessors
     /// <summary>
     /// Indicates the length of this pattern when rendered as a sequence
     /// </summary>
@@ -25,8 +36,22 @@ internal abstract record Pattern
     /// Indicates whether the pattern contains other patterns
     /// </summary>
     public abstract bool HasChildren { get; }
+    #endregion
 
-    public abstract IEnumerable<Pattern> GetSubPatterns();
-    public abstract Pattern Combine(Pattern other);
+    protected Pattern()
+    {        
+    }
 
+    public Pattern(MetaParserContext context)
+    {
+        NodeID = new(GraphNodeType.Pattern, context.Registry.GetNextPatternIndex(), context.WorkingSet.Consumers.Single().NodeID);
+        context.Registry.AddPattern(this);
+    }
+
+    public abstract Pattern Combine(Pattern other, MetaParserContext context);
+
+    #region Enumerability
+    public abstract IEnumerator<Pattern> GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<Pattern>)this).GetEnumerator();
+    #endregion
 }

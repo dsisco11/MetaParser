@@ -1,6 +1,4 @@
-﻿using MetaParser.Consumers;
-using MetaParser.Core;
-using System.Linq;
+﻿using MetaParser.Core;
 
 namespace MetaParser.Graphs;
 
@@ -8,13 +6,8 @@ internal static class DependencyGraph
 {
     public static void Build(MetaParserContext context)
     {
-        var tokenIdents = context.Tokens.Values.Select(static (x) => x.NodeID);
-        var consumerIdents = context.Consumers.CompleteSet.Select(static (x) => x.NodeID);
-        var allIdents = tokenIdents.Concat(consumerIdents);
-
-        context.DepsGraph = new DirectedGraph<GraphNodeKey>(allIdents);
-        // For each 'token' consumer, link it to all the tokens it references within the graph
-        foreach (var consumer in context.Consumers.CompleteSet.Where(static (c) => c.Type == EConsumerType.Token))
+        context.DepsGraph = new DirectedGraph<GraphNodeKey>(context.Registry.GetNodeIDs());
+        foreach (var consumer in context.Registry.Consumers.Values)
         {
             consumer.Register_Dependencies(context);
         }
@@ -25,14 +18,28 @@ internal static class DependencyGraph
         var results = context.DepsGraph.Resolve();
         foreach (var entry in results)
         {
-            if (entry.Key.Type == GraphNodeType.Token)
-            {// This is a token
-                context.Tokens.Values.Single((t) => t.NodeID == entry.Key).DependencyInfo = entry.Value;
-                continue;
+            switch (entry.Key.Type)
+            {
+                case GraphNodeType.Data:
+                    break;
+                case GraphNodeType.Pattern:
+                    {
+                        context.Registry.Patterns[entry.Key].DependencyInfo = entry.Value;
+                    }
+                    break;
+                case GraphNodeType.Consumer:
+                    {
+                        context.Registry.Consumers[entry.Key].DependencyInfo = entry.Value;
+                    }
+                    break;
+                case GraphNodeType.Token:
+                    {
+                        context.Registry.Tokens[entry.Key].DependencyInfo = entry.Value;
+                    }
+                    break;
+                default:
+                    break;
             }
-
-            var consumer = context.Consumers.CompleteSet.Single((x) => x.NodeID == entry.Key);
-            consumer.DependencyInfo = entry.Value;
         }
     }
 }

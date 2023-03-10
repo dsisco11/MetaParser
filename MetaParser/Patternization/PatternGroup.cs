@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using MetaParser.Core;
+
+using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Patternization;
 
-internal record PatternGroup : Pattern
+internal record PatternGroup : Pattern, IEnumerable<Pattern>
 {
     #region Fields
     private readonly Pattern[] _items;
@@ -16,7 +18,7 @@ internal record PatternGroup : Pattern
     #endregion
 
     #region Constructors
-    public PatternGroup(EPatternCondition condition, params Pattern[] items)
+    public PatternGroup(EPatternCondition condition, MetaParserContext context, params Pattern[] items) : base(context)
     {
         _condition = condition;
         _items = items;
@@ -64,17 +66,27 @@ internal record PatternGroup : Pattern
             };
         }
     }
-    public override bool IsConstantLength => !Items.Any(x => !x.IsConstantLength);
+    public override bool IsConstantLength => !_items.Any(x => !x.IsConstantLength);
     public override bool HasChildren => true;
 
 
-    public override IEnumerable<Pattern> GetSubPatterns()
+    public override Pattern Combine(Pattern other, MetaParserContext context)
     {
-        foreach(var item in Items)
+        List<Pattern> patterns = new List<Pattern>(_items)
+        {
+            other
+        };
+
+        return new PatternGroup(Condition, context, patterns.ToArray());
+    }
+
+    public override IEnumerator<Pattern> GetEnumerator()
+    {
+        foreach (Pattern item in _items)
         {
             if (item.HasChildren)
             {
-                foreach (var o in item.GetSubPatterns())
+                foreach (Pattern o in item)
                 {
                     yield return o;
                 }
@@ -86,15 +98,5 @@ internal record PatternGroup : Pattern
         }
 
         yield break;
-    }
-
-    public override Pattern Combine(Pattern other)
-    {
-        List<Pattern> patterns = new List<Pattern>(Items)
-        {
-            other
-        };
-
-        return new PatternGroup(Condition, patterns.ToArray());
     }
 }

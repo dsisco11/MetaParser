@@ -1,6 +1,6 @@
 ﻿using MetaParser.Builders.Interfaces;
-using MetaParser.Consumers;
 using MetaParser.Core;
+using MetaParser.Tokens;
 
 using System.Linq;
 
@@ -11,27 +11,26 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
-        if (!context.Consumers.WorkingSet.Any())
+        if (!context.WorkingSet.Consumers.Any())
         {
             return;
         }
 
         var writer = context.writer;
-        var workContext = context with { Consumers = context.Consumers with { WorkingSet = new TokenConsumer[1] } };
-
 #if DEBUG
         writer.WriteLine("// Recursive consumers");
 #endif
-        var sortedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
-        foreach (TokenConsumer consumer in sortedConsumers)
+        var orderedItems = context.WorkingSet.Consumers.Select(static (x) => x.Token)
+                                                          .Distinct()
+                                                          .OrderByDescending(static (t) => t.GetConsumers().Max(static (c) => c.DependencyInfo.MaxDepth))
+                                                          .ThenByDescending(static (t) => t.GetConsumers().Max(static (c) => c.Start.Length));
+        foreach (TokenInfo token in orderedItems)
         {
-            workContext.Consumers.WorkingSet[0] = consumer;
-
-            writer.WriteLine($"if ({Format_Pattern_Start_Detection_Function_Name(consumer.Index)}({VarNameBufferMajor}))");
+            writer.WriteLine($"if ({Format_Token_Start_Detection_Function_Name(token.Name)}({VarNameBufferMajor}))");
             writer.WriteLine("{");
             writer.Indent++;
 
-            base.WriteContent(workContext);
+            base.WriteContent(context);
 
             writer.Indent--;
             writer.WriteLine("}");

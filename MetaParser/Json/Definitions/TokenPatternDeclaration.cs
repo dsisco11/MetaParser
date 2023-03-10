@@ -32,7 +32,7 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
     {
         if (id is not null)
         {
-            return new PatternTokenRef(CodeCommon.Format_Token_Key(id));
+            return new PatternTokenRef(CodeCommon.Format_Token_Key(id), context);
         }
 
         return Pattern.Empty;
@@ -51,6 +51,6 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
         }
 
         var consts = oneof.Select(o => o.Resolve(context)).ToArray();
-        return new PatternGroup(EPatternCondition.OneOf, consts);
+        return new PatternGroup(EPatternCondition.OneOf, context, consts);
     }
 }

@@ -15,5 +15,5 @@ internal sealed record ConsumerList
     /// <summary>
     /// Set of tokens being targeted by the current action
     /// </summary>
-    public TokenConsumer[] WorkingSet { get; set; } = Array.Empty<TokenConsumer>();
+    public TokenConsumer[] Working { get; set; } = Array.Empty<TokenConsumer>();
 }

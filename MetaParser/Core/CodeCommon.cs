@@ -54,7 +54,7 @@ internal static class CodeCommon
 
     #region Formatting
     public static string Format_Pattern_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
-    public static string Format_Token_Start_Detection_Function_Name(string tokenName) => $"is_{tokenName}_token_start";
+    public static string Format_Token_Start_Detection_Function_Name(string tokenName) => $"is_{tokenName.ToLowerInvariant()}_token_start";
     public static string Format_Pattern_Start_Detection_Function_Name(int consumerIndex) => $"is_consumer_start_{consumerIndex}";
 
     public static string Format_Token_Id(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name);
@@ -70,6 +70,6 @@ internal static class CodeCommon
     public static TypeSyntax Get_Token_Buffer_Type(MetaParserConfig config, EConsumerType type) => SyntaxFactory.ParseTypeName($"{ReadOnlySpan}<{Get_Consumer_Data_Type(config, type)}>");
     public static FunctionDefinition Get_Token_Processor_Function_Definition(MetaParserConfig config, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}, out {config.IdType} id, out int length")).And(config.CodeFactory.Get_Token_Processing_Logic());
     public static FunctionDefinition Get_Local_Token_Consumer_Function_Definition(MetaParserConfig config, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}, out int length")).And(config.CodeFactory.Get_Token_Consumer_Logic());
-    public static FunctionDefinition Get_Local_Pattern_Start_Detection_Function_Definition(MetaParserConfig config, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}")).And(config.CodeFactory.Get_Logic_Detect_Recursive_Pattern());
+    public static FunctionDefinition Get_Local_Token_Detection_Function_Definition(MetaParserConfig config, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}")).And(config.CodeFactory.Get_Logic_Detect_Recursive_Pattern());
     #endregion
 }

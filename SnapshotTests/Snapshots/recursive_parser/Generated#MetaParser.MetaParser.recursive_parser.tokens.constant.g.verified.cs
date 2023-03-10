@@ -5,6 +5,7 @@ namespace UnitTestParser
     {
         private static bool TryProcessConstant(global::System.ReadOnlySpan<char> input, out byte id, out int length)
         {
+            // Linear consumers
             switch (input)
             {
                 case [ ((>='a' and <='z') or (>='A' and <='Z')), ((>='a' and <='z') or (>='A' and <='Z') or (>='0' and <='9') or '-' or '_'), ..]:

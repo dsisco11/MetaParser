@@ -1,20 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using MetaParser.Core;
+
+using System.Collections.Generic;
 
 namespace MetaParser.Patternization;
 
 internal record PatternEmpty : Pattern
 {
+    #region Accessors
     public override int Length => 0;
     public override bool IsRawValues => true;
     public override bool IsConstantLength => true;
     public override bool HasChildren => false;
+    #endregion
 
-    public override Pattern Combine(Pattern other)
+    public PatternEmpty()
+    {
+    }
+
+    public override Pattern Combine(Pattern other, MetaParserContext context)
     {
         throw new System.NotImplementedException();
     }
 
-    public override IEnumerable<Pattern> GetSubPatterns()
+    public override IEnumerator<Pattern> GetEnumerator()
     {
         yield break;
     }

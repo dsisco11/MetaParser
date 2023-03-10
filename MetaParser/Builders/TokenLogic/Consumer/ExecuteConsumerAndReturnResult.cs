@@ -11,9 +11,9 @@ internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
-        Debug.Assert(context.Consumers.WorkingSet.Length == 1);
+        Debug.Assert(context.WorkingSet.Consumers.Length == 1);
         var writer = context.writer;
-        var consumer = context.Consumers.WorkingSet.Single();
+        var consumer = context.WorkingSet.Consumers.Single();
 
         if (consumer.IsConstant)
         {

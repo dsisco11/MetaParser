@@ -42,7 +42,7 @@ internal sealed record PatternGroupDeclaration<T> : IPatternGroupDeclaration
                 return items.Single().Resolve(context);
             }
 
-            return new PatternGroup(condition, items.Select(o => o.Resolve(context)).ToArray());
+            return new PatternGroup(condition, context, items.Select(o => o.Resolve(context)).ToArray());
         }
 
         return Pattern.Empty;

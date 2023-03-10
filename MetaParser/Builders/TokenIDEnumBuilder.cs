@@ -14,7 +14,7 @@ internal class TokenIDEnumBuilder : MetaCodeBuilder
         var writer = context.writer;
         writer.WriteLine($"{Format_Token_Id(UnknownToken)} = ({context.Config.IdType}) 0,");
 
-        foreach (var token in context.Tokens.Values.ToImmutableSortedSet(TokenInfoComparer.Instance))
+        foreach (var token in context.Registry.Tokens.Values.ToImmutableSortedSet(TokenInfoComparer.Instance))
         {
             var enumName = Format_Token_Id(token.Name);
             writer.WriteLine($"{enumName} = ({context.Config.IdType}) {token.Index},");

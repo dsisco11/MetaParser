@@ -109,30 +109,28 @@ public partial class Generator : IIncrementalGenerator
 
             if (schema?.Definitions is not null)
             {
-                int tokenIndex = 0;
-                context.Tokens = schema.Definitions.ToImmutableDictionary(static (x) => CodeCommon.Format_Token_Key(x.Key), (x) => new TokenInfo(++tokenIndex, CodeCommon.Format_Token_Key(x.Key)));
+                foreach ( var definition in schema.Definitions )
+                {
+                    string tokenKey = CodeCommon.Format_Token_Key(definition.Key);
+                    var tokenInfo = new TokenInfo(tokenKey, context);
+                    context.Registry.AddToken(tokenInfo);
+                }
 
-                int consumerIndex = 0;
-                var Consumers = new List<TokenConsumer>();
+                context.WorkingSet.Tokens = new TokenInfo[1];
+                context.WorkingSet.Consumers = new TokenConsumer[1];
+
                 foreach (var def in schema.Definitions)
                 {
                     var tokenKey = CodeCommon.Format_Token_Key(def.Key);
-                    if (!context.Tokens.TryGetValue(tokenKey, out var token))
-                    {
-                        throw new UnknownTokenException($@"Unable to locate token: ""{tokenKey}""");
-                    }
+                    context.Registry.TryGetToken(tokenKey, out var token);
+                    context.WorkingSet.Tokens[0] = token;
 
                     foreach (var consumerDeclaration in def.Value)
                     {
-                        var consumerData = new ConsumerData(context, consumerDeclaration, ++consumerIndex);
-                        var consumer = new TokenConsumer(context, token, consumerData);
-
-                        token.Consumers.Add(consumer);
-                        Consumers.Add(consumer);
+                        var consumer = new TokenConsumer(context, consumerDeclaration);
+                        context.Registry.AddConsumer(consumer);
                     }
                 }
-
-                context.Consumers = new ConsumerList() { CompleteSet = Consumers.ToImmutableArray() };
 
                 DependencyGraph.Build(context);
                 DependencyGraph.Resolve(context);
@@ -141,9 +139,9 @@ public partial class Generator : IIncrementalGenerator
             return context;
         });
 
-        var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Data).ToArray() } }));
-        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MaxDepth <= 1).ToArray() } }));
-        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { Consumers = parser.Consumers with { WorkingSet = parser.Consumers.CompleteSet.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MaxDepth > 1).ToArray() } }));
+        var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Data).ToArray() } }));
+        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MaxDepth <= 1).ToArray() } }));
+        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MaxDepth > 1).ToArray() } }));
         #endregion
 
         // Parser Class

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MetaParser.Core;
+
+using System.Collections.Generic;
 
 namespace MetaParser.Patternization;
 
@@ -13,9 +15,9 @@ internal sealed record PatternConst : Pattern
     #endregion
 
     #region Constructors
-    public PatternConst(string value)
+    public PatternConst(string value, MetaParserContext context) : base(context)
     {
-        this._value = value;
+        _value = value;
     }
     #endregion
 
@@ -25,12 +27,12 @@ internal sealed record PatternConst : Pattern
     public override bool HasChildren => false;
 
 
-    public override Pattern Combine(Pattern other)
+    public override Pattern Combine(Pattern other, MetaParserContext context)
     {
         throw new System.NotImplementedException();
     }
 
-    public override IEnumerable<Pattern> GetSubPatterns()
+    public override IEnumerator<Pattern> GetEnumerator()
     {
         yield break;
     }

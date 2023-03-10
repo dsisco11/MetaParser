@@ -13,14 +13,29 @@ internal class ConsumeAndThen : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
-        Debug.Assert(context.Consumers.WorkingSet.Length == 1);
+        Debug.Assert(context.WorkingSet.Consumers.Length == 1);
         var writer = context.writer;
-        var consumer = context.Consumers.WorkingSet.Single();
+        var consumer = context.WorkingSet.Consumers.Single();
 #if DEBUG
         writer.WriteLine($"/*");
         writer.WriteLine($"* TokenID: {consumer.Token.Name} (#{consumer.Token.Index})");
         writer.WriteLine($"* ==[ CONSUMER_DATA ]==");
-        writer.WriteLine($"* {consumer}");
+        writer.WriteLine($"* START: {consumer.Start}");
+
+        if (consumer.Consume is not null)
+        {
+            writer.WriteLine($"* CONSUME: {consumer.Consume}");
+        }
+
+        if (consumer.Stop is not null)
+        {
+            writer.WriteLine($"* STOP: {consumer.Stop}");
+        }
+
+        if (consumer.Escape is not null)
+        {
+            writer.WriteLine($"* ESCAPE: {consumer.Escape}");
+        }
         writer.WriteLine($"*/");
 #endif
 

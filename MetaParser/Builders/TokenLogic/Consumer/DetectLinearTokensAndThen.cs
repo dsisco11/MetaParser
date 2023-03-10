@@ -12,25 +12,25 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
-        if (!context.Consumers.WorkingSet.Any())
+        if (!context.WorkingSet.Consumers.Any())
         {
             return;
         }
 
         var writer = context.writer;
-        var workContext = context with { Consumers = context.Consumers with { WorkingSet = new TokenConsumer[1] } };
+        var workContext = context with { WorkingSet = context.WorkingSet with { Consumers = new TokenConsumer[1] } };
 
 #if DEBUG
         writer.WriteLine("// Linear consumers");
 #endif
-        var sortedConsumers = context.Consumers.WorkingSet.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
+        var sortedConsumers = context.WorkingSet.Consumers.OrderByDescending(static (c) => c.DependencyInfo.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
         writer.WriteLine($"switch ({VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
 
         foreach (TokenConsumer consumer in sortedConsumers)
         {
-            workContext.Consumers.WorkingSet[0] = consumer;
+            workContext.WorkingSet.Consumers[0] = consumer;
 
             writer.Write("case ");
             PatternFormatter.WriteTo(context, consumer.Start);

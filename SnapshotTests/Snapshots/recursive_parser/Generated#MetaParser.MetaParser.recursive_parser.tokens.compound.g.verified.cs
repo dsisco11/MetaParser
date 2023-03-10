@@ -5,6 +5,14 @@ namespace UnitTestParser
     {
         private static bool TryProcessCompound(global::System.ReadOnlySpan<byte> input, out byte id, out int length)
         {
+            // Recursive consumers
+            if (is_codeblock_token_start(input))
+            {
+                id = TokenId.Codeblock;
+                return consume_pattern_16(input, out length);
+            }
+            
+            // Linear consumers
             switch (input)
             {
                 case [ TokenId.Solidus, TokenId.Solidus, ..]:
@@ -17,16 +25,19 @@ namespace UnitTestParser
                     id = TokenId.Declaration;
                     return consume_pattern_15(input, out length);
                 }
-                case [ TokenId.Open_Bracket, ..]:
-                {
-                    id = TokenId.Codeblock;
-                    return consume_pattern_16(input, out length);
-                }
             }
             id = default;
             length = default;
             return false;
             
+            bool is_codeblock_token_start(global::System.ReadOnlySpan<byte> input)
+            {
+                return input switch
+                {
+                    [TokenId.Open_Bracket, var buffer] when (is_declaration_token_start(buffer)) => true,
+                    _ => false
+                };
+            }
             bool consume_pattern_14(global::System.ReadOnlySpan<byte> input, out int length)
             {
                 /*

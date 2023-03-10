@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MetaParser.Core;
+
+using System.Collections.Generic;
 
 namespace MetaParser.Patternization;
 
@@ -16,7 +18,7 @@ internal sealed record PatternRange : Pattern
     #endregion
 
     #region Constructors
-    public PatternRange(string begin, string end)
+    public PatternRange(string begin, string end, MetaParserContext context) : base(context)
     {
         _begin = begin;
         _end = end;
@@ -28,12 +30,12 @@ internal sealed record PatternRange : Pattern
     public override int Length => (string.IsNullOrEmpty(Begin) && string.IsNullOrEmpty(End)) ? 0 : 1;
     public override bool HasChildren => false;
 
-    public override Pattern Combine(Pattern other)
+    public override Pattern Combine(Pattern other, MetaParserContext context)
     {
         throw new System.NotImplementedException();
     }
 
-    public override IEnumerable<Pattern> GetSubPatterns()
+    public override IEnumerator<Pattern> GetEnumerator()
     {
         yield break;
     }

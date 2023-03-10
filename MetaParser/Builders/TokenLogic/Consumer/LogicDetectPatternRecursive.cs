@@ -3,6 +3,7 @@ using MetaParser.Core;
 using MetaParser.Patternization;
 
 using System.Diagnostics;
+using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
@@ -16,9 +17,22 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
         writer.WriteLine($"return {VarNameBufferMajor} switch");
         writer.WriteLine("{");
         writer.Indent++;
-        foreach (var consumer in context.Consumers.WorkingSet)
+
+        var allTokens = context.WorkingSet.Consumers.Select(static (c) => c.Token).Distinct();
+        Debug.Assert(allTokens.Count() == 1);
+
+        var targetToken = allTokens.Single();
+
+        // Check if this token has any consumers which are non-recursive, if so then its possible for the token to appear in the stream already from a lower stage.
+        bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => !c.DependencyInfo.IsRecursive);
+        if (hasEarlierStages)
         {
-            Debug.Assert(consumer.Type == Consumers.EConsumerType.Token);
+            writer.WriteLine($"[{Format_Token_Id_Const_Ref(targetToken)}, ..] => true,");
+        }
+
+        var tokenConsumers = context.WorkingSet.Consumers.Where(static (c) => c.Type == Consumers.EConsumerType.Token);
+        foreach (var consumer in tokenConsumers)
+        {
             writer.Write("[");
             writer.Write(PatternFormatter.ToString(consumer.Start));
             writer.Write(", ");
@@ -28,7 +42,7 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
                 writer.Write($"var {VarNameBufferMinor}] when (");
 
                 bool first = true;
-                foreach (var pattern in consumer.Consume?.GetSubPatterns())
+                foreach (var pattern in consumer.Consume)
                 {
                     Debug.Assert(pattern is PatternTokenRef);
                     if (!first)

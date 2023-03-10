@@ -5,9 +5,6 @@ namespace UnitTestParser
     {
         private static bool TryProcessComplex(global::System.ReadOnlySpan<byte> input, out byte id, out int length)
         {
-            switch (input)
-            {
-            }
             id = default;
             length = default;
             return false;
