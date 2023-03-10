@@ -1,4 +1,4 @@
-﻿using MetaParser.Parsing.Constructs.Core;
+﻿using MetaParser.Core;
 
 using System.Collections.Generic;
 

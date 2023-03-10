@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 
 using MetaParser.Core;
 using MetaParser.Parsing.Constructs;
-using MetaParser.Parsing.Constructs.Core;
 
 namespace MetaParser.Json.Definitions;
 

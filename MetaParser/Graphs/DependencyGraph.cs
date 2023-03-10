@@ -1,4 +1,4 @@
-﻿using MetaParser.Parsing.Constructs.Core;
+﻿using MetaParser.Core;
 
 namespace MetaParser.Graphs;
 

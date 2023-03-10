@@ -2,7 +2,6 @@
 using MetaParser.Exceptions;
 using MetaParser.Graphs;
 using MetaParser.Json.Definitions;
-using MetaParser.Parsing.Constructs.Core;
 
 using System;
 using System.Collections.Generic;

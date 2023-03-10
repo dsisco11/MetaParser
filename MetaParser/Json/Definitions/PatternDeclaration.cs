@@ -1,5 +1,5 @@
-﻿using MetaParser.Parsing.Constructs;
-using MetaParser.Parsing.Constructs.Core;
+﻿using MetaParser.Core;
+using MetaParser.Parsing.Constructs;
 
 namespace MetaParser.Json.Definitions;
 

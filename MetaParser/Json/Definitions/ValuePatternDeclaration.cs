@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Linq;
-using MetaParser.Parsing.Constructs.Core;
 using MetaParser.Parsing.Constructs;
+using MetaParser.Core;
 
 namespace MetaParser.Json.Definitions;
 

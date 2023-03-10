@@ -1,5 +1,5 @@
-﻿using MetaParser.Graphs;
-using MetaParser.Parsing.Constructs.Core;
+﻿using MetaParser.Core;
+using MetaParser.Graphs;
 
 using System.Collections;
 using System.Collections.Generic;

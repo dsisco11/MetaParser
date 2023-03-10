@@ -1,11 +1,10 @@
 ﻿using MetaParser.Builders.Interfaces;
-using MetaParser.Core;
 using MetaParser.Graphs;
 
 using System.CodeDom.Compiler;
 using System.IO;
 
-namespace MetaParser.Parsing.Constructs.Core;
+namespace MetaParser.Core;
 
 internal record MetaParserContext : ICodeBuilderContext
 {
