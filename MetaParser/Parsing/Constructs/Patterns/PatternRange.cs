@@ -32,10 +32,15 @@ internal sealed record PatternRange : Pattern
 
     public override Pattern Combine(Pattern other, MetaParserContext context)
     {
-        throw new System.NotImplementedException();
+        return new PatternGroup(EPatternCondition.OneOf, context, this, other);
     }
 
     public override IEnumerator<Pattern> GetEnumerator()
+    {
+        yield break;
+    }
+
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
     {
         yield break;
     }

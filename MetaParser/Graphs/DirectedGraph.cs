@@ -63,14 +63,12 @@ internal class DirectedGraph<T> where T : notnull, IEquatable<T>
     {
         if(!nodes.TryGetValue(leftKey, out var leftNode))
         {
-            Debug.Fail($@"Unable to locate node with id: {leftKey}");
-            throw new UnknownTokenException($@"Unable to locate node with id: {leftKey}");
+            throw new ArgumentException($@"Unable to locate node with id: {leftKey}", nameof(leftKey));
         }
 
         if(!nodes.TryGetValue(rightKey, out var rightNode))
         {
-            Debug.Fail($@"Unable to locate node with id: {rightKey}");
-            throw new UnknownTokenException($@"Unable to locate node with id: {rightKey}");
+            throw new ArgumentException($@"Unable to locate node with id: {rightKey}", nameof(rightKey));
         }
 
         rightNode.Incoming.Add(leftKey);

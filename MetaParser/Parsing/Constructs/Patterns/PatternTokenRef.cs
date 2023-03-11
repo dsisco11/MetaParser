@@ -1,4 +1,5 @@
 ﻿using MetaParser.Core;
+using MetaParser.Exceptions;
 
 using System;
 using System.Collections.Generic;
@@ -30,11 +31,21 @@ internal sealed record PatternTokenRef : Pattern
 
     public override Pattern Combine(Pattern other, MetaParserContext context)
     {
-        throw new NotImplementedException();
+        return new PatternGroup(EPatternCondition.OneOf, context, this, other);
     }
 
     public override IEnumerator<Pattern> GetEnumerator()
     {
         yield break;
+    }
+
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
+    {
+        if (!context.Registry.TryGetToken(_tokenName, out var token))
+        {
+            throw new UnknownTokenException(_tokenName);
+        }
+
+        yield return new EntityLink(NodeID, token.NodeID);
     }
 }

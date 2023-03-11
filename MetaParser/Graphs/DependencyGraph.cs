@@ -1,4 +1,5 @@
 ﻿using MetaParser.Core;
+using MetaParser.Parsing.Constructs;
 
 namespace MetaParser.Graphs;
 
@@ -7,9 +8,13 @@ internal static class DependencyGraph
     public static void Build(MetaParserContext context)
     {
         context.DepsGraph = new DirectedGraph<NodeKey>(context.Registry.GetNodeIDs());
-        foreach (var consumer in context.Registry.Consumers.Values)
+        foreach (IGraphableEntity entity in context.Registry.GetGraphEntities())
         {
-            consumer.Register_Dependencies(context);
+            var resolvedLinks = entity.ResolveLinks(context);
+            foreach (var link in resolvedLinks)
+            {
+                context.DepsGraph.TryLink(link.Source, link.Target);
+            }
         }
     }
 

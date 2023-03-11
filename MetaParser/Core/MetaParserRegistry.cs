@@ -100,4 +100,20 @@ internal class MetaParserRegistry
         }
     }
 
+    public IEnumerable<IGraphableEntity> GetGraphEntities()
+    {
+        foreach (var token in _tokens)
+        {
+            yield return token.Value;
+        }
+        foreach (var consumer in _consumers)
+        {
+            yield return consumer.Value;
+        }
+        foreach (var pattern in _patterns)
+        {
+            yield return pattern.Value;
+        }
+    }
+
 }

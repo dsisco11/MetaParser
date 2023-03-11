@@ -33,7 +33,7 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
     }
     #endregion
 
-    public Pattern Resolve(MetaParserContext context)
+    public Pattern? Resolve(MetaParserContext context)
     {
         if (value is not null)
         {
@@ -48,14 +48,14 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
             return ResolveOneOf(context);
         }
 
-        return Pattern.Empty;
+        return null;
     }
 
-    private Pattern ResolveConst(MetaParserContext context)
+    private Pattern? ResolveConst(MetaParserContext context)
     {
         if (value is null)
         {
-            return Pattern.Empty;
+            return null;
         }
 
         if (value.Length == 1)
@@ -67,18 +67,18 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
         return new PatternGroup(EPatternCondition.AllOf, context, consts);
     }
 
-    private Pattern ResolveRange(MetaParserContext context)
+    private Pattern? ResolveRange(MetaParserContext context)
     {
         var start = SymbolDisplay.FormatLiteral(range[0][0], true);
         var stop = SymbolDisplay.FormatLiteral(range[1][0], true);
         return new PatternRange(start, stop, context);
     }
 
-    private Pattern ResolveOneOf(MetaParserContext context)
+    private Pattern? ResolveOneOf(MetaParserContext context)
     {
         if (oneof is null || oneof.Length == 0)
         {
-            return Pattern.Empty;
+            return null;
         }
 
         if (oneof.Length == 1)
@@ -86,7 +86,7 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
             return oneof.Single().Resolve(context);
         }
 
-        var consts = oneof.Select(o => o.Resolve(context)).ToArray();
+        var consts = oneof.Select(o => o.Resolve(context)!).ToArray();
         return new PatternGroup(EPatternCondition.OneOf, context, consts);
     }
 }

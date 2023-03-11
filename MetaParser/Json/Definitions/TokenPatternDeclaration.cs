@@ -16,7 +16,7 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
     public TokenPatternDeclaration[]? oneof { get; set; }
     #endregion
 
-    public Pattern Resolve(MetaParserContext context)
+    public Pattern? Resolve(MetaParserContext context)
     {
         if (id is not null)
         {
@@ -27,23 +27,23 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
             return ResolveOneOf(context);
         }
 
-        return Pattern.Empty;
+        return null;
     }
-    private Pattern ResolveToken(MetaParserContext context)
+    private Pattern? ResolveToken(MetaParserContext context)
     {
         if (id is not null)
         {
             return new PatternTokenRef(CodeCommon.Format_Token_Key(id), context);
         }
 
-        return Pattern.Empty;
+        return null;
     }
 
-    private Pattern ResolveOneOf(MetaParserContext context)
+    private Pattern? ResolveOneOf(MetaParserContext context)
     {
         if (oneof is null || oneof.Length == 0)
         {
-            return Pattern.Empty;
+            return null;
         }
 
         if (oneof.Length == 1)
@@ -51,7 +51,7 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
             return oneof.Single().Resolve(context);
         }
 
-        var consts = oneof.Select(o => o.Resolve(context)).ToArray();
+        var consts = oneof.Select(o => o.Resolve(context)!).ToArray();
         return new PatternGroup(EPatternCondition.OneOf, context, consts);
     }
 }

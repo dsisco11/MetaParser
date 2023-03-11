@@ -9,16 +9,10 @@ using System.Linq;
 namespace MetaParser.Parsing.Constructs;
 using static DirectedGraph<NodeKey>;
 
-internal record TokenInfo : IComparable<TokenInfo>
+internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
 {
     #region Fields
     public readonly string Name;
-    public readonly NodeKey NodeID;
-    private readonly WeakReference<MetaParserRegistry> _registry;
-    #endregion
-
-    #region Dependency Info
-    public ResolvedNode? DependencyInfo { get; set; }
     #endregion
 
     #region Accessors
@@ -26,25 +20,17 @@ internal record TokenInfo : IComparable<TokenInfo>
 
     public IEnumerable<Consumer> GetConsumers()
     {
-        if (_registry.TryGetTarget(out MetaParserRegistry registry))
-        {
-            return DependencyInfo!.Incoming
-                .Where(c => c.Key.Type == NodeType.Consumer && c.Key.Parent == NodeID)
-                .Select(c => registry.Consumers[c.Key]);
-        }
-        else
-        {
-            throw new MetaParserException($"Cannot resolve consumers for token without registry: {NodeID}");
-        }
+        var registry = Registry;
+        return DependencyInfo!.Incoming
+            .Where(c => c.Key.Type == NodeType.Consumer && c.Key.Parent == NodeID)
+            .Select(c => registry.Consumers[c.Key]);
     }
     #endregion
 
     #region Constructors
-    public TokenInfo(string name, MetaParserContext context)
+    public TokenInfo(string name, MetaParserContext context) : base(new NodeKey(NodeType.Token, context.Registry.GetNextTokenIndex()), context)
     {
-        _registry = new WeakReference<MetaParserRegistry>(context.Registry);
         Name = name;
-        NodeID = new NodeKey(NodeType.Token, context.Registry.GetNextTokenIndex());
     }
     #endregion
 
@@ -52,6 +38,13 @@ internal record TokenInfo : IComparable<TokenInfo>
     public int CompareTo(TokenInfo other)
     {
         return NodeID.CompareTo(other.NodeID);
+    }
+    #endregion
+
+    #region IDependencyGraphEntity
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
+    {
+        yield break;
     }
     #endregion
 }

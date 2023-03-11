@@ -15,7 +15,6 @@ internal interface IPatternGroupDeclaration : IEnumerable<IPatternDeclaration>, 
 internal sealed record PatternGroupDeclaration<T> : IPatternGroupDeclaration
     where T : IPatternDeclaration
 {
-    public static readonly PatternGroupDeclaration<T> Empty = new PatternGroupDeclaration<T>(EPatternCondition.Only, Array.Empty<T>());
 
     #region Fields
     private EPatternCondition condition;
@@ -33,7 +32,7 @@ internal sealed record PatternGroupDeclaration<T> : IPatternGroupDeclaration
         return items.GetEnumerator() as IEnumerator<IPatternDeclaration>;
     }
 
-    public Pattern Resolve(MetaParserContext context)
+    public Pattern? Resolve(MetaParserContext context)
     {
         if (items.Any())
         {
@@ -42,10 +41,10 @@ internal sealed record PatternGroupDeclaration<T> : IPatternGroupDeclaration
                 return items.Single().Resolve(context);
             }
 
-            return new PatternGroup(condition, context, items.Select(o => o.Resolve(context)).ToArray());
+            return new PatternGroup(condition, context, items.Select(o => o.Resolve(context)!).ToArray());
         }
 
-        return Pattern.Empty;
+        return null;
     }
 
     IEnumerator IEnumerable.GetEnumerator()

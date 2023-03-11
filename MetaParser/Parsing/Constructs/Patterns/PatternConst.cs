@@ -29,10 +29,15 @@ internal sealed record PatternConst : Pattern
 
     public override Pattern Combine(Pattern other, MetaParserContext context)
     {
-        throw new System.NotImplementedException();
+        return new PatternGroup(EPatternCondition.AllOf, context, this, other);
     }
 
     public override IEnumerator<Pattern> GetEnumerator()
+    {
+        yield break;
+    }
+
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
     {
         yield break;
     }

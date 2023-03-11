@@ -8,17 +8,8 @@ using System.Linq;
 namespace MetaParser.Parsing.Constructs;
 using static DirectedGraph<NodeKey>;
 
-internal abstract record Pattern : IEnumerable<Pattern>
+internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
 {
-    #region Statics
-    public static Pattern Empty = new PatternEmpty();
-    #endregion
-
-    #region Dependency Graph
-    public readonly NodeKey NodeID;
-    public ResolvedNode? DependencyInfo { get; set; }
-    #endregion
-
     #region Accessors
     /// <summary>
     /// Indicates the length of this pattern when rendered as a sequence
@@ -39,13 +30,8 @@ internal abstract record Pattern : IEnumerable<Pattern>
     #endregion
 
     #region Constructors
-    protected Pattern()
+    public Pattern(MetaParserContext context) : base(new(NodeType.Pattern, context.Registry.GetNextPatternIndex(), context.WorkingSet.Consumers.Single().NodeID), context)
     {
-    }
-
-    public Pattern(MetaParserContext context)
-    {
-        NodeID = new(NodeType.Pattern, context.Registry.GetNextPatternIndex(), context.WorkingSet.Consumers.Single().NodeID);
         context.Registry.AddPattern(this);
     }
     #endregion

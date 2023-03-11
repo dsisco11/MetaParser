@@ -5,24 +5,22 @@ using MetaParser.Json.Definitions;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
 using static DirectedGraph<NodeKey>;
 
-internal record Consumer : IComparable<Consumer>
+internal record Consumer : GraphableEntity, IComparable<Consumer>
 {
     #region Fields
-    private readonly WeakReference<MetaParserRegistry> _registry;
     private readonly ConsumerClauseInfo assigned;
     private readonly ConsumerClauseInfo specified;
 
     public readonly EConsumerType Type;
-    public readonly NodeKey NodeID;
     #endregion
 
     #region Properties
-    public ResolvedNode DependencyInfo { get; set; }
     #endregion
 
     #region Accessors
@@ -36,12 +34,7 @@ internal record Consumer : IComparable<Consumer>
                 throw new MetaParserException($"Cannot resolve token for consumer without parent node: {NodeID}");
             }
 
-            if (!_registry.TryGetTarget(out var registry))
-            {
-                throw new MetaParserException($"Cannot resolve token for consumer without registry: {NodeID}");
-            }
-
-            return registry.Tokens[NodeID.Parent];
+            return Registry.Tokens[NodeID.Parent];
         }
     }
     public PatternGroup Start => specified.Start!;
@@ -81,17 +74,14 @@ internal record Consumer : IComparable<Consumer>
     /// </summary>
     public bool IsDynamic => assigned.Consume is not null || assigned.Stop is not null;
     public bool IsConstant => assigned.Start is not null && assigned.Consume is null && assigned.Stop is null;
+
     #endregion
 
     #region Constructors
-    public Consumer(MetaParserContext context, IConsumerDeclaration consumer)
+    public Consumer(MetaParserContext context, IConsumerDeclaration consumer) : base(new NodeKey(NodeType.Consumer, context.Registry.GetNextConsumerIndex(), context.WorkingSet.Tokens.Single().NodeID), context)
     {
-        var tokenInfo = context.WorkingSet.Tokens.Single();
-        context.WorkingSet.Consumers[0] = this;
-
-        _registry = new(context.Registry);
         Type = consumer.Type;
-        NodeID = new NodeKey(NodeType.Consumer, context.Registry.GetNextConsumerIndex(), tokenInfo.NodeID);
+        context.WorkingSet.Consumers[0] = this;
 
         if (consumer.Start is null && consumer.Consume is null)
         {
@@ -100,10 +90,10 @@ internal record Consumer : IComparable<Consumer>
 
         assigned = new ConsumerClauseInfo()
         {
-            Start = consumer.Start.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Start.Select(o => o.Resolve(context)).ToArray()) : null,
-            Consume = consumer.Consume.Any() ? new PatternGroup(EPatternCondition.OneOf, context, consumer.Consume.Select(o => o.Resolve(context)).ToArray()) : null,
-            Stop = consumer.Stop.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Stop.Select(o => o.Resolve(context)).ToArray()) : null,
-            Escape = consumer.Escape.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Escape.Select(o => o.Resolve(context)).ToArray()) : null,
+            Start = consumer.Start.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Start.Select(o => o.Resolve(context)!).ToArray()) : null,
+            Consume = consumer.Consume.Any() ? new PatternGroup(EPatternCondition.OneOf, context, consumer.Consume.Select(o => o.Resolve(context)!).ToArray()) : null,
+            Stop = consumer.Stop.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Stop.Select(o => o.Resolve(context)!).ToArray()) : null,
+            Escape = consumer.Escape.Any() ? new PatternGroup(EPatternCondition.AllOf, context, consumer.Escape.Select(o => o.Resolve(context)!).ToArray()) : null,
         };
 
         specified = new ConsumerClauseInfo()
@@ -124,83 +114,57 @@ internal record Consumer : IComparable<Consumer>
     }
     #endregion
 
-    #region Dependencies
-    public void Register_Dependencies(MetaParserContext context)
+    #region IComparable
+    public int CompareTo(Consumer other)
+    {
+        return NodeID.CompareTo(other.NodeID);
+    }
+    #endregion
+
+    #region Dependency Link Resolution
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
     {
         if (Type == EConsumerType.Data)
         {
-            return;
+            yield break;
         }
 
-        var deps = Get_Dependencies(context);
-        foreach (var tokenName in deps)
-        {
-            if (!context.Registry.TryGetToken(tokenName, out var token))
-            {
-                throw new UnknownTokenException($@"Unable to find token: ""{tokenName}""");
-            }
+        // Link the consumers token to it
+        yield return new EntityLink(Token.NodeID, NodeID);
 
-            context.DepsGraph.TryLink(NodeID, token.NodeID);
-            context.DepsGraph.TryLink(Token.NodeID, token.NodeID);
-        }
-    }
-
-    private HashSet<string> Get_Dependencies(MetaParserContext context)
-    {
-        HashSet<string> refs = new();
+        // link the consumer to all of its immediate pattern groups
         if (Start is not null)
         {
-            foreach (var name in Get_Tokens_From_Pattern(Start))
-            {
-                refs.Add(name);
-            }
+            yield return new EntityLink(NodeID, Start.NodeID);
         }
 
         if (Consume is not null)
         {
-            foreach (var name in Get_Tokens_From_Pattern(Consume))
-            {
-                refs.Add(name);
-            }
+            yield return new EntityLink(NodeID, Consume.NodeID);
         }
         else if (IsClosed)
         {// Closed tokens with an ambiguous consume clause are inherently dependent on all other defined tokens as they can consume anything
-            var allOthers = context.Registry.Tokens.Values.Where((x) => x.Index != Token.Index).Select(static (x) => x.Name);
+            var allOthers = context.Registry.Tokens.Values.Except(new []{ Token }).Select(static (x) => x.Name);
             foreach (var tokenName in allOthers)
             {
-                refs.Add(tokenName);
+                if (context.Registry.TryGetToken(tokenName, out var outToken))
+                {
+                    yield return new EntityLink(Token.NodeID, outToken.NodeID);
+                }
             }
         }
 
         if (Stop is not null)
         {
-            foreach (var name in Get_Tokens_From_Pattern(Stop))
-            {
-                refs.Add(name);
-            }
-
-            if (Escape is not null)
-            {
-                foreach (var name in Get_Tokens_From_Pattern(Escape))
-                {
-                    refs.Add(name);
-                }
-            }
+            yield return new EntityLink(NodeID, Stop.NodeID);
         }
 
-        return refs;
-    }
+        if (Escape is not null)
+        {
+            yield return new EntityLink(NodeID, Escape.NodeID);
+        }
 
-    private static IEnumerable<string> Get_Tokens_From_Pattern(Pattern pattern)
-    {
-        return pattern.OfType<PatternTokenRef>().Select(static (x) => x.TokenName);
-    }
-    #endregion
-
-    #region IComparable
-    public int CompareTo(Consumer other)
-    {
-        return NodeID.CompareTo(other.NodeID);
+        yield break;
     }
     #endregion
 }

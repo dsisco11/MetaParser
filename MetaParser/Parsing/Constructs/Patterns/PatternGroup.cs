@@ -99,4 +99,14 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
 
         yield break;
     }
+
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
+    {
+        foreach(Pattern item in _items)
+        {
+            yield return new EntityLink(NodeID, item.NodeID);
+        }
+
+        yield break;
+    }
 }
