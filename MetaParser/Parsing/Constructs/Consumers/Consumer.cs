@@ -5,12 +5,9 @@ using MetaParser.Json.Definitions;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
-using static DirectedGraph<NodeKey>;
-
 internal record Consumer : GraphableEntity, IComparable<Consumer>
 {
     #region Fields

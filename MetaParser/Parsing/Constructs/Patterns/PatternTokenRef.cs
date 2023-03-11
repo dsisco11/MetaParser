@@ -1,7 +1,5 @@
 ﻿using MetaParser.Core;
 using MetaParser.Exceptions;
-
-using System;
 using System.Collections.Generic;
 
 namespace MetaParser.Parsing.Constructs;

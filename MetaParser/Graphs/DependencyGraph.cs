@@ -7,7 +7,7 @@ internal static class DependencyGraph
 {
     public static void Build(MetaParserContext context)
     {
-        context.DepsGraph = new DirectedGraph<NodeKey>(context.Registry.GetNodeIDs());
+        context.DepsGraph = new TokenGraph(context.Registry.GetNodeIDs());
         foreach (IGraphableEntity entity in context.Registry.GetGraphEntities())
         {
             var resolvedLinks = entity.ResolveLinks(context);

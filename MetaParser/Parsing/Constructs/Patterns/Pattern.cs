@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
-using static DirectedGraph<NodeKey>;
-
 internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
 {
     #region Accessors

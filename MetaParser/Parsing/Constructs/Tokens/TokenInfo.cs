@@ -1,5 +1,4 @@
 ﻿using MetaParser.Core;
-using MetaParser.Exceptions;
 using MetaParser.Graphs;
 
 using System;
@@ -7,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
-using static DirectedGraph<NodeKey>;
-
 internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
 {
     #region Fields

@@ -1,6 +1,4 @@
-﻿using MetaParser.Exceptions;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -8,7 +6,7 @@ using System.Linq;
 
 namespace MetaParser.Graphs;
 
-internal class DirectedGraph<T> where T : notnull, IEquatable<T>
+internal abstract class DirectedGraph<T> where T : notnull, IEquatable<T>
 {
     #region Records
     [DebuggerDisplay(@"[In: {Incoming.Count}] [Out: {Outgoing.Count}]", Name = @"{Id}")]

@@ -5,8 +5,6 @@ using MetaParser.Graphs;
 using System;
 using System.Collections.Generic;
 
-using static MetaParser.Graphs.DirectedGraph<MetaParser.Graphs.NodeKey>;
-
 namespace MetaParser.Parsing.Constructs;
 
 internal abstract record GraphableEntity : IGraphableEntity, IComparable<GraphableEntity>
@@ -17,7 +15,7 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
     #endregion
 
     #region Properties
-    public ResolvedNode? DependencyInfo { get; set; }
+    public TokenGraph.ResolvedNode? DependencyInfo { get; set; }
     #endregion
 
     #region Accessors
