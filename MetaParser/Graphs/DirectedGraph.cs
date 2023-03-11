@@ -38,7 +38,8 @@ internal abstract class DirectedGraph<T> where T : notnull, IEquatable<T>
     private readonly ImmutableDictionary<T, Node> nodes = ImmutableDictionary<T, Node>.Empty;
     #endregion
 
-    #region Properties
+    #region Accessors
+    public IReadOnlyDictionary<T, Node> Nodes => nodes;
     #endregion
 
     #region Constructors

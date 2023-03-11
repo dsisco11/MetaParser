@@ -34,4 +34,9 @@ internal record NodeKey : IComparable<NodeKey>
 
         return result;
     }
+
+    public override string ToString()
+    {
+        return $"{Type}_{Index}";
+    }
 }

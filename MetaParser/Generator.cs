@@ -139,6 +139,20 @@ public partial class Generator : IIncrementalGenerator
         var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MaxDepth > 1).ToArray() } }));
         #endregion
 
+#if DEBUG
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        {
+            using IndentedTextWriter writer = new(new StringWriter());
+            context = context with {  writer = writer  };
+
+            writer.WriteLine("```mermaid");
+            MermaidFormatter.TryFormat(writer, context.DepsGraph);
+            writer.WriteLine("```");
+
+            AddSource(spc, $"{context.Config.BaseFileName}.dependency_graph.md", writer.InnerWriter.ToString());
+        });
+#endif
+
         // Parser Class
         context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
