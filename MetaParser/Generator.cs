@@ -16,6 +16,7 @@ using MetaParser.Json.JsonTypeConverters;
 using Microsoft.CodeAnalysis.CSharp;
 using MetaParser.Graphs;
 using MetaParser.Parsing.Constructs;
+using MetaParser.Mermaid;
 
 namespace MetaParser;
 
@@ -127,7 +128,7 @@ public partial class Generator : IIncrementalGenerator
                     }
                 }
 
-                DependencyGraph.Build(context);
+                context.DepsGraph = DependencyGraph.Build(context);
                 DependencyGraph.Resolve(context);
             }
 
@@ -135,23 +136,34 @@ public partial class Generator : IIncrementalGenerator
         });
 
         var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Data).ToArray() } }));
-        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MaxDepth <= 1).ToArray() } }));
-        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo.MaxDepth > 1).ToArray() } }));
+        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && !o.DependencyInfo!.IsRecursive).ToArray() } }));
+        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo!.IsRecursive).ToArray() } }));
         #endregion
 
-#if DEBUG
-        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
-        {
-            using IndentedTextWriter writer = new(new StringWriter());
-            context = context with {  writer = writer  };
+//#if DEBUG
+//        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+//        {
+//            using IndentedTextWriter writer = new(new StringWriter());
+//            context = context with {  writer = writer  };
 
-            writer.WriteLine("```mermaid");
-            MermaidFormatter.TryFormat(writer, context.DepsGraph);
-            writer.WriteLine("```");
+//            var graph = new TokenGraph(context.DepsGraph);
+//            // we only want to see a graph of our token relationships, so we'll remove everything else from the graph
+//            var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token).ToList();
+//            foreach (var key in trash)
+//            {
+//                graph.TryRemove(key);
+//            }
 
-            AddSource(spc, $"{context.Config.BaseFileName}.dependency_graph.md", writer.InnerWriter.ToString());
-        });
-#endif
+//            writer.WriteLine("/*");
+//            writer.WriteLine("```mermaid");
+//            var mermaidFormatter = new MermaidFormatter(context.Registry, graph);
+//            mermaidFormatter.Write(writer, MermaidChartType.Graph);
+//            writer.WriteLine("```");
+//            writer.WriteLine("*/");
+
+//            spc.AddSource($"{context.Config.BaseFileName}.dependency_graph.md", writer.InnerWriter.ToString());
+//        });
+//#endif
 
         // Parser Class
         context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>

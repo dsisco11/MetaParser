@@ -35,7 +35,7 @@ internal abstract class DirectedGraph<T> where T : notnull, IEquatable<T>
     #endregion
 
     #region Fields
-    private readonly ImmutableDictionary<T, Node> nodes = ImmutableDictionary<T, Node>.Empty;
+    private readonly Dictionary<T, Node> nodes = new();
     #endregion
 
     #region Accessors
@@ -49,7 +49,7 @@ internal abstract class DirectedGraph<T> where T : notnull, IEquatable<T>
 
     public DirectedGraph(IEnumerable<T> items)
     {
-        nodes = items.ToImmutableDictionary(static (x) => x, static (x) => new Node());
+        nodes = items.ToDictionary(static (x) => x, static (x) => new Node());
     }
     #endregion
 
@@ -57,7 +57,43 @@ internal abstract class DirectedGraph<T> where T : notnull, IEquatable<T>
     public int Count => nodes.Count;
     #endregion
 
-    #region Links
+    #region Item Management
+    public bool TryAdd(T key)
+    {
+        if (nodes.ContainsKey(key))
+        {
+            return false;
+        }
+
+        nodes.Add(key, new Node());
+        return true;
+    }
+
+    public bool TryRemove(T key)
+    {
+        if (!nodes.ContainsKey(key))
+        {
+            return false;
+        }
+
+        var node = nodes[key];
+
+        foreach (var linkedNode in node.Incoming)
+        {
+            nodes[linkedNode].Outgoing.Remove(key);
+        }
+
+        foreach (var linkedNode in node.Outgoing)
+        {
+            nodes[linkedNode].Incoming.Remove(key);
+        }
+
+        nodes.Remove(key);
+        return true;
+    }
+    #endregion
+
+    #region Linking
     public bool TryLink(T leftKey, T rightKey)
     {
         if(!nodes.TryGetValue(leftKey, out var leftNode))

@@ -24,7 +24,7 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
         var targetToken = allTokens.Single();
 
         // Check if this token has any consumers which are non-recursive, if so then its possible for the token to appear in the stream already from a lower stage.
-        bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => !c.DependencyInfo.IsRecursive);
+        bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => !c.DependencyInfo!.IsRecursive);
         if (hasEarlierStages)
         {
             writer.WriteLine($"[{Format_Token_Id_Const_Ref(targetToken)}, ..] => true,");

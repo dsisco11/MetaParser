@@ -5,17 +5,19 @@ namespace MetaParser.Graphs;
 
 internal static class DependencyGraph
 {
-    public static void Build(MetaParserContext context)
+    public static TokenGraph Build(MetaParserContext context)
     {
-        context.DepsGraph = new TokenGraph(context.Registry.GetNodeIDs());
+        var graph = new TokenGraph(context.Registry.GetNodeIDs());
         foreach (IGraphableEntity entity in context.Registry.GetGraphEntities())
         {
             var resolvedLinks = entity.ResolveLinks(context);
             foreach (var link in resolvedLinks)
             {
-                context.DepsGraph.TryLink(link.Source, link.Target);
+                graph.TryLink(link.Source, link.Target);
             }
         }
+
+        return graph;
     }
 
     public static void Resolve(MetaParserContext context)
