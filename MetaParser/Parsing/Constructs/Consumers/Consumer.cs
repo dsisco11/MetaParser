@@ -2,6 +2,7 @@
 using MetaParser.Exceptions;
 using MetaParser.Graphs;
 using MetaParser.Json.Definitions;
+using MetaParser.Trees;
 
 using System;
 using System.Collections.Generic;
@@ -22,16 +23,19 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
 
     #region Accessors
     public int Index => NodeID.Index;
+    public KeyTreeNode<EntityKey> HierarchyNode => Registry.Tree.GetNode(NodeID) ?? throw new MetaParserException($"Cannot find hierarchy node for '{NodeID}'");
     public TokenInfo Token
     {
         get
         {
-            if (NodeID.Parent is null)
+            var parent = HierarchyNode.Parent;
+            if (parent is null)
             {
                 throw new MetaParserException($"Cannot resolve token for consumer without parent node: {NodeID}");
             }
 
-            return Registry.Tokens[NodeID.Parent];
+            var tokenKey = parent.Value;
+            return Registry.Tokens[tokenKey];
         }
     }
     public PatternGroup Start => specified.Start!;
@@ -75,7 +79,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     #endregion
 
     #region Constructors
-    public Consumer(MetaParserContext context, IConsumerDeclaration consumer) : base(new EntityKey(NodeType.Consumer, context.Registry.GetNextConsumerIndex(), context.WorkingSet.Tokens.Single().NodeID), context)
+    public Consumer(MetaParserContext context, IConsumerDeclaration consumer) : base(new EntityKey(NodeType.Consumer, context.Registry.GetNextConsumerIndex()), context)
     {
         Type = consumer.Type;
         context.WorkingSet.Consumers[0] = this;

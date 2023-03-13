@@ -17,10 +17,12 @@ internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
 
     public IEnumerable<Consumer> GetConsumers()
     {
-        var registry = Registry;
-        return DependencyInfo.Outgoing.Union(DependencyInfo.Incoming)
-            .Where(c => c.Key.Type == NodeType.Consumer && c.Key.Parent == NodeID)
-            .Select(c => registry.Consumers[c.Key]);
+        var tokenNode = Registry.Tree.GetNode(NodeID);
+        var consumerKeys = tokenNode.Where(static (n) => n.Value.Type == NodeType.Consumer).Select(static (n) => n.Value);
+        foreach (var key in consumerKeys)
+        {
+            yield return Registry.Consumers[key];
+        }
     }
     #endregion
 

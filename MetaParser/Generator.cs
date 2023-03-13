@@ -131,7 +131,7 @@ public partial class Generator : IIncrementalGenerator
                     foreach (var consumerDeclaration in def.Value)
                     {
                         var consumer = new Consumer(context, consumerDeclaration);
-                        context.Registry.AddConsumer(consumer);
+                        context.Registry.AddConsumer(consumer, token.NodeID);
                     }
                 }
 

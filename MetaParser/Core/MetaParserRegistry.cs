@@ -34,24 +34,27 @@ internal class MetaParserRegistry
             throw new ArgumentException($"Token '{token.Name}' already exists in the registry.");
         }
         _tokens.Add(token.NodeID, token);
+        Tree.AddEdge(token.NodeID, Tree.RootNode.Value);
     }
 
-    public void AddConsumer(Consumer consumer)
+    public void AddConsumer(Consumer consumer, EntityKey parentKey)
     {
         if (_consumers.ContainsKey(consumer.NodeID))
         {
             throw new ArgumentException($"Consumer '{consumer.NodeID}' already exists in the registry.");
         }
         _consumers.Add(consumer.NodeID, consumer);
+        Tree.AddEdge(consumer.NodeID, parentKey);
     }
 
-    public void AddPattern(Pattern pattern)
+    public void AddPattern(Pattern pattern, EntityKey parentKey)
     {
         if (_patterns.ContainsKey(pattern.NodeID))
         {
             throw new ArgumentException($"Pattern '{pattern.NodeID}' already exists in the registry.");
         }
         _patterns.Add(pattern.NodeID, pattern);
+        Tree.AddEdge(pattern.NodeID, parentKey);
     }
     #endregion
 

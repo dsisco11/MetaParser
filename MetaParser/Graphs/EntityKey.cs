@@ -14,7 +14,7 @@ internal sealed record EntityKey : IComparable<EntityKey>
     #endregion
 
     #region Constructors
-    public EntityKey(NodeType type, int index, EntityKey? parent = null)
+    public EntityKey(NodeType type, int index)
     {
         Type = type;
         Index = index;

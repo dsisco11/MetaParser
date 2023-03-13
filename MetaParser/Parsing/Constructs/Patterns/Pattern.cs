@@ -32,9 +32,10 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     #endregion
 
     #region Constructors
-    public Pattern(MetaParserContext context) : base(new(NodeType.Pattern, context.Registry.GetNextPatternIndex(), context.WorkingSet.Consumers.Single().NodeID), context)
+    public Pattern(MetaParserContext context) : base(new(NodeType.Pattern, context.Registry.GetNextPatternIndex()), context)
     {
-        context.Registry.AddPattern(this);
+        var consumerKey = context.WorkingSet.Consumers.Single().NodeID;
+        context.Registry.AddPattern(this, consumerKey);
     }
     #endregion
 
