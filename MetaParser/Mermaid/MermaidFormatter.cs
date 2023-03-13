@@ -44,7 +44,7 @@ internal class MermaidFormatter
         }
     }
 
-    void Write_Definition(IndentedTextWriter writer, MermaidChartType chartType, NodeKey Key, Node node)
+    void Write_Definition(IndentedTextWriter writer, MermaidChartType chartType, EntityKey Key, Node node)
     {
         if (!node.Incoming.Any() && !node.Outgoing.Any())
         {

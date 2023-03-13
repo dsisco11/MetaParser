@@ -75,7 +75,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     #endregion
 
     #region Constructors
-    public Consumer(MetaParserContext context, IConsumerDeclaration consumer) : base(new NodeKey(NodeType.Consumer, context.Registry.GetNextConsumerIndex(), context.WorkingSet.Tokens.Single().NodeID), context)
+    public Consumer(MetaParserContext context, IConsumerDeclaration consumer) : base(new EntityKey(NodeType.Consumer, context.Registry.GetNextConsumerIndex(), context.WorkingSet.Tokens.Single().NodeID), context)
     {
         Type = consumer.Type;
         context.WorkingSet.Consumers[0] = this;

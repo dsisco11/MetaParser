@@ -9,8 +9,8 @@ internal partial class DirectedGraph
     [DebuggerDisplay(@"[In: {Incoming.Count}] [Out: {Outgoing.Count}]", Name = @"{Id}")]
     public record Node
     {
-        public readonly HashSet<NodeKey> Incoming = new();
-        public readonly HashSet<NodeKey> Outgoing = new();
+        public readonly HashSet<EntityKey> Incoming = new();
+        public readonly HashSet<EntityKey> Outgoing = new();
     }
     #endregion
 }

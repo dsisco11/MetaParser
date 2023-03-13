@@ -10,7 +10,7 @@ namespace MetaParser.Parsing.Constructs;
 internal abstract record GraphableEntity : IGraphableEntity, IComparable<GraphableEntity>
 {
     #region Fields
-    private readonly NodeKey _nodeID;
+    private readonly EntityKey _key;
     private readonly WeakReference<MetaParserRegistry> _registry;
     #endregion
 
@@ -19,7 +19,7 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
     #endregion
 
     #region Accessors
-    public NodeKey NodeID => _nodeID;
+    public EntityKey NodeID => _key;
     public MetaParserRegistry Registry
     {
         get
@@ -36,16 +36,16 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
     #endregion
 
     #region Constructors
-    public GraphableEntity(NodeKey key, MetaParserContext context)
+    public GraphableEntity(EntityKey key, MetaParserContext context)
     {
-        _nodeID = key;
+        _key = key;
         _registry = new WeakReference<MetaParserRegistry>(context.Registry);
     }
     #endregion
 
     public int CompareTo(GraphableEntity other)
     {
-        return _nodeID.CompareTo(other._nodeID);
+        return _key.CompareTo(other._key);
     }
 
     public abstract IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry);

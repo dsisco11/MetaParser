@@ -25,7 +25,7 @@ internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
     #endregion
 
     #region Constructors
-    public TokenInfo(string name, MetaParserContext context) : base(new NodeKey(NodeType.Token, context.Registry.GetNextTokenIndex()), context)
+    public TokenInfo(string name, MetaParserContext context) : base(new EntityKey(NodeType.Token, context.Registry.GetNextTokenIndex()), context)
     {
         Name = name;
     }

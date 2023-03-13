@@ -8,11 +8,11 @@ namespace MetaParser.Graphs;
 internal partial class DirectedGraph
 {
     #region Fields
-    private readonly Dictionary<NodeKey, Node> nodes = new();
+    private readonly Dictionary<EntityKey, Node> nodes = new();
     #endregion
 
     #region Accessors
-    public IReadOnlyDictionary<NodeKey, Node> Nodes => nodes;
+    public IReadOnlyDictionary<EntityKey, Node> Nodes => nodes;
     #endregion
 
     #region Constructors
@@ -20,7 +20,7 @@ internal partial class DirectedGraph
     {
     }
 
-    public DirectedGraph(IEnumerable<NodeKey> items)
+    public DirectedGraph(IEnumerable<EntityKey> items)
     {
         nodes = items.ToDictionary(static (x) => x, static (x) => new Node());
     }
@@ -40,7 +40,7 @@ internal partial class DirectedGraph
     #endregion
 
     #region Item Management
-    public bool TryAdd(NodeKey key)
+    public bool TryAdd(EntityKey key)
     {
         if (nodes.ContainsKey(key))
         {
@@ -51,7 +51,7 @@ internal partial class DirectedGraph
         return true;
     }
 
-    public bool TryRemove(NodeKey key)
+    public bool TryRemove(EntityKey key)
     {
         if (!nodes.ContainsKey(key))
         {
@@ -76,7 +76,7 @@ internal partial class DirectedGraph
     #endregion
 
     #region Linking
-    public bool TryLink(NodeKey leftKey, NodeKey rightKey)
+    public bool TryLink(EntityKey leftKey, EntityKey rightKey)
     {
         if(!nodes.TryGetValue(leftKey, out var leftNode))
         {
@@ -100,12 +100,13 @@ internal partial class DirectedGraph
     /// </summary>
     /// <param name="graph"></param>
     /// <returns></returns>
-    public Dictionary<NodeKey, ResolvedNode> Resolve()
+    public Dictionary<EntityKey, ResolvedNode> Resolve()
     {
+        // TODO: nodes should inherit the depth of their children
         var count = Count;
         var in_degrees = nodes.Keys.ToDictionary(static (x) => x, (x) => nodes[x].Outgoing.Count);
         var resolved = nodes.Keys.ToDictionary(static (x) => x, (x) => new ResolvedNode(x));
-        var queue = new Queue<NodeKey>(in_degrees.Where(static (x) => x.Value == 0).Select(static (x) => x.Key));
+        var queue = new Queue<EntityKey>(in_degrees.Where(static (x) => x.Value == 0).Select(static (x) => x.Key));
 
         foreach (var item in resolved)
         {

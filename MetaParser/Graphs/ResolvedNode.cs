@@ -14,7 +14,7 @@ internal record ResolvedNode
     #endregion
 
     #region Fields
-    public readonly NodeKey Key;
+    public readonly EntityKey Key;
     [DebuggerDisplay("{DebugDepth}")]
     public readonly NodeDepth[] Depth = Array.Empty<NodeDepth>();
     public int Order { get; set; }
@@ -30,13 +30,13 @@ internal record ResolvedNode
     #region Costructors
     private ResolvedNode()
     {
-        Key = NodeKey.Default;
+        Key = EntityKey.Default;
         Order = int.MaxValue;
         Incoming = ImmutableHashSet<ResolvedNode>.Empty;
         Outgoing = ImmutableHashSet<ResolvedNode>.Empty;
     }
 
-    public ResolvedNode(NodeKey key)
+    public ResolvedNode(EntityKey key)
     {
         Key = key;
         Depth = new NodeDepth[MaxTypeIndex];

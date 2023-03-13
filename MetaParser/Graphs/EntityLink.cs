@@ -2,5 +2,5 @@
 
 namespace MetaParser.Parsing.Constructs
 {
-    internal record struct EntityLink(NodeKey Source, NodeKey Target);
+    internal record struct EntityLink(EntityKey Source, EntityKey Target);
 }
