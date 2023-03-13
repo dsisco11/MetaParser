@@ -1,5 +1,6 @@
 ﻿using MetaParser.Graphs;
 using MetaParser.Parsing.Constructs;
+using MetaParser.Trees;
 
 using System;
 using System.Collections.Generic;
@@ -12,12 +13,14 @@ namespace MetaParser.Core;
 internal class MetaParserRegistry
 {
     #region Fields
+    private readonly KeyTree<EntityKey> _tree = new KeyTree<EntityKey>(new KeyTreeNode<EntityKey>(EntityKey.Default));
     private readonly Dictionary<EntityKey, TokenInfo> _tokens = new();
     private readonly Dictionary<EntityKey, Consumer> _consumers = new();
     private readonly Dictionary<EntityKey, Pattern> _patterns = new();
     #endregion
 
     #region Accessors
+    public KeyTree<EntityKey> Tree => _tree;
     public IReadOnlyDictionary<EntityKey, TokenInfo> Tokens => _tokens;
     public IReadOnlyDictionary<EntityKey, Consumer> Consumers => _consumers;
     public IReadOnlyDictionary<EntityKey, Pattern> Patterns => _patterns;
