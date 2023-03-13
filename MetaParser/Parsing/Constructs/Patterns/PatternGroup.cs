@@ -67,9 +67,9 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
         }
     }
 
-    public override bool IsInline
+    public override bool IsInlinable
     {
-        get => Items.Length > 1 ? Items.All(x => x.IsInline) : Items.Length == 1 ? Items[0].IsInline : false;
+        get => Items.Length > 1 ? Items.All(x => x.IsInlinable) : Items.Length == 1 ? Items[0].IsInlinable : false;
     }
 
     public override bool IsConstantLength => !_items.Any(x => !x.IsConstantLength);

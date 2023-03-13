@@ -16,7 +16,7 @@ using MetaParser.Json.JsonTypeConverters;
 using Microsoft.CodeAnalysis.CSharp;
 using MetaParser.Graphs;
 using MetaParser.Parsing.Constructs;
-using MetaParser.Mermaid;
+using MetaParser.Builders.Parser;
 
 namespace MetaParser;
 
@@ -24,6 +24,20 @@ namespace MetaParser;
 [Generator(LanguageNames.CSharp)]
 public partial class Generator : IIncrementalGenerator
 {
+    private static JsonSerializerOptions SerializerOptions
+    {
+        get
+        {
+            var deserializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
+            deserializerOptions.Converters.Add(new JsonEnumerableConverter());
+            deserializerOptions.Converters.Add(new ValuePatternDeclarationConverterFactory());
+            deserializerOptions.Converters.Add(new TokenPatternDeclarationConverterFactory());
+
+            deserializerOptions.AddContext<MetaParserJsonSerializer>();
+            return deserializerOptions;
+        }
+    }
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         #region Loading
@@ -45,14 +59,7 @@ public partial class Generator : IIncrementalGenerator
         {
             FileData file = data.Item1;
             JsonDocument jsonDoc = data.Item2;
-            var deserializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
-            deserializerOptions.Converters.Add(new JsonEnumerableConverter());
-            deserializerOptions.Converters.Add(new ValuePatternDeclarationConverterFactory());
-            deserializerOptions.Converters.Add(new TokenPatternDeclarationConverterFactory());
-
-            deserializerOptions.AddContext<MetaParserJsonSerializer>();
-
-            var schema = jsonDoc.Deserialize<ParserDefinition>(deserializerOptions);
+            var schema = jsonDoc.Deserialize<ParserDefinition>(SerializerOptions);
 
             if (schema is null || schema.Definitions is null)
             {
@@ -128,44 +135,72 @@ public partial class Generator : IIncrementalGenerator
                     }
                 }
 
-                context.DepsGraph = DependencyGraph.Build(context);
-                DependencyGraph.Resolve(context);
+                context.DepsGraph = DependencyGraph.Build(context.Registry);
             }
 
             return context;
         });
 
-        var constantTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Data).ToArray() } }));
-        var compoundTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && !o.DependencyInfo!.IsRecursive).ToArray() } }));
-        var complexTokens = ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) => (parser with { WorkingSet = parser.WorkingSet with { Consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo!.IsRecursive).ToArray() } }));
         #endregion
 
-//#if DEBUG
-//        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
-//        {
-//            using IndentedTextWriter writer = new(new StringWriter());
-//            context = context with {  writer = writer  };
+        //#if DEBUG
+        //        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        //        {
+        //            using IndentedTextWriter writer = new(new StringWriter());
+        //            context = context with {  writer = writer  };
 
-//            var graph = new TokenGraph(context.DepsGraph);
-//            // we only want to see a graph of our token relationships, so we'll remove everything else from the graph
-//            var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token).ToList();
-//            foreach (var key in trash)
-//            {
-//                graph.TryRemove(key);
-//            }
+        //            var graph = new DirectedGraph(context.DepsGraph);
+        //            // we only want to see a graph of our token relationships, so we'll remove everything else from the graph
+        //            var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token).ToList();
+        //            foreach (var key in trash)
+        //            {
+        //                graph.TryRemove(key);
+        //            }
 
-//            writer.WriteLine("/*");
-//            writer.WriteLine("```mermaid");
-//            var mermaidFormatter = new MermaidFormatter(context.Registry, graph);
-//            mermaidFormatter.Write(writer, MermaidChartType.Graph);
-//            writer.WriteLine("```");
-//            writer.WriteLine("*/");
+        //            writer.WriteLine("/*");
+        //            writer.WriteLine("```mermaid");
+        //            var mermaidFormatter = new MermaidFormatter(context.Registry, graph);
+        //            mermaidFormatter.Write(writer, MermaidChartType.Graph);
+        //            writer.WriteLine("```");
+        //            writer.WriteLine("*/");
 
-//            spc.AddSource($"{context.Config.BaseFileName}.dependency_graph.md", writer.InnerWriter.ToString());
-//        });
-//#endif
+        //            spc.AddSource($"{context.Config.BaseFileName}.dependency_graph.md", writer.InnerWriter.ToString());
+        //        });
+        //#endif
 
-        // Parser Class
+#if DEBUG
+        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        {
+            using IndentedTextWriter writer = new(new StringWriter());
+            context = context with { writer = writer };
+
+            writer.WriteLine("/*");
+            writer.WriteLine("```");
+            // write all items in the registry
+            foreach (var token in context.Registry.Tokens)
+            {
+                writer.WriteLine(token);
+            }
+            writer.WriteLine();
+
+            foreach (var consumer in context.Registry.Consumers)
+            {
+                writer.WriteLine(consumer);
+            }
+            writer.WriteLine();
+
+            foreach (var pattern in context.Registry.Patterns)
+            {
+                writer.WriteLine(pattern);
+            }
+            writer.WriteLine("```");
+            writer.WriteLine("*/");
+
+            spc.AddSource($"{context.Config.BaseFileName}.registry.debug", writer.InnerWriter.ToString());
+        });
+#endif
+
+        #region Parser Class
         context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
@@ -181,9 +216,36 @@ public partial class Generator : IIncrementalGenerator
 
             AddSource(spc, $"{context.Config.BaseFileName}.parser.class", writer.InnerWriter.ToString());
         });
+        #endregion
 
-        // Constant-Type Tokens
-        context.RegisterSourceOutput(constantTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        #region Token Start Detection
+        // Any token which has an incoming link must have a start detection function
+        context.RegisterSourceOutput(ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
+        {
+            //var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo!.Incoming.Any(static (x) => x.Key.Type == Graphs.NodeType.Token && x.Depth[(int)NodeType.Token].Max > 0));
+            var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo.Depth[(int)NodeType.Token].Min > 0);
+            return (parser with { WorkingSet = new WorkingSet(tokens) });
+        }), 
+        static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        {
+            using IndentedTextWriter writer = new(new StringWriter());
+            context = context with { writer = writer };
+
+            new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
+                .And(new GenTokenStartDetectors())
+                .WriteTo(context);
+
+            AddSource(spc, $"{context.Config.BaseFileName}.tokens.detection", writer.InnerWriter.ToString());
+        });
+        #endregion
+
+        #region Constant-Type Tokens
+        context.RegisterSourceOutput(ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
+        {
+            Consumer[] consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Data).ToArray();
+            return (parser with { WorkingSet = new WorkingSet(consumers) });
+        }), 
+        static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
@@ -195,9 +257,15 @@ public partial class Generator : IIncrementalGenerator
 
             AddSource(spc, $"{context.Config.BaseFileName}.tokens.constant", writer.InnerWriter.ToString());
         });
+        #endregion
 
-        // Compound-Type Tokens
-        context.RegisterSourceOutput(compoundTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        #region Compound-Type Tokens
+        context.RegisterSourceOutput(ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
+        {
+            Consumer[] consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && !o.DependencyInfo!.IsRecursive).ToArray();
+            return (parser with { WorkingSet = new WorkingSet(consumers) });
+        }), 
+        static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
@@ -209,9 +277,15 @@ public partial class Generator : IIncrementalGenerator
 
             AddSource(spc, $"{context.Config.BaseFileName}.tokens.compound", writer.InnerWriter.ToString());
         });
+        #endregion
 
-        // Complex-Type Tokens
-        context.RegisterSourceOutput(complexTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        #region Complex-Type Tokens
+        context.RegisterSourceOutput(ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
+        {
+            Consumer[] consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Token && o.DependencyInfo!.IsRecursive).ToArray();
+            return (parser with { WorkingSet = new WorkingSet(consumers) });
+        }), 
+        static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
@@ -223,8 +297,9 @@ public partial class Generator : IIncrementalGenerator
 
             AddSource(spc, $"{context.Config.BaseFileName}.tokens.complex", writer.InnerWriter.ToString());
         });
+        #endregion
 
-        // Token Structure
+        #region Token Structure
         context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
@@ -234,8 +309,9 @@ public partial class Generator : IIncrementalGenerator
 
             AddSource(spc, $"{context.Config.BaseFileName}.token.struct", writer.InnerWriter.ToString());
         });
+        #endregion
 
-        // Enums
+        #region Token-ID Enums
         context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) => 
         {
             using IndentedTextWriter writer = new(new StringWriter());
@@ -253,8 +329,9 @@ public partial class Generator : IIncrementalGenerator
 
             AddSource(spc, $"{context.Config.BaseFileName}.enum", writer.InnerWriter.ToString());
         });
+        #endregion
 
-        // Constants
+        #region Token-ID Constants
         context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
@@ -266,6 +343,7 @@ public partial class Generator : IIncrementalGenerator
 
             AddSource(spc, $"{context.Config.BaseFileName}.constants", writer.InnerWriter.ToString());
         });
+        #endregion
 
     }
 

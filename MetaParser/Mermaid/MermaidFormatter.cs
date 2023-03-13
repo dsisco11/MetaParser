@@ -7,14 +7,16 @@ using Microsoft.CodeAnalysis.CSharp;
 using System.CodeDom.Compiler;
 using System.Linq;
 
+using static MetaParser.Graphs.DirectedGraph;
+
 namespace MetaParser.Mermaid;
 
 internal class MermaidFormatter
 {
-    private TokenGraph Graph;
+    private DirectedGraph Graph;
     private MetaParserRegistry Registry;
 
-    public MermaidFormatter(MetaParserRegistry registry, TokenGraph graph)
+    public MermaidFormatter(MetaParserRegistry registry, DirectedGraph graph)
     {
         Graph = graph;
         Registry = registry;
@@ -42,7 +44,7 @@ internal class MermaidFormatter
         }
     }
 
-    void Write_Definition(IndentedTextWriter writer, MermaidChartType chartType, NodeKey Key, TokenGraph.Node node)
+    void Write_Definition(IndentedTextWriter writer, MermaidChartType chartType, NodeKey Key, Node node)
     {
         if (!node.Incoming.Any() && !node.Outgoing.Any())
         {

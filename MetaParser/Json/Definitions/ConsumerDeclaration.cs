@@ -25,10 +25,10 @@ internal abstract record ConsumerDeclaration<T> : IConsumerDeclaration
     [JsonPropertyName("escape")]
     public IEnumerable<T> Escape { get; set; }
 
-    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Start => Start as IEnumerable<IPatternDeclaration>;
-    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Consume => Consume as IEnumerable<IPatternDeclaration>;
-    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Stop => Stop as IEnumerable<IPatternDeclaration>;
-    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Escape => Escape as IEnumerable<IPatternDeclaration>;
+    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Start => (IEnumerable<IPatternDeclaration>) Start;
+    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Consume => (IEnumerable<IPatternDeclaration>) Consume;
+    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Stop => (IEnumerable<IPatternDeclaration>) Stop;
+    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Escape => (IEnumerable<IPatternDeclaration>) Escape;
     #endregion
 
     [JsonConstructor]

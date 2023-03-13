@@ -18,7 +18,7 @@ internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
     public IEnumerable<Consumer> GetConsumers()
     {
         var registry = Registry;
-        return DependencyInfo!.Incoming
+        return DependencyInfo.Outgoing.Union(DependencyInfo.Incoming)
             .Where(c => c.Key.Type == NodeType.Consumer && c.Key.Parent == NodeID)
             .Select(c => registry.Consumers[c.Key]);
     }
@@ -39,7 +39,7 @@ internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
     #endregion
 
     #region IDependencyGraphEntity
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
     {
         yield break;
     }

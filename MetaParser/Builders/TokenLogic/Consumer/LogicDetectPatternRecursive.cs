@@ -18,13 +18,13 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        var allTokens = context.WorkingSet.Consumers.Select(static (c) => c.Token).Distinct();
-        Debug.Assert(allTokens.Count() == 1);
+        Debug.Assert(context.WorkingSet.Tokens.Length == 1);
 
-        var targetToken = allTokens.Single();
+        var targetToken = context.WorkingSet.Tokens.Single();
 
-        // Check if this token has any consumers which are non-recursive, if so then its possible for the token to appear in the stream already from a lower stage.
-        bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => !c.DependencyInfo!.IsRecursive);
+        // Check if its possible for the token to appear in the stream already from a lower stage.
+        bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => c.Type == EConsumerType.Data);
+        //bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => c.DependencyInfo.Depth[(int)NodeType.Consumer].Min < );
         if (hasEarlierStages)
         {
             writer.WriteLine($"[{Format_Token_Id_Const_Ref(targetToken)}, ..] => true,");

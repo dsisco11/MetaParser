@@ -1,3 +1,10 @@
 ﻿namespace MetaParser.Graphs;
 
-internal enum NodeType { Data, Pattern, Consumer, Token }
+public enum NodeType 
+{ 
+    None = 0, 
+    Data, 
+    Pattern, 
+    Consumer, 
+    Token 
+}

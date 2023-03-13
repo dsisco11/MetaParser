@@ -1,29 +1,26 @@
 ﻿using MetaParser.Core;
 using MetaParser.Parsing.Constructs;
 
+using System.Linq;
+
 namespace MetaParser.Graphs;
 
 internal static class DependencyGraph
 {
-    public static TokenGraph Build(MetaParserContext context)
+    public static DirectedGraph Build(MetaParserRegistry Registry)
     {
-        var graph = new TokenGraph(context.Registry.GetNodeIDs());
-        foreach (IGraphableEntity entity in context.Registry.GetGraphEntities())
+        var graph = new DirectedGraph(Registry.GetNodeIDs());
+        foreach (IGraphableEntity entity in Registry.GetGraphEntities())
         {
-            var resolvedLinks = entity.ResolveLinks(context);
+            var resolvedLinks = entity.ResolveLinks(Registry);
             foreach (var link in resolvedLinks)
             {
                 graph.TryLink(link.Source, link.Target);
             }
         }
 
-        return graph;
-    }
-
-    public static void Resolve(MetaParserContext context)
-    {
-        var results = context.DepsGraph.Resolve();
-        foreach (var entry in results)
+        var resolved = graph.Resolve();
+        foreach (var entry in resolved)
         {
             switch (entry.Key.Type)
             {
@@ -31,22 +28,34 @@ internal static class DependencyGraph
                     break;
                 case NodeType.Pattern:
                     {
-                        context.Registry.Patterns[entry.Key].DependencyInfo = entry.Value;
+                        Registry.Patterns[entry.Key].DependencyInfo = entry.Value;
                     }
                     break;
                 case NodeType.Consumer:
                     {
-                        context.Registry.Consumers[entry.Key].DependencyInfo = entry.Value;
+                        Registry.Consumers[entry.Key].DependencyInfo = entry.Value;
                     }
                     break;
                 case NodeType.Token:
                     {
-                        context.Registry.Tokens[entry.Key].DependencyInfo = entry.Value;
+                        Registry.Tokens[entry.Key].DependencyInfo = entry.Value;
                     }
                     break;
                 default:
                     break;
             }
+        }
+
+        return graph;
+    }
+
+    static void Simplify_Graph(DirectedGraph graph)
+    {
+        // we only want to see a graph of our token relationships, so we'll remove everything else from the graph
+        var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token && k.Type != NodeType.Consumer).ToList();
+        foreach (var key in trash)
+        {
+            graph.TryRemove(key);
         }
     }
 }

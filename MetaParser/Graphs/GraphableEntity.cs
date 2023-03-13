@@ -15,7 +15,7 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
     #endregion
 
     #region Properties
-    public TokenGraph.ResolvedNode? DependencyInfo { get; set; }
+    public ResolvedNode DependencyInfo { get; set; } = ResolvedNode.Default;
     #endregion
 
     #region Accessors
@@ -48,5 +48,5 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
         return _nodeID.CompareTo(other._nodeID);
     }
 
-    public abstract IEnumerable<EntityLink> ResolveLinks(MetaParserContext context);
+    public abstract IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry);
 }

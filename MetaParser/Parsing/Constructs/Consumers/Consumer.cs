@@ -119,12 +119,12 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     #endregion
 
     #region Dependency Link Resolution
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
     {
-        if (Type == EConsumerType.Data)
-        {
-            yield break;
-        }
+        //if (Type == EConsumerType.Data)
+        //{
+        //    yield break;
+        //}
 
         // Link the consumers token to it
         yield return new EntityLink(Token.NodeID, NodeID);
@@ -141,10 +141,10 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
         }
         else if (IsClosed)
         {// Closed tokens with an ambiguous consume clause are inherently dependent on all other defined tokens as they can consume anything
-            var allOthers = context.Registry.Tokens.Values.Except(new []{ Token }).Select(static (x) => x.Name);
+            var allOthers = Registry.Tokens.Values.Except(new []{ Token }).Select(static (x) => x.Name);
             foreach (var tokenName in allOthers)
             {
-                if (context.Registry.TryGetToken(tokenName, out var outToken))
+                if (Registry.TryGetToken(tokenName, out var outToken))
                 {
                     yield return new EntityLink(Token.NodeID, outToken.NodeID);
                 }

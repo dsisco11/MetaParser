@@ -1,5 +1,6 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
+using MetaParser.Graphs;
 using MetaParser.Parsing.Constructs;
 
 using System.Linq;
@@ -22,7 +23,7 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
 #endif
         var orderedItems = context.WorkingSet.Consumers.Select(static (x) => x.Token)
                                                           .Distinct()
-                                                          .OrderByDescending(static (t) => t.GetConsumers().Max(static (c) => c.DependencyInfo.MaxDepth))
+                                                          .OrderByDescending(static (t) => t.GetConsumers().Max(static (c) => c.DependencyInfo.Depth[(int)NodeType.Token].Max))
                                                           .ThenByDescending(static (t) => t.GetConsumers().Max(static (c) => c.Start.Length));
         foreach (TokenInfo token in orderedItems)
         {

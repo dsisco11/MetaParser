@@ -12,6 +12,12 @@ namespace MetaParser.Core;
 [JsonSerializable(typeof(IPatternDeclaration))]
 [JsonSerializable(typeof(ValuePatternDeclaration))]
 [JsonSerializable(typeof(TokenPatternDeclaration))]
+//// Stuff
+//[JsonSerializable(typeof(NodeKey))]
+//[JsonSerializable(typeof(NodeType))]
+//[JsonSerializable(typeof(NodeDepth))]
+//[JsonSerializable(typeof(ResolvedNode))]
+//[JsonSerializable(typeof(MetaParserRegistry))]
 internal partial class MetaParserJsonSerializer : JsonSerializerContext
 {
 }

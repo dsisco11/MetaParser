@@ -20,7 +20,7 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     /// <summary>
     /// Indicates whether the fully resolved pattern only represents values which can all be inline evaluated
     /// </summary>
-    public abstract bool IsInline { get; }
+    public abstract bool IsInlinable { get; }
     /// <summary>
     /// Indicates whether the pattern will always match a predetermined count of items, or if the patterns length can vary
     /// </summary>

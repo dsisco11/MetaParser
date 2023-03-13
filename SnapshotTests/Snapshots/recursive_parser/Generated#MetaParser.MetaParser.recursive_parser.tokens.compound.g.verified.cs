@@ -43,7 +43,8 @@ namespace UnitTestParser
                 /*
                 * TokenID: comment (#13)
                 * ==[ CONSUMER_DATA ]==
-                * TokenConsumer { Token = TokenInfo { Index = 13, Name = comment, Consumers = System.Collections.Generic.List`1[MetaParser.Consumers.TokenConsumer], Identity = TokenGraphId { TokenIndex = 13, ConsumerIndex = -1 } }, Index = 14, Type = Token, Identity = TokenGraphId { TokenIndex = 13, ConsumerIndex = 14 }, DependencyInfo = ResolvedVertexNode { Order = 26, MinDepth = 1, MaxDepth = 1, IsRecursive = True }, Start = PatternGroup { Length = 2, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }, Consume = , Stop = PatternGroup { Length = 1, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }, Escape = , IsOpen = False, IsClosed = True, IsDynamic = True, IsConstant = False }
+                * START: PatternGroup { DependencyInfo = , NodeID = Pattern_49, Registry = MetaParser.Core.MetaParserRegistry, Length = 2, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }
+                * STOP: PatternGroup { DependencyInfo = , NodeID = Pattern_51, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
                 */
                 /* Consume the START sequence which got us here in the first place, we already know its part of the token */
                 var buffer = input.Slice(2);
@@ -74,7 +75,8 @@ namespace UnitTestParser
                 /*
                 * TokenID: declaration (#14)
                 * ==[ CONSUMER_DATA ]==
-                * TokenConsumer { Token = TokenInfo { Index = 14, Name = declaration, Consumers = System.Collections.Generic.List`1[MetaParser.Consumers.TokenConsumer], Identity = TokenGraphId { TokenIndex = 14, ConsumerIndex = -1 } }, Index = 15, Type = Token, Identity = TokenGraphId { TokenIndex = 14, ConsumerIndex = 15 }, DependencyInfo = ResolvedVertexNode { Order = 26, MinDepth = 1, MaxDepth = 1, IsRecursive = True }, Start = PatternGroup { Length = 2, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }, Consume = , Stop = PatternGroup { Length = 1, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }, Escape = , IsOpen = False, IsClosed = True, IsDynamic = True, IsConstant = False }
+                * START: PatternGroup { DependencyInfo = , NodeID = Pattern_54, Registry = MetaParser.Core.MetaParserRegistry, Length = 2, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }
+                * STOP: PatternGroup { DependencyInfo = , NodeID = Pattern_56, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
                 */
                 /* Consume the START sequence which got us here in the first place, we already know its part of the token */
                 var buffer = input.Slice(2);
@@ -105,7 +107,9 @@ namespace UnitTestParser
                 /*
                 * TokenID: codeblock (#15)
                 * ==[ CONSUMER_DATA ]==
-                * TokenConsumer { Token = TokenInfo { Index = 15, Name = codeblock, Consumers = System.Collections.Generic.List`1[MetaParser.Consumers.TokenConsumer], Identity = TokenGraphId { TokenIndex = 15, ConsumerIndex = -1 } }, Index = 16, Type = Token, Identity = TokenGraphId { TokenIndex = 15, ConsumerIndex = 16 }, DependencyInfo = ResolvedVertexNode { Order = 26, MinDepth = 1, MaxDepth = 1, IsRecursive = True }, Start = PatternGroup { Length = 1, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }, Consume = PatternGroup { Length = 1, IsRawValues = False, IsConstantLength = True, HasChildren = True, Condition = OneOf, ConditionJoiner =  or , MinLength = 1 }, Stop = PatternGroup { Length = 1, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }, Escape = , IsOpen = False, IsClosed = True, IsDynamic = True, IsConstant = False }
+                * START: PatternGroup { DependencyInfo = , NodeID = Pattern_58, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
+                * CONSUME: PatternGroup { DependencyInfo = , NodeID = Pattern_60, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = False, IsConstantLength = True, HasChildren = True, Condition = OneOf, ConditionJoiner =  or , MinLength = 1 }
+                * STOP: PatternGroup { DependencyInfo = , NodeID = Pattern_62, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
                 */
                 /* Consume the START sequence which got us here in the first place, we already know its part of the token */
                 var buffer = input.Slice(1);

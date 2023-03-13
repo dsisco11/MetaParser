@@ -1,6 +1,8 @@
 ﻿using MetaParser.Parsing.Constructs;
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MetaParser.Core;
 
@@ -9,7 +11,43 @@ namespace MetaParser.Core;
 /// </summary>
 internal record WorkingSet
 {
+    #region Fields
     public TokenInfo[] Tokens { get; set; } = Array.Empty<TokenInfo>();
     public Consumer[] Consumers { get; set; } = Array.Empty<Consumer>();
     public Pattern[] Patterns { get; set; } = Array.Empty<Pattern>();
+    #endregion
+
+    #region Constructors
+    public WorkingSet()
+    {
+    }
+
+    public WorkingSet (IEnumerable<Consumer> consumers)
+    {
+        Consumers = consumers.ToArray();
+        Patterns = consumers.SelectMany(static (x) => x.Patterns).ToArray();
+        Tokens = consumers.Select(static (x) => x.Token).ToArray();
+    }
+
+    public WorkingSet(params Consumer[] consumers)
+    {
+        Consumers = consumers.ToArray();
+        Patterns = consumers.SelectMany(static (x) => x.Patterns).ToArray();
+        Tokens = consumers.Select(static (x) => x.Token).ToArray();
+    }
+
+    public WorkingSet(IEnumerable<TokenInfo> tokens)
+    {
+        Tokens = tokens.ToArray();
+        Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).ToArray();
+        Patterns = Consumers.SelectMany(static (x) => x.Patterns).ToArray();
+    }
+
+    public WorkingSet(params TokenInfo[] tokens)
+    {
+        Tokens = tokens.ToArray();
+        Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).ToArray();
+        Patterns = Consumers.SelectMany(static (x) => x.Patterns).ToArray();
+    }
+    #endregion
 }

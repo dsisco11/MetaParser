@@ -25,7 +25,7 @@ internal sealed record PatternTokenRef : Pattern
 
     public override int Length => 1;
     public override bool IsRawValues => true;
-    public override bool IsInline
+    public override bool IsInlinable
     { 
         get
         {

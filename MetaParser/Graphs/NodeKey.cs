@@ -3,19 +3,35 @@ using System.Diagnostics;
 
 namespace MetaParser.Graphs;
 
-[DebuggerDisplay("{Type}<{Index}> Parent: [{Parent.Type}:{Parent.Index}]")]
+[DebuggerDisplay(@"{Type}<{Index}>{ParentString}")]
 internal record NodeKey : IComparable<NodeKey>
 {
+    #region Statics
+    public static readonly NodeKey Default = new(NodeType.None, 0);
+    #endregion
+
+    #region Fields
     public readonly NodeKey? Parent;
     public readonly NodeType Type;
     public readonly int Index;
+    #endregion
 
+    #region Properties
+    #endregion
+
+    #region Accessors
+    private string ParentString => Parent is not null ? $"({Parent?.ToString()})" : string.Empty;
+
+    #endregion
+
+    #region Constructors
     public NodeKey(NodeType type, int index, NodeKey? parent = null)
     {
         Type = type;
         Index = index;
         Parent = parent;
     }
+    #endregion
 
     public int CompareTo(NodeKey other)
     {

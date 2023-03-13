@@ -1,5 +1,6 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
+using MetaParser.Graphs;
 using MetaParser.Parsing.Constructs;
 
 using System.Linq;
@@ -17,19 +18,19 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
         }
 
         var writer = context.writer;
-        var workContext = context with { WorkingSet = context.WorkingSet with { Consumers = new Parsing.Constructs.Consumer[1] } };
+        var workContext = context with {};
 
 #if DEBUG
         writer.WriteLine("// Linear consumers");
 #endif
-        var sortedConsumers = context.WorkingSet.Consumers.OrderByDescending(static (c) => c.DependencyInfo!.MaxDepth).ThenByDescending(static (c) => c.Start.Length);
+        var sortedConsumers = context.WorkingSet.Consumers.OrderByDescending(static (c) => c.DependencyInfo.Depth[(int)NodeType.Token].Max).ThenByDescending(static (c) => c.Start.Length);
         writer.WriteLine($"switch ({VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
 
         foreach (Parsing.Constructs.Consumer consumer in sortedConsumers)
         {
-            workContext.WorkingSet.Consumers[0] = consumer;
+            workContext.WorkingSet = new (consumer);
 
             writer.Write("case ");
             PatternFormatter.WriteTo(context, consumer.Start);
