@@ -1,5 +1,7 @@
 ﻿using MetaParser.Core;
 using MetaParser.Exceptions;
+using MetaParser.Graphs;
+
 using System.Collections.Generic;
 
 namespace MetaParser.Parsing.Constructs;
@@ -23,6 +25,19 @@ internal sealed record PatternTokenRef : Pattern
 
     public override int Length => 1;
     public override bool IsRawValues => true;
+    public override bool IsInline
+    { 
+        get
+        {
+            if (!Registry.TryGetToken(_tokenName, out var token))
+            {
+                throw new UnknownTokenException(_tokenName);
+            }
+
+            // if this token depends on another non-data token, then it has complex requirements and cannot be inlined
+            return token.DependencyInfo.Depth[(int)NodeType.Token].Max < 2;
+        }
+    }
     public override bool IsConstantLength => true;
     public override bool HasChildren => false;
 
@@ -37,9 +52,9 @@ internal sealed record PatternTokenRef : Pattern
         yield break;
     }
 
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
     {
-        if (!context.Registry.TryGetToken(_tokenName, out var token))
+        if (!Registry.TryGetToken(_tokenName, out var token))
         {
             throw new UnknownTokenException(_tokenName);
         }

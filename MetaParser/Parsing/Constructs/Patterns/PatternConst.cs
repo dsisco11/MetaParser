@@ -22,6 +22,7 @@ internal sealed record PatternConst : Pattern
     #endregion
 
     public override bool IsRawValues => true;
+    public override bool IsInline => true;
     public override bool IsConstantLength => true;
     public override int Length => string.IsNullOrEmpty(Value) ? 0 : 1;
     public override bool HasChildren => false;
@@ -37,7 +38,7 @@ internal sealed record PatternConst : Pattern
         yield break;
     }
 
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
     {
         yield break;
     }

@@ -18,6 +18,10 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     /// </summary>
     public abstract bool IsRawValues { get; }
     /// <summary>
+    /// Indicates whether the fully resolved pattern only represents values which can all be inline evaluated
+    /// </summary>
+    public abstract bool IsInline { get; }
+    /// <summary>
     /// Indicates whether the pattern will always match a predetermined count of items, or if the patterns length can vary
     /// </summary>
     public abstract bool IsConstantLength { get; }

@@ -26,6 +26,7 @@ internal sealed record PatternRange : Pattern
     #endregion
 
     public override bool IsRawValues => false;
+    public override bool IsInline => true;
     public override bool IsConstantLength => Begin.Length == End.Length;
     public override int Length => string.IsNullOrEmpty(Begin) && string.IsNullOrEmpty(End) ? 0 : 1;
     public override bool HasChildren => false;
@@ -40,7 +41,7 @@ internal sealed record PatternRange : Pattern
         yield break;
     }
 
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
     {
         yield break;
     }

@@ -66,6 +66,12 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
             };
         }
     }
+
+    public override bool IsInline
+    {
+        get => Items.Length > 1 ? Items.All(x => x.IsInline) : Items.Length == 1 ? Items[0].IsInline : false;
+    }
+
     public override bool IsConstantLength => !_items.Any(x => !x.IsConstantLength);
     public override bool HasChildren => true;
 
@@ -100,7 +106,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
         yield break;
     }
 
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserContext context)
+    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
     {
         foreach(Pattern item in _items)
         {
