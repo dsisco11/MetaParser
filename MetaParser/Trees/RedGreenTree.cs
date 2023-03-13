@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Buffers;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -19,6 +20,13 @@ public sealed class RedGreenTree<T>
     public RedGreenTree(GreenNode<T> rootNode)
     {
         _rootNode = rootNode;
+    }
+    #endregion
+
+    #region Methods
+    public RedGreenTree<T> Clone()
+    {
+        return new RedGreenTree<T>(_rootNode);
     }
     #endregion
 }
@@ -58,6 +66,30 @@ public sealed record GreenNode<T> : IEnumerable<GreenNode<T>>
     }
     #endregion
 
+    #region Mutators
+    public void AddChild(GreenNode<T> child)
+    {
+        Children.Add(child);
+    }
+
+    public void RemoveChild(GreenNode<T> child)
+    {
+        Children.Remove(child);
+    }
+
+    public void ReplaceChild(GreenNode<T> oldChild, GreenNode<T> newChild)
+    {
+        var index = Children.IndexOf(oldChild);
+        Children[index] = newChild;
+    }
+
+    public void ReplaceChild(int index, GreenNode<T> newChild)
+    {
+        Children[index] = newChild;
+    }
+    #endregion
+
+    #region Enumerators
     public IEnumerator<GreenNode<T>> GetEnumerator()
     {
         foreach (var child in Children)
@@ -67,6 +99,7 @@ public sealed record GreenNode<T> : IEnumerable<GreenNode<T>>
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    #endregion
 }
 
 /// <summary>
