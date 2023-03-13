@@ -1,5 +1,4 @@
-﻿using System.Buffers;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -63,29 +62,6 @@ public sealed record GreenNode<T> : IEnumerable<GreenNode<T>>
     {
         _value = value;
         Children = children.ToImmutableArray();
-    }
-    #endregion
-
-    #region Mutators
-    public void AddChild(GreenNode<T> child)
-    {
-        Children.Add(child);
-    }
-
-    public void RemoveChild(GreenNode<T> child)
-    {
-        Children.Remove(child);
-    }
-
-    public void ReplaceChild(GreenNode<T> oldChild, GreenNode<T> newChild)
-    {
-        var index = Children.IndexOf(oldChild);
-        Children[index] = newChild;
-    }
-
-    public void ReplaceChild(int index, GreenNode<T> newChild)
-    {
-        Children[index] = newChild;
     }
     #endregion
 
