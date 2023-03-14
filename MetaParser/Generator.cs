@@ -222,7 +222,7 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
         {
             //var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo!.Incoming.Any(static (x) => x.Key.Type == Graphs.NodeType.Token && x.Depth[(int)NodeType.Token].Max > 0));
-            var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo.NodeDepth.Min > 0);
+            var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo.NodeDepth.Max > 0);
             return (parser with { WorkingSet = new WorkingSet(tokens) });
         }), 
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>

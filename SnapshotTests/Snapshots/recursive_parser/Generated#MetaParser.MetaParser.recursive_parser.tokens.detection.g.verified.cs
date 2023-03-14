@@ -7,6 +7,7 @@ namespace UnitTestParser
         {
             return input switch
             {
+                [TokenId.Comment, ..] => true,
                 [TokenId.Solidus, TokenId.Solidus, ..] => true,
                 _ => false
             };

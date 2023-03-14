@@ -18,6 +18,11 @@ namespace UnitTestParser
                     id = TokenId.Comment;
                     return consume_pattern_28(input, out length);
                 }
+                case [ TokenId.Open_Bracket, ..]:
+                {
+                    id = TokenId.Codeblock;
+                    return consume_pattern_29(input, out length);
+                }
                 case [ TokenId.Keyword_Var, ..]:
                 {
                     id = TokenId.Typename;
@@ -47,11 +52,6 @@ namespace UnitTestParser
                     id = TokenId.Typename;
                     length = 1;
                     return true;
-                }
-                case [ TokenId.Open_Bracket, ..]:
-                {
-                    id = TokenId.Codeblock;
-                    return consume_pattern_29(input, out length);
                 }
             }
             id = default;

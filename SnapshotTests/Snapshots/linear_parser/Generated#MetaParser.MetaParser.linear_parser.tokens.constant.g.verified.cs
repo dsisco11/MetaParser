@@ -8,6 +8,11 @@ namespace UnitTestParser
             // Linear consumers
             switch (input)
             {
+                case [ '/', '*', ..]:
+                {
+                    id = TokenId.Comment;
+                    return consume_pattern_26(input, out length);
+                }
                 case [ 'f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ..]:
                 {
                     id = TokenId.Keyword_Function;
@@ -48,11 +53,6 @@ namespace UnitTestParser
                 {
                     id = TokenId.Identifier;
                     return consume_pattern_20(input, out length);
-                }
-                case [ '/', '*', ..]:
-                {
-                    id = TokenId.Comment;
-                    return consume_pattern_26(input, out length);
                 }
                 case [ '{', ..]:
                 {
