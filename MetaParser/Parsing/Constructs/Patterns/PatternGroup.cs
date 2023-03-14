@@ -25,6 +25,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
     }
     #endregion
 
+    #region Accessors
     public string ConditionJoiner
     {
         get => Condition switch
@@ -74,7 +75,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
 
     public override bool IsConstantLength => !_items.Any(x => !x.IsConstantLength);
     public override bool HasChildren => true;
-
+    #endregion
 
     public override Pattern Combine(Pattern other, MetaParserContext context)
     {
@@ -88,22 +89,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
 
     public override IEnumerator<Pattern> GetEnumerator()
     {
-        foreach (Pattern item in _items)
-        {
-            if (item.HasChildren)
-            {
-                foreach (Pattern o in item)
-                {
-                    yield return o;
-                }
-            }
-            else
-            {
-                yield return item;
-            }
-        }
-
-        yield break;
+        return ((IEnumerable<Pattern>)_items).GetEnumerator();
     }
 
     public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
