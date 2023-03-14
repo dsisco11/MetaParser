@@ -8,8 +8,8 @@ namespace UnitTestParser
             return input switch
             {
                 [TokenId.Comment, ..] => true,
-                [TokenId.Solidus, TokenId.Asterisk, ..] => true,
                 [TokenId.Solidus, TokenId.Solidus, ..] => true,
+                [TokenId.Solidus, TokenId.Asterisk, ..] => true,
                 _ => false
             };
         }

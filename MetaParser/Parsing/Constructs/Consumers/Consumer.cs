@@ -23,7 +23,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
 
     #region Accessors
     public int Index => NodeID.Index;
-    public KeyTreeNode<EntityKey> HierarchyNode => Registry.Tree.GetNode(NodeID) ?? throw new MetaParserException($"Cannot find hierarchy node for '{NodeID}'");
+    public KeyTreeNode<EntityKey> HierarchyNode => Registry.Tree[NodeID] ?? throw new MetaParserException($"Cannot find hierarchy node for '{NodeID}'");
     public TokenInfo Token
     {
         get
@@ -83,6 +83,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     {
         Type = consumer.Type;
         context.WorkingSet.Consumers[0] = this;
+        context.Registry.AddConsumer(this, context.WorkingSet.Tokens.Single().NodeID);
 
         if (consumer.Start is null && consumer.Consume is null)
         {

@@ -3,6 +3,7 @@ using MetaParser.Graphs;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
@@ -17,7 +18,11 @@ internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
 
     public IEnumerable<Consumer> GetConsumers()
     {
-        var tokenNode = Registry.Tree.GetNode(NodeID);
+        if (!Registry.Tree.TryGetNode(NodeID, out var tokenNode))
+        {
+            yield break;
+        }
+
         var consumerKeys = tokenNode.Where(static (n) => n.Value.Type == NodeType.Consumer).Select(static (n) => n.Value);
         foreach (var key in consumerKeys)
         {

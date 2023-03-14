@@ -34,7 +34,7 @@ internal class MetaParserRegistry
             throw new ArgumentException($"Token '{token.Name}' already exists in the registry.");
         }
         _tokens.Add(token.NodeID, token);
-        Tree.AddEdge(token.NodeID, Tree.RootNode.Value);
+        Tree.Add(token.NodeID);
     }
 
     public void AddConsumer(Consumer consumer, EntityKey parentKey)

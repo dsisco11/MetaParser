@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace MetaParser.Trees;
 
@@ -36,11 +37,16 @@ internal sealed class KeyTree<T>
     #endregion
 
     #region Mutators
-    public void AddEdge(T parent, T child)
+    public void Add(T value)
+    {
+        nodes.Add(value, new KeyTreeNode<T>(value, _rootNode));
+    }
+
+    public void AddEdge(T child, T parent)
     {
         if (!nodes.TryGetValue(parent, out var parentNode))
         {
-            parentNode = new KeyTreeNode<T>(parent, _rootNode);
+            parentNode = new KeyTreeNode<T>(parent);
             nodes.Add(parent, parentNode);
         }
 
@@ -66,24 +72,45 @@ internal sealed class KeyTree<T>
     #endregion
 
     #region Lookup
-    public KeyTreeNode<T>? GetNode(T value)
+    public bool TryGetNode(T key, out KeyTreeNode<T> result)
     {
-        if (nodes.TryGetValue(value, out var node))
+        if (nodes.TryGetValue(key, out var node))
         {
-            return node;
+            result = node;
+            return true;
         }
 
-        return null;
+        Debug.Fail($"Unable to findkKey in tree. (Key: {key})");
+        result = KeyTreeNode<T>.Default;
+        return false;
+    }
+
+    public KeyTreeNode<T>? this[T key]
+    {
+        get 
+        {
+            if (nodes.TryGetValue(key, out var node))
+            {
+                return node;
+            }
+
+            Debug.Fail($"Unable to findkKey in tree. (Key: {key})");
+            return null;
+        }
     }
     #endregion
 }
 
 public sealed class KeyTreeNode<T> : IEnumerable<KeyTreeNode<T>>
 {
+    #region Statics
+    public static readonly KeyTreeNode<T> Default = new KeyTreeNode<T>(default);
+    #endregion
+
     #region Fields
     readonly T _value;
     readonly WeakReference<KeyTreeNode<T>?> _parent = new WeakReference<KeyTreeNode<T>?>(null);
-    readonly List<KeyTreeNode<T>> _children;
+    readonly List<KeyTreeNode<T>> _children = new();
     #endregion
 
     #region Accessors

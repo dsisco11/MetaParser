@@ -63,8 +63,8 @@ namespace UnitTestParser
                 /*
                 * TokenID: comment (#22)
                 * ==[ CONSUMER_DATA ]==
-                * START: PatternGroup { DependencyInfo = Pattern_104 | Order[149] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_104, Registry = MetaParser.Core.MetaParserRegistry, Length = 2, IsRawValues = True, IsInline = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }
-                * STOP: PatternGroup { DependencyInfo = Pattern_106 | Order[153] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_106, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInline = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
+                * START: PatternGroup { DependencyInfo = Pattern_104 | Order[149] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_104, Registry = MetaParser.Core.MetaParserRegistry, Length = 2, IsRawValues = True, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }
+                * STOP: PatternGroup { DependencyInfo = Pattern_106 | Order[153] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_106, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
                 */
                 /* Consume the START sequence which got us here in the first place, we already know its part of the token */
                 var buffer = input.Slice(2);
@@ -95,9 +95,9 @@ namespace UnitTestParser
                 /*
                 * TokenID: comment (#22)
                 * ==[ CONSUMER_DATA ]==
-                * START: PatternGroup { DependencyInfo = Pattern_109 | Order[150] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_109, Registry = MetaParser.Core.MetaParserRegistry, Length = 2, IsRawValues = True, IsInline = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }
-                * STOP: PatternGroup { DependencyInfo = Pattern_112 | Order[151] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_112, Registry = MetaParser.Core.MetaParserRegistry, Length = 2, IsRawValues = True, IsInline = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }
-                * ESCAPE: PatternGroup { DependencyInfo = Pattern_114 | Order[152] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_114, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInline = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
+                * START: PatternGroup { DependencyInfo = Pattern_109 | Order[150] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_109, Registry = MetaParser.Core.MetaParserRegistry, Length = 2, IsRawValues = True, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }
+                * STOP: PatternGroup { DependencyInfo = Pattern_112 | Order[151] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_112, Registry = MetaParser.Core.MetaParserRegistry, Length = 2, IsRawValues = True, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 2 }
+                * ESCAPE: PatternGroup { DependencyInfo = Pattern_114 | Order[152] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_114, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
                 */
                 /* Consume the START sequence which got us here in the first place, we already know its part of the token */
                 var buffer = input.Slice(2);
@@ -140,8 +140,8 @@ namespace UnitTestParser
                 /*
                 * TokenID: codeblock (#23)
                 * ==[ CONSUMER_DATA ]==
-                * START: PatternGroup { DependencyInfo = Pattern_116 | Order[147] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_116, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInline = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
-                * STOP: PatternGroup { DependencyInfo = Pattern_118 | Order[148] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_118, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInline = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
+                * START: PatternGroup { DependencyInfo = Pattern_116 | Order[147] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_116, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
+                * STOP: PatternGroup { DependencyInfo = Pattern_118 | Order[148] | IsRecursive (False) | Depth[N: [0, 5], D: [0, 0], P: [1, 1], C: [0, 0], T: [0, 0]], NodeID = Pattern_118, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
                 */
                 /* Consume the START sequence which got us here in the first place, we already know its part of the token */
                 var buffer = input.Slice(1);
