@@ -7,6 +7,7 @@ using MetaParser.Trees;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace MetaParser.Parsing.Constructs;
 internal record Consumer : GraphableEntity, IComparable<Consumer>
@@ -169,4 +170,35 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
         yield break;
     }
     #endregion
+
+    // ToString
+    public override string ToString()
+    {
+        StringBuilder sb = new StringBuilder($"{Key} | Type: {Type}");
+
+        sb.Append($" | DependencyInfo: {DependencyInfo}");
+        sb.Append($" | Start: {Start}");
+        // write consume
+        if (Consume is null)
+        {
+            sb.Append($"| Consume: {Consume}");
+        }
+
+        // write stop
+        if (Stop is not null)
+        {
+            sb.Append($"| Stop: {Stop}");
+        }
+
+        // write escape
+        if (Escape is not null)
+        {
+            sb.Append($"| Escape: {Escape}");
+        }
+
+        // write state
+        sb.Append($"| IsDynamic: {IsDynamic}, IsConstant: {IsConstant}, IsOpen: {IsOpen}, IsClosed: {IsClosed}");
+
+        return sb.ToString();
+    }
 }

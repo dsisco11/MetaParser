@@ -35,7 +35,7 @@ internal sealed record PatternTokenRef : Pattern
             }
 
             // if this token depends on another non-data token, then it has complex requirements and cannot be inlined
-            return token.DependencyInfo.Depth[(int)NodeType.Token].Max < 2;
+            return token.DependencyInfo.NodeDepth.Max < 2;
         }
     }
     public override bool IsConstantLength => true;

@@ -176,21 +176,21 @@ public partial class Generator : IIncrementalGenerator
             writer.WriteLine("/*");
             writer.WriteLine("```");
             // write all items in the registry
-            foreach (var token in context.Registry.Tokens)
+            foreach (var token in context.Registry.Tokens.Values)
             {
                 writer.WriteLine(token);
             }
             writer.WriteLine();
 
-            foreach (var consumer in context.Registry.Consumers)
+            foreach (var consumer in context.Registry.Consumers.Values)
             {
-                writer.WriteLine(consumer);
+                writer.WriteLine(consumer.DependencyInfo);
             }
             writer.WriteLine();
 
-            foreach (var pattern in context.Registry.Patterns)
+            foreach (var pattern in context.Registry.Patterns.Values)
             {
-                writer.WriteLine(pattern);
+                writer.WriteLine(pattern.DependencyInfo);
             }
             writer.WriteLine("```");
             writer.WriteLine("*/");
@@ -222,7 +222,7 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
         {
             //var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo!.Incoming.Any(static (x) => x.Key.Type == Graphs.NodeType.Token && x.Depth[(int)NodeType.Token].Max > 0));
-            var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo.Depth[(int)NodeType.Token].Min > 0);
+            var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo.NodeDepth.Min > 0);
             return (parser with { WorkingSet = new WorkingSet(tokens) });
         }), 
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>

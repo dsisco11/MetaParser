@@ -8,16 +8,6 @@ namespace UnitTestParser
             // Linear consumers
             switch (input)
             {
-                case [ TokenId.Solidus, TokenId.Solidus, ..]:
-                {
-                    id = TokenId.Comment;
-                    return consume_pattern_27(input, out length);
-                }
-                case [ TokenId.Solidus, TokenId.Asterisk, ..]:
-                {
-                    id = TokenId.Comment;
-                    return consume_pattern_28(input, out length);
-                }
                 case [ TokenId.Keyword_Var, ..]:
                 {
                     id = TokenId.Typename;
@@ -47,6 +37,16 @@ namespace UnitTestParser
                     id = TokenId.Typename;
                     length = 1;
                     return true;
+                }
+                case [ TokenId.Solidus, TokenId.Solidus, ..]:
+                {
+                    id = TokenId.Comment;
+                    return consume_pattern_27(input, out length);
+                }
+                case [ TokenId.Solidus, TokenId.Asterisk, ..]:
+                {
+                    id = TokenId.Comment;
+                    return consume_pattern_28(input, out length);
                 }
                 case [ TokenId.Open_Bracket, ..]:
                 {

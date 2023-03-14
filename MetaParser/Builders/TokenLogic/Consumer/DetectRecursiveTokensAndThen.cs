@@ -23,7 +23,7 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
 #endif
         var orderedItems = context.WorkingSet.Consumers.Select(static (x) => x.Token)
                                                           .Distinct()
-                                                          .OrderByDescending(static (t) => t.GetConsumers().Max(static (c) => c.DependencyInfo.Depth[(int)NodeType.Token].Max))
+                                                          .OrderByDescending(static (t) => t.GetConsumers().Max(static (c) => c.DependencyInfo.TreeDepth.Max))
                                                           .ThenByDescending(static (t) => t.GetConsumers().Max(static (c) => c.Start.Length));
         foreach (TokenInfo token in orderedItems)
         {

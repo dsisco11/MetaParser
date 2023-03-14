@@ -49,4 +49,9 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
     }
 
     public abstract IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry);
+
+    public override string ToString()
+    {
+        return _key.ToString();
+    }
 }

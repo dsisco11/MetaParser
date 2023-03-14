@@ -51,4 +51,9 @@ internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
         yield break;
     }
     #endregion
+
+    public override string ToString()
+    {
+        return $"{Key} | Name: {Name} | DependencyInfo: {DependencyInfo}";
+    }
 }

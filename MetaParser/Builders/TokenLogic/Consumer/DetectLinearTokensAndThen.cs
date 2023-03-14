@@ -23,7 +23,7 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
 #if DEBUG
         writer.WriteLine("// Linear consumers");
 #endif
-        var sortedConsumers = context.WorkingSet.Consumers.OrderByDescending(static (c) => c.DependencyInfo.Depth[(int)NodeType.Token].Max).ThenByDescending(static (c) => c.Start.Length);
+        var sortedConsumers = context.WorkingSet.Consumers.OrderByDescending(static (c) => c.DependencyInfo.TreeDepth.Max).ThenByDescending(static (c) => c.Start.Length);
         writer.WriteLine($"switch ({VarNameBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;

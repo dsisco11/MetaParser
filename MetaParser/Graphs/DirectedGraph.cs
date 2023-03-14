@@ -113,10 +113,16 @@ internal partial class DirectedGraph
             var node = nodes[item.Key];
             item.Value.Incoming = node.Incoming.Select((k) => resolved[k]).ToImmutableHashSet();
             item.Value.Outgoing = node.Outgoing.Select((k) => resolved[k]).ToImmutableHashSet();
-            var outNodeTypes = item.Value.Outgoing.Select(static x => x.Key.Type).Distinct();
-            foreach (var nodeType in outNodeTypes)
+
+            var hasLinks = item.Value.Outgoing.Any();
+            if (hasLinks)
             {
-                item.Value.Zero_Depth(nodeType);
+                item.Value.Zero_Tree_Depth();
+                var hasSimilarLinks = item.Value.Outgoing.Any(x => x.Key.Type == item.Key.Type);
+                if (hasSimilarLinks)
+                {
+                    item.Value.Zero_Node_Depth();
+                }
             }
         }
 
