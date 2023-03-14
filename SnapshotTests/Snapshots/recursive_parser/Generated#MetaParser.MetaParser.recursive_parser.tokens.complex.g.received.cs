@@ -39,7 +39,7 @@ namespace UnitTestParser
                     
                     while (buffer.Length > 0)
                     {
-                        if (buffer is [ TokenId.Declaration, ..])
+                        if (buffer is [ is_declaration_token_start(), ..])
                         /* If we have a set of valid CONSUME targets, then try and consume as many as possible (STOP sequence should be mutually exclusive with CONSUME sequence) */
                         {
                             buffer = buffer.Slice(1);

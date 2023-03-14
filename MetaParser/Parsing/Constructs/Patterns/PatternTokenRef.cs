@@ -22,23 +22,16 @@ internal sealed record PatternTokenRef : Pattern
     }
     #endregion
 
+    #region Accessors
     public override int Length => 1;
     public override bool IsRawValues => true;
     public override bool IsInlinable
     { 
-        get
-        {
-            if (!Registry.TryGetToken(_tokenName, out var token))
-            {
-                throw new UnknownTokenException(_tokenName);
-            }
-
-            // if this token depends on another non-data token, then it has complex requirements and cannot be inlined
-            return token.DependencyInfo.NodeDepth.Max < 2;
-        }
+        get => GetToken().DependencyInfo.NodeDepth.Max == 0;
     }
     public override bool IsConstantLength => true;
     public override bool HasChildren => false;
+    #endregion
 
 
     public override Pattern Combine(Pattern other, MetaParserContext context)
@@ -60,4 +53,14 @@ internal sealed record PatternTokenRef : Pattern
 
         yield return new EntityLink(Key, token.Key);
     }
+
+    public TokenInfo GetToken()
+    {
+        if (!Registry.TryGetToken(_tokenName, out var token))
+        {
+            throw new UnknownTokenException(_tokenName);
+        }
+        return token;
+    }
+
 }

@@ -42,14 +42,6 @@ internal class TokenProcessor : MetaCodeBuilder
 
         #region Local Sub-Functions
 
-        //foreach (var consumer in consumersRecursive)
-        //{
-        //    var funcName = Format_Token_Start_Detection_Function_Name(consumer.Token.Name);
-        //    var funcDef = Get_Local_Token_Detection_Function_Definition(context.Config, consumer.Type, funcName);
-        //    var lesserConsumers = consumer.Token.GetConsumers().Where((c) => c.DependencyInfo!.MinDepth <= consumer.DependencyInfo!.MinDepth).ToArray();
-        //    funcDef.WriteTo(context with { WorkingSet = context.WorkingSet with { Consumers = lesserConsumers } });
-        //}
-
         // generate token consumer functions
         var workingContext = context with { };
         foreach (var consumer in context.WorkingSet.Consumers)
