@@ -22,8 +22,8 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     #endregion
 
     #region Accessors
-    public int Index => NodeID.Index;
-    public KeyTreeNode<EntityKey> HierarchyNode => Registry.Tree[NodeID] ?? throw new MetaParserException($"Cannot find hierarchy node for '{NodeID}'");
+    public int Index => Key.Index;
+    public KeyTreeNode<EntityKey> HierarchyNode => Registry.Tree[Key] ?? throw new MetaParserException($"Cannot find hierarchy node for '{Key}'");
     public TokenInfo Token
     {
         get
@@ -31,7 +31,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
             var parent = HierarchyNode.Parent;
             if (parent is null)
             {
-                throw new MetaParserException($"Cannot resolve token for consumer without parent node: {NodeID}");
+                throw new MetaParserException($"Cannot resolve token for consumer without parent node: {Key}");
             }
 
             var tokenKey = parent.Value;
@@ -83,7 +83,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     {
         Type = consumer.Type;
         context.WorkingSet.Consumers[0] = this;
-        context.Registry.AddConsumer(this, context.WorkingSet.Tokens.Single().NodeID);
+        context.Registry.AddConsumer(this, context.WorkingSet.Tokens.Single().Key);
 
         if (consumer.Start is null && consumer.Consume is null)
         {
@@ -119,7 +119,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     #region IComparable
     public int CompareTo(Consumer other)
     {
-        return NodeID.CompareTo(other.NodeID);
+        return Key.CompareTo(other.Key);
     }
     #endregion
 
@@ -132,17 +132,17 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
         //}
 
         // Link the consumers token to it
-        yield return new EntityLink(Token.NodeID, NodeID);
+        yield return new EntityLink(Token.Key, Key);
 
         // link the consumer to all of its immediate pattern groups
         if (Start is not null)
         {
-            yield return new EntityLink(NodeID, Start.NodeID);
+            yield return new EntityLink(Key, Start.Key);
         }
 
         if (Consume is not null)
         {
-            yield return new EntityLink(NodeID, Consume.NodeID);
+            yield return new EntityLink(Key, Consume.Key);
         }
         else if (IsClosed)
         {// Closed tokens with an ambiguous consume clause are inherently dependent on all other defined tokens as they can consume anything
@@ -151,19 +151,19 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
             {
                 if (Registry.TryGetToken(tokenName, out var outToken))
                 {
-                    yield return new EntityLink(Token.NodeID, outToken.NodeID);
+                    yield return new EntityLink(Token.Key, outToken.Key);
                 }
             }
         }
 
         if (Stop is not null)
         {
-            yield return new EntityLink(NodeID, Stop.NodeID);
+            yield return new EntityLink(Key, Stop.Key);
         }
 
         if (Escape is not null)
         {
-            yield return new EntityLink(NodeID, Escape.NodeID);
+            yield return new EntityLink(Key, Escape.Key);
         }
 
         yield break;

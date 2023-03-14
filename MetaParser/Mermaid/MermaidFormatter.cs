@@ -88,7 +88,7 @@ internal class MermaidFormatter
         {
             PatternConst c => $@"{SymbolDisplay.FormatLiteral(c.Value, true)}",
             PatternRange r => $"[{r.Begin}, {r.End}]",
-            PatternGroup g => $@"""{{{g.NodeID.Index}}}""",
+            PatternGroup g => $@"""{{{g.Key.Index}}}""",
             PatternTokenRef t => $@"""#{t.TokenName}""",
             _ => throw new System.NotImplementedException(),
         };

@@ -29,32 +29,32 @@ internal class MetaParserRegistry
     #region Item Management
     public void AddToken(TokenInfo token)
     {
-        if (_tokens.ContainsKey(token.NodeID))
+        if (_tokens.ContainsKey(token.Key))
         {
             throw new ArgumentException($"Token '{token.Name}' already exists in the registry.");
         }
-        _tokens.Add(token.NodeID, token);
-        Tree.Add(token.NodeID);
+        _tokens.Add(token.Key, token);
+        Tree.Add(token.Key);
     }
 
     public void AddConsumer(Consumer consumer, EntityKey parentKey)
     {
-        if (_consumers.ContainsKey(consumer.NodeID))
+        if (_consumers.ContainsKey(consumer.Key))
         {
-            throw new ArgumentException($"Consumer '{consumer.NodeID}' already exists in the registry.");
+            throw new ArgumentException($"Consumer '{consumer.Key}' already exists in the registry.");
         }
-        _consumers.Add(consumer.NodeID, consumer);
-        Tree.AddEdge(consumer.NodeID, parentKey);
+        _consumers.Add(consumer.Key, consumer);
+        Tree.AddEdge(consumer.Key, parentKey);
     }
 
     public void AddPattern(Pattern pattern, EntityKey parentKey)
     {
-        if (_patterns.ContainsKey(pattern.NodeID))
+        if (_patterns.ContainsKey(pattern.Key))
         {
-            throw new ArgumentException($"Pattern '{pattern.NodeID}' already exists in the registry.");
+            throw new ArgumentException($"Pattern '{pattern.Key}' already exists in the registry.");
         }
-        _patterns.Add(pattern.NodeID, pattern);
-        Tree.AddEdge(pattern.NodeID, parentKey);
+        _patterns.Add(pattern.Key, pattern);
+        Tree.AddEdge(pattern.Key, parentKey);
     }
     #endregion
 

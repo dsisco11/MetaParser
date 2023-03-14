@@ -110,7 +110,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
     {
         foreach(Pattern item in _items)
         {
-            yield return new EntityLink(NodeID, item.NodeID);
+            yield return new EntityLink(Key, item.Key);
         }
 
         yield break;

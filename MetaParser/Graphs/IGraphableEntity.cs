@@ -7,7 +7,7 @@ namespace MetaParser.Parsing.Constructs
 {
     internal interface IGraphableEntity
     {
-        public EntityKey NodeID { get; }
+        public EntityKey Key { get; }
         public IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry);
     }
 }

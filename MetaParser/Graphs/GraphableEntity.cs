@@ -19,14 +19,14 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
     #endregion
 
     #region Accessors
-    public EntityKey NodeID => _key;
+    public EntityKey Key => _key;
     public MetaParserRegistry Registry
     {
         get
         {
             if (!_registry.TryGetTarget(out var registry))
             {
-                throw new MetaParserException($"Cannot resolve registry for graphable entity: {NodeID}");
+                throw new MetaParserException($"Cannot resolve registry for graphable entity: {Key}");
             }
 
             return registry;

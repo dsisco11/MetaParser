@@ -14,11 +14,11 @@ internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
     #endregion
 
     #region Accessors
-    public int Index => NodeID.Index;
+    public int Index => Key.Index;
 
     public IEnumerable<Consumer> GetConsumers()
     {
-        if (!Registry.Tree.TryGetNode(NodeID, out var tokenNode))
+        if (!Registry.Tree.TryGetNode(Key, out var tokenNode))
         {
             yield break;
         }
@@ -41,7 +41,7 @@ internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
     #region IComparable
     public int CompareTo(TokenInfo other)
     {
-        return NodeID.CompareTo(other.NodeID);
+        return Key.CompareTo(other.Key);
     }
     #endregion
 

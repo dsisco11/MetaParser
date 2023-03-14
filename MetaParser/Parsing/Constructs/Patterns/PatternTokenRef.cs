@@ -59,6 +59,6 @@ internal sealed record PatternTokenRef : Pattern
             throw new UnknownTokenException(_tokenName);
         }
 
-        yield return new EntityLink(NodeID, token.NodeID);
+        yield return new EntityLink(Key, token.Key);
     }
 }
