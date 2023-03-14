@@ -100,31 +100,12 @@ internal partial class DirectedGraph
     /// </summary>
     /// <param name="graph"></param>
     /// <returns></returns>
-    public Dictionary<EntityKey, ResolvedNode> Resolve()
+    public ImmutableDictionary<EntityKey, ResolvedNode> Resolve()
     {
-        // TODO: nodes should inherit the depth of their children
         var count = Count;
         var in_degrees = nodes.Keys.ToDictionary(static (x) => x, (x) => nodes[x].Outgoing.Count);
-        var resolved = nodes.Keys.ToDictionary(static (x) => x, (x) => new ResolvedNode(x));
         var queue = new Queue<EntityKey>(in_degrees.Where(static (x) => x.Value == 0).Select(static (x) => x.Key));
-
-        foreach (var item in resolved)
-        {
-            var node = nodes[item.Key];
-            item.Value.Incoming = node.Incoming.Select((k) => resolved[k]).ToImmutableHashSet();
-            item.Value.Outgoing = node.Outgoing.Select((k) => resolved[k]).ToImmutableHashSet();
-
-            var hasLinks = item.Value.Outgoing.Any();
-            if (hasLinks)
-            {
-                item.Value.Zero_Tree_Depth();
-                var hasSimilarLinks = item.Value.Outgoing.Any(x => x.Key.Type == item.Key.Type);
-                if (hasSimilarLinks)
-                {
-                    item.Value.Zero_Node_Depth();
-                }
-            }
-        }
+        Dictionary<EntityKey, ResolutionData> resolved = nodes.Keys.ToDictionary(static (k) => k, static (k) => new ResolutionData(k.Type));
 
         int order = 0;
         while (queue.Count > 0)
@@ -135,7 +116,7 @@ internal partial class DirectedGraph
 
             foreach (var id in nodes[key].Incoming)
             {
-                in_degrees[id] -= 1;
+                in_degrees[id] -= 1;// "remove" the edge from the node
                 var node = resolved[id];
                 node.Update_Depth(ancestorNode);
 
@@ -160,7 +141,56 @@ internal partial class DirectedGraph
             }
         }
 
-        return resolved;
+        return resolved.ToImmutableDictionary(static (kvp) => kvp.Key, (kvp) =>
+        {
+            var data = kvp.Value;
+            var node = nodes[kvp.Key];
+            return new ResolvedNode(kvp.Key,
+                                    node.Incoming.ToImmutableHashSet(),
+                                    node.Outgoing.ToImmutableHashSet(),
+                                    data.Order,
+                                    data.IsRecursive,
+                                    data.TreeDepth,
+                                    data.NodeDepth);
+        });
+    }
+    #endregion
+
+    #region Classes
+    private class ResolutionData
+    {
+        #region Fields
+        public readonly NodeType Type;
+        public int Order { get; set; } = int.MaxValue;
+        public bool IsRecursive { get; set; }
+        public NodeDepth? TreeDepth { get; private set; }
+        public NodeDepth? NodeDepth { get; private set; }
+        #endregion
+
+        #region Constructors
+        public ResolutionData(NodeType type)
+        {
+            Type = type;
+        }
+        #endregion
+
+        public void Update_Depth(ResolutionData ancestorNode)
+        {
+            TreeDepth = new()
+            {
+                Min = Math.Min(TreeDepth?.Min ?? int.MaxValue, (ancestorNode.TreeDepth?.Min + 1) ?? 1),
+                Max = Math.Max(TreeDepth?.Max ?? int.MinValue, (ancestorNode.TreeDepth?.Max + 1) ?? 1)
+            };
+
+            if (Type == ancestorNode.Type)
+            {
+                NodeDepth = new()
+                {
+                    Min = Math.Min(NodeDepth?.Min ?? int.MaxValue, (ancestorNode.NodeDepth?.Min + 1) ?? 1),
+                    Max = Math.Max(NodeDepth?.Max ?? int.MinValue, (ancestorNode.NodeDepth?.Max + 1) ?? 1)
+                };
+            }
+        }
     }
     #endregion
 }

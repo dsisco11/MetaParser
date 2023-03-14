@@ -15,7 +15,7 @@ Token_11 | Name: newline | DependencyInfo: Token_11 | Order: 67 | IsRecursive: F
 Token_12 | Name: identifier | DependencyInfo: Token_12 | Order: 77 | IsRecursive: False | TreeDepth: [3, 4] | NodeDepth: [0, 0]
 Token_13 | Name: comment | DependencyInfo: Token_13 | Order: 88 | IsRecursive: True | TreeDepth: [3, 7] | NodeDepth: [1, 1]
 Token_14 | Name: declaration | DependencyInfo: Token_14 | Order: 88 | IsRecursive: True | TreeDepth: [4, 8] | NodeDepth: [1, 1]
-Token_15 | Name: codeblock | DependencyInfo: Token_15 | Order: 88 | IsRecursive: True | TreeDepth: [2147483647, -2147483648] | NodeDepth: [0, 0]
+Token_15 | Name: codeblock | DependencyInfo: Token_15 | Order: 88 | IsRecursive: True | TreeDepth: [0, 0] | NodeDepth: [0, 0]
 
 Consumer_1 | Order: 42 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
 Consumer_2 | Order: 43 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
@@ -92,8 +92,8 @@ Pattern_55 | Order: 73 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0,
 Pattern_56 | Order: 79 | IsRecursive: False | TreeDepth: [5, 5] | NodeDepth: [1, 1]
 Pattern_57 | Order: 74 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
 Pattern_58 | Order: 80 | IsRecursive: False | TreeDepth: [5, 5] | NodeDepth: [1, 1]
-Pattern_59 | Order: 88 | IsRecursive: True | TreeDepth: [2147483647, -2147483648] | NodeDepth: [0, 0]
-Pattern_60 | Order: 88 | IsRecursive: True | TreeDepth: [2147483647, -2147483648] | NodeDepth: [2147483647, -2147483648]
+Pattern_59 | Order: 88 | IsRecursive: True | TreeDepth: [0, 0] | NodeDepth: [0, 0]
+Pattern_60 | Order: 88 | IsRecursive: True | TreeDepth: [0, 0] | NodeDepth: [0, 0]
 Pattern_61 | Order: 75 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
 Pattern_62 | Order: 81 | IsRecursive: False | TreeDepth: [5, 5] | NodeDepth: [1, 1]
 ```

@@ -22,7 +22,7 @@ namespace UnitTestParser
                 * TokenID: codeblock (#15)
                 * ==[ CONSUMER_DATA ]==
                 * START: PatternGroup { DependencyInfo = Pattern_58 | Order: 80 | IsRecursive: False | TreeDepth: [5, 5] | NodeDepth: [1, 1], Key = Pattern_58, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
-                * CONSUME: PatternGroup { DependencyInfo = Pattern_60 | Order: 88 | IsRecursive: True | TreeDepth: [2147483647, -2147483648] | NodeDepth: [2147483647, -2147483648], Key = Pattern_60, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = False, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = OneOf, ConditionJoiner =  or , MinLength = 1 }
+                * CONSUME: PatternGroup { DependencyInfo = Pattern_60 | Order: 88 | IsRecursive: True | TreeDepth: [0, 0] | NodeDepth: [0, 0], Key = Pattern_60, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = False, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = OneOf, ConditionJoiner =  or , MinLength = 1 }
                 * STOP: PatternGroup { DependencyInfo = Pattern_62 | Order: 81 | IsRecursive: False | TreeDepth: [5, 5] | NodeDepth: [1, 1], Key = Pattern_62, Registry = MetaParser.Core.MetaParserRegistry, Length = 1, IsRawValues = True, IsInlinable = True, IsConstantLength = True, HasChildren = True, Condition = AllOf, ConditionJoiner = , , MinLength = 1 }
                 */
                 /* Consume the START sequence which got us here in the first place, we already know its part of the token */

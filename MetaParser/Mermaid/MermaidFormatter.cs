@@ -101,11 +101,11 @@ internal class MermaidFormatter
         // output all resolved nodes in mermaid entity diagram format
         foreach (var entry in resolved)
         {
-            foreach (var dep in entry.Value.Outgoing)
+            foreach (var entityKey in entry.Value.Outgoing)
             {
                 writer.Write(entry.Key);
                 writer.Write(" --> ");
-                writer.Write(dep.Key);
+                writer.Write(entityKey);
                 writer.WriteLine();
             }
         }
