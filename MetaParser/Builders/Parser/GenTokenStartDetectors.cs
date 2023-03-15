@@ -12,7 +12,10 @@ internal class GenTokenStartDetectors : MetaCodeBuilder
 {
     public static FunctionDefinition Get_Function_Definition(MetaParserConfig config, EConsumerType type, string name)
     {
-        return (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTokens("private static"), SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}")).And(config.CodeFactory.Get_Logic_Detect_Recursive_Pattern());
+        return (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTokens("private static"),
+                                                          SyntaxFactory.ParseTypeName("bool"),
+                                                          name,
+                                                          SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(config, type)} {VarNameBufferMajor}")).And(config.CodeFactory.Get_Logic_Detect_Recursive_Pattern());
     }
 
     protected override void Write(MetaParserContext context)

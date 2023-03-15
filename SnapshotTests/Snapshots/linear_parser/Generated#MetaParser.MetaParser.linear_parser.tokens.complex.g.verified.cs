@@ -3,7 +3,7 @@ namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        private static bool TryProcessComplex(global::System.ReadOnlySpan<byte> input, out byte id, out int length)
+        private static bool TryProcessComplex(global::System.ReadOnlySpan<byte> buffer0, out byte id, out int length)
         {
             id = default;
             length = default;

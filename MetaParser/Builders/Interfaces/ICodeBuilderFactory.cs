@@ -3,7 +3,7 @@
 internal interface ICodeBuilderFactory
 {
     IMetaCodeBuilder Get_Parsing_Logic();
-    IMetaCodeBuilder Get_Token_Consumer_Logic();
+    IMetaCodeBuilder Get_Logic_Consumer_Match();
     IMetaCodeBuilder Get_Logic_Detect_Linear_Token();
     IMetaCodeBuilder Get_Logic_Detect_Recursive_Token();
     IMetaCodeBuilder Get_Token_ID_Constants_Builder();
@@ -11,4 +11,6 @@ internal interface ICodeBuilderFactory
     IMetaCodeBuilder Get_Token_Processing_Logic();
     IMetaCodeBuilder Get_Token_Struct_Builder();
     IMetaCodeBuilder Get_Logic_Detect_Recursive_Pattern();
+    IMetaCodeBuilder Get_Logic_Pattern_Match();
+    IMetaCodeBuilder Get_Logic_Pattern_Matching_Switch_Clause();
 }

@@ -23,10 +23,10 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
         var orderedItems = context.WorkingSet.Consumers.Select(static (x) => x.Token)
                                                           .Distinct()
                                                           .OrderByDescending(static (t) => t.DependencyInfo.NodeDepth.Max)
-                                                          .ThenByDescending(static (t) => t.GetConsumers().Max(static (c) => c.Start.Length));
+                                                          .ThenByDescending(static (t) => t.GetConsumers().Max(static (c) => c.Start.MaxLogicalLength));
         foreach (TokenInfo token in orderedItems)
         {
-            writer.WriteLine($"if ({Format_Token_Start_Detection_Function_Name(token.Name)}({VarNameBufferMajor}))");
+            writer.WriteLine($"if ({Format_Token_Start_Detection_Function_Name(token.Name)}({context.ActiveBufferName}))");
             writer.WriteLine("{");
             writer.Indent++;
 

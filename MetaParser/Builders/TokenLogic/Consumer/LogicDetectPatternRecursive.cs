@@ -34,7 +34,7 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
         foreach (var consumer in tokenConsumers)
         {
             writer.Write("[");
-            writer.Write(PatternFormatter.Format(consumer.Start));
+            context.Config.CodeFactory.Get_Logic_Pattern_Matching_Switch_Clause().WriteTo(context with { WorkingSet = new WorkingSet(consumer.Token, consumer, consumer.Start) });
             writer.Write(", ");
 
             if (consumer.Consume is not null)

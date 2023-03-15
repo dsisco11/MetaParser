@@ -8,7 +8,6 @@ using static CodeCommon;
 
 internal class TokenProcessor : MetaCodeBuilder
 {
-
     protected override void Write(MetaParserContext context)
     {
         var writer = context.writer;
@@ -53,7 +52,7 @@ internal class TokenProcessor : MetaCodeBuilder
 
             workingContext.WorkingSet = new(consumer);
             var funcName = Format_Pattern_Consumer_Function_Name(consumer.Key.Index);
-            var funcDef = Get_Local_Token_Consumer_Function_Definition(context.Config, consumer.Type, funcName);
+            var funcDef = Get_Local_Token_Consumer_Function_Definition(context, consumer.Type, funcName);
             funcDef.WriteTo(workingContext);
         }
         #endregion

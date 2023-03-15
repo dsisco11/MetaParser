@@ -221,7 +221,6 @@ public partial class Generator : IIncrementalGenerator
         // Any token which has an incoming link must have a start detection function
         context.RegisterSourceOutput(ctxParserTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
         {
-            //var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo!.Incoming.Any(static (x) => x.Key.Type == Graphs.NodeType.Token && x.Depth[(int)NodeType.Token].Max > 0));
             var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo.NodeDepth.Max > 0);
             return (parser with { WorkingSet = new WorkingSet(tokens) });
         }), 
@@ -249,7 +248,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context.Config, EConsumerType.Data, CodeCommon.ConstantTokenProcessorFunctionName);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Data, CodeCommon.ConstantTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);
@@ -269,7 +268,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context.Config, EConsumerType.Token, CodeCommon.CompoundTokenProcessorFunctionName);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Token, CodeCommon.CompoundTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);
@@ -289,7 +288,7 @@ public partial class Generator : IIncrementalGenerator
             using IndentedTextWriter writer = new(new StringWriter());
             context = context with { writer = writer };
 
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context.Config, EConsumerType.Token, CodeCommon.ComplexTokenProcessorFunctionName);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Token, CodeCommon.ComplexTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);

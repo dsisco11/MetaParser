@@ -1,6 +1,7 @@
 ﻿using MetaParser.Parsing.Constructs;
 
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +12,7 @@ namespace MetaParser.Core;
 /// </summary>
 internal record WorkingSet
 {
-    #region Fields
+    #region Properties
     public TokenInfo[] Tokens { get; set; } = Array.Empty<TokenInfo>();
     public Consumer[] Consumers { get; set; } = Array.Empty<Consumer>();
     public Pattern[] Patterns { get; set; } = Array.Empty<Pattern>();
@@ -48,6 +49,13 @@ internal record WorkingSet
         Tokens = tokens.ToArray();
         Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).ToArray();
         Patterns = Consumers.SelectMany(static (x) => x.Patterns).ToArray();
+    }
+
+    public WorkingSet(TokenInfo token, Consumer consumer, params Pattern[] patterns)
+    {
+        Patterns = patterns;
+        Consumers = new[] { consumer };
+        Tokens = new[] { token };
     }
     #endregion
 }
