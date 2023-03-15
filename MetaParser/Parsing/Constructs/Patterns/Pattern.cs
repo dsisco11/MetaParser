@@ -1,6 +1,7 @@
 ﻿using MetaParser.Core;
 using MetaParser.Graphs;
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +13,14 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     /// <summary>
     /// Indicates the length of this pattern when rendered as a sequence
     /// </summary>
+    [Obsolete("use MinLogicalLength or MaxLogicalLength instead.")]
     public abstract int Length { get; }
     /// <summary>
     /// Indicates whether the fully resolved pattern represents only constant values
     /// </summary>
     public abstract bool IsRawValues { get; }
     /// <summary>
-    /// Indicates whether the fully resolved pattern only represents values which can all be inline evaluated
+    /// Indicates whether the fully resolved pattern only represents values which can always be expressed as inline statements, eg no function calls
     /// </summary>
     public abstract bool IsInlinable { get; }
     /// <summary>
@@ -26,9 +28,21 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     /// </summary>
     public abstract bool IsConstantLength { get; }
     /// <summary>
-    /// Indicates whether the pattern contains other patterns
+    /// Indicates whether the pattern contains nested patterns
     /// </summary>
     public abstract bool HasChildren { get; }
+    /// <summary>
+    /// Indicates the length of the shortest nested pattern sequence, or 1 if this pattern has no nested sequences
+    /// </summary>
+    public abstract int MinLogicalLength { get; }
+    /// <summary>
+    /// Indicates the length of the longest nested pattern sequence, or 1 if this pattern has no nested sequences
+    /// </summary>
+    public abstract int MaxLogicalLength { get; }
+    /// <summary>
+    /// Indicated whether the pattern involves a logical operation sequence such as (x and y) or (x or y)
+    /// </summary>
+    public abstract bool IsLogical { get; }
     #endregion
 
     #region Constructors

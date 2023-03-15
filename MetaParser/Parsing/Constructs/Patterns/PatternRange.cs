@@ -25,11 +25,16 @@ internal sealed record PatternRange : Pattern
     }
     #endregion
 
+    #region Accessors
     public override bool IsRawValues => false;
     public override bool IsInlinable => true;
     public override bool IsConstantLength => Begin.Length == End.Length;
     public override int Length => string.IsNullOrEmpty(Begin) && string.IsNullOrEmpty(End) ? 0 : 1;
     public override bool HasChildren => false;
+    public override int MinLogicalLength => 2;// ranges require 2 logical checks
+    public override int MaxLogicalLength => 2;
+    public override bool IsLogical => true;
+    #endregion
 
     public override Pattern Combine(Pattern other, MetaParserContext context)
     {

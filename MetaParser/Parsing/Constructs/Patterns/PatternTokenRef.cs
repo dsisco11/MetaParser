@@ -24,13 +24,16 @@ internal sealed record PatternTokenRef : Pattern
 
     #region Accessors
     public override int Length => 1;
-    public override bool IsRawValues => true;
+    public override bool IsRawValues => IsInlinable;
     public override bool IsInlinable
     { 
         get => GetToken().DependencyInfo.NodeDepth.Max == 0;
     }
     public override bool IsConstantLength => true;
     public override bool HasChildren => false;
+    public override int MinLogicalLength => 1;
+    public override int MaxLogicalLength => 1;
+    public override bool IsLogical => false;
     #endregion
 
 

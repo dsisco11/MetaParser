@@ -21,11 +21,16 @@ internal sealed record PatternConst : Pattern
     }
     #endregion
 
+    #region Accessors
     public override bool IsRawValues => true;
     public override bool IsInlinable => true;
     public override bool IsConstantLength => true;
     public override int Length => string.IsNullOrEmpty(Value) ? 0 : 1;
     public override bool HasChildren => false;
+    public override int MinLogicalLength => 1;
+    public override int MaxLogicalLength => 1;
+    public override bool IsLogical => false;
+    #endregion
 
 
     public override Pattern Combine(Pattern other, MetaParserContext context)

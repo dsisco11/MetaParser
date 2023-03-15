@@ -37,21 +37,13 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
         };
     }
 
+    public override bool HasChildren => _items.Length > 0;
     public override int Length
     {
         get => Condition switch
         {
-            EPatternCondition.OneOf => Items.Length > 0 ? Items.Max(x => x.Length) : 0,
-            _ => Items.Sum((p) => p.Length)
-        };
-    }
-
-    public int MinLength
-    {
-        get => Condition switch
-        {
-            EPatternCondition.OneOf => Items.Length > 0 ? Items.Min(x => x.Length) : 0,
-            _ => Items.Sum((p) => p.Length)
+            EPatternCondition.OneOf => _items.Length > 0 ? _items.Max(static (x) => x.Length) : 0,
+            _ => _items.Sum(static (p) => p.Length)
         };
     }
 
@@ -61,7 +53,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
         {
             return Condition switch
             {
-                EPatternCondition.AllOf => !Items.Any(x => !x.IsRawValues),
+                EPatternCondition.AllOf => !_items.Any(static (x) => !x.IsRawValues),
                 EPatternCondition.OneOf => false,
                 _ => false
             };
@@ -70,11 +62,48 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
 
     public override bool IsInlinable
     {
-        get => Items.Length > 1 ? Items.All(x => x.IsInlinable) : Items.Length == 1 ? Items[0].IsInlinable : false;
+        get => _items.Length > 1 ? _items.All(static (x) => x.IsInlinable) : _items.Length == 1 && _items[0].IsInlinable;
     }
 
-    public override bool IsConstantLength => !_items.Any(x => !x.IsConstantLength);
-    public override bool HasChildren => true;
+    public override bool IsConstantLength => _items.Length > 1 ? _items.All(static (x) => x.IsConstantLength) : _items.Length == 1 && _items[0].IsConstantLength;
+    public override int MinLogicalLength
+    {
+        get
+        {
+            if (_items.Length == 1) return _items[0].MinLogicalLength;
+            return Condition switch
+            {
+                EPatternCondition.OneOf => _items.Min(static (x) => x.MinLogicalLength),
+                _ => _items.Sum(static (x) => x.MinLogicalLength)
+            };
+        }
+    }
+
+    public override int MaxLogicalLength
+    {
+        get
+        {
+            if (_items.Length == 1) return _items[0].MaxLogicalLength;
+            return Condition switch
+            {
+                EPatternCondition.OneOf => _items.Max(static (x) => x.MaxLogicalLength),
+                _ => _items.Sum(static (x) => x.MaxLogicalLength)
+            };
+        }
+    }
+
+    public override bool IsLogical
+    {
+        get
+        {
+            if (_items.Length == 1) return _items[0].IsLogical;
+            return Condition switch
+            {
+                EPatternCondition.OneOf when _items.Length > 1 => true,
+                _ => _items.Any(static (x) => x.IsLogical)
+            };
+        }
+    }
     #endregion
 
     public override Pattern Combine(Pattern other, MetaParserContext context)
@@ -94,7 +123,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
 
     public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
     {
-        foreach(Pattern item in _items)
+        foreach (Pattern item in _items)
         {
             yield return new EntityLink(Key, item.Key);
         }
