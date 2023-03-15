@@ -8,7 +8,7 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-internal class LogicDetectPatternRecursive : MetaCodeBuilder
+internal class LogicSingleTokenDetector : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
@@ -22,9 +22,9 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
 
         var targetToken = context.WorkingSet.Tokens.Single();
 
+        // TODO: Obsolete this once we move to the new lexer/parser split design
         // Check if its possible for the token to appear in the stream already from a lower stage.
         bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => c.Type == EConsumerType.Data);
-        //bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => c.DependencyInfo.Depth[(int)NodeType.Consumer].Min < );
         if (hasEarlierStages)
         {
             writer.WriteLine($"[{Format_Token_Id_Const_Ref(targetToken)}, ..] => true,");
@@ -34,7 +34,7 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
         foreach (var consumer in tokenConsumers)
         {
             writer.Write("[");
-            context.Config.CodeFactory.Get_Logic_Pattern_Matching_Switch_Clause().WriteTo(context with { WorkingSet = new WorkingSet(consumer.Token, consumer, consumer.Start) });
+            context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context with { WorkingSet = new WorkingSet(consumer.Token, consumer, consumer.Start) });
             writer.Write(", ");
 
             if (consumer.Consume is not null)

@@ -10,7 +10,7 @@ internal interface ICodeBuilderFactory
     IMetaCodeBuilder Get_Token_ID_Enum_Builder();
     IMetaCodeBuilder Get_Token_Processing_Logic();
     IMetaCodeBuilder Get_Token_Struct_Builder();
-    IMetaCodeBuilder Get_Logic_Detect_Recursive_Pattern();
+    IMetaCodeBuilder Get_Logic_Single_Token_Detector();
     IMetaCodeBuilder Get_Logic_Pattern_Match();
-    IMetaCodeBuilder Get_Logic_Pattern_Matching_Switch_Clause();
+    IMetaCodeBuilder Get_Pattern_Writer();
 }

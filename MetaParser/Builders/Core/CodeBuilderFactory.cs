@@ -15,7 +15,7 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
     private readonly IMetaCodeBuilder _token_id_enum_builder;
     private readonly IMetaCodeBuilder _token_struct_builder;
     private readonly IMetaCodeBuilder _token_pattern_matcher;
-    private readonly IMetaCodeBuilder _token_pattern_matching_switch_clause;
+    private readonly IMetaCodeBuilder _token_pattern_expression_writer;
     #endregion
 
     public CodeBuilderFactory(MetaParserConfig config)
@@ -27,7 +27,7 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
         _token_id_enum_builder = new TokenIDEnumBuilder();
         _token_struct_builder = new TokenStructBuilder();
         _token_pattern_matcher = new LogicPatternMatcher();
-        _token_pattern_matching_switch_clause = new LogicPatternMatchingSwitchClause();
+        _token_pattern_expression_writer = new WritePatternAsExpression();
     }
 
     public IMetaCodeBuilder Get_Parsing_Logic() => _parsing_logic;
@@ -36,9 +36,9 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
 
     public IMetaCodeBuilder Get_Logic_Detect_Linear_Token() => new DetectLinearTokensAndThen();
     public IMetaCodeBuilder Get_Logic_Detect_Recursive_Token() => new DetectRecursiveTokensAndThen();
-    public IMetaCodeBuilder Get_Logic_Detect_Recursive_Pattern() => new LogicDetectPatternRecursive();
+    public IMetaCodeBuilder Get_Logic_Single_Token_Detector() => new LogicSingleTokenDetector();
     public IMetaCodeBuilder Get_Logic_Pattern_Match() => _token_pattern_matcher;
-    public IMetaCodeBuilder Get_Logic_Pattern_Matching_Switch_Clause() => _token_pattern_matching_switch_clause;
+    public IMetaCodeBuilder Get_Pattern_Writer() => _token_pattern_expression_writer;
 
 
     public IMetaCodeBuilder Get_Token_ID_Constants_Builder() => _token_id_constants_builder;

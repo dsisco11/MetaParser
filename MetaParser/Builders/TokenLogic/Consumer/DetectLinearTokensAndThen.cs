@@ -28,9 +28,9 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
         {
             workContext.WorkingSet = new WorkingSet(consumer.Token, consumer, consumer.Start);
 
-            writer.Write("case ");
-            context.Config.CodeFactory.Get_Logic_Pattern_Matching_Switch_Clause().WriteTo(workContext);
-            writer.WriteLine(":");
+            writer.Write("case [");
+            context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(workContext);
+            writer.WriteLine(", ..]:");
             writer.WriteLine("{");
             writer.Indent++;
 
