@@ -11,12 +11,12 @@ namespace UnitTestParser
                 case ['/', '*', ..]:
                 {
                     id = TokenId.Comment;
-                    return consume_pattern_13(input, out length);
+                    return consume_pattern_13(buffer0, out length);
                 }
                 case [((>='a' and <='z') or (>='A' and <='Z')), ((>='a' and <='z') or (>='A' and <='Z') or (>='0' and <='9') or '-' or '_'), ..]:
                 {
                     id = TokenId.Identifier;
-                    return consume_pattern_12(input, out length);
+                    return consume_pattern_12(buffer0, out length);
                 }
                 case ['/', ..]:
                 {
@@ -75,12 +75,12 @@ namespace UnitTestParser
                 case [(' ' or '\t' or '\f'), ..]:
                 {
                     id = TokenId.Whitespace;
-                    return consume_pattern_10(input, out length);
+                    return consume_pattern_10(buffer0, out length);
                 }
                 case [('\r' or '\n'), ..]:
                 {
                     id = TokenId.Newline;
-                    return consume_pattern_11(input, out length);
+                    return consume_pattern_11(buffer0, out length);
                 }
             }
             id = default;

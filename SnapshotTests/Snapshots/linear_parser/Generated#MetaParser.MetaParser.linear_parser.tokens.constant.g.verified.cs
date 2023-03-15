@@ -11,7 +11,7 @@ namespace UnitTestParser
                 case ['/', '*', ..]:
                 {
                     id = TokenId.Comment;
-                    return consume_pattern_26(input, out length);
+                    return consume_pattern_26(buffer0, out length);
                 }
                 case ['f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ..]:
                 {
@@ -40,7 +40,7 @@ namespace UnitTestParser
                 case [((>='a' and <='z') or (>='A' and <='Z')), ((>='a' and <='z') or (>='A' and <='Z') or (>='0' and <='9') or '-' or '_'), ..]:
                 {
                     id = TokenId.Identifier;
-                    return consume_pattern_20(input, out length);
+                    return consume_pattern_20(buffer0, out length);
                 }
                 case ['v', 'a', 'r', ..]:
                 {
@@ -57,12 +57,12 @@ namespace UnitTestParser
                 case [(>='0' and <='9'), ..]:
                 {
                     id = TokenId.Digits;
-                    return consume_pattern_17(input, out length);
+                    return consume_pattern_17(buffer0, out length);
                 }
                 case [((>='a' and <='z') or (>='A' and <='Z')), ..]:
                 {
                     id = TokenId.Letters;
-                    return consume_pattern_18(input, out length);
+                    return consume_pattern_18(buffer0, out length);
                 }
                 case ['{', ..]:
                 {
@@ -121,12 +121,12 @@ namespace UnitTestParser
                 case [(' ' or '\t' or '\f'), ..]:
                 {
                     id = TokenId.Whitespace;
-                    return consume_pattern_16(input, out length);
+                    return consume_pattern_16(buffer0, out length);
                 }
                 case [('\r' or '\n'), ..]:
                 {
                     id = TokenId.Newline;
-                    return consume_pattern_19(input, out length);
+                    return consume_pattern_19(buffer0, out length);
                 }
             }
             id = default;

@@ -26,7 +26,7 @@ internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
             var consumerId = consumer.Index;
             var consumerFunc = Format_Pattern_Consumer_Function_Name(consumerId);
             writer.WriteLine($"id = {Format_Token_Id_Const_Ref(consumer.Token.Name)};");
-            writer.WriteLine($"return {consumerFunc}({VarNameBufferMajor}, out length);");
+            writer.WriteLine($"return {consumerFunc}({context.ActiveBufferName}, out length);");
         }
         else
         {

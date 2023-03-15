@@ -3,9 +3,9 @@ namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        private static bool is_comment_token_start(global::System.ReadOnlySpan<byte> input)
+        private static bool is_comment_token_start(global::System.ReadOnlySpan<byte> buffer0)
         {
-            return input switch
+            return buffer0 switch
             {
                 [TokenId.Comment, ..] => true,
                 [[TokenId.Solidus, TokenId.Solidus, ..], ..] => true,
@@ -13,9 +13,9 @@ namespace UnitTestParser
                 _ => false
             };
         }
-        private static bool is_codeblock_token_start(global::System.ReadOnlySpan<byte> input)
+        private static bool is_codeblock_token_start(global::System.ReadOnlySpan<byte> buffer0)
         {
-            return input switch
+            return buffer0 switch
             {
                 [[TokenId.Open_Bracket, ..], ..] => true,
                 _ => false

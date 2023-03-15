@@ -18,33 +18,40 @@ internal class ConstantTokenStage : MetaCodeBuilder
         const string VarNameResults = "results";
         var writer = context.writer;
 
-        writer.WriteLine($"private static {TokenValueStructName}[] {FunctionName}({argumentType} {VarNameBufferMajor})");
+        string VarBufferMajor = context.ActiveBufferName;
+        context.ActiveBuffer++;
+        string VarBufferMinor = context.ActiveBufferName;
+        context.ActiveBuffer++;
+        string VarBufferLocal = context.ActiveBufferName;
+        context.ActiveBuffer--;
+
+        writer.WriteLine($"private static {TokenValueStructName}[] {FunctionName}({argumentType} {VarBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"var {VarNameBufferMinor} = {VarNameBufferMajor};");
-        writer.WriteLine($"var {VarNameBufferLocal} = {VarNameBufferMinor}.Span;");
+        writer.WriteLine($"var {VarBufferMinor} = {VarBufferMajor};");
+        writer.WriteLine($"var {VarBufferLocal} = {VarBufferMinor}.Span;");
         writer.WriteLine($"var {VarNameResults} = new {resultsBuilderType}();");
         writer.WriteLine();
 
-        writer.WriteLine($"while ({VarNameBufferLocal}.Length > 0)");
+        writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"if ({ConstantTokenProcessorFunctionName}({VarNameBufferLocal}, out var outId, out var outLength))");
+        writer.WriteLine($"if ({ConstantTokenProcessorFunctionName}({VarBufferLocal}, out var outId, out var outLength))");
         writer.WriteLine("{");
         writer.Indent++;
         // Be sure to push unknown token if its lingering
         UnknownTokenPusher.Instance.WriteTo(context);
         writer.WriteLine();
-        writer.WriteLine($"var consumed = {VarNameBufferMinor}.Slice(0, outLength);");
+        writer.WriteLine($"var consumed = {VarBufferMinor}.Slice(0, outLength);");
         writer.WriteLine($"{VarNameResults}.Add( new {TokenValueStructName}(outId, consumed) );");
-        writer.WriteLine($"{VarNameBufferMinor} = {VarNameBufferMinor}.Slice(outLength);");
-        writer.WriteLine($"{VarNameBufferLocal} = {VarNameBufferMinor}.Span;");
+        writer.WriteLine($"{VarBufferMinor} = {VarBufferMinor}.Slice(outLength);");
+        writer.WriteLine($"{VarBufferLocal} = {VarBufferMinor}.Span;");
         writer.Indent--;
         writer.WriteLine("}");
         writer.WriteLine("else");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"{VarNameBufferLocal} = {VarNameBufferLocal}.Slice(1);");
+        writer.WriteLine($"{VarBufferLocal} = {VarBufferLocal}.Slice(1);");
         writer.Indent--;
         writer.WriteLine("}");
 

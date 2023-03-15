@@ -9,7 +9,7 @@ namespace UnitTestParser
             if (is_codeblock_token_start(buffer0))
             {
                 id = TokenId.Codeblock;
-                return consume_pattern_16(input, out length);
+                return consume_pattern_16(buffer0, out length);
             }
             
             id = default;

@@ -18,12 +18,12 @@ internal record MetaParserContext : ICodeBuilderContext
     #endregion
 
     #region Accessors
-    public string LastBufferName => GetBufferName(ActiveBuffer - 1);
-    public string ActiveBufferName => GetBufferName(ActiveBuffer);
-    public string NextBufferName => GetBufferName(ActiveBuffer + 1);
+    public string LastBufferName => FormatBufferName(ActiveBuffer - 1);
+    public string ActiveBufferName => FormatBufferName(ActiveBuffer);
+    public string NextBufferName => FormatBufferName(ActiveBuffer + 1);
     #endregion
 
     #region Methods
-    private string GetBufferName(int buffer) => $"buffer{buffer}";
+    private string FormatBufferName(int buffer) => $"buffer{buffer}";
     #endregion
 }

@@ -38,13 +38,6 @@ internal static class CodeCommon
     public const string TokenValueStructName = "ValueToken";
     public const string TokenRecordTypeName = "Token";
 
-    /// <summary>Name of first buffer used in any method</summary>
-    public const string VarNameBufferMajor = "input";
-    /// <summary>Name of second buffer used in any method</summary>
-    public const string VarNameBufferMinor = "buffer";
-    /// <summary>Name of third buffer used in any method</summary>
-    public const string VarNameBufferLocal = "reader";
-
     public const string ConstantTokenProcessorFunctionName = "TryProcessConstant";
     public const string CompoundTokenProcessorFunctionName = "TryProcessCompound";
     public const string ComplexTokenProcessorFunctionName = "TryProcessComplex";

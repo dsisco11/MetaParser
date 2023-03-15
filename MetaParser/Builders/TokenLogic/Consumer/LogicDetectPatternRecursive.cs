@@ -14,7 +14,7 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
     {
         var writer = context.writer;
 
-        writer.WriteLine($"return {VarNameBufferMajor} switch");
+        writer.WriteLine($"return {context.ActiveBufferName} switch");
         writer.WriteLine("{");
         writer.Indent++;
 
@@ -39,7 +39,7 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
 
             if (consumer.Consume is not null)
             {
-                writer.Write($"var {VarNameBufferMinor}] when (");
+                writer.Write($"var {context.NextBufferName}] when (");
 
                 bool first = true;
                 foreach (var pattern in consumer.Consume)
@@ -53,7 +53,7 @@ internal class LogicDetectPatternRecursive : MetaCodeBuilder
 
                     if (pattern is PatternTokenRef tokenRef)
                     {
-                        writer.Write($"{Format_Token_Start_Detection_Function_Name(tokenRef.TokenName)}({VarNameBufferMinor})");
+                        writer.Write($"{Format_Token_Start_Detection_Function_Name(tokenRef.TokenName)}({context.NextBufferName})");
                     }
                 }
                 writer.Write(")");

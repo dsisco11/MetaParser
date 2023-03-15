@@ -11,12 +11,12 @@ namespace UnitTestParser
                 case [TokenId.Solidus, TokenId.Solidus, ..]:
                 {
                     id = TokenId.Comment;
-                    return consume_pattern_14(input, out length);
+                    return consume_pattern_14(buffer0, out length);
                 }
                 case [TokenId.Identifier, TokenId.Colon, ..]:
                 {
                     id = TokenId.Declaration;
-                    return consume_pattern_15(input, out length);
+                    return consume_pattern_15(buffer0, out length);
                 }
             }
             id = default;

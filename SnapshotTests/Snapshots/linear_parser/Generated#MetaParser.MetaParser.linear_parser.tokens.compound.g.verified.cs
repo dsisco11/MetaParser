@@ -11,17 +11,17 @@ namespace UnitTestParser
                 case [TokenId.Solidus, TokenId.Solidus, ..]:
                 {
                     id = TokenId.Comment;
-                    return consume_pattern_27(input, out length);
+                    return consume_pattern_27(buffer0, out length);
                 }
                 case [TokenId.Solidus, TokenId.Asterisk, ..]:
                 {
                     id = TokenId.Comment;
-                    return consume_pattern_28(input, out length);
+                    return consume_pattern_28(buffer0, out length);
                 }
                 case [TokenId.Open_Bracket, ..]:
                 {
                     id = TokenId.Codeblock;
-                    return consume_pattern_29(input, out length);
+                    return consume_pattern_29(buffer0, out length);
                 }
                 case [TokenId.Keyword_Var, ..]:
                 {
