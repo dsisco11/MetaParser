@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
@@ -14,6 +13,6 @@ internal record ParserDefinition
     [JsonPropertyName("$type")]
     public string? ParserType { get; set; }
 
-    [JsonPropertyName("definitions")]
-    public Dictionary<string, IEnumerable<IConsumerDeclaration>>? Definitions { get; set; }
+    [JsonPropertyName("stages")]
+    public ParsingStages? Stages { get; set; }
 }
