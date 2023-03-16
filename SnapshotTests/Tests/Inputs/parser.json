@@ -3,7 +3,7 @@
   "namespace": "UnitTestParser",
   "stages": {
     "lexer": {
-      "definitions": {
+      "consumers": {
         "keyword_var": {
           "start": "var"
         },
@@ -104,7 +104,7 @@
       }
     },
     "parser": {
-      "definitions": {
+      "consumers": {
         "typename": [
           {
             "start": "keyword_var"

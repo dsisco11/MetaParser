@@ -17,27 +17,45 @@
       "type": "string",
       "description": "Determines the parsing system strategy for consuming data"
     },
-    "patterns": {
-      "type": "object",
-      "propertyNames": {
-        "pattern": "^([\\w-]*)$"
-      },
-      "additionalProperties": {
-        "$ref": "#/$defs/ref:pattern"
-      }
-    },
-    "definitions": {
-      "type": "object",
-      "propertyNames": {
-        "pattern": "^([\\w-]*)$"
-      },
-      "additionalProperties": {
+    "stages": {
+      "lexer": {
         "type": "object",
-        "required": [ "$type" ],
-        "$ref": "#/$defs/def:token:one_or_many"
+        "description": "Defines the lexer stage of the parser",
+        "properties": {
+          "consumers": {
+            "type": "object",
+            "description": "Defines the consumers for the lexer stage",
+            "propertyNames": {
+              "pattern": "^([\\w-]*)$"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "$ref": "#/$defs/def:consumer:values:one_or_many"
+            },
+          }
+        },
+        "required": [ "consumers" ]
+      },
+      "parser": {
+        "type": "object",
+        "description": "Defines the parser stage of the parser",
+        "properties": {
+          "consumers": {
+            "type": "object",
+            "description": "Defines the consumers for the parser stage",
+            "propertyNames": {
+              "pattern": "^([\\w-]*)$"
+            },
+            "additionalProperties": {
+              "type": "object",
+              "$ref": "#/$defs/def:consumer:tokens:one_or_many"
+            }
+          }
+        },
+        "required": [ "consumers" ]
       }
     },
-    "required": [ "namespace", "definitions" ]
+    "required": [ "namespace", "stages" ]
   },
   "$defs": {
     "def:token": {

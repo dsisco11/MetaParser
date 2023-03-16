@@ -10,7 +10,7 @@ internal record class LexingStageDefinition : IParsingStageDefinition<ValueConsu
     public EParsingStage Stage => EParsingStage.Lexing;
 
     #region Properties
-    [JsonPropertyName("definitions")]
-    public ImmutableDictionary<string, IEnumerable<ValueConsumerDeclaration>>? Definitions { get; set; }
+    [JsonPropertyName("consumers")]
+    public ImmutableDictionary<string, IEnumerable<ValueConsumerDeclaration>>? Consumers { get; set; }
     #endregion
 }

@@ -10,15 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Tests\Inputs\bad_tokens.json" />
     <None Remove="Tests\Inputs\complex_tokens.parser.json" />
     <None Remove="Tests\Inputs\parser.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Tests\Inputs\bad_tokens.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Include="Tests\Inputs\parser.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>

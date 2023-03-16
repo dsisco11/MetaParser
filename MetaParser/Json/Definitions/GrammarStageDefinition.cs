@@ -10,7 +10,7 @@ internal record class GrammarStageDefinition : IParsingStageDefinition<TokenCons
     public EParsingStage Stage => EParsingStage.Lexing;
 
     #region Properties
-    [JsonPropertyName("definitions")]
-    public ImmutableDictionary<string, IEnumerable<TokenConsumerDeclaration>>? Definitions { get; set; }
+    [JsonPropertyName("consumers")]
+    public ImmutableDictionary<string, IEnumerable<TokenConsumerDeclaration>>? Consumers { get; set; }
     #endregion
 }

@@ -6,5 +6,5 @@ namespace MetaParser.Json.Definitions;
 internal interface IParsingStageDefinition<T> where T : IConsumerDeclaration
 {
     EParsingStage Stage { get; }
-    ImmutableDictionary<string, IEnumerable<T>>? Definitions { get; }
+    ImmutableDictionary<string, IEnumerable<T>>? Consumers { get; }
 }
