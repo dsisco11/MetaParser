@@ -12,18 +12,14 @@
   <ItemGroup>
     <None Remove="Tests\Inputs\bad_tokens.json" />
     <None Remove="Tests\Inputs\complex_tokens.parser.json" />
-    <None Remove="Tests\Inputs\linear_parser.json" />
-    <None Remove="Tests\Inputs\recursive_parser.json" />
+    <None Remove="Tests\Inputs\parser.json" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Tests\Inputs\bad_tokens.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="Tests\Inputs\recursive_parser.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tests\Inputs\linear_parser.json">
+    <EmbeddedResource Include="Tests\Inputs\parser.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
@@ -48,10 +44,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Snapshots\" />
-    </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\MetaParser\MetaParser.csproj" ReferenceOutputAssembly="true" />
