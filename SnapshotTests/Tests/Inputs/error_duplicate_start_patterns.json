@@ -1,0 +1,36 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-02.json",
+  "namespace": "UnitTestParser",
+  "stages": [
+    {
+      "$type": "lexer",
+      "consumers": {
+        "letters": {
+          "consume": [
+            { "range": [ "a", "z" ] },
+            { "range": [ "A", "Z" ] }
+          ]
+        },
+        "identifier": [
+          {
+            "start": [
+              {
+                "oneof": [
+                  { "range": [ "a", "z" ] },
+                  { "range": [ "A", "Z" ] }
+                ]
+              }
+            ],
+            "consume": [
+              { "range": [ "a", "z" ] },
+              { "range": [ "A", "Z" ] },
+              { "range": [ "0", "9" ] },
+              "-",
+              "_"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

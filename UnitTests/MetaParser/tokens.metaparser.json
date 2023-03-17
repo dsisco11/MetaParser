@@ -62,12 +62,6 @@
         "digits": {
           "consume": { "range": [ "0", "9" ] }
         },
-        "letters": {
-          "consume": [
-            { "range": [ "a", "z" ] },
-            { "range": [ "A", "Z" ] }
-          ]
-        },
         "newline": {
           "consume": [ "\r", "\n" ]
         },

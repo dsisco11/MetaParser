@@ -11,10 +11,14 @@
 
   <ItemGroup>
     <None Remove="Tests\Inputs\complex_tokens.parser.json" />
+    <None Remove="Tests\Inputs\error_duplicate_start_patterns.json" />
     <None Remove="Tests\Inputs\parser.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Tests\Inputs\error_duplicate_start_patterns.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tests\Inputs\parser.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
