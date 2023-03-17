@@ -10,8 +10,7 @@ internal abstract record ConsumerDeclaration<T> : IConsumerDeclaration
     where T : IPatternDeclaration
 {
     #region Properties
-    [JsonPropertyName("$type")]
-    public abstract EConsumerType Type { get; set; }
+    public abstract EConsumerType Type { get; }
 
     [JsonPropertyName("start")]
     public IEnumerable<T> Start { get; set; }

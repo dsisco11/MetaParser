@@ -8,12 +8,23 @@ namespace MetaParser.Core;
 
 internal record MetaParserContext : ICodeBuilderContext
 {
+    #region Fields
+    private MetaParserRegistry? _registry;
+    #endregion
+
     #region Properties
     public IndentedTextWriter writer { get; set; } = new IndentedTextWriter(new StringWriter());
     public MetaParserConfig Config { get; set; }
-    public MetaParserRegistry Registry { get; set; } = new();
+    public MetaParserRegistry Registry 
+    { 
+        get
+        {
+            _registry ??= new MetaParserRegistry();
+            return _registry;
+        }
+    }
     public DirectedGraph DepsGraph { get; set; }
-    public WorkingSet WorkingSet { get; set; } = new ();
+    public WorkingSet WorkingSet { get; set; } = new();
     public int ActiveBuffer { get; set; }
     #endregion
 

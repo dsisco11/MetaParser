@@ -7,8 +7,8 @@ namespace MetaParser.Json.Definitions;
 
 internal sealed record TokenConsumerDeclaration : ConsumerDeclaration<TokenPatternDeclaration>
 {
-    [JsonPropertyName("$type")]
-    public override EConsumerType Type { get => EConsumerType.Token; set { } }
+    [JsonIgnore]
+    public override EConsumerType Type { get => EConsumerType.Syntax; }
 
     [JsonConstructor]
     public TokenConsumerDeclaration(IEnumerable<TokenPatternDeclaration>? start, IEnumerable<TokenPatternDeclaration>? consume, IEnumerable<TokenPatternDeclaration>? stop, IEnumerable<TokenPatternDeclaration>? escape) : base(start, consume, stop, escape)

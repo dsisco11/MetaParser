@@ -24,13 +24,13 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
 
         // TODO: Obsolete this once we move to the new lexer/parser split design
         // Check if its possible for the token to appear in the stream already from a lower stage.
-        bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => c.Type == EConsumerType.Data);
+        bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => c.Type == EConsumerType.Lexer);
         if (hasEarlierStages)
         {
             writer.WriteLine($"[{Format_Token_Id_Const_Ref(targetToken)}, ..] => true,");
         }
 
-        var tokenConsumers = context.WorkingSet.Consumers.Where(static (c) => c.Type == EConsumerType.Token);
+        var tokenConsumers = context.WorkingSet.Consumers.Where(static (c) => c.Type == EConsumerType.Syntax);
         foreach (var consumer in tokenConsumers)
         {
             writer.Write("[");

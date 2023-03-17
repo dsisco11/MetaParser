@@ -6,11 +6,9 @@ namespace MetaParser.Core;
 [JsonSerializable(typeof(ParserDefinition))]
 [JsonSerializable(typeof(ParsingStages))]
 // Consumers
-[JsonSerializable(typeof(IConsumerDeclaration))]
 [JsonSerializable(typeof(ValueConsumerDeclaration))]
 [JsonSerializable(typeof(TokenConsumerDeclaration))]
 // Patterns
-[JsonSerializable(typeof(IPatternDeclaration))]
 [JsonSerializable(typeof(ValuePatternDeclaration))]
 [JsonSerializable(typeof(TokenPatternDeclaration))]
 internal partial class MetaParserJsonSerializer : JsonSerializerContext

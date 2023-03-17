@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace MetaParser.Json.Definitions;
 
-internal interface IParsingStageDefinition<T> where T : IConsumerDeclaration
+internal interface IParsingStageDefinition
 {
     EParsingStage Stage { get; }
-    ImmutableDictionary<string, IEnumerable<T>>? Consumers { get; }
+    Dictionary<string, IEnumerable<IConsumerDeclaration>>? Consumers { get; }
 }

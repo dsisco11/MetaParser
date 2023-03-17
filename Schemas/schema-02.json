@@ -31,7 +31,7 @@
             "additionalProperties": {
               "type": "object",
               "$ref": "#/$defs/def:consumer:values:one_or_many"
-            },
+            }
           }
         },
         "required": [ "consumers" ]

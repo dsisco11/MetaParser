@@ -23,7 +23,7 @@ internal class GenTokenStartDetectors : MetaCodeBuilder
         foreach (var token in context.WorkingSet.Tokens)
         {
             var funcName = Format_Token_Start_Detection_Function_Name(token.Name);
-            var funcDef = Get_Function_Definition(context, EConsumerType.Token, funcName);
+            var funcDef = Get_Function_Definition(context, EConsumerType.Syntax, funcName);
             funcDef.WriteTo(context with { WorkingSet = new WorkingSet(token) });
         }
     }

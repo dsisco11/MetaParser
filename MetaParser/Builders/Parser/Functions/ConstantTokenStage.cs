@@ -13,7 +13,7 @@ internal class ConstantTokenStage : MetaCodeBuilder
 
     protected override void Write(MetaParserContext context)
     {
-        var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, EConsumerType.Data)}>");
+        var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, EConsumerType.Lexer)}>");
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenValueStructName}>");
         const string VarNameResults = "results";
         var writer = context.writer;

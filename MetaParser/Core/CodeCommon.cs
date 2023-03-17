@@ -57,7 +57,7 @@ internal static class CodeCommon
 
 
     #region Builders
-    public static TypeSyntax Get_Consumer_Data_Type(MetaParserConfig config, EConsumerType type) => (type == EConsumerType.Data ? config.InputType : config.IdType);
+    public static TypeSyntax Get_Consumer_Data_Type(MetaParserConfig config, EConsumerType type) => (type == EConsumerType.Lexer ? config.InputType : config.IdType);
     public static TypeSyntax Get_Token_Buffer_Type(MetaParserConfig config, EConsumerType type) => SyntaxFactory.ParseTypeName($"{ReadOnlySpan}<{Get_Consumer_Data_Type(config, type)}>");
     public static FunctionDefinition Get_Token_Processor_Function_Definition(MetaParserContext context, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}, out {context.Config.IdType} id, out int length")).And(context.Config.CodeFactory.Get_Token_Processing_Logic());
     public static FunctionDefinition Get_Local_Token_Consumer_Function_Definition(MetaParserContext context, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}, out int length")).And(context.Config.CodeFactory.Get_Logic_Consumer_Match());

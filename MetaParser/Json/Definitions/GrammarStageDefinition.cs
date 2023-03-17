@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
-internal record class GrammarStageDefinition : IParsingStageDefinition<TokenConsumerDeclaration>
+internal sealed class GrammarStageDefinition : ParsingStageDefinition<TokenConsumerDeclaration>
 {
     [JsonIgnore]
-    public EParsingStage Stage => EParsingStage.Lexing;
+    public override EParsingStage Stage => EParsingStage.Parsing;
 
     #region Properties
     [JsonPropertyName("consumers")]
-    public ImmutableDictionary<string, IEnumerable<TokenConsumerDeclaration>>? Consumers { get; set; }
+    public override Dictionary<string, IEnumerable<TokenConsumerDeclaration>>? Consumers { get; }
     #endregion
 }
