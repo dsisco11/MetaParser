@@ -4,5 +4,5 @@ namespace MetaParser.Builders.Interfaces;
 
 internal interface ICodeBuilderContext
 {
-    IndentedTextWriter writer { get; }
+    IndentedTextWriter Writer { get; }
 }

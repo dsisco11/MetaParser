@@ -14,7 +14,7 @@ internal class ConsumeAndThen : MetaCodeBuilder
         Debug.Assert(context.WorkingSet.Consumers.Length == 1);
 
         context = context with { ActiveBuffer = context.ActiveBuffer + 1 };
-        var writer = context.writer;
+        var writer = context.Writer;
         var consumer = context.WorkingSet.Consumers.Single();
         var detectionContext = context with { WorkingSet = context.WorkingSet with { Patterns = new Pattern[1] } };
 
@@ -179,7 +179,7 @@ internal class ConsumeAndThen : MetaCodeBuilder
 
     void write_debug_header(MetaParserContext context)
     {
-        var writer = context.writer;
+        var writer = context.Writer;
         var consumer = context.WorkingSet.Consumers.Single();
 
         writer.WriteLine($"/*");

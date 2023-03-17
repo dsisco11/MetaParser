@@ -35,7 +35,7 @@ internal class ClassBuilder : MetaCodeBuilder
 
     protected override void Write(MetaParserContext context)
     {
-        var writer = context.writer;
+        var writer = context.Writer;
         writer.WriteLine($"namespace {context.Config.Namespace}");
         writer.WriteLine("{");
         writer.Indent++;

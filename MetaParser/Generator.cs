@@ -200,7 +200,6 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
-            context = context with { writer = writer };
 
             writer.WriteLine("/*");
             writer.WriteLine("```");
@@ -232,7 +231,6 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxParserOnly, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
-            context = context with { writer = writer };
 
             CodeBuilderFactory codeFactory = context.Config.CodeFactory;
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
@@ -256,7 +254,6 @@ public partial class Generator : IIncrementalGenerator
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
-            context = context with { writer = writer };
 
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(new GenTokenStartDetectors())
@@ -275,7 +272,6 @@ public partial class Generator : IIncrementalGenerator
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
-            context = context with { writer = writer };
 
             var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Lexer, CodeCommon.ConstantTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
@@ -295,7 +291,6 @@ public partial class Generator : IIncrementalGenerator
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
-            context = context with { writer = writer };
 
             var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Syntax, CodeCommon.CompoundTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
@@ -315,7 +310,6 @@ public partial class Generator : IIncrementalGenerator
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
-            context = context with { writer = writer };
 
             var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Syntax, CodeCommon.ComplexTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
@@ -330,7 +324,6 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxParserOnly, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
-            context = context with { writer = writer };
 
             context.Config.CodeFactory.Get_Token_Struct_Builder().WriteTo(context);
 
@@ -342,7 +335,6 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
-            context = context with { writer = writer };
 
             writer.WriteLine($"namespace {context.Config.Namespace};");
             writer.WriteLine($"public enum {CodeCommon.TokenEnum} : {context.Config.IdType}");
@@ -362,7 +354,6 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             using IndentedTextWriter writer = new(new StringWriter());
-            context = context with { writer = writer };
 
             new ClassBuilder(SyntaxFactory.ParseTokens("internal static"), CodeCommon.TokenConsts)
                 .And(context.Config.CodeFactory.Get_Token_ID_Constants_Builder())

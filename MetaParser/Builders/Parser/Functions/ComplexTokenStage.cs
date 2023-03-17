@@ -13,7 +13,7 @@ internal class ComplexTokenStage : MetaCodeBuilder
     protected override void Write(MetaParserContext context)
     {
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{TokenRecordTypeName}>");
-        var writer = context.writer;
+        var writer = context.Writer;
 
         writer.WriteLine($"private static {TokenRecordTypeName}[] {FunctionName}({argumentType} {context.ActiveBufferName})");
         writer.WriteLine("{");

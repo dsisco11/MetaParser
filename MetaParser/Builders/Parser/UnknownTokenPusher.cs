@@ -10,7 +10,7 @@ internal class UnknownTokenPusher : MetaCodeBuilder
 
     protected override void Write(MetaParserContext context)
     {
-        var wr = context.writer;
+        var wr = context.Writer;
         wr.WriteLine($"if ({context.ActiveBufferName}.Length != {context.NextBufferName}.Length)");
         wr.WriteLine("{");
         wr.Indent++;

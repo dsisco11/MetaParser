@@ -10,7 +10,7 @@ internal class TokenIDEnumBuilder : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
-        var writer = context.writer;
+        var writer = context.Writer;
         writer.WriteLine($"{Format_Token_Id(UnknownToken)} = ({context.Config.IdType}) 0,");
 
         foreach (var token in context.Registry.Tokens.Values.ToImmutableSortedSet())

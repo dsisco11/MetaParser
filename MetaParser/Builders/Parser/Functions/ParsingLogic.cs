@@ -12,7 +12,7 @@ internal class ParsingLogic : MetaCodeBuilder
     {
         const string VarNameValueTokensArray = "tokensArray";
         const string VarNameValueTokensBuffer = "tokensBuffer";
-        var writer = context.writer;
+        var writer = context.Writer;
 
         var tyInputBuffer = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{context.Config.InputType}>");
         var tyTokenList = SyntaxFactory.ParseTypeName($"{TokenRecordTypeName}[]");

@@ -37,7 +37,7 @@ internal class FunctionDefinition : MetaCodeBuilder
 
     protected override void Write(MetaParserContext context)
     {
-        var writer = context.writer;
+        var writer = context.Writer;
         if (Modifiers is not null)
         {
             foreach (var mod in Modifiers)

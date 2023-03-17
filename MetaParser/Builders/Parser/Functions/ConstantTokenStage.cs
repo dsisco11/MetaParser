@@ -16,7 +16,7 @@ internal class ConstantTokenStage : MetaCodeBuilder
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, EConsumerType.Lexer)}>");
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenValueStructName}>");
         const string VarNameResults = "results";
-        var writer = context.writer;
+        var writer = context.Writer;
 
         string VarBufferMajor = context.ActiveBufferName;
         context.ActiveBuffer++;

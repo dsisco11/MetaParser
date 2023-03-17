@@ -13,7 +13,7 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
             return;
         }
 
-        var writer = context.writer;
+        var writer = context.Writer;
         var workContext = context with {};
 
 #if DEBUG

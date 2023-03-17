@@ -12,7 +12,7 @@ internal class LogicPatternMatcher : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
-        var writer = context.writer;
+        var writer = context.Writer;
         var pattern = context.WorkingSet.Patterns.Single();
 
         if (!pattern.IsInlinable && pattern.MaxLogicalLength == 1)

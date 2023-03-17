@@ -16,7 +16,7 @@ internal class CompoundTokenStage : MetaCodeBuilder
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenRecordTypeName}>");
         const string VarNameIdBuffer = "idValues";
         const string VarNameResults = "results";
-        var writer = context.writer;
+        var writer = context.Writer;
 
         string VarBufferMajor = context.ActiveBufferName;
         context.ActiveBuffer++;

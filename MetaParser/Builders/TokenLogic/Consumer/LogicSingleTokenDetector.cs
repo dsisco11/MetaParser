@@ -12,7 +12,7 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
-        var writer = context.writer;
+        var writer = context.Writer;
 
         writer.WriteLine($"return {context.ActiveBufferName} switch");
         writer.WriteLine("{");

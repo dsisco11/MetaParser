@@ -10,7 +10,7 @@ internal class TokenProcessor : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
-        var writer = context.writer;
+        var writer = context.Writer;
 
         #region Token Processing Logic
 

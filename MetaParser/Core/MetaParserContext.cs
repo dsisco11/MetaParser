@@ -10,25 +10,36 @@ internal record MetaParserContext : ICodeBuilderContext
 {
     #region Fields
     private MetaParserRegistry? _registry;
+    private IndentedTextWriter? _writer;
     #endregion
 
     #region Properties
-    public IndentedTextWriter writer { get; set; } = new IndentedTextWriter(new StringWriter());
     public MetaParserConfig Config { get; set; }
-    public MetaParserRegistry Registry 
-    { 
-        get
-        {
-            _registry ??= new MetaParserRegistry();
-            return _registry;
-        }
-    }
     public DirectedGraph DepsGraph { get; set; }
     public WorkingSet WorkingSet { get; set; } = new();
     public int ActiveBuffer { get; set; }
     #endregion
 
     #region Accessors
+    public IndentedTextWriter Writer
+    {
+        get
+        {
+            _writer ??= new IndentedTextWriter(new StringWriter());
+            return _writer;
+        }
+    }
+
+    public MetaParserRegistry Registry
+    {
+        get
+        {
+            _registry ??= new MetaParserRegistry();
+            return _registry;
+        }
+    }
+
+
     public string LastBufferName => FormatBufferName(ActiveBuffer - 1);
     public string ActiveBufferName => FormatBufferName(ActiveBuffer);
     public string NextBufferName => FormatBufferName(ActiveBuffer + 1);

@@ -16,7 +16,7 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
             return;
         }
 
-        var writer = context.writer;
+        var writer = context.Writer;
 #if DEBUG
         writer.WriteLine("// Recursive consumers");
 #endif
