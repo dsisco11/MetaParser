@@ -35,6 +35,6 @@ internal record MetaParserContext : ICodeBuilderContext
     #endregion
 
     #region Methods
-    private string FormatBufferName(int buffer) => $"buffer{buffer}";
+    private static string FormatBufferName(int buffer) => $"buffer{buffer}";
     #endregion
 }
