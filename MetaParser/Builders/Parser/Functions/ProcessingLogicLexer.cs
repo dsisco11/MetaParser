@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
 
-internal class ConstantTokenStage : MetaCodeBuilder
+internal class ProcessingLogicLexer : MetaCodeBuilder
 {
     public const string FunctionName = "Parse_Constant";
 

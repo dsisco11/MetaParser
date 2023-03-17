@@ -14,11 +14,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 
@@ -174,9 +170,7 @@ public partial class Generator : IIncrementalGenerator
         //#if DEBUG
         //        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         //        {
-        //            using IndentedTextWriter writer = new(new StringWriter());
-        //            context = context with {  writer = writer  };
-
+        //            var writer = context.Writer;
         //            var graph = new DirectedGraph(context.DepsGraph);
         //            // we only want to see a graph of our token relationships, so we'll remove everything else from the graph
         //            var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token).ToList();
@@ -199,7 +193,7 @@ public partial class Generator : IIncrementalGenerator
 #if DEBUG
         context.RegisterSourceOutput(ctxTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            using IndentedTextWriter writer = new(new StringWriter());
+            var writer = context.Writer;
 
             writer.WriteLine("/*");
             writer.WriteLine("```");
@@ -230,17 +224,15 @@ public partial class Generator : IIncrementalGenerator
         #region Parser Class
         context.RegisterSourceOutput(ctxParserOnly, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            using IndentedTextWriter writer = new(new StringWriter());
-
             CodeBuilderFactory codeFactory = context.Config.CodeFactory;
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
             .And(codeFactory.Get_Parsing_Logic())
-            .And(new ConstantTokenStage())
+            .And(new ProcessingLogicLexer())
             .And(new CompoundTokenStage())
             .And(new ComplexTokenStage())
                 .WriteTo(context);
 
-            AddSource(spc, $"{context.Config.BaseFileName}.parser.class", writer.InnerWriter.ToString());
+            AddSource(spc, $"{context.Config.BaseFileName}.parser.class", context.Writer.InnerWriter.ToString());
         });
         #endregion
 
@@ -253,13 +245,11 @@ public partial class Generator : IIncrementalGenerator
         }),
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            using IndentedTextWriter writer = new(new StringWriter());
-
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(new GenTokenStartDetectors())
                 .WriteTo(context);
 
-            AddSource(spc, $"{context.Config.BaseFileName}.tokens.detection", writer.InnerWriter.ToString());
+            AddSource(spc, $"{context.Config.BaseFileName}.tokens.detection", context.Writer.InnerWriter.ToString());
         });
         #endregion
 
@@ -271,14 +261,12 @@ public partial class Generator : IIncrementalGenerator
         }),
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            using IndentedTextWriter writer = new(new StringWriter());
-
             var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Lexer, CodeCommon.ConstantTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);
 
-            AddSource(spc, $"{context.Config.BaseFileName}.tokens.constant", writer.InnerWriter.ToString());
+            AddSource(spc, $"{context.Config.BaseFileName}.tokens.constant", context.Writer.InnerWriter.ToString());
         });
         #endregion
 
@@ -290,14 +278,12 @@ public partial class Generator : IIncrementalGenerator
         }),
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            using IndentedTextWriter writer = new(new StringWriter());
-
             var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Syntax, CodeCommon.CompoundTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);
 
-            AddSource(spc, $"{context.Config.BaseFileName}.tokens.compound", writer.InnerWriter.ToString());
+            AddSource(spc, $"{context.Config.BaseFileName}.tokens.compound", context.Writer.InnerWriter.ToString());
         });
         #endregion
 
@@ -309,32 +295,28 @@ public partial class Generator : IIncrementalGenerator
         }),
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            using IndentedTextWriter writer = new(new StringWriter());
-
             var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Syntax, CodeCommon.ComplexTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);
 
-            AddSource(spc, $"{context.Config.BaseFileName}.tokens.complex", writer.InnerWriter.ToString());
+            AddSource(spc, $"{context.Config.BaseFileName}.tokens.complex", context.Writer.InnerWriter.ToString());
         });
         #endregion
 
         #region Token Structure
         context.RegisterSourceOutput(ctxParserOnly, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            using IndentedTextWriter writer = new(new StringWriter());
-
             context.Config.CodeFactory.Get_Token_Struct_Builder().WriteTo(context);
 
-            AddSource(spc, $"{context.Config.BaseFileName}.token.struct", writer.InnerWriter.ToString());
+            AddSource(spc, $"{context.Config.BaseFileName}.token.struct", context.Writer.InnerWriter.ToString());
         });
         #endregion
 
         #region Token-ID Enums
         context.RegisterSourceOutput(ctxTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            using IndentedTextWriter writer = new(new StringWriter());
+            var writer = context.Writer;
 
             writer.WriteLine($"namespace {context.Config.Namespace};");
             writer.WriteLine($"public enum {CodeCommon.TokenEnum} : {context.Config.IdType}");
@@ -346,20 +328,18 @@ public partial class Generator : IIncrementalGenerator
             writer.Indent--;
             writer.WriteLine("}");
 
-            AddSource(spc, $"{context.Config.BaseFileName}.enum", writer.InnerWriter.ToString());
+            AddSource(spc, $"{context.Config.BaseFileName}.enum", context.Writer.InnerWriter.ToString());
         });
         #endregion
 
         #region Token-ID Constants
         context.RegisterSourceOutput(ctxTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
-            using IndentedTextWriter writer = new(new StringWriter());
-
             new ClassBuilder(SyntaxFactory.ParseTokens("internal static"), CodeCommon.TokenConsts)
                 .And(context.Config.CodeFactory.Get_Token_ID_Constants_Builder())
                 .WriteTo(context);
 
-            AddSource(spc, $"{context.Config.BaseFileName}.constants", writer.InnerWriter.ToString());
+            AddSource(spc, $"{context.Config.BaseFileName}.constants", context.Writer.InnerWriter.ToString());
         });
         #endregion
 
