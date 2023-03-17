@@ -4,7 +4,8 @@ using System.Text.Json.Serialization;
 namespace MetaParser.Core;
 
 [JsonSerializable(typeof(ParserDefinition))]
-[JsonSerializable(typeof(ParsingStages))]
+// Stages
+[JsonSerializable(typeof(IParsingStageDefinition))]
 [JsonSerializable(typeof(LexingStageDefinition))]
 [JsonSerializable(typeof(SyntaxStageDefinition))]
 // Consumers

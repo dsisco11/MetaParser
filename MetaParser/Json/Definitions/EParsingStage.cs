@@ -2,6 +2,6 @@
 
 internal enum EParsingStage
 {
-    Lexing,
+    Lexer,
     Parsing
 }

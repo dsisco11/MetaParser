@@ -1,8 +1,9 @@
 ﻿{
   "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/master/Schemas/schema-02.json",
   "namespace": "UnitTestParser",
-  "stages": {
-    "lexer": {
+  "stages": [
+    {
+      "$type": "lexer",
       "consumers": {
         "keyword_var": {
           "start": "var"
@@ -103,7 +104,8 @@
         ]
       }
     },
-    "syntax": {
+    {
+      "$type": "syntax",
       "consumers": {
         "typename": [
           {
@@ -164,5 +166,5 @@
         }
       }
     }
-  }
+  ]
 }

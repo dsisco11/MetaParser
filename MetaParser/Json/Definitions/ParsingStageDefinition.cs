@@ -1,14 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
-internal abstract class ParsingStageDefinition<T> : IParsingStageDefinition
+internal abstract record ParsingStageDefinition<T> : IParsingStageDefinition
     where T : IConsumerDeclaration
 {
     #region Properties
-    public abstract EParsingStage Stage { get; }
-    public abstract Dictionary<string, IEnumerable<T>>? Consumers { get; }
+    [JsonPropertyName("$type")]
+    public abstract EParsingStage Type { get; }
+    [JsonPropertyName("consumers")]
+    public abstract Dictionary<string, IEnumerable<T>>? Consumers { get; set; }
     #endregion
 
-    Dictionary<string, IEnumerable<IConsumerDeclaration>>? IParsingStageDefinition.Consumers => Consumers as Dictionary<string, IEnumerable<IConsumerDeclaration>>;
+    IEnumerable<KeyValuePair<string, IEnumerable<IConsumerDeclaration>>> IParsingStageDefinition.Consumers
+    {
+        get
+        {
+            // yield return all consumers from dictionary cast to the base type
+            if (Consumers is null)
+            {
+                yield break;
+            }
+
+            foreach (var pair in Consumers)
+            {
+                yield return new KeyValuePair<string, IEnumerable<IConsumerDeclaration>>(pair.Key, pair.Value.Cast<IConsumerDeclaration>());
+            }
+        }
+    }
 }

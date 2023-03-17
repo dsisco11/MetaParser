@@ -3,13 +3,21 @@ using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
-internal sealed class SyntaxStageDefinition : ParsingStageDefinition<TokenConsumerDeclaration>
+internal sealed record SyntaxStageDefinition : ParsingStageDefinition<TokenConsumerDeclaration>
 {
     [JsonIgnore]
-    public override EParsingStage Stage => EParsingStage.Parsing;
+    public override EParsingStage Type => EParsingStage.Parsing;
 
     #region Properties
     [JsonPropertyName("consumers")]
-    public override Dictionary<string, IEnumerable<TokenConsumerDeclaration>>? Consumers { get; }
+    public override Dictionary<string, IEnumerable<TokenConsumerDeclaration>>? Consumers { get; set; }
+    #endregion
+
+    #region Constructors
+    [JsonConstructor]
+    public SyntaxStageDefinition(Dictionary<string, IEnumerable<TokenConsumerDeclaration>>? consumers)
+    {
+        Consumers = consumers;
+    }
     #endregion
 }

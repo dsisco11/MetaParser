@@ -10,7 +10,6 @@ internal record MetaParserContext : ICodeBuilderContext
 {
     #region Fields
     private MetaParserRegistry? _registry;
-    private IndentedTextWriter? _writer;
     #endregion
 
     #region Properties
@@ -21,14 +20,7 @@ internal record MetaParserContext : ICodeBuilderContext
     #endregion
 
     #region Accessors
-    public IndentedTextWriter Writer
-    {
-        get
-        {
-            _writer ??= new IndentedTextWriter(new StringWriter());
-            return _writer;
-        }
-    }
+    public IndentedTextWriter Writer { get; set; }
 
     public MetaParserRegistry Registry
     {

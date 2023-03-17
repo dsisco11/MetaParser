@@ -1,0 +1,33 @@
+﻿//HintName: MetaParser.MetaParser.parser.enum.g.cs
+namespace UnitTestParser;
+public enum ETokenType : byte
+{
+    Unknown = (byte) 0,
+    Keyword_Var = (byte) 1,
+    Keyword_Function = (byte) 2,
+    Keyword_Byte = (byte) 3,
+    Keyword_Short = (byte) 4,
+    Keyword_Int = (byte) 5,
+    Keyword_Float = (byte) 6,
+    Char_Open_Bracket = (byte) 7,
+    Char_Close_Bracket = (byte) 8,
+    Char_Open_Sqbracket = (byte) 9,
+    Char_Close_Sqbracket = (byte) 10,
+    Char_Open_Parenthesis = (byte) 11,
+    Char_Close_Parenthesis = (byte) 12,
+    Char_Colon = (byte) 13,
+    Char_Semicolon = (byte) 14,
+    Char_Asterisk = (byte) 15,
+    Char_Solidus = (byte) 16,
+    Char_Reverse_Solidus = (byte) 17,
+    Whitespace = (byte) 18,
+    Digits = (byte) 19,
+    Letters = (byte) 20,
+    Newline = (byte) 21,
+    Identifier = (byte) 22,
+    Comment = (byte) 23,
+    Typename = (byte) 24,
+    Declaration = (byte) 25,
+    Codeblock = (byte) 26,
+    Program = (byte) 27,
+}

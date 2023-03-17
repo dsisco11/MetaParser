@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
@@ -14,5 +16,5 @@ internal record ParserDefinition
     public string? ParserType { get; set; }
 
     [JsonPropertyName("stages")]
-    public ParsingStages? Stages { get; set; }
+    public IEnumerable<IParsingStageDefinition> Stages { get; set; } = Enumerable.Empty<IParsingStageDefinition>();
 }
