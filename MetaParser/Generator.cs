@@ -238,8 +238,8 @@ public partial class Generator : IIncrementalGenerator
             CodeBuilderFactory codeFactory = context.Config.CodeFactory;
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
             .And(codeFactory.Get_Parsing_Logic())
-            .And(new ProcessingLogicLexer())
-            .And(new CompoundTokenStage())
+            .And(new LogicLexerTokenProcessor())
+            .And(new LogicSyntaxTokenProcessor())
             .And(new ComplexTokenStage())
                 .WriteTo(context);
 
@@ -278,7 +278,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Lexer, CodeCommon.ConstantTokenProcessorFunctionName);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Lexer, CodeCommon.LexerProcessingFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);
@@ -298,7 +298,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Syntax, CodeCommon.CompoundTokenProcessorFunctionName);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Syntax, CodeCommon.SyntaxProcessingFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);

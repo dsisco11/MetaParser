@@ -3,7 +3,7 @@ namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        private static bool TryProcessCompound(global::System.ReadOnlySpan<byte> buffer0, out byte id, out int length)
+        private static bool TryProcessingSyntax(global::System.ReadOnlySpan<byte> buffer0, out byte id, out int length)
         {
             // Linear consumers
             switch (buffer0)

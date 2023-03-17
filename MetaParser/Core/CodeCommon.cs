@@ -38,8 +38,8 @@ internal static class CodeCommon
     public const string TokenValueStructName = "ValueToken";
     public const string TokenRecordTypeName = "Token";
 
-    public const string ConstantTokenProcessorFunctionName = "TryProcessConstant";
-    public const string CompoundTokenProcessorFunctionName = "TryProcessCompound";
+    public const string LexerProcessingFunctionName = "TryProcessingLexerToken";
+    public const string SyntaxProcessingFunctionName = "TryProcessingSyntaxToken";
     public const string ComplexTokenProcessorFunctionName = "TryProcessComplex";
     #endregion
 

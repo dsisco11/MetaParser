@@ -23,10 +23,10 @@ internal class ParsingLogic : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
         // constant-tokens
-        writer.WriteLine($"var {VarNameValueTokensArray} = {ProcessingLogicLexer.FunctionName}({context.ActiveBufferName});");
+        writer.WriteLine($"var {VarNameValueTokensArray} = {LogicLexerTokenProcessor.FunctionName}({context.ActiveBufferName});");
         // compound-tokens
         writer.WriteLine($"var {VarNameValueTokensBuffer} = new {ReadOnlyMemory}<{TokenValueStructName}>( {VarNameValueTokensArray} );");
-        writer.WriteLine($"return {CompoundTokenStage.FunctionName}({VarNameValueTokensBuffer});");
+        writer.WriteLine($"return {LogicSyntaxTokenProcessor.FunctionName}({VarNameValueTokensBuffer});");
         writer.WriteLine();
 
         writer.Indent--;

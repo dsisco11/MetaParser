@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
 
-internal class CompoundTokenStage : MetaCodeBuilder
+internal class LogicSyntaxTokenProcessor : MetaCodeBuilder
 {
     public const string FunctionName = "Parse_Compound";
 
@@ -46,7 +46,7 @@ internal class CompoundTokenStage : MetaCodeBuilder
         writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"if ({CompoundTokenProcessorFunctionName}({VarBufferLocal}, out var outId, out var outLength))");
+        writer.WriteLine($"if ({SyntaxProcessingFunctionName}({VarBufferLocal}, out var outId, out var outLength))");
         writer.WriteLine("{");
         writer.Indent++;
         writer.WriteLine($"var consumed = {VarBufferMajor}.Slice(0, outLength).ToArray();");

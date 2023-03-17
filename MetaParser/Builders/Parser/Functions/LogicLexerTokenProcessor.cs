@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
 
-internal class ProcessingLogicLexer : MetaCodeBuilder
+internal class LogicLexerTokenProcessor : MetaCodeBuilder
 {
     public const string FunctionName = "Parse_Constant";
 
@@ -36,7 +36,7 @@ internal class ProcessingLogicLexer : MetaCodeBuilder
         writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"if ({ConstantTokenProcessorFunctionName}({VarBufferLocal}, out var outId, out var outLength))");
+        writer.WriteLine($"if ({LexerProcessingFunctionName}({VarBufferLocal}, out var outId, out var outLength))");
         writer.WriteLine("{");
         writer.Indent++;
         // Be sure to push unknown token if its lingering
