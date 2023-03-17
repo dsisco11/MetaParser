@@ -92,7 +92,7 @@ public partial class Generator : IIncrementalGenerator
             if (schema.Stages is not null)
             {
                 var lexerTokenNames = schema.Stages.LexingStage?.Consumers?.Keys;
-                var grammarTokenNames = schema.Stages.GrammarStage?.Consumers?.Keys;
+                var grammarTokenNames = schema.Stages.SyntaxStage?.Consumers?.Keys;
                 var allTokenNames = lexerTokenNames.Concat(grammarTokenNames).Distinct().ToList();
 
                 config.IdType = Common.Get_Integer_Type(allTokenNames.Count);
@@ -113,7 +113,7 @@ public partial class Generator : IIncrementalGenerator
 
         IncrementalValuesProvider<ValueTuple<MetaParserContext, IParsingStageDefinition?>> ctxGrammarStage = ctxFull.Select(static (ValueTuple<MetaParserContext, ParserDefinition> data, CancellationToken cancellationToken) =>
         {
-            return new ValueTuple<MetaParserContext, IParsingStageDefinition?>(data.Item1, data.Item2.Stages!.GrammarStage);
+            return new ValueTuple<MetaParserContext, IParsingStageDefinition?>(data.Item1, data.Item2.Stages!.SyntaxStage);
         });
         #endregion
 
@@ -130,9 +130,9 @@ public partial class Generator : IIncrementalGenerator
                 Populate(context, stages.LexingStage);
             }
 
-            if (stages.GrammarStage is not null)
+            if (stages.SyntaxStage is not null)
             {
-                Populate(context, stages.GrammarStage);
+                Populate(context, stages.SyntaxStage);
             }
 
             context.DepsGraph = DependencyGraph.Build(context.Registry);

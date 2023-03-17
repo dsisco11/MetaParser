@@ -5,6 +5,8 @@ namespace MetaParser.Core;
 
 [JsonSerializable(typeof(ParserDefinition))]
 [JsonSerializable(typeof(ParsingStages))]
+[JsonSerializable(typeof(LexingStageDefinition))]
+[JsonSerializable(typeof(SyntaxStageDefinition))]
 // Consumers
 [JsonSerializable(typeof(ValueConsumerDeclaration))]
 [JsonSerializable(typeof(TokenConsumerDeclaration))]

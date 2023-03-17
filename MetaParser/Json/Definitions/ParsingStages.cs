@@ -8,5 +8,5 @@ internal record ParsingStages
     public LexingStageDefinition? LexingStage { get; set; }
 
     [JsonPropertyName("syntax")]
-    public GrammarStageDefinition? GrammarStage { get; set; }
+    public SyntaxStageDefinition? SyntaxStage { get; set; }
 }

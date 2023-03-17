@@ -103,7 +103,7 @@
         ]
       }
     },
-    "parser": {
+    "syntax": {
       "consumers": {
         "typename": [
           {
