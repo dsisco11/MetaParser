@@ -13,7 +13,6 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     /// <summary>
     /// Indicates the length of this pattern when rendered as a sequence
     /// </summary>
-    [Obsolete("use MinLogicalLength or MaxLogicalLength instead.")]
     public abstract int Length { get; }
     /// <summary>
     /// Indicates whether the fully resolved pattern represents only constant values
