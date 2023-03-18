@@ -2,7 +2,6 @@
 using MetaParser.Graphs;
 
 using System.CodeDom.Compiler;
-using System.IO;
 
 namespace MetaParser.Core;
 

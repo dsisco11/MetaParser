@@ -1,5 +1,6 @@
 ﻿using MetaParser.Core;
 using MetaParser.Graphs;
+using MetaParser.Parsing.Constructs.Patterns;
 
 using System;
 using System.Collections;
@@ -7,17 +8,13 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
-internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
+internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>, IComparable<Pattern>
 {
     #region Accessors
     /// <summary>
     /// Indicates the length of this pattern when rendered as a sequence
     /// </summary>
     public abstract int Length { get; }
-    /// <summary>
-    /// Indicates whether the fully resolved pattern represents only constant values
-    /// </summary>
-    public abstract bool IsRawValues { get; }
     /// <summary>
     /// Indicates whether the fully resolved pattern only represents values which can always be expressed as inline statements, eg no function calls
     /// </summary>
@@ -29,19 +26,24 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     /// <summary>
     /// Indicates whether the pattern contains nested patterns
     /// </summary>
-    public abstract bool HasChildren { get; }
+    public abstract bool IsSequence { get; }
     /// <summary>
     /// Indicates the minimum number of logical/conditional checks the pattern requires
     /// </summary>
-    public abstract int MinLogicalLength { get; }
+    public abstract int MinConditions { get; }
     /// <summary>
     /// Indicates the maximum number of logical/conditional checks the pattern requires
     /// </summary>
-    public abstract int MaxLogicalLength { get; }
+    public abstract int MaxConditions { get; }
     /// <summary>
     /// Indicated whether the pattern involves a logical operation sequence such as (x and y) or (x or y)
     /// </summary>
-    public abstract bool IsLogical { get; }
+    public abstract bool IsConditional { get; }
+
+    /// <summary>
+    /// Indicates whether the pattern is deterministic, meaning it can only match a single possible token sequence
+    /// </summary>
+    public abstract bool IsDeterministic { get; }
     #endregion
 
     #region Constructors
@@ -57,5 +59,12 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     #region Enumerability
     public abstract IEnumerator<Pattern> GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<Pattern>)this).GetEnumerator();
+    #endregion
+
+    #region Comparison
+    public int CompareTo(Pattern other)
+    {
+        return PatternSorter.Instance.Compare(this, other);
+    }
     #endregion
 }

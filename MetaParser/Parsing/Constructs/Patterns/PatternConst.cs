@@ -22,14 +22,14 @@ internal sealed record PatternConst : Pattern
     #endregion
 
     #region Accessors
-    public override bool IsRawValues => true;
+    public override bool IsDeterministic => true;
     public override bool IsInlinable => true;
     public override bool IsConstantLength => true;
     public override int Length => string.IsNullOrEmpty(Value) ? 0 : 1;
-    public override bool HasChildren => false;
-    public override int MinLogicalLength => 0;
-    public override int MaxLogicalLength => 0;
-    public override bool IsLogical => false;
+    public override bool IsSequence => false;
+    public override int MinConditions => 0;
+    public override int MaxConditions => 0;
+    public override bool IsConditional => false;
     #endregion
 
 

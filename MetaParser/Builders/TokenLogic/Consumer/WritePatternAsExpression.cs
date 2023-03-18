@@ -29,7 +29,7 @@ internal class WritePatternAsExpression : MetaCodeBuilder
             PatternTokenRef t => Format_Token_Id_Const_Ref(t.TokenName),
             // groups
             PatternGroup g when g.Condition == EPatternCondition.OneOf && g.Items.Length > 1 => $"({string.Join(g.ConditionJoiner, g.Items.Select(Format))})",
-            PatternGroup g when g.MaxLogicalLength == 1 => Format(g.Items.Single()),
+            PatternGroup g when g.MaxConditions == 1 => Format(g.Items.Single()),
             PatternGroup g => string.Join(g.ConditionJoiner, g.Items.Select(Format)),
             _ => throw new NotImplementedException()
         };

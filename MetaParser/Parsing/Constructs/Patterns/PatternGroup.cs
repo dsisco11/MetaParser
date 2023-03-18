@@ -29,31 +29,31 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
     {
         get => Condition switch
         {
-            EPatternCondition.Only => string.Empty,
-            EPatternCondition.AllOf => ", ",
-            EPatternCondition.OneOf => " or ",
+            EPatternCondition.Only => string.Empty,// an only is a single item, so no joiner
+            EPatternCondition.AllOf => ", ",// an allof is a comma separated list
+            EPatternCondition.OneOf => " or ",// a oneof is an or separated list
             _ => throw new System.NotImplementedException()
         };
     }
 
-    public override bool HasChildren => _items.Length > 0;
+    public override bool IsSequence => _items.Length > 0;
     public override int Length
     {
         get => Condition switch
         {
-            EPatternCondition.OneOf => _items.Length > 0 ? _items.Min(static (x) => x.Length) : 0,
-            _ => _items.Length
+            EPatternCondition.OneOf => _items.Length > 0 ? _items.Min(static (x) => x.Length) : 0,// a oneof is the minimum length of all items
+            _ => _items.Length// an allof is the sum of all items
         };
     }
 
-    public override bool IsRawValues
+    public override bool IsDeterministic
     {
         get
         {
             return Condition switch
             {
-                EPatternCondition.AllOf => !_items.Any(static (x) => !x.IsRawValues),
-                EPatternCondition.OneOf => false,
+                EPatternCondition.AllOf => _items.All(static (x) => x.IsDeterministic),// an allof is deterministic if all items are deterministic
+                EPatternCondition.OneOf => false,// a oneof is never deterministic, as it can be any of the items
                 _ => false
             };
         }
@@ -61,45 +61,45 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
 
     public override bool IsInlinable
     {
-        get => _items.Length > 1 ? _items.All(static (x) => x.IsInlinable) : _items.Length == 1 && _items[0].IsInlinable;
+        get => _items.Length > 1 ? _items.All(static (x) => x.IsInlinable) : _items.Length == 1 && _items[0].IsInlinable;// a group is inlinable if all items are inlinable
     }
 
-    public override bool IsConstantLength => _items.Length > 1 ? _items.All(static (x) => x.IsConstantLength) : _items.Length == 1 && _items[0].IsConstantLength;
-    public override int MinLogicalLength
+    public override bool IsConstantLength => _items.Length > 1 ? _items.All(static (x) => x.IsConstantLength) : _items.Length == 1 && _items[0].IsConstantLength;// a group is constant length if all items are constant length
+    public override int MinConditions
     {
         get
         {
-            if (_items.Length == 1) return _items[0].MinLogicalLength;
+            if (_items.Length == 1) return _items[0].MinConditions;
             return Condition switch
             {
-                EPatternCondition.OneOf => _items.Min(static (x) => x.MinLogicalLength),
-                _ => _items.Sum(static (x) => x.MinLogicalLength)
+                EPatternCondition.OneOf => _items.Min(static (x) => x.MinConditions),// a oneof is the minimum number of conditions of all items
+                _ => _items.Sum(static (x) => x.MinConditions)// an allof is the sum of all items
             };
         }
     }
 
-    public override int MaxLogicalLength
+    public override int MaxConditions
     {
         get
         {
-            if (_items.Length == 1) return _items[0].MaxLogicalLength;
+            if (_items.Length == 1) return _items[0].MaxConditions;
             return Condition switch
             {
-                EPatternCondition.OneOf => _items.Max(static (x) => x.MaxLogicalLength),
-                _ => _items.Sum(static (x) => x.MaxLogicalLength)
+                EPatternCondition.OneOf => _items.Max(static (x) => x.MaxConditions),// a oneof is the maximum number of conditions of all items
+                _ => _items.Sum(static (x) => x.MaxConditions)// an allof is the sum of all items
             };
         }
     }
 
-    public override bool IsLogical
+    public override bool IsConditional
     {
         get
         {
-            if (_items.Length == 1) return _items[0].IsLogical;
+            if (_items.Length == 1) return _items[0].IsConditional;
             return Condition switch
             {
-                EPatternCondition.OneOf when _items.Length > 1 => true,
-                _ => _items.Any(static (x) => x.IsLogical)
+                EPatternCondition.OneOf when _items.Length > 1 => true,// a oneof is always conditional, as it can be any of the items
+                _ => _items.Any(static (x) => x.IsConditional)// otherwise it is conditional if any of the items are conditional
             };
         }
     }

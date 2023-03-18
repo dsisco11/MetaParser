@@ -2,6 +2,7 @@
 using MetaParser.Exceptions;
 using MetaParser.Graphs;
 using MetaParser.Json.Definitions;
+using MetaParser.Parsing.Constructs.Consumers;
 using MetaParser.Trees;
 
 using System;
@@ -120,7 +121,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     #region IComparable
     public int CompareTo(Consumer other)
     {
-        return Key.CompareTo(other.Key);
+        return ConsumerSorter.Instance.Compare(this, other);
     }
     #endregion
 

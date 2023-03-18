@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace MetaParser.Parsing.Constructs.Patterns;
 
-internal class PatternComparer : IComparer<Pattern>
+internal class PatternSorter : IComparer<Pattern>
 {
-    public static readonly PatternComparer Instance = new PatternComparer();
+    public static readonly PatternSorter Instance = new PatternSorter();
 
     public int Compare(Pattern left, Pattern right)
     {
@@ -18,12 +17,12 @@ internal class PatternComparer : IComparer<Pattern>
         // if the index is different, then the pattern with the lower index is considered to be less than the pattern with the higher index
 
         // First we make sure both patterns either are/are not sequences
-        if (left.HasChildren != right.HasChildren)
+        if (left.IsSequence != right.IsSequence)
         {
-            return !left.HasChildren ? -1 : 1;// patterns with no children come before patterns with children
+            return !left.IsSequence ? -1 : 1;// patterns with no children come before patterns with children
         }
 
-        if (left.HasChildren)
+        if (left.IsSequence)
         {
             // If both patterns are sequences, then we compare the children
             IEnumerator<Pattern> leftEnumerator = left.GetEnumerator();
@@ -53,10 +52,9 @@ internal class PatternComparer : IComparer<Pattern>
             }
         }
 
-        // compare left and right patterns based on the factors: IsRawValues, IsInlinable, IsConstantLength, MinLogicalLength, MaxLogicalLength
-        if (left.IsRawValues != right.IsRawValues)
+        if (left.IsDeterministic != right.IsDeterministic)
         {
-            return left.IsRawValues ? -1 : 1; // raw values come before non-raws
+            return left.IsDeterministic ? -1 : 1; // deterministic values come before non-deterministic
         }
 
         if (left.IsInlinable != right.IsInlinable)
@@ -64,9 +62,9 @@ internal class PatternComparer : IComparer<Pattern>
             return left.IsInlinable ? -1 : 1; // inlineable values come before non-inlineables
         }
 
-        if (left.IsLogical != right.IsLogical)
+        if (left.IsConditional != right.IsConditional)
         {
-            return left.IsLogical ? 1 : -1; // logical values come after non-logic
+            return left.IsConditional ? 1 : -1; // logical values come after non-logic
         }
 
         if (left.IsConstantLength != right.IsConstantLength)
@@ -74,17 +72,16 @@ internal class PatternComparer : IComparer<Pattern>
             return left.IsConstantLength ? -1 : 1;
         }
 
-        if (left.MaxLogicalLength != right.MaxLogicalLength)
+        if (left.MaxConditions != right.MaxConditions)
         {
-            return left.MaxLogicalLength.CompareTo(right.MaxLogicalLength);
+            return left.MaxConditions.CompareTo(right.MaxConditions);
         }
 
-        if (left.MinLogicalLength != right.MinLogicalLength)
+        if (left.MinConditions != right.MinConditions)
         {
-            return left.MinLogicalLength.CompareTo(right.MinLogicalLength);
+            return left.MinConditions.CompareTo(right.MinConditions);
         }
 
-        //return left.DependencyInfo.Order.CompareTo(right.DependencyInfo.Order);
         return 0;
     }
 }
