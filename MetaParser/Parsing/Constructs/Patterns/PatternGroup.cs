@@ -1,5 +1,4 @@
 ﻿using MetaParser.Core;
-
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +20,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
     public PatternGroup(EPatternCondition condition, MetaParserContext context, params Pattern[] items) : base(context)
     {
         _condition = condition;
-        _items = items;
+        _items = CollapseInnerGroups(items, condition).ToArray();
     }
     #endregion
 
@@ -42,8 +41,8 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
     {
         get => Condition switch
         {
-            EPatternCondition.OneOf => _items.Length > 0 ? _items.Max(static (x) => x.Length) : 0,
-            _ => _items.Sum(static (p) => p.Length)
+            EPatternCondition.OneOf => _items.Length > 0 ? _items.Min(static (x) => x.Length) : 0,
+            _ => _items.Length
         };
     }
 
@@ -127,7 +126,30 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
         {
             yield return new EntityLink(Key, item.Key);
         }
-
-        yield break;
     }
+
+    #region Sequence Flattening
+    private static List<Pattern> CollapseInnerGroups(Pattern[] patterns, EPatternCondition condition)
+    {
+        List<Pattern> results = new List<Pattern>();
+        foreach (Pattern item in patterns)
+        {
+            // If this pattern group is the same type as us, then we can flatten it in the enumeration
+            if (item is PatternGroup subGroup && subGroup.Condition == condition)
+            {
+                foreach (Pattern subItem in subGroup)
+                {
+                    results.Add(subItem);
+                }
+            }
+            else
+            {
+                results.Add(item);
+            }
+        }
+
+        return results;
+    }
+    #endregion
 }
+
