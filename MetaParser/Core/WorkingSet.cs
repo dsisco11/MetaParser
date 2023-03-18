@@ -14,51 +14,16 @@ namespace MetaParser.Core;
 internal record WorkingSet
 {
     #region Fields
-    private TokenInfo[] tokens = Array.Empty<TokenInfo>();
-    private Consumer[] consumers = Array.Empty<Consumer>();
-    private Pattern[] patterns = Array.Empty<Pattern>();
-
-    private SortedSet<TokenInfo> sortedTokens = new SortedSet<TokenInfo>();
-    private SortedSet<Consumer> sortedConsumers = new SortedSet<Consumer>();
     private SortedSet<Pattern> sortedPatterns = new SortedSet<Pattern>(PatternComparer.Instance);
     #endregion
 
     #region Properties
-    [Obsolete("Use SortedTokens instead")]
-    public TokenInfo[] Tokens
-    {
-        get => tokens;
-        set
-        {
-            tokens = value;
-            sortedTokens = new SortedSet<TokenInfo>();
-        }
-    }
+    public TokenInfo[] Tokens { get; set; } = Array.Empty<TokenInfo>();
 
-    [Obsolete("Use SortedConsumers instead")]
-    public Consumer[] Consumers
-    {
-        get => consumers; 
-        set
-        {
-            consumers = value;
-            sortedConsumers = new SortedSet<Consumer>();
-        }
-    }
+    public Consumer[] Consumers { get; set; } = Array.Empty<Consumer>();
 
-    [Obsolete("Use SortedPatterns instead")]
-    public Pattern[] Patterns
-    {
-        get => patterns; 
-        set
-        {
-            patterns = value;
-            sortedPatterns = new SortedSet<Pattern>(PatternComparer.Instance);
-        }
-    }
-
-    public SortedSet<TokenInfo> SortedTokens => sortedTokens;
-    public SortedSet<Consumer> SortedConsumers => sortedConsumers; 
+    [Obsolete("Try to use SortedPatterns instead")]
+    public Pattern[] Patterns { get; set; } = Array.Empty<Pattern>();
     public SortedSet<Pattern> SortedPatterns => sortedPatterns;
     #endregion
 
@@ -72,6 +37,7 @@ internal record WorkingSet
         Consumers = consumers.ToArray();
         Patterns = consumers.SelectMany(static (x) => x.Patterns).ToArray();
         Tokens = consumers.Select(static (x) => x.Token).ToArray();
+        sortedPatterns = new SortedSet<Pattern>(Patterns, PatternComparer.Instance);
     }
 
     public WorkingSet(params Consumer[] consumers)
@@ -79,6 +45,7 @@ internal record WorkingSet
         Consumers = consumers.ToArray();
         Patterns = consumers.SelectMany(static (x) => x.Patterns).ToArray();
         Tokens = consumers.Select(static (x) => x.Token).ToArray();
+        sortedPatterns = new SortedSet<Pattern>(Patterns, PatternComparer.Instance);
     }
 
     public WorkingSet(IEnumerable<TokenInfo> tokens)
@@ -86,6 +53,7 @@ internal record WorkingSet
         Tokens = tokens.ToArray();
         Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).ToArray();
         Patterns = Consumers.SelectMany(static (x) => x.Patterns).ToArray();
+        sortedPatterns = new SortedSet<Pattern>(Patterns, PatternComparer.Instance);
     }
 
     public WorkingSet(params TokenInfo[] tokens)
@@ -93,6 +61,7 @@ internal record WorkingSet
         Tokens = tokens.ToArray();
         Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).ToArray();
         Patterns = Consumers.SelectMany(static (x) => x.Patterns).ToArray();
+        sortedPatterns = new SortedSet<Pattern>(Patterns, PatternComparer.Instance);
     }
 
     public WorkingSet(TokenInfo token, Consumer consumer, params Pattern[] patterns)
@@ -100,6 +69,7 @@ internal record WorkingSet
         Patterns = patterns;
         Consumers = new[] { consumer };
         Tokens = new[] { token };
+        sortedPatterns = new SortedSet<Pattern>(Patterns, PatternComparer.Instance);
     }
     #endregion
 }
