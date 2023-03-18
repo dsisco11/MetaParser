@@ -15,7 +15,7 @@ internal class LogicPatternMatcher : MetaCodeBuilder
         var writer = context.Writer;
         var pattern = context.WorkingSet.Patterns.Single();
 
-        if (!pattern.IsInlinable && pattern.MaxConditions == 1)
+        if (!pattern.IsInlinable && pattern.IsConditional && pattern.Length == 1)
         {// This is a single non-inlineable item, so we execute the function
             writer.Write(Format(pattern));
             writer.Write($"({context.ActiveBufferName})");
