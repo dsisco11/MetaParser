@@ -31,9 +31,9 @@ internal sealed record PatternTokenRef : Pattern
     }
     public override bool IsConstantLength => true;
     public override bool HasChildren => false;
-    public override int MinLogicalLength => 1;
-    public override int MaxLogicalLength => 1;
-    public override bool IsLogical => false;
+    public override int MinLogicalLength => IsLogical ? 1 : 0;
+    public override int MaxLogicalLength => IsLogical ? 1 : 0;
+    public override bool IsLogical => !IsInlinable;// if token isnt inlineable, it must be a logical check
     #endregion
 
 

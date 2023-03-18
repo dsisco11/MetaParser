@@ -27,8 +27,8 @@ internal sealed record PatternConst : Pattern
     public override bool IsConstantLength => true;
     public override int Length => string.IsNullOrEmpty(Value) ? 0 : 1;
     public override bool HasChildren => false;
-    public override int MinLogicalLength => 1;
-    public override int MaxLogicalLength => 1;
+    public override int MinLogicalLength => 0;
+    public override int MaxLogicalLength => 0;
     public override bool IsLogical => false;
     #endregion
 

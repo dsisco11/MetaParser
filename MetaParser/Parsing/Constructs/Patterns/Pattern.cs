@@ -24,7 +24,7 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     /// </summary>
     public abstract bool IsInlinable { get; }
     /// <summary>
-    /// Indicates whether the pattern will always match a predetermined count of items, or if the patterns length can vary
+    /// Indicates whether the pattern will always match a predetermined count of items, or if the number of matched items varies
     /// </summary>
     public abstract bool IsConstantLength { get; }
     /// <summary>
@@ -32,11 +32,11 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>
     /// </summary>
     public abstract bool HasChildren { get; }
     /// <summary>
-    /// Indicates the length of the shortest nested pattern sequence, or 1 if this pattern has no nested sequences
+    /// Indicates the minimum number of logical/conditional checks the pattern requires
     /// </summary>
     public abstract int MinLogicalLength { get; }
     /// <summary>
-    /// Indicates the length of the longest nested pattern sequence, or 1 if this pattern has no nested sequences
+    /// Indicates the maximum number of logical/conditional checks the pattern requires
     /// </summary>
     public abstract int MaxLogicalLength { get; }
     /// <summary>
