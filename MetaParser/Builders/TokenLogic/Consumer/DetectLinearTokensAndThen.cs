@@ -1,5 +1,6 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
+using MetaParser.Parsing.Constructs.Patterns;
 
 using System.Linq;
 
@@ -19,7 +20,7 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
 #if DEBUG
         writer.WriteLine("// Linear consumers");
 #endif
-        var sortedConsumers = context.WorkingSet.Consumers.OrderByDescending(static (c) => c.Token.DependencyInfo.NodeDepth.Max).ThenByDescending(static (c) => c.Start.MaxLogicalLength);
+        var sortedConsumers = context.WorkingSet.Consumers.OrderByDescending(static (c) => c.Token.DependencyInfo.NodeDepth.Max).ThenBy(static (c) => c.Start, PatternComparer.Instance);
         writer.WriteLine($"switch ({context.ActiveBufferName})");
         writer.WriteLine("{");
         writer.Indent++;

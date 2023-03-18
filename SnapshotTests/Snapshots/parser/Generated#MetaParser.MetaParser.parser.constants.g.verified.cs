@@ -23,13 +23,12 @@ namespace UnitTestParser
         public const byte Char_Reverse_Solidus = 17;
         public const byte Whitespace = 18;
         public const byte Digits = 19;
-        public const byte Letters = 20;
-        public const byte Newline = 21;
-        public const byte Identifier = 22;
-        public const byte Comment = 23;
-        public const byte Typename = 24;
-        public const byte Declaration = 25;
-        public const byte Codeblock = 26;
-        public const byte Program = 27;
+        public const byte Newline = 20;
+        public const byte Identifier = 21;
+        public const byte Comment = 22;
+        public const byte Typename = 23;
+        public const byte Declaration = 24;
+        public const byte Codeblock = 25;
+        public const byte Program = 26;
     }
 }

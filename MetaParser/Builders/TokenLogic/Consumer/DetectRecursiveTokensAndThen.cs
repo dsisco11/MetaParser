@@ -1,6 +1,7 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
 using MetaParser.Parsing.Constructs;
+using MetaParser.Parsing.Constructs.Patterns;
 
 using System.Linq;
 

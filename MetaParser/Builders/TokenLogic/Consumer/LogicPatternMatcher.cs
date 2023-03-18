@@ -35,7 +35,7 @@ internal class LogicPatternMatcher : MetaCodeBuilder
             writer.Indent--;
             writer.WriteLine("}");
         }
-        else if (pattern.IsRawValues && !pattern.IsLogical && pattern.MaxLogicalLength == 1)
+        else if (pattern.IsRawValues && !pattern.IsLogical && pattern.Length == 1)
         {// This is a single inlineable item, so do a length-1 buffer check
          // "buffer[0] == x"
             writer.Write($"{context.ActiveBufferName}[0] == {Format(pattern)}");

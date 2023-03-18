@@ -31,7 +31,7 @@ internal class ConsumeAndThen : MetaCodeBuilder
             {
                 writer.WriteLine("/* WARNING: consumer START sequence is of uncertain length, it is possible this could cause token parsing discrepancies */");
             }
-            writer.WriteLine($"var {context.ActiveBufferName} = {context.LastBufferName}.Slice({Math.Max(1, consumer.Start.MinLogicalLength)});");
+            writer.WriteLine($"var {context.ActiveBufferName} = {context.LastBufferName}.Slice({Math.Max(1, consumer.Start.Length)});");
         }
 
         // Check for escape sequence
