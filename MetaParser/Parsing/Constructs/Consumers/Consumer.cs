@@ -85,7 +85,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     {
         Type = consumer.Type;
         context.WorkingSet.Consumers[0] = this;
-        context.Registry.RegisterConsumer(this, context.WorkingSet.Tokens.Single().Key);
+        context.Registry.AddConsumer(this, context.WorkingSet.Tokens.Single().Key);
 
         if (consumer.Start is null && consumer.Consume is null)
         {

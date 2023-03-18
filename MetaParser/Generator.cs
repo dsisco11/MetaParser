@@ -155,7 +155,7 @@ public partial class Generator : IIncrementalGenerator
                 // create a token for each token name
                 string tokenKey = CodeCommon.Format_Token_Key(definition.Key);
                 var tokenInfo = new TokenInfo(tokenKey, context);
-                context.Registry.RegisterToken(tokenInfo);
+                context.Registry.AddToken(tokenInfo);
 
                 // add the token to the working set, so consumers know which one they belong to when they're created
                 context.WorkingSet.Tokens[0] = tokenInfo;
