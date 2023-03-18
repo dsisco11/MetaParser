@@ -4,6 +4,7 @@ using MetaParser.Trees;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MetaParser.Core;
 
@@ -27,7 +28,7 @@ internal class MetaParserRegistry
     #endregion
 
     #region Item Management
-    public void AddToken(TokenInfo token)
+    public void RegisterToken(TokenInfo token)
     {
         if (_tokens.ContainsKey(token.Key))
         {
@@ -37,7 +38,7 @@ internal class MetaParserRegistry
         Tree.Add(token.Key);
     }
 
-    public void AddConsumer(Consumer consumer, EntityKey parentKey)
+    public void RegisterConsumer(Consumer consumer, EntityKey parentKey)
     {
         if (_consumers.ContainsKey(consumer.Key))
         {
@@ -47,14 +48,22 @@ internal class MetaParserRegistry
         Tree.AddEdge(consumer.Key, parentKey);
     }
 
-    public void AddPattern(Pattern pattern, EntityKey parentKey)
+    public Pattern RegisterPattern(Pattern pattern, EntityKey parentKey)
     {
         if (_patterns.ContainsKey(pattern.Key))
         {
             throw new ArgumentException($"Pattern '{pattern.Key}' already exists in the registry.");
         }
+
+        if (_patterns.ContainsValue(pattern))
+        {
+            pattern = _patterns.Values.First(p => p == pattern);
+        }
+
         _patterns.Add(pattern.Key, pattern);
         Tree.AddEdge(pattern.Key, parentKey);
+
+        return pattern;
     }
     #endregion
 

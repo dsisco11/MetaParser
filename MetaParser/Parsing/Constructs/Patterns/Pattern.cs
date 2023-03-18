@@ -50,7 +50,7 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>, ICompa
     public Pattern(MetaParserContext context) : base(new(NodeType.Pattern, context.Registry.GetNextPatternIndex()), context)
     {
         var consumerKey = context.WorkingSet.Consumers.Single().Key;
-        context.Registry.AddPattern(this, consumerKey);
+        context.Registry.RegisterPattern(this, consumerKey);
     }
     #endregion
 
