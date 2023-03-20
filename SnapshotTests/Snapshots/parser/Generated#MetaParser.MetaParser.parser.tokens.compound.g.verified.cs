@@ -5,7 +5,6 @@ namespace UnitTestParser
     {
         private static bool TryProcessingSyntaxToken(global::System.ReadOnlySpan<byte> buffer0, out byte id, out int length)
         {
-            // Linear consumers
             switch (buffer0)
             {
                 case [TokenId.Keyword_Var, ..]:

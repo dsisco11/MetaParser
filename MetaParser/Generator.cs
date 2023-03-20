@@ -170,14 +170,20 @@ public partial class Generator : IIncrementalGenerator
             return context;
         });
 
+        IncrementalValuesProvider<MetaParserContext> ctxRecursiveTokens = ctxTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
+        {
+            var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo.NodeDepth.Max > 0);
+            return (parser with { WorkingSet = new WorkingSet(tokens) });
+        });
+
         #endregion
 
         //#if DEBUG
         //        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         //        {
         //            
-            //context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
-            //var writer = context.Writer;
+        //context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
+        //var writer = context.Writer;
         //            var graph = new DirectedGraph(context.DepsGraph);
         //            // we only want to see a graph of our token relationships, so we'll remove everything else from the graph
         //            var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token).ToList();
@@ -249,11 +255,7 @@ public partial class Generator : IIncrementalGenerator
 
         #region Token Start Detection
         // Any token which has an incoming link must have a start detection function
-        context.RegisterSourceOutput(ctxTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
-        {
-            var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo.NodeDepth.Max > 0);
-            return (parser with { WorkingSet = new WorkingSet(tokens) });
-        }),
+        context.RegisterSourceOutput(ctxRecursiveTokens,
         static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
@@ -264,6 +266,22 @@ public partial class Generator : IIncrementalGenerator
                 .WriteTo(context);
 
             AddSource(spc, $"{context.Config.BaseFileName}.tokens.detection", context.Writer.InnerWriter.ToString());
+        });
+        #endregion
+
+        #region Token Builders
+        // Any token which has an incoming link must have a dedicated consumption function
+        context.RegisterSourceOutput(ctxRecursiveTokens,
+        static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        {
+            context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
+            var writer = context.Writer;
+
+            new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
+                .And(new GenTokenConsumeFunctions())
+                .WriteTo(context);
+
+            AddSource(spc, $"{context.Config.BaseFileName}.tokens.consumption", context.Writer.InnerWriter.ToString());
         });
         #endregion
 

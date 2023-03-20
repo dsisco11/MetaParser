@@ -21,15 +21,15 @@ internal class TokenProcessor : MetaCodeBuilder
         {
             context.Config.CodeFactory.Get_Logic_Detect_Recursive_Token()
                                       .And(new ExecuteConsumerAndReturnResult())
-                                      .WriteTo(context with { WorkingSet = new (consumersRecursive.ToArray()) });
+                                      .WriteTo(context with { WorkingSet = new WorkingSet(consumersRecursive.ToArray()) });
         }
 
         var consumersLinear = groups.Where(static b => b.Key == false).SelectMany(static b => b);
         if (consumersLinear.Any())
         {
-            context.Config.CodeFactory.Get_Logic_Detect_Linear_Token()
+            context.Config.CodeFactory.Get_Switch_Block_For_Consumers()
                                       .And(new ExecuteConsumerAndReturnResult())
-                                      .WriteTo(context with { WorkingSet = new(consumersLinear.ToArray()) });
+                                      .WriteTo(context with { WorkingSet = new WorkingSet(consumersLinear.ToArray()) });
         }
 
         // return failure

@@ -3,7 +3,7 @@ namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        private static bool is_comment_token_start(global::System.ReadOnlySpan<byte> buffer0)
+        private static bool starts_comment_token(global::System.ReadOnlySpan<byte> buffer0)
         {
             return buffer0 switch
             {
@@ -13,7 +13,7 @@ namespace UnitTestParser
                 _ => false
             };
         }
-        private static bool is_declaration_token_start(global::System.ReadOnlySpan<byte> buffer0)
+        private static bool starts_declaration_token(global::System.ReadOnlySpan<byte> buffer0)
         {
             return buffer0 switch
             {

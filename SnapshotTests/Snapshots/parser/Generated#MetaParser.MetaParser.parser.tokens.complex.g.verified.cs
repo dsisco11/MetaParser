@@ -5,8 +5,8 @@ namespace UnitTestParser
     {
         private static bool TryProcessComplex(global::System.ReadOnlySpan<byte> buffer0, out byte id, out int length)
         {
-            // Recursive consumers
-            if (is_codeblock_token_start(buffer0))
+            // Recursive tokens
+            if (starts_codeblock_token(buffer0))
             {
                 id = TokenId.Codeblock;
                 return consume_pattern_32(buffer0, out length);
@@ -39,7 +39,7 @@ namespace UnitTestParser
                     
                     while (buffer1.Length > 0)
                     {
-                        if (is_declaration_token_start(buffer1))
+                        if (starts_declaration_token(buffer1))
                         /* If we have a set of valid CONSUME targets, then try and consume as many as possible (STOP sequence should be mutually exclusive with CONSUME sequence) */
                         {
                             buffer1 = buffer1.Slice(1);

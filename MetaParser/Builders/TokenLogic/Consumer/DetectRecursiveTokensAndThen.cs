@@ -18,11 +18,11 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
 
         var writer = context.Writer;
 #if DEBUG
-        writer.WriteLine("// Recursive consumers");
+        writer.WriteLine("// Recursive tokens");
 #endif
-        var orderedItems = context.WorkingSet.Consumers.Select(static (x) => x.Token).Distinct();
-        foreach (TokenInfo token in orderedItems)
+        for (int i = 0; i < context.WorkingSet.Tokens.Length; i++)
         {
+            TokenInfo? token = context.WorkingSet.Tokens[i];
             writer.WriteLine($"if ({Format_Token_Start_Detection_Function_Name(token.Name)}({context.ActiveBufferName}))");
             writer.WriteLine("{");
             writer.Indent++;

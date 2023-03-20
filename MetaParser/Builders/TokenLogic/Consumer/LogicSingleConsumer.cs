@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
-internal class ConsumeAndThen : MetaCodeBuilder
+internal class LogicSingleConsumer : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {

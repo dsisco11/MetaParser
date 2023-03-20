@@ -38,6 +38,9 @@ internal static class CodeCommon
     public const string TokenValueStructName = "ValueToken";
     public const string TokenRecordTypeName = "Token";
 
+    public const string TypeTokenProcessingResult = "TokenResult";
+    public const string TypeConsumerProcessingResult = "ConsumerResult";
+
     public const string LexerProcessingFunctionName = "TryProcessingLexerToken";
     public const string SyntaxProcessingFunctionName = "TryProcessingSyntaxToken";
     public const string ComplexTokenProcessorFunctionName = "TryProcessComplex";
@@ -45,8 +48,9 @@ internal static class CodeCommon
 
     #region Formatting
     public static string Format_Pattern_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
-    public static string Format_Token_Start_Detection_Function_Name(string tokenName) => $"is_{tokenName.ToLowerInvariant()}_token_start";
-    public static string Format_Pattern_Start_Detection_Function_Name(int consumerIndex) => $"is_consumer_start_{consumerIndex}";
+    public static string Format_Pattern_Start_Detection_Function_Name(int consumerIndex) => $"starts_consumer_{consumerIndex}";
+    public static string Format_Token_Start_Detection_Function_Name(string tokenName) => $"starts_{tokenName.ToLowerInvariant()}_token";
+    public static string Format_Token_Consume_Function_Name(string tokenName) => $"consume_{tokenName.ToLowerInvariant()}_token";
 
     public static string Format_Token_Id(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name);
     public static string Format_Token_Key(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : name.ToLowerInvariant();
@@ -54,7 +58,6 @@ internal static class CodeCommon
     public static string Format_Token_Id_Const_Ref(string? name) => $"{TokenConsts}.{Format_Token_Id(name)}";
     public static string Format_Token_Id_Const_Ref(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : $"{TokenConsts}.{Format_Token_Id(token.Name)}";
     #endregion
-
 
     #region Builders
     public static TypeSyntax Get_Consumer_Data_Type(MetaParserConfig config, EConsumerType type) => (type == EConsumerType.Lexer ? config.InputType : config.IdType);

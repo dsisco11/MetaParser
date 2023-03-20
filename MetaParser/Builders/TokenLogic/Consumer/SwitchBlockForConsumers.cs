@@ -1,11 +1,10 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
-using MetaParser.Parsing.Constructs.Patterns;
 
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
-internal class DetectLinearTokensAndThen : MetaCodeBuilder
+internal class SwitchBlockForConsumers : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
@@ -17,16 +16,13 @@ internal class DetectLinearTokensAndThen : MetaCodeBuilder
         var writer = context.Writer;
         var workContext = context with {};
 
-#if DEBUG
-        writer.WriteLine("// Linear consumers");
-#endif
-        var sortedConsumers = context.WorkingSet.Consumers;
         writer.WriteLine($"switch ({context.ActiveBufferName})");
         writer.WriteLine("{");
         writer.Indent++;
 
-        foreach (Parsing.Constructs.Consumer consumer in sortedConsumers)
+        for (int i = 0; i < context.WorkingSet.Consumers.Length; i++)
         {
+            Parsing.Constructs.Consumer? consumer = context.WorkingSet.Consumers[i];
             workContext.WorkingSet = new WorkingSet(consumer.Token, consumer, consumer.Start);
 
             writer.Write("case [");

@@ -5,7 +5,6 @@ namespace UnitTestParser
     {
         private static bool TryProcessingLexerToken(global::System.ReadOnlySpan<char> buffer0, out byte id, out int length)
         {
-            // Linear consumers
             switch (buffer0)
             {
                 case ['f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ..]:

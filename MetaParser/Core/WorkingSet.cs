@@ -1,5 +1,4 @@
 ﻿using MetaParser.Parsing.Constructs;
-using MetaParser.Parsing.Constructs.Patterns;
 
 using System;
 using System.Buffers;
@@ -29,32 +28,32 @@ internal record WorkingSet
     public WorkingSet(IEnumerable<Consumer> consumers)
     {
         Consumers = consumers.ToArray();
-        Patterns = consumers.SelectMany(static (x) => x.Patterns).ToArray();
-        Tokens = consumers.Select(static (x) => x.Token).ToArray();
+        Patterns = consumers.SelectMany(static (x) => x.Patterns).Distinct().ToArray();
+        Tokens = consumers.Select(static (x) => x.Token).Distinct().ToArray();
         Sort();
     }
 
     public WorkingSet(params Consumer[] consumers)
     {
         Consumers = consumers.ToArray();
-        Patterns = consumers.SelectMany(static (x) => x.Patterns).ToArray();
-        Tokens = consumers.Select(static (x) => x.Token).ToArray();
+        Patterns = consumers.SelectMany(static (x) => x.Patterns).Distinct().ToArray();
+        Tokens = consumers.Select(static (x) => x.Token).Distinct().ToArray();
         Sort();
     }
 
     public WorkingSet(IEnumerable<TokenInfo> tokens)
     {
         Tokens = tokens.ToArray();
-        Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).ToArray();
-        Patterns = Consumers.SelectMany(static (x) => x.Patterns).ToArray();
+        Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).Distinct().ToArray();
+        Patterns = Consumers.SelectMany(static (x) => x.Patterns).Distinct().ToArray();
         Sort();
     }
 
     public WorkingSet(params TokenInfo[] tokens)
     {
         Tokens = tokens.ToArray();
-        Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).ToArray();
-        Patterns = Consumers.SelectMany(static (x) => x.Patterns).ToArray();
+        Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).Distinct().ToArray();
+        Patterns = Consumers.SelectMany(static (x) => x.Patterns).Distinct().ToArray();
         Sort();
     }
 
