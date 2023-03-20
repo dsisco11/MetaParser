@@ -3,20 +3,19 @@ namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        private static bool TryProcessComplex(global::System.ReadOnlySpan<byte> buffer0, out byte id, out int length)
+        private static ConsumerResult TryProcessComplex(global::System.ReadOnlySpan<byte> buffer0)
         {
             // Recursive tokens
             if (starts_codeblock_token(buffer0))
             {
-                id = TokenId.Codeblock;
-                return consume_pattern_32(buffer0, out length);
+                return consume_pattern_32(buffer0);
             }
             
             id = default;
             length = default;
             return false;
             
-            bool consume_pattern_32(global::System.ReadOnlySpan<byte> buffer0, out int length)
+            ConsumerResult consume_pattern_32(global::System.ReadOnlySpan<byte> buffer0)
             {
                 /*
                 * TokenID: codeblock (#25)
@@ -55,12 +54,10 @@ namespace UnitTestParser
                 
                 if (buffer1[0] == TokenId.Char_Close_Bracket)
                 {
-                    length = 1 + (buffer0.Length - buffer1.Length);
-                    return true;
+                    return new (TokenId.Codeblock, 1 + (buffer0.Length - buffer1.Length));
                 }
                 
-                length = default;
-                return false;
+                return new (default, default);
             }
         }
     }

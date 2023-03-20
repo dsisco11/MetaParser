@@ -14,9 +14,9 @@ internal class GenTokenConsumeFunctions : MetaCodeBuilder
     public static FunctionDefinition Get_Function_Definition(MetaParserContext context, EConsumerType type, string name)
     {
         return (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTokens("private static"),
-                                                          SyntaxFactory.ParseTypeName("bool"),
+                                                          SyntaxFactory.ParseTypeName(TypeConsumerProcessingResult),
                                                           name,
-                                                          SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}, out {CodeCommon.TokenRecordTypeName} outToken, out int consumeCount"));
+                                                          SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}"));
     }
 
     protected override void Write(MetaParserContext context)

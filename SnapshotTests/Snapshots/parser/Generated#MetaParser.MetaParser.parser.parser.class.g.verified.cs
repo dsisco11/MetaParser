@@ -18,7 +18,8 @@ namespace UnitTestParser
             
             while (buffer2.Length > 0)
             {
-                if (TryProcessingLexerToken(buffer2, out var outId, out var outLength))
+                var processed = TryProcessingLexerToken(buffer2))
+                if (processed.length != default)
                 {
                     if (buffer1.Length != buffer2.Length)
                     {
@@ -29,9 +30,9 @@ namespace UnitTestParser
                         buffer2 = buffer1.Span;
                     }
                     
-                    var consumed = buffer1.Slice(0, outLength);
-                    results.Add( new ValueToken(outId, consumed) );
-                    buffer1 = buffer1.Slice(outLength);
+                    var consumed = buffer1.Slice(0, processed.length);
+                    results.Add( new ValueToken(processed.id, consumed) );
+                    buffer1 = buffer1.Slice(processed.length);
                     buffer2 = buffer1.Span;
                 }
                 else
@@ -65,18 +66,19 @@ namespace UnitTestParser
             
             while (buffer3.Length > 0)
             {
-                if (TryProcessingSyntaxToken(buffer3, out var outId, out var outLength))
+                var processed = (TryProcessingSyntaxToken(buffer3))
+                if (processed.length != default)
                 {
-                    var consumed = buffer1.Slice(0, outLength).ToArray();
-                    results.Add(new Token((ETokenType) outId, consumed) );
+                    var consumed = buffer1.Slice(0, processed.length).ToArray();
+                    results.Add(new Token((ETokenType) processed.id, consumed) );
                     
-                    buffer1 = buffer1.Slice(outLength);
-                    buffer2 = buffer2.Slice(outLength);
+                    buffer1 = buffer1.Slice(processed.length);
+                    buffer2 = buffer2.Slice(processed.length);
                     buffer3 = buffer2.Span;
                 }
                 else
                 {
-                    /* Proxy the current token as it has no special compound behavior */
+                    /* Forward the token on to the next stage */
                     var consumed = buffer1.Span[0];
                     results.Add(new Token((ETokenType) consumed.Id, new[] { consumed }));
                     buffer1 = buffer1.Slice(1);

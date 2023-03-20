@@ -345,6 +345,18 @@ public partial class Generator : IIncrementalGenerator
         });
         #endregion
 
+        #region Result Structure
+        context.RegisterSourceOutput(ctxParserOnly, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        {
+            context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
+            var writer = context.Writer;
+
+            context.Config.CodeFactory.Get_Parsing_Struct_Builder().WriteTo(context);
+
+            AddSource(spc, $"{context.Config.BaseFileName}.parser.structs", context.Writer.InnerWriter.ToString());
+        });
+        #endregion
+
         #region Token Structure
         context.RegisterSourceOutput(ctxParserOnly, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
         {

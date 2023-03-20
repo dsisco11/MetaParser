@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
+using static CodeCommon;
+
 internal class LogicSingleConsumer : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
@@ -161,18 +163,15 @@ internal class LogicSingleConsumer : MetaCodeBuilder
             writer.WriteLine(")");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"length = {consumer.Stop.Length} + ({context.LastBufferName}.Length - {context.ActiveBufferName}.Length);");
-            writer.WriteLine("return true;");
+            writer.WriteLine($"return new ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Stop.Length} + ({context.LastBufferName}.Length - {context.ActiveBufferName}.Length));");
             writer.Indent--;
             writer.WriteLine("}");
             writer.WriteLine();
-            writer.WriteLine("length = default;");
-            writer.WriteLine("return false;");
+            writer.WriteLine("return new (default, default);");
         }
         else
         {
-            writer.WriteLine($"length = {context.LastBufferName}.Length - {context.ActiveBufferName}.Length;");
-            writer.WriteLine("return true;");
+            writer.WriteLine($"return new ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {context.LastBufferName}.Length - {context.ActiveBufferName}.Length);");
         }
 
     }

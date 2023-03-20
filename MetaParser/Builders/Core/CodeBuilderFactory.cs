@@ -10,6 +10,7 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
     #region Fields
     protected readonly MetaParserConfig Config;
     private readonly IMetaCodeBuilder _parsing_logic;
+    private readonly IMetaCodeBuilder _parsing_struct_builder;
     private readonly IMetaCodeBuilder _token_processing_logic;
     private readonly IMetaCodeBuilder _token_id_constants_builder;
     private readonly IMetaCodeBuilder _token_id_enum_builder;
@@ -22,6 +23,7 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
     {
         Config = config;
         _parsing_logic = new ParsingLogic();
+        _parsing_struct_builder = new ResultStructBuilder();
         _token_processing_logic = new TokenProcessor();
         _token_id_constants_builder = new TokenIDConstBuilder();
         _token_id_enum_builder = new TokenIDEnumBuilder();
@@ -31,6 +33,7 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
     }
 
     public IMetaCodeBuilder Get_Parsing_Logic() => _parsing_logic;
+    public IMetaCodeBuilder Get_Parsing_Struct_Builder() => _parsing_struct_builder;
 
     public IMetaCodeBuilder Get_Logic_Consumer_Match() => new LogicSingleConsumer();
 

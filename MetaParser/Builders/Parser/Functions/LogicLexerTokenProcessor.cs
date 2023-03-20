@@ -16,6 +16,7 @@ internal class LogicLexerTokenProcessor : MetaCodeBuilder
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, EConsumerType.Lexer)}>");
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenValueStructName}>");
         const string VarNameResults = "results";
+        const string VarNameProcesserReturn = "processed";
         var writer = context.Writer;
 
         string VarBufferMajor = context.ActiveBufferName;
@@ -36,15 +37,16 @@ internal class LogicLexerTokenProcessor : MetaCodeBuilder
         writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"if ({LexerProcessingFunctionName}({VarBufferLocal}, out var outId, out var outLength))");
+        writer.WriteLine($"var {VarNameProcesserReturn} = {LexerProcessingFunctionName}({VarBufferLocal}))");
+        writer.WriteLine($"if ({VarNameProcesserReturn}.length != default)");
         writer.WriteLine("{");
         writer.Indent++;
         // Be sure to push unknown token if its lingering
         UnknownTokenPusher.Instance.WriteTo(context);
         writer.WriteLine();
-        writer.WriteLine($"var consumed = {VarBufferMinor}.Slice(0, outLength);");
-        writer.WriteLine($"{VarNameResults}.Add( new {TokenValueStructName}(outId, consumed) );");
-        writer.WriteLine($"{VarBufferMinor} = {VarBufferMinor}.Slice(outLength);");
+        writer.WriteLine($"var consumed = {VarBufferMinor}.Slice(0, {VarNameProcesserReturn}.length);");
+        writer.WriteLine($"{VarNameResults}.Add( new {TokenValueStructName}({VarNameProcesserReturn}.id, consumed) );");
+        writer.WriteLine($"{VarBufferMinor} = {VarBufferMinor}.Slice({VarNameProcesserReturn}.length);");
         writer.WriteLine($"{VarBufferLocal} = {VarBufferMinor}.Span;");
         writer.Indent--;
         writer.WriteLine("}");

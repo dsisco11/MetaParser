@@ -16,6 +16,7 @@ internal class LogicSyntaxTokenProcessor : MetaCodeBuilder
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenRecordTypeName}>");
         const string VarNameIdBuffer = "idValues";
         const string VarNameResults = "results";
+        const string VarNameProcesserReturn = "processed";
         var writer = context.Writer;
 
         string VarBufferMajor = context.ActiveBufferName;
@@ -46,14 +47,15 @@ internal class LogicSyntaxTokenProcessor : MetaCodeBuilder
         writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"if ({SyntaxProcessingFunctionName}({VarBufferLocal}, out var outId, out var outLength))");
+        writer.WriteLine($"var {VarNameProcesserReturn} = ({SyntaxProcessingFunctionName}({VarBufferLocal}))");
+        writer.WriteLine($"if ({VarNameProcesserReturn}.length != default)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"var consumed = {VarBufferMajor}.Slice(0, outLength).ToArray();");
-        writer.WriteLine($"{VarNameResults}.Add(new {TokenRecordTypeName}(({TokenEnum}) outId, consumed) );");
+        writer.WriteLine($"var consumed = {VarBufferMajor}.Slice(0, {VarNameProcesserReturn}.length).ToArray();");
+        writer.WriteLine($"{VarNameResults}.Add(new {TokenRecordTypeName}(({TokenEnum}) {VarNameProcesserReturn}.id, consumed) );");
         writer.WriteLine();
-        writer.WriteLine($"{VarBufferMajor} = {VarBufferMajor}.Slice(outLength);");
-        writer.WriteLine($"{VarBufferMinor} = {VarBufferMinor}.Slice(outLength);");
+        writer.WriteLine($"{VarBufferMajor} = {VarBufferMajor}.Slice({VarNameProcesserReturn}.length);");
+        writer.WriteLine($"{VarBufferMinor} = {VarBufferMinor}.Slice({VarNameProcesserReturn}.length);");
         writer.WriteLine($"{VarBufferLocal} = {VarBufferMinor}.Span;");
         writer.Indent--;
         writer.WriteLine("}");
@@ -61,7 +63,7 @@ internal class LogicSyntaxTokenProcessor : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 #if DEBUG
-        writer.WriteLine("/* Proxy the current token as it has no special compound behavior */");
+        writer.WriteLine("/* Forward the token on to the next stage */");
 #endif
         writer.WriteLine($"var consumed = {VarBufferMajor}.Span[0];");
         var createNewToken = $"new {TokenRecordTypeName}(({TokenEnum}) consumed.Id, new[] {{ consumed }})";

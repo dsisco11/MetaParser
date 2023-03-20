@@ -3,148 +3,108 @@ namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        private static bool TryProcessingLexerToken(global::System.ReadOnlySpan<char> buffer0, out byte id, out int length)
+        private static ConsumerResult TryProcessingLexerToken(global::System.ReadOnlySpan<char> buffer0)
         {
             switch (buffer0)
             {
                 case ['f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ..]:
                 {
-                    id = TokenId.Keyword_Function;
-                    length = 8;
-                    return true;
+                    return new ConsumerResult (TokenId.Keyword_Function, 8);
                 }
                 case ['s', 'h', 'o', 'r', 't', ..]:
                 {
-                    id = TokenId.Keyword_Short;
-                    length = 5;
-                    return true;
+                    return new ConsumerResult (TokenId.Keyword_Short, 5);
                 }
                 case ['f', 'l', 'o', 'a', 't', ..]:
                 {
-                    id = TokenId.Keyword_Float;
-                    length = 5;
-                    return true;
+                    return new ConsumerResult (TokenId.Keyword_Float, 5);
                 }
                 case ['b', 'y', 't', 'e', ..]:
                 {
-                    id = TokenId.Keyword_Byte;
-                    length = 4;
-                    return true;
+                    return new ConsumerResult (TokenId.Keyword_Byte, 4);
                 }
                 case ['v', 'a', 'r', ..]:
                 {
-                    id = TokenId.Keyword_Var;
-                    length = 3;
-                    return true;
+                    return new ConsumerResult (TokenId.Keyword_Var, 3);
                 }
                 case ['i', 'n', 't', ..]:
                 {
-                    id = TokenId.Keyword_Int;
-                    length = 3;
-                    return true;
+                    return new ConsumerResult (TokenId.Keyword_Int, 3);
                 }
                 case [(' ' or '\t' or '\f'), ..]:
                 {
-                    id = TokenId.Whitespace;
-                    return consume_pattern_18(buffer0, out length);
+                    return consume_pattern_18(buffer0);
                 }
                 case [('\r' or '\n'), ..]:
                 {
-                    id = TokenId.Newline;
-                    return consume_pattern_20(buffer0, out length);
+                    return consume_pattern_20(buffer0);
                 }
                 case [':', ..]:
                 {
-                    id = TokenId.Char_Colon;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Colon, 1);
                 }
                 case ['{', ..]:
                 {
-                    id = TokenId.Char_Open_Bracket;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Open_Bracket, 1);
                 }
                 case ['}', ..]:
                 {
-                    id = TokenId.Char_Close_Bracket;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Close_Bracket, 1);
                 }
                 case ['[', ..]:
                 {
-                    id = TokenId.Char_Open_Sqbracket;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Open_Sqbracket, 1);
                 }
                 case [']', ..]:
                 {
-                    id = TokenId.Char_Close_Sqbracket;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Close_Sqbracket, 1);
                 }
                 case [';', ..]:
                 {
-                    id = TokenId.Char_Semicolon;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Semicolon, 1);
                 }
                 case [')', ..]:
                 {
-                    id = TokenId.Char_Close_Parenthesis;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Close_Parenthesis, 1);
                 }
                 case ['*', ..]:
                 {
-                    id = TokenId.Char_Asterisk;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Asterisk, 1);
                 }
                 case ['/', ..]:
                 {
-                    id = TokenId.Char_Solidus;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Solidus, 1);
                 }
                 case ['\\', ..]:
                 {
-                    id = TokenId.Char_Reverse_Solidus;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Reverse_Solidus, 1);
                 }
                 case ['(', ..]:
                 {
-                    id = TokenId.Char_Open_Parenthesis;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Char_Open_Parenthesis, 1);
                 }
                 case [(>='0' and <='9'), ..]:
                 {
-                    id = TokenId.Digits;
-                    return consume_pattern_19(buffer0, out length);
+                    return consume_pattern_19(buffer0);
                 }
                 case [((>='a' and <='z') or (>='A' and <='Z')), ((>='a' and <='z') or (>='A' and <='Z') or (>='0' and <='9') or '-' or '_'), ..]:
                 {
-                    id = TokenId.Identifier;
-                    return consume_pattern_21(buffer0, out length);
+                    return consume_pattern_21(buffer0);
                 }
                 case ['/', '*', ..]:
                 {
-                    id = TokenId.Comment;
-                    return consume_pattern_22(buffer0, out length);
+                    return consume_pattern_22(buffer0);
                 }
                 case ['/', '/', ..]:
                 {
-                    id = TokenId.Comment;
-                    return consume_pattern_23(buffer0, out length);
+                    return consume_pattern_23(buffer0);
                 }
             }
             id = default;
             length = default;
             return false;
             
-            bool consume_pattern_18(global::System.ReadOnlySpan<char> buffer0, out int length)
+            ConsumerResult consume_pattern_18(global::System.ReadOnlySpan<char> buffer0)
             {
                 /*
                 * TokenID: whitespace (#18)
@@ -169,10 +129,9 @@ namespace UnitTestParser
                     break;
                 }
                 
-                length = buffer0.Length - buffer1.Length;
-                return true;
+                return new (TokenId.Whitespace, buffer0.Length - buffer1.Length);
             }
-            bool consume_pattern_20(global::System.ReadOnlySpan<char> buffer0, out int length)
+            ConsumerResult consume_pattern_20(global::System.ReadOnlySpan<char> buffer0)
             {
                 /*
                 * TokenID: newline (#20)
@@ -197,10 +156,9 @@ namespace UnitTestParser
                     break;
                 }
                 
-                length = buffer0.Length - buffer1.Length;
-                return true;
+                return new (TokenId.Newline, buffer0.Length - buffer1.Length);
             }
-            bool consume_pattern_19(global::System.ReadOnlySpan<char> buffer0, out int length)
+            ConsumerResult consume_pattern_19(global::System.ReadOnlySpan<char> buffer0)
             {
                 /*
                 * TokenID: digits (#19)
@@ -225,10 +183,9 @@ namespace UnitTestParser
                     break;
                 }
                 
-                length = buffer0.Length - buffer1.Length;
-                return true;
+                return new (TokenId.Digits, buffer0.Length - buffer1.Length);
             }
-            bool consume_pattern_21(global::System.ReadOnlySpan<char> buffer0, out int length)
+            ConsumerResult consume_pattern_21(global::System.ReadOnlySpan<char> buffer0)
             {
                 /*
                 * TokenID: identifier (#21)
@@ -253,10 +210,9 @@ namespace UnitTestParser
                     break;
                 }
                 
-                length = buffer0.Length - buffer1.Length;
-                return true;
+                return new (TokenId.Identifier, buffer0.Length - buffer1.Length);
             }
-            bool consume_pattern_22(global::System.ReadOnlySpan<char> buffer0, out int length)
+            ConsumerResult consume_pattern_22(global::System.ReadOnlySpan<char> buffer0)
             {
                 /*
                 * TokenID: comment (#22)
@@ -294,14 +250,12 @@ namespace UnitTestParser
                 
                 if (buffer1.StartsWith(stackalloc []{ '*', '/' }))
                 {
-                    length = 2 + (buffer0.Length - buffer1.Length);
-                    return true;
+                    return new (TokenId.Comment, 2 + (buffer0.Length - buffer1.Length));
                 }
                 
-                length = default;
-                return false;
+                return new (default, default);
             }
-            bool consume_pattern_23(global::System.ReadOnlySpan<char> buffer0, out int length)
+            ConsumerResult consume_pattern_23(global::System.ReadOnlySpan<char> buffer0)
             {
                 /*
                 * TokenID: comment (#22)
@@ -339,12 +293,10 @@ namespace UnitTestParser
                 
                 if (buffer1[0] == '\n')
                 {
-                    length = 1 + (buffer0.Length - buffer1.Length);
-                    return true;
+                    return new (TokenId.Comment, 1 + (buffer0.Length - buffer1.Length));
                 }
                 
-                length = default;
-                return false;
+                return new (default, default);
             }
         }
     }

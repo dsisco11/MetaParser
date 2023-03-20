@@ -17,16 +17,13 @@ internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
 
         if (consumer.IsConstant)
         {
-            writer.WriteLine($"id = {Format_Token_Id_Const_Ref(consumer.Token.Name)};");
-            writer.WriteLine($"length = {consumer.Start!.Length};");
-            writer.WriteLine($"return true;");
+            writer.WriteLine($"return new {TypeConsumerProcessingResult} ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Start!.Length});");
         }
         else if (consumer.IsDynamic)
         {
             var consumerId = consumer.Index;
             var consumerFunc = Format_Pattern_Consumer_Function_Name(consumerId);
-            writer.WriteLine($"id = {Format_Token_Id_Const_Ref(consumer.Token.Name)};");
-            writer.WriteLine($"return {consumerFunc}({context.ActiveBufferName}, out length);");
+            writer.WriteLine($"return {consumerFunc}({context.ActiveBufferName});");
         }
         else
         {

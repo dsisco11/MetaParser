@@ -3,66 +3,52 @@ namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        private static bool TryProcessingSyntaxToken(global::System.ReadOnlySpan<byte> buffer0, out byte id, out int length)
+        private static ConsumerResult TryProcessingSyntaxToken(global::System.ReadOnlySpan<byte> buffer0)
         {
             switch (buffer0)
             {
                 case [TokenId.Keyword_Var, ..]:
                 {
-                    id = TokenId.Typename;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Typename, 1);
                 }
                 case [TokenId.Keyword_Byte, ..]:
                 {
-                    id = TokenId.Typename;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Typename, 1);
                 }
                 case [TokenId.Keyword_Short, ..]:
                 {
-                    id = TokenId.Typename;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Typename, 1);
                 }
                 case [TokenId.Keyword_Int, ..]:
                 {
-                    id = TokenId.Typename;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Typename, 1);
                 }
                 case [TokenId.Keyword_Float, ..]:
                 {
-                    id = TokenId.Typename;
-                    length = 1;
-                    return true;
+                    return new ConsumerResult (TokenId.Typename, 1);
                 }
                 case [(TokenId.Keyword_Var or TokenId.Keyword_Function), (TokenId.Whitespace or TokenId.Identifier or TokenId.Whitespace or TokenId.Char_Open_Parenthesis or TokenId.Whitespace or TokenId.Char_Close_Parenthesis or TokenId.Whitespace or TokenId.Char_Open_Bracket or TokenId.Whitespace or TokenId.Char_Close_Bracket), ..]:
                 {
-                    id = TokenId.Program;
-                    return consume_pattern_33(buffer0, out length);
+                    return consume_pattern_33(buffer0);
                 }
                 case [TokenId.Char_Solidus, TokenId.Char_Asterisk, ..]:
                 {
-                    id = TokenId.Comment;
-                    return consume_pattern_25(buffer0, out length);
+                    return consume_pattern_25(buffer0);
                 }
                 case [TokenId.Char_Solidus, TokenId.Char_Solidus, ..]:
                 {
-                    id = TokenId.Comment;
-                    return consume_pattern_24(buffer0, out length);
+                    return consume_pattern_24(buffer0);
                 }
                 case [TokenId.Identifier, TokenId.Char_Colon, ..]:
                 {
-                    id = TokenId.Declaration;
-                    return consume_pattern_31(buffer0, out length);
+                    return consume_pattern_31(buffer0);
                 }
             }
             id = default;
             length = default;
             return false;
             
-            bool consume_pattern_33(global::System.ReadOnlySpan<byte> buffer0, out int length)
+            ConsumerResult consume_pattern_33(global::System.ReadOnlySpan<byte> buffer0)
             {
                 /*
                 * TokenID: program (#26)
@@ -87,10 +73,9 @@ namespace UnitTestParser
                     break;
                 }
                 
-                length = buffer0.Length - buffer1.Length;
-                return true;
+                return new (TokenId.Program, buffer0.Length - buffer1.Length);
             }
-            bool consume_pattern_25(global::System.ReadOnlySpan<byte> buffer0, out int length)
+            ConsumerResult consume_pattern_25(global::System.ReadOnlySpan<byte> buffer0)
             {
                 /*
                 * TokenID: comment (#22)
@@ -128,14 +113,12 @@ namespace UnitTestParser
                 
                 if (buffer1.StartsWith(stackalloc []{ TokenId.Char_Asterisk, TokenId.Char_Solidus }))
                 {
-                    length = 2 + (buffer0.Length - buffer1.Length);
-                    return true;
+                    return new (TokenId.Comment, 2 + (buffer0.Length - buffer1.Length));
                 }
                 
-                length = default;
-                return false;
+                return new (default, default);
             }
-            bool consume_pattern_31(global::System.ReadOnlySpan<byte> buffer0, out int length)
+            ConsumerResult consume_pattern_31(global::System.ReadOnlySpan<byte> buffer0)
             {
                 /*
                 * TokenID: declaration (#24)
@@ -160,14 +143,12 @@ namespace UnitTestParser
                 
                 if (buffer1[0] == TokenId.Char_Semicolon)
                 {
-                    length = 1 + (buffer0.Length - buffer1.Length);
-                    return true;
+                    return new (TokenId.Declaration, 1 + (buffer0.Length - buffer1.Length));
                 }
                 
-                length = default;
-                return false;
+                return new (default, default);
             }
-            bool consume_pattern_24(global::System.ReadOnlySpan<byte> buffer0, out int length)
+            ConsumerResult consume_pattern_24(global::System.ReadOnlySpan<byte> buffer0)
             {
                 /*
                 * TokenID: comment (#22)
@@ -192,12 +173,10 @@ namespace UnitTestParser
                 
                 if (buffer1[0] == TokenId.Newline)
                 {
-                    length = 1 + (buffer0.Length - buffer1.Length);
-                    return true;
+                    return new (TokenId.Comment, 1 + (buffer0.Length - buffer1.Length));
                 }
                 
-                length = default;
-                return false;
+                return new (default, default);
             }
         }
     }
