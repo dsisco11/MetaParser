@@ -28,6 +28,14 @@ internal record TokenInfo : GraphableEntity, IComparable<TokenInfo>
             yield return Registry.Consumers[key];
         }
     }
+
+    public bool IsConstant => GetConsumers().All(static (c) => c.IsConstant);
+    public bool IsDynamic => GetConsumers().All(static (c) => c.IsDynamic);
+    public bool IsComplex => GetConsumers().Any(static (c) => c.IsDynamic) && GetConsumers().Any(static (c) => c.IsConstant);
+
+    public bool HasLexing => GetConsumers().Any(static (c) => c.Type == EConsumerType.Lexer);
+    public bool HasSyntax => GetConsumers().Any(static (c) => c.Type == EConsumerType.Syntax);
+
     #endregion
 
     #region Constructors

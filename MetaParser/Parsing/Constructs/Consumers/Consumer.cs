@@ -67,16 +67,17 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     #endregion
 
     #region State
+    /// <summary> A consumer is considered constant if it has ONLY a START criteria. </summary>
+    public bool IsConstant => assigned.Start is not null && assigned.Consume is null && assigned.Stop is null;
     /// <summary> A consumer is considered open if it is dynamic and has no STOP criteria. </summary>
     public bool IsOpen => IsDynamic && assigned.Stop is null;
     /// <summary> A consumer is considered closed if it is dynamic and has a STOP criteria. </summary>
     public bool IsClosed => IsDynamic && assigned.Stop is not null;
     /// <summary> 
     /// A consumer is considered dynamic if it is not constant, specifically if it has either a CONSUME or STOP criteria.
-    /// So a consumer is "dynamic" if it involves consuming a variable number of elements.
+    /// In other words; a dynamic consumer involves consuming a variable number of elements.
     /// </summary>
     public bool IsDynamic => assigned.Consume is not null || assigned.Stop is not null;
-    public bool IsConstant => assigned.Start is not null && assigned.Consume is null && assigned.Stop is null;
 
     #endregion
 
