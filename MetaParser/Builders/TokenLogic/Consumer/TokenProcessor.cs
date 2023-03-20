@@ -33,28 +33,8 @@ internal class TokenProcessor : MetaCodeBuilder
         }
 
         // return failure
-        writer.WriteLine("id = default;");
-        writer.WriteLine("length = default;");
-        writer.WriteLine("return false;");
+        writer.WriteLine("return new (default, default);");
         writer.WriteLine();
-        #endregion
-
-        #region Local Sub-Functions
-
-        // generate token consumer functions
-        var workingContext = context with { };
-        foreach (var consumer in context.WorkingSet.Consumers)
-        {
-            if (consumer.IsConstant)
-            {
-                continue;// skip const patterns as they get an inline fast-path
-            }
-
-            workingContext.WorkingSet = new(consumer);
-            var funcName = Format_Pattern_Consumer_Function_Name(consumer.Key.Index);
-            var funcDef = Get_Local_Token_Consumer_Function_Definition(context, consumer.Type, funcName);
-            funcDef.WriteTo(workingContext);
-        }
         #endregion
     }
 }

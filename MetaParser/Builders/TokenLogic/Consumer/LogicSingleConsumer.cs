@@ -20,7 +20,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
         var consumer = context.WorkingSet.Consumers.Single();
         var detectionContext = context with { WorkingSet = context.WorkingSet with { Patterns = new Pattern[1] } };
 
-        #if DEBUG
+#if DEBUG
         write_debug_header(context);
         #endif
 
@@ -176,7 +176,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
 
     }
 
-    void write_debug_header(MetaParserContext context)
+    static void write_debug_header(MetaParserContext context)
     {
         var writer = context.Writer;
         var consumer = context.WorkingSet.Consumers.Single();

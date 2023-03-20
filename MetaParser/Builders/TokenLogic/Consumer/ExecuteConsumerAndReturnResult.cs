@@ -17,7 +17,7 @@ internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
 
         if (consumer.IsConstant)
         {
-            writer.WriteLine($"return new {TypeConsumerProcessingResult} ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Start!.Length});");
+            writer.WriteLine($"return new {TypeConsumerResult} ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Start!.Length});");
         }
         else if (consumer.IsDynamic)
         {

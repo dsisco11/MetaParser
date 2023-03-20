@@ -47,7 +47,7 @@ internal class LogicSyntaxTokenProcessor : MetaCodeBuilder
         writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"var {VarNameProcesserReturn} = ({SyntaxProcessingFunctionName}({VarBufferLocal}))");
+        writer.WriteLine($"var {VarNameProcesserReturn} = {SyntaxProcessingFunctionName}({VarBufferLocal});");
         writer.WriteLine($"if ({VarNameProcesserReturn}.length != default)");
         writer.WriteLine("{");
         writer.Indent++;

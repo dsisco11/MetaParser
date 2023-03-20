@@ -37,7 +37,7 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
 
     public IMetaCodeBuilder Get_Logic_Consumer_Match() => new LogicSingleConsumer();
 
-    public IMetaCodeBuilder Get_Switch_Block_For_Consumers() => new SwitchBlockForConsumers();
+    public IMetaCodeBuilder Get_Switch_Block_For_Consumers() => new LogicConsumerSwitchBlock();
     public IMetaCodeBuilder Get_Logic_Detect_Recursive_Token() => new DetectRecursiveTokensAndThen();
     public IMetaCodeBuilder Get_Logic_Single_Token_Detector() => new LogicSingleTokenDetector();
     public IMetaCodeBuilder Get_Logic_Single_Token_Consume() => new LogicSingleTokenDetector();

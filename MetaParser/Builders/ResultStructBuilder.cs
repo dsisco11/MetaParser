@@ -12,6 +12,6 @@ internal class ResultStructBuilder : MetaCodeBuilder
 
         writer.WriteLine($"namespace {context.Config.Namespace};");
         writer.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 0)]");
-        writer.WriteLine($"public readonly record struct {TypeConsumerProcessingResult}({context.Config.IdType} id, uint length);");
+        writer.WriteLine($"public readonly record struct {TypeConsumerResult}({context.Config.IdType} id, int length);");
     }
 }

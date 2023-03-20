@@ -167,6 +167,7 @@ public partial class Generator : IIncrementalGenerator
             }
 
             context.DepsGraph = DependencyGraph.Build(context.Registry);
+            context.WorkingSet = new WorkingSet(context.Registry.Tokens.Values);
             return context;
         });
 
@@ -250,6 +251,25 @@ public partial class Generator : IIncrementalGenerator
                 .WriteTo(context);
 
             AddSource(spc, $"{context.Config.BaseFileName}.parser.class", context.Writer.InnerWriter.ToString());
+        });
+        #endregion
+
+        #region Consumer Builders
+        context.RegisterSourceOutput(ctxTokens.Select(static (MetaParserContext parser, CancellationToken cancellationToken) =>
+        {
+            Consumer[] consumers = parser.Registry.Consumers.Values.Where(static (o) => !o.IsConstant).ToArray();
+            return (parser with { WorkingSet = new WorkingSet(consumers) });
+        }),
+        static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
+        {
+            context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
+            var writer = context.Writer;
+
+            new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
+                .And(new GenPatternConsumerFunctions())
+                .WriteTo(context);
+
+            AddSource(spc, $"{context.Config.BaseFileName}.consumers", context.Writer.InnerWriter.ToString());
         });
         #endregion
 

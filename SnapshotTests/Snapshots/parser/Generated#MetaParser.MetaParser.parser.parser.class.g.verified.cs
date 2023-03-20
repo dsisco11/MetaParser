@@ -18,7 +18,7 @@ namespace UnitTestParser
             
             while (buffer2.Length > 0)
             {
-                var processed = TryProcessingLexerToken(buffer2))
+                var processed = TryProcessingLexerToken(buffer2);
                 if (processed.length != default)
                 {
                     if (buffer1.Length != buffer2.Length)
@@ -66,7 +66,7 @@ namespace UnitTestParser
             
             while (buffer3.Length > 0)
             {
-                var processed = (TryProcessingSyntaxToken(buffer3))
+                var processed = TryProcessingSyntaxToken(buffer3);
                 if (processed.length != default)
                 {
                     var consumed = buffer1.Slice(0, processed.length).ToArray();

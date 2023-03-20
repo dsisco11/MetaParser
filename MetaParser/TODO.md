@@ -1,5 +1,6 @@
 # TODO
 
+- a token shall not be able to have consumers from more than one stage. (Any token which does, should default to the highest stage and have its lower stage consumers expanded into 'virtual tokens' which are just placeholder tokens to represent all of its lower stage consumers)
 - A consumers 'Stop' items must be mutually exclusive against the 'Consume' items
 - Token processor function needs to return Token instance
 - Parser should operate on a RedGreenTree

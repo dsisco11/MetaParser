@@ -37,7 +37,7 @@ internal class LogicLexerTokenProcessor : MetaCodeBuilder
         writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"var {VarNameProcesserReturn} = {LexerProcessingFunctionName}({VarBufferLocal}))");
+        writer.WriteLine($"var {VarNameProcesserReturn} = {LexerProcessingFunctionName}({VarBufferLocal});");
         writer.WriteLine($"if ({VarNameProcesserReturn}.length != default)");
         writer.WriteLine("{");
         writer.Indent++;

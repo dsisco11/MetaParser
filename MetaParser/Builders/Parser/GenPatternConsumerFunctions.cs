@@ -1,6 +1,5 @@
 ﻿using MetaParser.Builders.Core;
 using MetaParser.Builders.Interfaces;
-using MetaParser.Builders.TokenLogic.Consumer;
 using MetaParser.Core;
 using MetaParser.Parsing.Constructs;
 
@@ -9,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp;
 namespace MetaParser.Builders.Parser;
 using static CodeCommon;
 
-internal class GenTokenConsumeFunctions : MetaCodeBuilder
+internal class GenPatternConsumerFunctions : MetaCodeBuilder
 {
     public static FunctionDefinition Get_Function_Definition(MetaParserContext context, EConsumerType type, string name)
     {
@@ -21,14 +20,17 @@ internal class GenTokenConsumeFunctions : MetaCodeBuilder
 
     protected override void Write(MetaParserContext context)
     {
-        var bodyBuilder = context.Config.CodeFactory.Get_Switch_Block_For_Consumers().And(new ExecuteConsumerAndReturnResult());
-        foreach (var token in context.WorkingSet.Tokens)
+        foreach (var consumer in context.WorkingSet.Consumers)
         {
-            var funcName = Format_Token_Consume_Function_Name(token.Name);
-            var funcDef = Get_Function_Definition(context, EConsumerType.Syntax, funcName);
-            funcDef
-                .And(bodyBuilder)
-                .WriteTo(context with { WorkingSet = new WorkingSet(token) });
+            if (consumer.IsConstant)
+            {
+                continue;// skip const patterns as they get an inline fast-path
+            }
+
+            var body = context.Config.CodeFactory.Get_Logic_Consumer_Match();
+            var funcName = Format_Pattern_Consumer_Function_Name(consumer.Key.Index);
+            var funcDef = Get_Function_Definition(context, consumer.Type, funcName);
+            funcDef.And(body).WriteTo(context with { WorkingSet = new WorkingSet(consumer) });
         }
     }
 }

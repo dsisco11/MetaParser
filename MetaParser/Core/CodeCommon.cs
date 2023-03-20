@@ -38,7 +38,7 @@ internal static class CodeCommon
     public const string TokenValueStructName = "ValueToken";
     public const string TokenRecordTypeName = "Token";
 
-    public const string TypeConsumerProcessingResult = "ConsumerResult";
+    public const string TypeConsumerResult = "ConsumerResult";
 
     public const string LexerProcessingFunctionName = "TryProcessingLexerToken";
     public const string SyntaxProcessingFunctionName = "TryProcessingSyntaxToken";
@@ -61,8 +61,6 @@ internal static class CodeCommon
     #region Builders
     public static TypeSyntax Get_Consumer_Data_Type(MetaParserConfig config, EConsumerType type) => (type == EConsumerType.Lexer ? config.InputType : config.IdType);
     public static TypeSyntax Get_Token_Buffer_Type(MetaParserConfig config, EConsumerType type) => SyntaxFactory.ParseTypeName($"{ReadOnlySpan}<{Get_Consumer_Data_Type(config, type)}>");
-    public static FunctionDefinition Get_Token_Processor_Function_Definition(MetaParserContext context, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName(TypeConsumerProcessingResult), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Token_Processing_Logic());
-    public static FunctionDefinition Get_Local_Token_Consumer_Function_Definition(MetaParserContext context, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTypeName(TypeConsumerProcessingResult), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Logic_Consumer_Match());
-    public static FunctionDefinition Get_Local_Token_Detection_Function_Definition(MetaParserContext context, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTypeName("bool"), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Logic_Single_Token_Detector());
+    public static FunctionDefinition Get_Token_Processor_Function_Definition(MetaParserContext context, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName(TypeConsumerResult), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Token_Processing_Logic());
     #endregion
 }
