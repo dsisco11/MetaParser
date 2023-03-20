@@ -7,7 +7,7 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
+internal class ExecuteConsumerAndReturn : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
     {
@@ -19,15 +19,9 @@ internal class ExecuteConsumerAndReturnResult : MetaCodeBuilder
         {
             writer.WriteLine($"return new {TypeConsumerResult} ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Start!.Length});");
         }
-        else if (consumer.IsDynamic)
-        {
-            var consumerId = consumer.Index;
-            var consumerFunc = Format_Pattern_Consumer_Function_Name(consumerId);
-            writer.WriteLine($"return {consumerFunc}({context.ActiveBufferName});");
-        }
         else
         {
-            throw new System.NotImplementedException();
+            writer.WriteLine($"return {Format_Pattern_Consumer_Function_Name(consumer.Index)}({context.ActiveBufferName});");
         }
     }
 }

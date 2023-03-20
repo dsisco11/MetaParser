@@ -1,7 +1,5 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
-
-using System.Diagnostics;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
@@ -15,12 +13,12 @@ internal class LogicConsumerSwitchBlock : MetaCodeBuilder
         }
 
         // assert that all consumers are of the same type
-        Debug.Assert(context.WorkingSet.Consumers.All(c => c.Type == context.WorkingSet.Consumers[0].Type));
+        //Debug.Assert(context.WorkingSet.Consumers.All(c => c.Type == context.WorkingSet.Consumers[0].Type));
 
         var writer = context.Writer;
         var workContext = context with {};
 
-        writer.WriteLine($"switch ({context.ActiveBufferName})");
+        writer.WriteLine($"return {context.ActiveBufferName} switch");
         writer.WriteLine("{");
         writer.Indent++;
 
@@ -29,19 +27,15 @@ internal class LogicConsumerSwitchBlock : MetaCodeBuilder
             Parsing.Constructs.Consumer? consumer = context.WorkingSet.Consumers[i];
             workContext.WorkingSet = new WorkingSet(consumer.Token, consumer, consumer.Start);
 
-            writer.Write("case [");
+            writer.Write("[");
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(workContext);
-            writer.WriteLine(", ..]:");
-            writer.WriteLine("{");
-            writer.Indent++;
-
+            writer.Write(", ..] => ");
             base.WriteContent(workContext);
-
-            writer.Indent--;
-            writer.WriteLine("}");
+            writer.WriteLine(",");
         }
 
+        writer.WriteLine("_ => new (default, default)");
         writer.Indent--;
-        writer.WriteLine("}");// end switch
+        writer.WriteLine("};");// end switch
     }
 }

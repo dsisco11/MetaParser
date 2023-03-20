@@ -21,7 +21,7 @@ internal class GenTokenConsumeFunctions : MetaCodeBuilder
 
     protected override void Write(MetaParserContext context)
     {
-        var bodyBuilder = context.Config.CodeFactory.Get_Switch_Block_For_Consumers().And(new ExecuteConsumerAndReturnResult());
+        var bodyBuilder = context.Config.CodeFactory.Get_Switch_Block_For_Consumers().And(new ExecuteConsumer());
         foreach (var token in context.WorkingSet.Tokens)
         {
             var funcName = Format_Token_Consume_Function_Name(token.Name);

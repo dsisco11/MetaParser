@@ -4,8 +4,6 @@ using MetaParser.Core;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
-using static CodeCommon;
-
 internal class TokenProcessor : MetaCodeBuilder
 {
     protected override void Write(MetaParserContext context)
@@ -20,7 +18,7 @@ internal class TokenProcessor : MetaCodeBuilder
         if (consumersRecursive.Any())
         {
             context.Config.CodeFactory.Get_Logic_Detect_Recursive_Token()
-                                      .And(new ExecuteConsumerAndReturnResult())
+                                      .And(new ExecuteConsumerAndReturn())
                                       .WriteTo(context with { WorkingSet = new WorkingSet(consumersRecursive.ToArray()) });
         }
 
@@ -28,12 +26,14 @@ internal class TokenProcessor : MetaCodeBuilder
         if (consumersLinear.Any())
         {
             context.Config.CodeFactory.Get_Switch_Block_For_Consumers()
-                                      .And(new ExecuteConsumerAndReturnResult())
+                                      .And(new ExecuteConsumer())
                                       .WriteTo(context with { WorkingSet = new WorkingSet(consumersLinear.ToArray()) });
         }
+        else
+        {
+            writer.WriteLine("return new (default, default);");
+        }
 
-        // return failure
-        writer.WriteLine("return new (default, default);");
         writer.WriteLine();
         #endregion
     }
