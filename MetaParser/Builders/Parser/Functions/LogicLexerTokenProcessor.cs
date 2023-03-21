@@ -11,7 +11,7 @@ internal class LogicLexerTokenProcessor : MetaCodeBuilder
 {
     public const string FunctionName = "Parse_Constant";
 
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, EConsumerType.Lexer)}>");
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenValueStructName}>");

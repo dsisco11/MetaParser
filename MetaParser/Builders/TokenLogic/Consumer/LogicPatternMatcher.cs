@@ -10,7 +10,7 @@ using static CodeCommon;
 
 internal class LogicPatternMatcher : MetaCodeBuilder
 {
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var writer = context.Writer;
         var pattern = context.WorkingSet.Patterns.Single();

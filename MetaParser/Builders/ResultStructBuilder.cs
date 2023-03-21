@@ -6,7 +6,7 @@ using static CodeCommon;
 
 internal class ResultStructBuilder : MetaCodeBuilder
 {
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var writer = context.Writer;
 

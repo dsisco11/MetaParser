@@ -6,7 +6,7 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 internal class TokenProcessor : MetaCodeBuilder
 {
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var writer = context.Writer;
 

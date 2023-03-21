@@ -5,14 +5,14 @@ using System.CodeDom.Compiler;
 
 namespace MetaParser.Core;
 
-internal record MetaParserContext : ICodeBuilderContext
+internal record ParserContext : ICodeBuilderContext
 {
     #region Fields
-    private MetaParserRegistry? _registry;
+    private TokenRegistry? _registry;
     #endregion
 
     #region Properties
-    public MetaParserConfig Config { get; set; }
+    public ParserConfiguration Config { get; set; }
     public DirectedGraph DepsGraph { get; set; }
     public WorkingSet WorkingSet { get; set; } = new();
     public int ActiveBuffer { get; set; }
@@ -21,11 +21,11 @@ internal record MetaParserContext : ICodeBuilderContext
     #region Accessors
     public IndentedTextWriter Writer { get; set; }
 
-    public MetaParserRegistry Registry
+    public TokenRegistry Registry
     {
         get
         {
-            _registry ??= new MetaParserRegistry();
+            _registry ??= new TokenRegistry();
             return _registry;
         }
     }

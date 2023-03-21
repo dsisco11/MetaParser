@@ -16,7 +16,7 @@ internal sealed record PatternTokenRef : Pattern
     #endregion
 
     #region Constructors
-    public PatternTokenRef(string value, MetaParserContext context) : base(context)
+    public PatternTokenRef(string value, ParserContext context) : base(context)
     {
         _tokenName = value;
     }
@@ -41,7 +41,7 @@ internal sealed record PatternTokenRef : Pattern
     #endregion
 
 
-    public override Pattern Combine(Pattern other, MetaParserContext context)
+    public override Pattern Combine(Pattern other, ParserContext context)
     {
         return new PatternGroup(EPatternCondition.OneOf, context, this, other);
     }
@@ -51,7 +51,7 @@ internal sealed record PatternTokenRef : Pattern
         yield break;
     }
 
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
+    public override IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry)
     {
         if (!Registry.TryGetToken(_tokenName, out var token))
         {

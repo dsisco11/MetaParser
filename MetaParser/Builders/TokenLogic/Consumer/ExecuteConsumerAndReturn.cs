@@ -9,7 +9,7 @@ using static CodeCommon;
 
 internal class ExecuteConsumerAndReturn : MetaCodeBuilder
 {
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         Debug.Assert(context.WorkingSet.Consumers.Length == 1);
         var writer = context.Writer;

@@ -47,14 +47,14 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>, ICompa
     #endregion
 
     #region Constructors
-    public Pattern(MetaParserContext context) : base(new(NodeType.Pattern, context.Registry.GetNextPatternIndex()), context)
+    public Pattern(ParserContext context) : base(new(NodeType.Pattern, context.Registry.GetNextPatternIndex()), context)
     {
         var consumerKey = context.WorkingSet.Consumers.Single().Key;
         context.Registry.AddPattern(this, consumerKey);
     }
     #endregion
 
-    public abstract Pattern Combine(Pattern other, MetaParserContext context);
+    public abstract Pattern Combine(Pattern other, ParserContext context);
 
     #region Enumerability
     public abstract IEnumerator<Pattern> GetEnumerator();

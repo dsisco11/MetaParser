@@ -10,7 +10,7 @@ internal class LogicSyntaxTokenProcessor : MetaCodeBuilder
 {
     public const string FunctionName = "Parse_Compound";
 
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{TokenValueStructName}>");
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenRecordTypeName}>");

@@ -15,7 +15,7 @@ internal sealed record PatternConst : Pattern
     #endregion
 
     #region Constructors
-    public PatternConst(string value, MetaParserContext context) : base(context)
+    public PatternConst(string value, ParserContext context) : base(context)
     {
         _value = value;
     }
@@ -33,7 +33,7 @@ internal sealed record PatternConst : Pattern
     #endregion
 
 
-    public override Pattern Combine(Pattern other, MetaParserContext context)
+    public override Pattern Combine(Pattern other, ParserContext context)
     {
         return new PatternGroup(EPatternCondition.AllOf, context, this, other);
     }
@@ -43,7 +43,7 @@ internal sealed record PatternConst : Pattern
         yield break;
     }
 
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
+    public override IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry)
     {
         yield break;
     }

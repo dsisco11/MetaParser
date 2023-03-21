@@ -8,7 +8,7 @@ using static CodeCommon;
 
 internal class TokenIDEnumBuilder : MetaCodeBuilder
 {
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var writer = context.Writer;
         writer.WriteLine($"{Format_Token_Id(UnknownToken)} = ({context.Config.IdType}) 0,");

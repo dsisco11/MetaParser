@@ -17,7 +17,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
     #endregion
 
     #region Constructors
-    public PatternGroup(EPatternCondition condition, MetaParserContext context, params Pattern[] items) : base(context)
+    public PatternGroup(EPatternCondition condition, ParserContext context, params Pattern[] items) : base(context)
     {
         _condition = condition;
         _items = CollapseInnerGroups(items, condition).ToArray();
@@ -105,7 +105,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
     }
     #endregion
 
-    public override Pattern Combine(Pattern other, MetaParserContext context)
+    public override Pattern Combine(Pattern other, ParserContext context)
     {
         List<Pattern> patterns = new List<Pattern>(_items)
         {
@@ -120,7 +120,7 @@ internal record PatternGroup : Pattern, IEnumerable<Pattern>
         return ((IEnumerable<Pattern>)_items).GetEnumerator();
     }
 
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
+    public override IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry)
     {
         foreach (Pattern item in _items)
         {

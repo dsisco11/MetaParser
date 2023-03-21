@@ -10,7 +10,7 @@ internal class ComplexTokenStage : MetaCodeBuilder
 {
     public const string FunctionName = "Parse_Complex";
 
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{TokenRecordTypeName}>");
         var writer = context.Writer;

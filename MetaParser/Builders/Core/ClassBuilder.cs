@@ -33,7 +33,7 @@ internal class ClassBuilder : MetaCodeBuilder
     }
     #endregion
 
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var writer = context.Writer;
         writer.WriteLine($"namespace {context.Config.Namespace}");

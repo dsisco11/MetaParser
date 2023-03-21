@@ -18,7 +18,7 @@ internal sealed record PatternRange : Pattern
     #endregion
 
     #region Constructors
-    public PatternRange(string begin, string end, MetaParserContext context) : base(context)
+    public PatternRange(string begin, string end, ParserContext context) : base(context)
     {
         _begin = begin;
         _end = end;
@@ -36,7 +36,7 @@ internal sealed record PatternRange : Pattern
     public override bool IsConditional => true;
     #endregion
 
-    public override Pattern Combine(Pattern other, MetaParserContext context)
+    public override Pattern Combine(Pattern other, ParserContext context)
     {
         return new PatternGroup(EPatternCondition.OneOf, context, this, other);
     }
@@ -46,7 +46,7 @@ internal sealed record PatternRange : Pattern
         yield break;
     }
 
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
+    public override IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry)
     {
         yield break;
     }

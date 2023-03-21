@@ -16,7 +16,7 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
     public TokenPatternDeclaration[]? oneof { get; set; }
     #endregion
 
-    public Pattern? Resolve(MetaParserContext context)
+    public Pattern? Resolve(ParserContext context)
     {
         if (id is not null)
         {
@@ -29,7 +29,7 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
 
         return null;
     }
-    private Pattern? ResolveToken(MetaParserContext context)
+    private Pattern? ResolveToken(ParserContext context)
     {
         if (id is not null)
         {
@@ -39,7 +39,7 @@ internal sealed record TokenPatternDeclaration : IPatternDeclaration
         return null;
     }
 
-    private Pattern? ResolveOneOf(MetaParserContext context)
+    private Pattern? ResolveOneOf(ParserContext context)
     {
         if (oneof is null || oneof.Length == 0)
         {

@@ -8,7 +8,7 @@ using static CodeCommon;
 
 internal class ParsingLogic : MetaCodeBuilder
 {
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         const string VarNameValueTokensArray = "tokensArray";
         const string VarNameValueTokensBuffer = "tokensBuffer";

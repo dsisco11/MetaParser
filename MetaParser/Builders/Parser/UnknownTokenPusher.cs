@@ -8,7 +8,7 @@ internal class UnknownTokenPusher : MetaCodeBuilder
 {
     public static IMetaCodeBuilder Instance = new UnknownTokenPusher();
 
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var wr = context.Writer;
         wr.WriteLine($"if ({context.ActiveBufferName}.Length != {context.NextBufferName}.Length)");

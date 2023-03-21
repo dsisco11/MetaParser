@@ -7,7 +7,7 @@ namespace MetaParser.Graphs;
 
 internal static class DependencyGraph
 {
-    public static DirectedGraph Build(MetaParserRegistry Registry)
+    public static DirectedGraph Build(TokenRegistry Registry)
     {
         var graph = new DirectedGraph(Registry.GetNodeIDs());
         foreach (IGraphableEntity entity in Registry.GetGraphEntities())

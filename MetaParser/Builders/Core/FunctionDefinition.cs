@@ -35,7 +35,7 @@ internal class FunctionDefinition : MetaCodeBuilder
 
     #endregion
 
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         var writer = context.Writer;
         if (Modifiers is not null)

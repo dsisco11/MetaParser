@@ -10,7 +10,7 @@ namespace MetaParser.Core;
 /// <summary>
 /// Holds a registry list of all Tokens, Consumers, and Patterns that are used in the MetaParser.
 /// </summary>
-internal class MetaParserRegistry
+internal class TokenRegistry
 {
     #region Fields
     private readonly KeyTree<EntityKey> _tree = new KeyTree<EntityKey>(new KeyTreeNode<EntityKey>(EntityKey.Default));

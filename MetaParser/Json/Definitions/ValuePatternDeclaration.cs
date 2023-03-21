@@ -33,7 +33,7 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
     }
     #endregion
 
-    public Pattern? Resolve(MetaParserContext context)
+    public Pattern? Resolve(ParserContext context)
     {
         if (value is not null)
         {
@@ -51,7 +51,7 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
         return null;
     }
 
-    private Pattern? ResolveConst(MetaParserContext context)
+    private Pattern? ResolveConst(ParserContext context)
     {
         if (value is null)
         {
@@ -67,14 +67,14 @@ internal sealed record ValuePatternDeclaration : IPatternDeclaration
         return new PatternGroup(EPatternCondition.AllOf, context, consts);
     }
 
-    private Pattern? ResolveRange(MetaParserContext context)
+    private Pattern? ResolveRange(ParserContext context)
     {
         var start = SymbolDisplay.FormatLiteral(range[0][0], true);
         var stop = SymbolDisplay.FormatLiteral(range[1][0], true);
         return new PatternRange(start, stop, context);
     }
 
-    private Pattern? ResolveOneOf(MetaParserContext context)
+    private Pattern? ResolveOneOf(ParserContext context)
     {
         if (oneof is null || oneof.Length == 0)
         {

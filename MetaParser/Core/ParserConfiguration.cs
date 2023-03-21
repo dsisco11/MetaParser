@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MetaParser.Core;
 
-internal record MetaParserConfig
+internal record ParserConfiguration
 {
     public string BaseFileName { get; set; } = string.Empty;
     public string? ClassName { get; set; } = "Parser";
@@ -15,7 +15,7 @@ internal record MetaParserConfig
     public string? ParserType { get; set; }
     public readonly CodeBuilderFactory CodeFactory;
 
-    public MetaParserConfig()
+    public ParserConfiguration()
     {
         CodeFactory = new CodeBuilderFactory(this);
     }

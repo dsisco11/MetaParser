@@ -32,7 +32,7 @@ internal sealed record PatternGroupDeclaration<T> : IPatternGroupDeclaration
         return items.GetEnumerator() as IEnumerator<IPatternDeclaration>;
     }
 
-    public Pattern? Resolve(MetaParserContext context)
+    public Pattern? Resolve(ParserContext context)
     {
         if (items.Any())
         {

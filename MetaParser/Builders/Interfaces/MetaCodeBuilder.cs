@@ -4,37 +4,37 @@ using System.Collections.Generic;
 
 namespace MetaParser.Builders.Interfaces;
 
-internal abstract class MetaCodeBuilder : IMetaCodeBuilder, ICodeBuilder<MetaParserContext>
+internal abstract class MetaCodeBuilder : IMetaCodeBuilder, ICodeBuilder<ParserContext>
 {
     #region Fields
-    protected readonly LinkedList<ICodeBuilder<MetaParserContext>> preBuilders = new();
-    protected readonly LinkedList<ICodeBuilder<MetaParserContext>> contentBuilders = new();
-    protected readonly LinkedList<ICodeBuilder<MetaParserContext>> postBuilders = new();
+    protected readonly LinkedList<ICodeBuilder<ParserContext>> preBuilders = new();
+    protected readonly LinkedList<ICodeBuilder<ParserContext>> contentBuilders = new();
+    protected readonly LinkedList<ICodeBuilder<ParserContext>> postBuilders = new();
     #endregion
 
-    protected abstract void Write(MetaParserContext context);
+    protected abstract void Write(ParserContext context);
 
     #region Call Chain Builders
-    public ICodeBuilder<MetaParserContext> Before(ICodeBuilder<MetaParserContext> builder)
+    public ICodeBuilder<ParserContext> Before(ICodeBuilder<ParserContext> builder)
     {
         preBuilders.AddLast(builder);
         return this;
     }
 
-    public ICodeBuilder<MetaParserContext> After(ICodeBuilder<MetaParserContext> builder)
+    public ICodeBuilder<ParserContext> After(ICodeBuilder<ParserContext> builder)
     {
         postBuilders.AddLast(builder);
         return this;
     }
 
-    public ICodeBuilder<MetaParserContext> And(ICodeBuilder<MetaParserContext> builder)
+    public ICodeBuilder<ParserContext> And(ICodeBuilder<ParserContext> builder)
     {
         contentBuilders.AddLast(builder);
         return this;
     }
     #endregion
 
-    protected void WriteContent(MetaParserContext context)
+    protected void WriteContent(ParserContext context)
     {
         foreach (var builder in contentBuilders)
         {
@@ -42,7 +42,7 @@ internal abstract class MetaCodeBuilder : IMetaCodeBuilder, ICodeBuilder<MetaPar
         }
     }
 
-    public void WriteTo(MetaParserContext context)
+    public void WriteTo(ParserContext context)
     {
         foreach (var builder in preBuilders)
         {

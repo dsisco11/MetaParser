@@ -5,7 +5,7 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 internal class LogicConsumerSwitchBlock : MetaCodeBuilder
 {
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         if (!context.WorkingSet.Consumers.Any())
         {

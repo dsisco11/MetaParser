@@ -8,7 +8,7 @@ namespace MetaParser.Builders.Core;
 internal class CodeBuilderFactory : ICodeBuilderFactory
 {
     #region Fields
-    protected readonly MetaParserConfig Config;
+    protected readonly ParserConfiguration Config;
     private readonly IMetaCodeBuilder _parsing_logic;
     private readonly IMetaCodeBuilder _parsing_struct_builder;
     private readonly IMetaCodeBuilder _token_processing_logic;
@@ -19,7 +19,7 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
     private readonly IMetaCodeBuilder _token_pattern_expression_writer;
     #endregion
 
-    public CodeBuilderFactory(MetaParserConfig config)
+    public CodeBuilderFactory(ParserConfiguration config)
     {
         Config = config;
         _parsing_logic = new ParsingLogic();

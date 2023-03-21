@@ -11,7 +11,7 @@ using static CodeCommon;
 
 internal class LogicSingleConsumer : MetaCodeBuilder
 {
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         Debug.Assert(context.WorkingSet.Consumers.Length == 1);
 
@@ -176,7 +176,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
 
     }
 
-    static void write_debug_header(MetaParserContext context)
+    static void write_debug_header(ParserContext context)
     {
         var writer = context.Writer;
         var consumer = context.WorkingSet.Consumers.Single();

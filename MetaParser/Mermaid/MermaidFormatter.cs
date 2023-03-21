@@ -14,9 +14,9 @@ namespace MetaParser.Mermaid;
 internal class MermaidFormatter
 {
     private DirectedGraph Graph;
-    private MetaParserRegistry Registry;
+    private TokenRegistry Registry;
 
-    public MermaidFormatter(MetaParserRegistry registry, DirectedGraph graph)
+    public MermaidFormatter(TokenRegistry registry, DirectedGraph graph)
     {
         Graph = graph;
         Registry = registry;

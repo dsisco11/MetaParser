@@ -82,7 +82,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     #endregion
 
     #region Constructors
-    public Consumer(MetaParserContext context, IConsumerDeclaration consumer) : base(new EntityKey(NodeType.Consumer, context.Registry.GetNextConsumerIndex()), context)
+    public Consumer(ParserContext context, IConsumerDeclaration consumer) : base(new EntityKey(NodeType.Consumer, context.Registry.GetNextConsumerIndex()), context)
     {
         Type = consumer.Type;
         context.WorkingSet.Consumers[0] = this;
@@ -127,7 +127,7 @@ internal record Consumer : GraphableEntity, IComparable<Consumer>
     #endregion
 
     #region Dependency Link Resolution
-    public override IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry)
+    public override IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry)
     {
         //if (Type == EConsumerType.Data)
         //{

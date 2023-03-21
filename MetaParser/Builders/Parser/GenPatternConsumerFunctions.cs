@@ -10,7 +10,7 @@ using static CodeCommon;
 
 internal class GenPatternConsumerFunctions : MetaCodeBuilder
 {
-    public static FunctionDefinition Get_Function_Definition(MetaParserContext context, EConsumerType type, string name)
+    public static FunctionDefinition Get_Function_Definition(ParserContext context, EConsumerType type, string name)
     {
         return new FunctionDefinition(SyntaxFactory.ParseTokens("private static"),
                                                           SyntaxFactory.ParseTypeName(TypeConsumerResult),
@@ -18,7 +18,7 @@ internal class GenPatternConsumerFunctions : MetaCodeBuilder
                                                           SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}"));
     }
 
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         foreach (var consumer in context.WorkingSet.Consumers)
         {

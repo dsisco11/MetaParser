@@ -2,6 +2,6 @@
 
 namespace MetaParser.Builders.Interfaces;
 
-internal interface IMetaCodeBuilder : ICodeBuilder<MetaParserContext>
+internal interface IMetaCodeBuilder : ICodeBuilder<ParserContext>
 {
 }

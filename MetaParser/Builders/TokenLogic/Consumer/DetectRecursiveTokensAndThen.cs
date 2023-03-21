@@ -9,7 +9,7 @@ using static CodeCommon;
 
 internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
 {
-    protected override void Write(MetaParserContext context)
+    protected override void Write(ParserContext context)
     {
         if (!context.WorkingSet.Consumers.Any())
         {

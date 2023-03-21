@@ -11,7 +11,7 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
 {
     #region Fields
     private readonly EntityKey _key;
-    private readonly WeakReference<MetaParserRegistry> _registry;
+    private readonly WeakReference<TokenRegistry> _registry;
     #endregion
 
     #region Properties
@@ -20,7 +20,7 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
 
     #region Accessors
     public EntityKey Key => _key;
-    public MetaParserRegistry Registry
+    public TokenRegistry Registry
     {
         get
         {
@@ -36,10 +36,10 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
     #endregion
 
     #region Constructors
-    public GraphableEntity(EntityKey key, MetaParserContext context)
+    public GraphableEntity(EntityKey key, ParserContext context)
     {
         _key = key;
-        _registry = new WeakReference<MetaParserRegistry>(context.Registry);
+        _registry = new WeakReference<TokenRegistry>(context.Registry);
     }
     #endregion
 
@@ -48,7 +48,7 @@ internal abstract record GraphableEntity : IGraphableEntity, IComparable<Graphab
         return _key.CompareTo(other._key);
     }
 
-    public abstract IEnumerable<EntityLink> ResolveLinks(MetaParserRegistry Registry);
+    public abstract IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry);
 
     public override string ToString()
     {
