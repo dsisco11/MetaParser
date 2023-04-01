@@ -22,13 +22,13 @@ internal class GenTokenConsumeFunctions : MetaCodeBuilder
     protected override void Write(ParserContext context)
     {
         var bodyBuilder = context.Config.CodeFactory.Get_Switch_Block_For_Consumers().And(new ExecuteConsumer());
-        foreach (var token in context.WorkingSet.Tokens)
+        foreach (var token in context.State.Targets.Tokens)
         {
             var funcName = Format_Token_Consume_Function_Name(token.Name);
             var funcDef = Get_Function_Definition(context, EConsumerKind.Syntax, funcName);
             funcDef
                 .And(bodyBuilder)
-                .WriteTo(context with { WorkingSet = new WorkingSet(token) });
+                .WriteTo(context with { State = context.State with { Targets = new WorkingSet(token) } });
         }
     }
 }

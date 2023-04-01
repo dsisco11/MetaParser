@@ -20,11 +20,11 @@ internal class GenTokenStartDetectors : MetaCodeBuilder
 
     protected override void Write(ParserContext context)
     {
-        foreach (var token in context.WorkingSet.Tokens)
+        foreach (var token in context.State.Targets.Tokens)
         {
             var funcName = Format_Token_Start_Detection_Function_Name(token.Name);
             var funcDef = Get_Function_Definition(context, EConsumerKind.Syntax, funcName);
-            funcDef.WriteTo(context with { WorkingSet = new WorkingSet(token) });
+            funcDef.WriteTo(context with { State = context.State with { Targets = new WorkingSet(token) } });
         }
     }
 }

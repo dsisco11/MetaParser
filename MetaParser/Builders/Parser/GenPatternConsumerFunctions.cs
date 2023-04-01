@@ -20,7 +20,7 @@ internal class GenPatternConsumerFunctions : MetaCodeBuilder
 
     protected override void Write(ParserContext context)
     {
-        foreach (var consumer in context.WorkingSet.Consumers)
+        foreach (var consumer in context.State.Targets.Consumers)
         {
             if (consumer.IsConstant)
             {
@@ -30,7 +30,7 @@ internal class GenPatternConsumerFunctions : MetaCodeBuilder
             var body = context.Config.CodeFactory.Get_Logic_Consumer_Match();
             var funcName = Format_Pattern_Consumer_Function_Name(consumer.Key.Index);
             var funcDef = Get_Function_Definition(context, consumer.Kind, funcName);
-            funcDef.And(body).WriteTo(context with { WorkingSet = new WorkingSet(consumer) });
+            funcDef.And(body).WriteTo(context with { State = context.State with { Targets = new WorkingSet(consumer) } });
         }
     }
 }

@@ -163,7 +163,7 @@ internal sealed record ParserInterpreter
             Config = _config,
             Registry = registry,
             DepsGraph = DependencyGraph.Build(registry),
-            WorkingSet = new WorkingSet(registry.Tokens)
+            State = new CodeGenState(new WorkingSet(registry.Tokens))
         };
         return context;
     }

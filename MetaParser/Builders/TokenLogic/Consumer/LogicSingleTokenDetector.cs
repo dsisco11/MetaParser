@@ -18,9 +18,9 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        Debug.Assert(context.WorkingSet.Tokens.Length == 1);
+        Debug.Assert(context.State.Targets.Tokens.Length == 1);
 
-        var targetToken = context.WorkingSet.Tokens.Single();
+        var targetToken = context.State.Targets.Tokens.Single();
 
         // TODO: Obsolete this once we move to the new lexer/parser split design
         // Check if its possible for the token to appear in the stream already from a lower stage.
@@ -30,11 +30,11 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
             writer.WriteLine($"[{Format_Token_Id_Const_Ref(targetToken)}, ..] => true,");
         }
 
-        var tokenConsumers = context.WorkingSet.Consumers.Where(static (c) => c.Kind == EConsumerKind.Syntax);
+        var tokenConsumers = context.State.Targets.Consumers.Where(static (c) => c.Kind == EConsumerKind.Syntax);
         foreach (var consumer in tokenConsumers)
         {
             writer.Write("[");
-            context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context with { WorkingSet = new WorkingSet(consumer.Token, consumer, consumer.Start) });
+            context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context with { State = context.State with { Targets = new WorkingSet(consumer.Token, consumer, consumer.Start) } });
             writer.Write(", ");
 
             if (consumer.Consume is not null)

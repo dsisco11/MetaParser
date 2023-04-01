@@ -14,9 +14,7 @@ internal record WorkingSet
 {
     #region Properties
     public TokenEntity[] Tokens { get; set; } = Array.Empty<TokenEntity>();
-
     public ConsumerEntity[] Consumers { get; set; } = Array.Empty<ConsumerEntity>();
-
     public PatternEntity[] Patterns { get; set; } = Array.Empty<PatternEntity>();
     #endregion
 
@@ -62,6 +60,14 @@ internal record WorkingSet
         Patterns = patterns;
         Consumers = new[] { consumer };
         Tokens = new[] { token };
+        Sort();
+    }
+
+    public WorkingSet(params PatternEntity[] patterns)
+    {
+        Patterns = patterns.ToArray();
+        Consumers = Array.Empty<ConsumerEntity>();
+        Tokens = Array.Empty<TokenEntity>();
         Sort();
     }
     #endregion

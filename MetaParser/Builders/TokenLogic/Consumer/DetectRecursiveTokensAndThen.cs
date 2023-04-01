@@ -11,7 +11,7 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)
     {
-        if (!context.WorkingSet.Consumers.Any())
+        if (!context.State.Targets.Consumers.Any())
         {
             return;
         }
@@ -20,9 +20,9 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
 #if DEBUG
         writer.WriteLine("// Recursive tokens");
 #endif
-        for (int i = 0; i < context.WorkingSet.Tokens.Length; i++)
+        for (int i = 0; i < context.State.Targets.Tokens.Length; i++)
         {
-            TokenEntity? token = context.WorkingSet.Tokens[i];
+            TokenEntity? token = context.State.Targets.Tokens[i];
             writer.WriteLine($"if ({Format_Token_Start_Detection_Function_Name(token.Name)}({context.State.ActiveBufferName}))");
             writer.WriteLine("{");
             writer.Indent++;

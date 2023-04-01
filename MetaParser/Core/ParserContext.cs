@@ -6,7 +6,7 @@ using System.CodeDom.Compiler;
 
 namespace MetaParser.Core;
 
-internal record ParserContext : ICodeBuilderContext
+internal sealed record ParserContext : ICodeBuilderContext
 {
     #region Fields
     private EntityRegistry? _registry;
@@ -16,7 +16,6 @@ internal record ParserContext : ICodeBuilderContext
     #region Properties
     public ParserConfiguration Config { get; set; }
     public DirectedGraph DepsGraph { get; set; }
-    public WorkingSet WorkingSet { get; set; } = new();
     public ParsingStageContext Stage { get; set; }
     #endregion
 

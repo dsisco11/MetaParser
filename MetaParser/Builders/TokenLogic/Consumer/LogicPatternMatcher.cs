@@ -13,7 +13,7 @@ internal class LogicPatternMatcher : MetaCodeBuilder
     protected override void Write(ParserContext context)
     {
         var writer = context.Writer;
-        var pattern = context.WorkingSet.Patterns.Single();
+        var pattern = context.State.Targets.Patterns.Single();
 
         if (!pattern.IsInlinable && pattern.IsConditional && pattern.Length == 1)
         {// This is a single non-inlineable item, so we execute the function
@@ -31,7 +31,7 @@ internal class LogicPatternMatcher : MetaCodeBuilder
             {
                 //writer.Write(Format(item));
                 context.Config.CodeFactory.Get_Pattern_Writer()
-                    .WriteTo(context with { WorkingSet = context.WorkingSet with { Patterns = new[] { item } } });
+                    .WriteTo(context with { State = context.State with { Targets = new WorkingSet(item) } });
                 writer.WriteLine(" => true,");
             }
             writer.WriteLine("_ => false");

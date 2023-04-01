@@ -15,7 +15,7 @@ internal class WritePatternAsExpression : MetaCodeBuilder
     protected override void Write(ParserContext context)
     {
         var writer = context.Writer;
-        var pattern = context.WorkingSet.Patterns.Single();
+        var pattern = context.State.Targets.Patterns.Single();
 
         writer.Write(Format(pattern));
     }

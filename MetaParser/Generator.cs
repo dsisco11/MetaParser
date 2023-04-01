@@ -111,10 +111,10 @@ public partial class Generator : IIncrementalGenerator
             return interpreter.Compile();
         });
 
-        IncrementalValuesProvider<ParserContext> ctxRecursiveTokens = ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider<ParserContext> ctxRecursiveTokens = ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
         {
-            var tokens = parser.Registry.Tokens.Where(static (entity) => entity.DependencyInfo.NodeDepth.Max > 0);
-            return (parser with { WorkingSet = new WorkingSet(tokens) });
+            var tokens = context.Registry.Tokens.Where(static (entity) => entity.DependencyInfo.NodeDepth.Max > 0);
+            return (context with { State = context.State with { Targets = new WorkingSet(tokens) } });
         });
         #endregion
 
@@ -194,10 +194,10 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Consumer Builders
-        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
+        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
         {
-            ConsumerEntity[] consumers = parser.Registry.Consumers.Where(static (o) => !o.IsConstant).ToArray();
-            return (parser with { WorkingSet = new WorkingSet(consumers) });
+            ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => !o.IsConstant).ToArray();
+            return (context with { State = context.State with { Targets = new WorkingSet(consumers) } });
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
@@ -245,10 +245,10 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Constant-Type Tokens
-        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
+        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
         {
-            ConsumerEntity[] consumers = parser.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).ToArray();
-            return (parser with { WorkingSet = new WorkingSet(consumers) });
+            ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).ToArray();
+            return (context with { State = context.State with { Targets = new WorkingSet(consumers) } });
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
@@ -265,10 +265,10 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Compound-Type Tokens
-        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
-        {
-            ConsumerEntity[] consumers = parser.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && !o.DependencyInfo!.IsRecursive).ToArray();
-            return (parser with { WorkingSet = new WorkingSet(consumers) });
+        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) => 
+        { 
+            ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && !o.DependencyInfo!.IsRecursive).ToArray(); 
+            return context with { State = context.State with { Targets = new WorkingSet(consumers) } }; 
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
@@ -285,10 +285,10 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Complex-Type Tokens
-        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
-        {
-            ConsumerEntity[] consumers = parser.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && o.DependencyInfo!.IsRecursive).ToArray();
-            return (parser with { WorkingSet = new WorkingSet(consumers) });
+        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) => 
+        { 
+            ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && o.DependencyInfo!.IsRecursive).ToArray(); 
+            return context with { State = context.State with { Targets = new WorkingSet(consumers) } }; 
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {

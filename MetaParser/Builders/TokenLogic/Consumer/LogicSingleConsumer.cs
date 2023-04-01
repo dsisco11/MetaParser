@@ -13,14 +13,14 @@ internal class LogicSingleConsumer : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)
     {
-        Debug.Assert(context.WorkingSet.Consumers.Length == 1);
+        Debug.Assert(context.State.Targets.Consumers.Length == 1);
 
         context = context with { };
         context.Increment_Active_Bufffer();
 
         var writer = context.Writer;
-        var consumer = context.WorkingSet.Consumers.Single();
-        var detectionContext = context with { WorkingSet = context.WorkingSet with { Patterns = new PatternEntity[1] } };
+        var consumer = context.State.Targets.Consumers.Single();
+        var detectionContext = context with { State = context.State with { Targets = new(new PatternEntity[1]) } };
 
 #if DEBUG
         write_debug_header(context);
@@ -50,7 +50,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
             {
                 writer.Write("if (");
 
-                detectionContext.WorkingSet.Patterns[0] = consumer.Escape;
+                detectionContext.State.Targets.Patterns[0] = consumer.Escape;
                 context.Config.CodeFactory.Get_Logic_Pattern_Match().WriteTo(detectionContext);
 
                 writer.WriteLine(")");
@@ -66,7 +66,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
                 // Check STOP sequence
                 writer.Write("if (");
 
-                detectionContext.WorkingSet.Patterns[0] = consumer.Stop;
+                detectionContext.State.Targets.Patterns[0] = consumer.Stop;
                 var tempContext = detectionContext with { };
                 tempContext.Increment_Active_Bufffer();
                 context.Config.CodeFactory.Get_Logic_Pattern_Match().WriteTo(tempContext);
@@ -87,7 +87,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
             {
                 writer.Write("if (");
 
-                detectionContext.WorkingSet.Patterns[0] = consumer.Stop;
+                detectionContext.State.Targets.Patterns[0] = consumer.Stop;
                 context.Config.CodeFactory.Get_Logic_Pattern_Match().WriteTo(detectionContext);
 
                 writer.WriteLine(")");
@@ -114,7 +114,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
             writer.Indent++;
             writer.Write("if (");
 
-            detectionContext.WorkingSet.Patterns[0] = consumer.Consume;
+            detectionContext.State.Targets.Patterns[0] = consumer.Consume;
             context.Config.CodeFactory.Get_Logic_Pattern_Match().WriteTo(detectionContext);
 
             writer.WriteLine(")");
@@ -160,7 +160,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
 
             writer.Write("if (");
 
-            detectionContext.WorkingSet.Patterns[0] = consumer.Stop;
+            detectionContext.State.Targets.Patterns[0] = consumer.Stop;
             context.Config.CodeFactory.Get_Logic_Pattern_Match().WriteTo(detectionContext);
 
             writer.WriteLine(")");
@@ -182,7 +182,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
     static void write_debug_header(ParserContext context)
     {
         var writer = context.Writer;
-        var consumer = context.WorkingSet.Consumers.Single();
+        var consumer = context.State.Targets.Consumers.Single();
 
         writer.WriteLine($"/*");
         writer.WriteLine($"* TokenID: {consumer.Token.ID} (#{consumer.Token.Index})");

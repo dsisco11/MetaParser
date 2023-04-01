@@ -12,14 +12,14 @@ internal class TokenProcessor : MetaCodeBuilder
 
         #region Token Processing Logic
 
-        var groups = context.WorkingSet.Consumers.GroupBy(static c => c.DependencyInfo!.IsRecursive && c.Consume is not null);
+        var groups = context.State.Targets.Consumers.GroupBy(static c => c.DependencyInfo!.IsRecursive && c.Consume is not null);
 
         var consumersRecursive = groups.Where(static b => b.Key == true).SelectMany(static b => b);
         if (consumersRecursive.Any())
         {
             context.Config.CodeFactory.Get_Logic_Detect_Recursive_Token()
                                       .And(new ExecuteConsumerAndReturn())
-                                      .WriteTo(context with { WorkingSet = new WorkingSet(consumersRecursive.ToArray()) });
+                                      .WriteTo(context with { State = context.State with { Targets = new WorkingSet(consumersRecursive.ToArray()) } });
         }
 
         var consumersLinear = groups.Where(static b => b.Key == false).SelectMany(static b => b);
@@ -27,7 +27,7 @@ internal class TokenProcessor : MetaCodeBuilder
         {
             context.Config.CodeFactory.Get_Switch_Block_For_Consumers()
                                       .And(new ExecuteConsumer())
-                                      .WriteTo(context with { WorkingSet = new WorkingSet(consumersLinear.ToArray()) });
+                                      .WriteTo(context with { State = context.State with { Targets = new WorkingSet(consumersLinear.ToArray()) } });
         }
         else
         {
