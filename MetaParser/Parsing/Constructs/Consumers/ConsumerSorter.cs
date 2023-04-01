@@ -2,11 +2,11 @@
 
 namespace MetaParser.Parsing.Constructs.Consumers;
 
-internal class ConsumerSorter : IComparer<Consumer>
+internal class ConsumerSorter : IComparer<ConsumerEntity>
 {
     public readonly static ConsumerSorter Instance = new ConsumerSorter();
 
-    public int Compare(Consumer x, Consumer y)
+    public int Compare(ConsumerEntity x, ConsumerEntity y)
     {
         // compare tokens by max node depth
         var depthCompare = x.Token.DependencyInfo.NodeDepth.Max.CompareTo(y.Token.DependencyInfo.NodeDepth.Max);

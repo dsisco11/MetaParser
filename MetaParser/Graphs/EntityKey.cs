@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MetaParser.Core;
+
+using System;
 
 namespace MetaParser.Graphs;
 
@@ -14,6 +16,12 @@ internal sealed record EntityKey : IComparable<EntityKey>
     #endregion
 
     #region Constructors
+    public EntityKey(NodeType type, EntityRegistry registry)
+    {
+        Type = type;
+        Index = registry.GetNextIndex(type);
+    }
+
     public EntityKey(NodeType type, int index)
     {
         Type = type;

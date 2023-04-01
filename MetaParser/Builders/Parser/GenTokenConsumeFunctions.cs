@@ -11,7 +11,7 @@ using static CodeCommon;
 
 internal class GenTokenConsumeFunctions : MetaCodeBuilder
 {
-    public static FunctionDefinition Get_Function_Definition(ParserContext context, EConsumerType type, string name)
+    public static FunctionDefinition Get_Function_Definition(ParserContext context, EConsumerKind type, string name)
     {
         return new FunctionDefinition(SyntaxFactory.ParseTokens("private static"),
                                                           SyntaxFactory.ParseTypeName(TypeConsumerResult),
@@ -25,7 +25,7 @@ internal class GenTokenConsumeFunctions : MetaCodeBuilder
         foreach (var token in context.WorkingSet.Tokens)
         {
             var funcName = Format_Token_Consume_Function_Name(token.Name);
-            var funcDef = Get_Function_Definition(context, EConsumerType.Syntax, funcName);
+            var funcDef = Get_Function_Definition(context, EConsumerKind.Syntax, funcName);
             funcDef
                 .And(bodyBuilder)
                 .WriteTo(context with { WorkingSet = new WorkingSet(token) });

@@ -14,9 +14,9 @@ namespace MetaParser.Mermaid;
 internal class MermaidFormatter
 {
     private DirectedGraph Graph;
-    private TokenRegistry Registry;
+    private EntityRegistry Registry;
 
-    public MermaidFormatter(TokenRegistry registry, DirectedGraph graph)
+    public MermaidFormatter(EntityRegistry registry, DirectedGraph graph)
     {
         Graph = graph;
         Registry = registry;
@@ -61,8 +61,16 @@ internal class MermaidFormatter
                     {
                         break;
                     }
-                    var content = Get_Pattern_Contents(chartType, Registry.Patterns[Key]);
-                    writer.WriteLine($"{Key}({content})");
+
+                    writer.Write(Key);
+                    if (Registry.TryGetEntity(Key, out var patternEntity))
+                    {
+                        writer.Write("(");
+                        writer.Write(Get_Pattern_Contents(chartType, (PatternEntity)patternEntity));
+                        writer.Write(")");
+
+                    }
+                    writer.WriteLine();
                 }
                 break;
             case NodeType.Consumer:
@@ -75,20 +83,26 @@ internal class MermaidFormatter
                 break;
             case NodeType.Token:
                 {
-                    var token = Registry.Tokens[Key];
-                    writer.WriteLine($@"{Key}[""{token.Name}""]");
+                    writer.Write(Key);
+                    if (Registry.TryGetEntity(Key, out var tokenEntity))
+                    {
+                        writer.Write(@"[""");
+                        writer.Write(((TokenEntity)tokenEntity).Name);
+                        writer.Write(@"""]");
+                    }
+                    writer.WriteLine();
                 }
                 break;
         }
     }
 
-    string Get_Pattern_Contents(MermaidChartType chartType, Pattern pattern)
+    string Get_Pattern_Contents(MermaidChartType chartType, PatternEntity pattern)
     {
         return pattern switch
         {
             PatternConst c => $@"{SymbolDisplay.FormatLiteral(c.Value, true)}",
             PatternRange r => $"[{r.Begin}, {r.End}]",
-            PatternGroup g => $@"""{{{g.Key.Index}}}""",
+            PatternSequence g => $@"""{{{g.Key.Index}}}""",
             PatternTokenRef t => $@"""#{t.TokenName}""",
             _ => throw new System.NotImplementedException(),
         };

@@ -8,7 +8,7 @@ namespace MetaParser.Core;
 internal record ParserContext : ICodeBuilderContext
 {
     #region Fields
-    private TokenRegistry? _registry;
+    private EntityRegistry? _registry;
     #endregion
 
     #region Properties
@@ -21,13 +21,14 @@ internal record ParserContext : ICodeBuilderContext
     #region Accessors
     public IndentedTextWriter Writer { get; set; }
 
-    public TokenRegistry Registry
+    public EntityRegistry Registry
     {
         get
         {
-            _registry ??= new TokenRegistry();
+            _registry ??= new EntityRegistry();
             return _registry;
         }
+        set { _registry = value; }
     }
 
 

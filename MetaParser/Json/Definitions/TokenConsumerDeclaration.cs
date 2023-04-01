@@ -5,13 +5,14 @@ using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
-internal sealed record TokenConsumerDeclaration : ConsumerDeclaration<TokenPatternDeclaration>
+internal sealed record TokenConsumerDeclaration : ConsumerDeclaration
 {
     [JsonIgnore]
-    public override EConsumerType Type { get => EConsumerType.Syntax; }
+    public override EConsumerKind Type { get => EConsumerKind.Syntax; }
+    public override EParsingStage Stage { get => EParsingStage.Syntax; }
 
     [JsonConstructor]
-    public TokenConsumerDeclaration(IEnumerable<TokenPatternDeclaration>? start, IEnumerable<TokenPatternDeclaration>? consume, IEnumerable<TokenPatternDeclaration>? stop, IEnumerable<TokenPatternDeclaration>? escape) : base(start, consume, stop, escape)
+    public TokenConsumerDeclaration(IEnumerable<PatternDeclaration>? start, IEnumerable<PatternDeclaration>? consume, IEnumerable<PatternDeclaration>? stop, IEnumerable<PatternDeclaration>? escape) : base(start, consume, stop, escape)
     {
     }
 }

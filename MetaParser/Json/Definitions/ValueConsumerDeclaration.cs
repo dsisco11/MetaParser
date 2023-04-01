@@ -5,13 +5,14 @@ using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
-internal sealed record ValueConsumerDeclaration : ConsumerDeclaration<ValuePatternDeclaration>
+internal sealed record ValueConsumerDeclaration : ConsumerDeclaration
 {
     [JsonIgnore]
-    public override EConsumerType Type { get => EConsumerType.Lexer; }
+    public override EConsumerKind Type { get => EConsumerKind.Lexer; }
+    public override EParsingStage Stage { get => EParsingStage.Lexer; }
 
     [JsonConstructor]
-    public ValueConsumerDeclaration(IEnumerable<ValuePatternDeclaration>? start, IEnumerable<ValuePatternDeclaration>? consume, IEnumerable<ValuePatternDeclaration>? stop, IEnumerable<ValuePatternDeclaration>? escape) : base(start, consume, stop, escape)
+    public ValueConsumerDeclaration(IEnumerable<PatternDeclaration>? start, IEnumerable<PatternDeclaration>? consume, IEnumerable<PatternDeclaration>? stop, IEnumerable<PatternDeclaration>? escape) : base(start, consume, stop, escape)
     {
     }
 }

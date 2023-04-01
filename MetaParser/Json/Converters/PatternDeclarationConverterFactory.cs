@@ -5,26 +5,32 @@ using System;
 
 namespace MetaParser.Json.Definitions;
 
-internal sealed class TokenPatternDeclarationConverterFactory : JsonConverterFactory
+internal sealed class PatternDeclarationConverterFactory : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert)
     {
-        return typeToConvert == typeof(TokenPatternDeclaration);
+        return typeToConvert == typeof(PatternDeclaration);
     }
 
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-        return new TokenPatternDeclarationConverter(options);
+        return new PatternDeclarationConverter(options);
     }
 
 
-    internal sealed class TokenPatternDeclarationConverter : JsonConverter<TokenPatternDeclaration>
+    internal sealed class PatternDeclarationConverter : JsonConverter<PatternDeclaration>
     {
-        public TokenPatternDeclarationConverter(JsonSerializerOptions options)
+        private static readonly JsonConverter<string[]> s_stringArrayConverter = (JsonConverter<string[]>)JsonSerializerOptions.Default.GetConverter(typeof(string[]));
+        private readonly Type _stringArrayType;
+        //private readonly JsonConverter<IEnumerable<string>> _stringArrayConverter;
+
+        public PatternDeclarationConverter(JsonSerializerOptions options)
         {
+            _stringArrayType = typeof(string[]);
+            //_stringArrayConverter = (JsonConverter<IEnumerable<string>>)options.GetConverter(_stringArrayType);
         }
 
-        public override TokenPatternDeclaration? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override PatternDeclaration? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             switch (reader.TokenType)
             {
@@ -34,11 +40,11 @@ internal sealed class TokenPatternDeclarationConverterFactory : JsonConverterFac
                     }
                 case JsonTokenType.String:
                     {
-                        return new TokenPatternDeclaration() { id = reader.GetString() };
+                        return new PatternDeclaration() { value = reader.GetString() };
                     }
                 case JsonTokenType.StartArray:
                     {
-                        return new TokenPatternDeclaration() { oneof = read_array(ref reader, typeToConvert, options) };
+                        return new PatternDeclaration() { oneof = read_array(ref reader, typeToConvert, options) };
                     }
                 case JsonTokenType.StartObject:
                     {
@@ -51,7 +57,7 @@ internal sealed class TokenPatternDeclarationConverterFactory : JsonConverterFac
             }
         }
 
-        TokenPatternDeclaration read_object(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        PatternDeclaration read_object(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (!reader.Read())
             {
@@ -68,8 +74,9 @@ internal sealed class TokenPatternDeclarationConverterFactory : JsonConverterFac
 
             var result = propertyName switch
             {
-                "id" => new TokenPatternDeclaration() { id = reader.GetString() },
-                "oneof" => new TokenPatternDeclaration() { oneof = read_array(ref reader, typeToConvert, options) },
+                "value" => new PatternDeclaration() { value = reader.GetString() },
+                "range" => new PatternDeclaration() { range = s_stringArrayConverter.Read(ref reader, _stringArrayType, options) },
+                "oneof" => new PatternDeclaration() { oneof = read_array(ref reader, typeToConvert, options) },
                 _ => throw new NotSupportedException()
             };
 
@@ -90,9 +97,9 @@ internal sealed class TokenPatternDeclarationConverterFactory : JsonConverterFac
             return result;
         }
 
-        TokenPatternDeclaration[] read_array(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        PatternDeclaration[] read_array(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            List<TokenPatternDeclaration> results = new();
+            List<PatternDeclaration> results = new();
             while (reader.Read())
             {
                 switch (reader.TokenType)
@@ -113,10 +120,10 @@ internal sealed class TokenPatternDeclarationConverterFactory : JsonConverterFac
                 }
             }
 
-            return Array.Empty<TokenPatternDeclaration>();
+            return Array.Empty<PatternDeclaration>();
         }
 
-        public override void Write(Utf8JsonWriter writer, TokenPatternDeclaration value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, PatternDeclaration value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }

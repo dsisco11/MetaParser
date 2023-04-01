@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace MetaParser.Parsing.Constructs
 {
-    internal interface IGraphableEntity
+    internal interface IGraphEntity
     {
         public EntityKey Key { get; }
-        public IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry);
+        public IEnumerable<EntityLink> ResolveLinks(EntityRegistry Registry);
     }
 }

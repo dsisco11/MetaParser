@@ -5,12 +5,16 @@ using MetaParser.Parsing.Constructs.Patterns;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
-internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>, IComparable<Pattern>
+internal abstract record PatternEntity : GraphEntity, IEnumerable<PatternEntity>, IComparable<PatternEntity>
 {
+    #region Fields
+    public readonly EPatternKind Kind;
+    #endregion
+
     #region Accessors
+
     /// <summary>
     /// Indicates the length of this pattern when rendered as a sequence
     /// </summary>
@@ -36,7 +40,7 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>, ICompa
     /// </summary>
     public abstract int MaxConditions { get; }
     /// <summary>
-    /// Indicated whether the pattern involves a logical operation sequence such as (x and y) or (x or y)
+    /// Indicates whether the pattern involves a logical operation sequence such as (x and y) or (x or y)
     /// </summary>
     public abstract bool IsConditional { get; }
 
@@ -47,22 +51,19 @@ internal abstract record Pattern : GraphableEntity, IEnumerable<Pattern>, ICompa
     #endregion
 
     #region Constructors
-    public Pattern(ParserContext context) : base(new(NodeType.Pattern, context.Registry.GetNextPatternIndex()), context)
+    public PatternEntity(EPatternKind kind, EntityRegistry registry) : base(NodeType.Pattern, registry)
     {
-        var consumerKey = context.WorkingSet.Consumers.Single().Key;
-        context.Registry.AddPattern(this, consumerKey);
+        Kind = kind;
     }
     #endregion
 
-    public abstract Pattern Combine(Pattern other, ParserContext context);
-
     #region Enumerability
-    public abstract IEnumerator<Pattern> GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<Pattern>)this).GetEnumerator();
+    public virtual IEnumerator<PatternEntity> GetEnumerator() { yield break; }
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<PatternEntity>)this).GetEnumerator();
     #endregion
 
     #region Comparison
-    public int CompareTo(Pattern other)
+    public int CompareTo(PatternEntity other)
     {
         return PatternSorter.Instance.Compare(this, other);
     }

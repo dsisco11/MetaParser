@@ -6,36 +6,31 @@ using System.Text.Json.Serialization;
 
 namespace MetaParser.Json.Definitions;
 
-internal abstract record ConsumerDeclaration<T> : IConsumerDeclaration
-    where T : IPatternDeclaration
+internal abstract record ConsumerDeclaration
 {
     #region Properties
-    public abstract EConsumerType Type { get; }
+    public abstract EConsumerKind Type { get; }
+    public abstract EParsingStage Stage { get; }
 
     [JsonPropertyName("start")]
-    public IEnumerable<T> Start { get; set; }
+    public IEnumerable<PatternDeclaration> Start { get; set; }
 
     [JsonPropertyName("consume")]
-    public IEnumerable<T> Consume { get; set; }
+    public IEnumerable<PatternDeclaration> Consume { get; set; }
 
     [JsonPropertyName("stop")]
-    public IEnumerable<T> Stop { get; set; }
+    public IEnumerable<PatternDeclaration> Stop { get; set; }
 
     [JsonPropertyName("escape")]
-    public IEnumerable<T> Escape { get; set; }
-
-    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Start => (IEnumerable<IPatternDeclaration>) Start;
-    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Consume => (IEnumerable<IPatternDeclaration>) Consume;
-    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Stop => (IEnumerable<IPatternDeclaration>) Stop;
-    IEnumerable<IPatternDeclaration> IConsumerDeclaration.Escape => (IEnumerable<IPatternDeclaration>) Escape;
+    public IEnumerable<PatternDeclaration> Escape { get; set; }
     #endregion
 
     [JsonConstructor]
-    protected ConsumerDeclaration(IEnumerable<T>? start, IEnumerable<T>? consume, IEnumerable<T>? stop, IEnumerable<T>? escape)
+    protected ConsumerDeclaration(IEnumerable<PatternDeclaration>? start, IEnumerable<PatternDeclaration>? consume, IEnumerable<PatternDeclaration>? stop, IEnumerable<PatternDeclaration>? escape)
     {
-        Start = start ?? Array.Empty<T>();
-        Consume = consume ?? Array.Empty<T>();
-        Stop = stop ?? Array.Empty<T>();
-        Escape = escape ?? Array.Empty<T>();
+        Start = start ?? Array.Empty<PatternDeclaration>();
+        Consume = consume ?? Array.Empty<PatternDeclaration>();
+        Stop = stop ?? Array.Empty<PatternDeclaration>();
+        Escape = escape ?? Array.Empty<PatternDeclaration>();
     }
 }

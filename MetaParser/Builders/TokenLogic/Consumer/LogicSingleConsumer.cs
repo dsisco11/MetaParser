@@ -18,7 +18,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
         context = context with { ActiveBuffer = context.ActiveBuffer + 1 };
         var writer = context.Writer;
         var consumer = context.WorkingSet.Consumers.Single();
-        var detectionContext = context with { WorkingSet = context.WorkingSet with { Patterns = new Pattern[1] } };
+        var detectionContext = context with { WorkingSet = context.WorkingSet with { Patterns = new PatternEntity[1] } };
 
 #if DEBUG
         write_debug_header(context);
@@ -182,7 +182,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
         var consumer = context.WorkingSet.Consumers.Single();
 
         writer.WriteLine($"/*");
-        writer.WriteLine($"* TokenID: {consumer.Token.Name} (#{consumer.Token.Index})");
+        writer.WriteLine($"* TokenID: {consumer.Token.ID} (#{consumer.Token.Index})");
         writer.WriteLine($"* ==[ CONSUMER_DATA ]==");
         writer.WriteLine($"* START: {consumer.Start}");
 

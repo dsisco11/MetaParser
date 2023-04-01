@@ -121,10 +121,10 @@
         "comment": [
           {
             "start": [
-              { "id": "char_solidus" },
-              { "id": "char_solidus" }
+              "char_solidus",
+              "char_solidus"
             ],
-            "stop": [ { "id": "newline" } ]
+            "stop": [ "newline" ]
           },
           {
             "start": [ "char_solidus", "char_asterisk" ],
@@ -146,16 +146,16 @@
             { "oneof": [ "keyword_var", "keyword_function" ] }
           ],
           "consume": [
-            { "id": "whitespace" },
-            { "id": "identifier" },
-            { "id": "whitespace" },
-            { "id": "char_open_parenthesis" },
-            { "id": "whitespace" },
-            { "id": "char_close_parenthesis" },
-            { "id": "whitespace" },
-            { "id": "char_open_bracket" },
-            { "id": "whitespace" },
-            { "id": "char_close_bracket" }
+            "whitespace",
+            "identifier",
+            "whitespace",
+            "char_open_parenthesis",
+            "whitespace",
+            "char_close_parenthesis",
+            "whitespace",
+            "char_open_bracket",
+            "whitespace",
+            "char_close_bracket"
           ]
         }
       }

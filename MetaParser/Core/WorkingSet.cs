@@ -13,11 +13,11 @@ namespace MetaParser.Core;
 internal record WorkingSet
 {
     #region Properties
-    public TokenInfo[] Tokens { get; set; } = Array.Empty<TokenInfo>();
+    public TokenEntity[] Tokens { get; set; } = Array.Empty<TokenEntity>();
 
-    public Consumer[] Consumers { get; set; } = Array.Empty<Consumer>();
+    public ConsumerEntity[] Consumers { get; set; } = Array.Empty<ConsumerEntity>();
 
-    public Pattern[] Patterns { get; set; } = Array.Empty<Pattern>();
+    public PatternEntity[] Patterns { get; set; } = Array.Empty<PatternEntity>();
     #endregion
 
     #region Constructors
@@ -25,7 +25,7 @@ internal record WorkingSet
     {
     }
 
-    public WorkingSet(IEnumerable<Consumer> consumers)
+    public WorkingSet(IEnumerable<ConsumerEntity> consumers)
     {
         Consumers = consumers.ToArray();
         Patterns = consumers.SelectMany(static (x) => x.Patterns).Distinct().ToArray();
@@ -33,7 +33,7 @@ internal record WorkingSet
         Sort();
     }
 
-    public WorkingSet(params Consumer[] consumers)
+    public WorkingSet(params ConsumerEntity[] consumers)
     {
         Consumers = consumers.ToArray();
         Patterns = consumers.SelectMany(static (x) => x.Patterns).Distinct().ToArray();
@@ -41,7 +41,7 @@ internal record WorkingSet
         Sort();
     }
 
-    public WorkingSet(IEnumerable<TokenInfo> tokens)
+    public WorkingSet(IEnumerable<TokenEntity> tokens)
     {
         Tokens = tokens.ToArray();
         Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).Distinct().ToArray();
@@ -49,7 +49,7 @@ internal record WorkingSet
         Sort();
     }
 
-    public WorkingSet(params TokenInfo[] tokens)
+    public WorkingSet(params TokenEntity[] tokens)
     {
         Tokens = tokens.ToArray();
         Consumers = tokens.SelectMany(static (x) => x.GetConsumers()).Distinct().ToArray();
@@ -57,7 +57,7 @@ internal record WorkingSet
         Sort();
     }
 
-    public WorkingSet(TokenInfo token, Consumer consumer, params Pattern[] patterns)
+    public WorkingSet(TokenEntity token, ConsumerEntity consumer, params PatternEntity[] patterns)
     {
         Patterns = patterns;
         Consumers = new[] { consumer };

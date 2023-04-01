@@ -42,15 +42,19 @@ internal sealed class KeyTree<T>
         nodes.Add(value, new KeyTreeNode<T>(value, _rootNode));
     }
 
-    public void AddEdge(T child, T parent)
+    public void AddEdge(T parent, T child)
     {
         if (!nodes.TryGetValue(parent, out var parentNode))
         {
-            parentNode = new KeyTreeNode<T>(parent);
+            parentNode = new KeyTreeNode<T>(parent, _rootNode);
             nodes.Add(parent, parentNode);
         }
 
-        if (!nodes.TryGetValue(child, out var childNode))
+        if (nodes.TryGetValue(child, out var childNode))
+        {
+            childNode.SetParent(parentNode);
+        }
+        else
         {
             childNode = new KeyTreeNode<T>(child, parentNode);
             nodes.Add(child, childNode);
@@ -164,6 +168,11 @@ public sealed class KeyTreeNode<T> : IEnumerable<KeyTreeNode<T>>
     internal void Clear()
     {
         _children.Clear();
+    }
+
+    internal void SetParent(KeyTreeNode<T> parent)
+    {
+        _parent.SetTarget(parent);
     }
     #endregion
 }

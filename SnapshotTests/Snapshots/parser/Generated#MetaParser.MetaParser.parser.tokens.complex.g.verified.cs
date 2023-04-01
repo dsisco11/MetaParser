@@ -6,7 +6,7 @@ namespace UnitTestParser
         private static ConsumerResult TryProcessComplex(global::System.ReadOnlySpan<byte> buffer0)
         {
             // Recursive tokens
-            if (starts_codeblock_token(buffer0))
+            if (starts_syntax_codeblock_token(buffer0))
             {
                 return consume_pattern_32(buffer0);
             }

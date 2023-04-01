@@ -1,27 +1,19 @@
 ﻿using MetaParser.Core;
 
-using System.Collections.Generic;
-
 namespace MetaParser.Parsing.Constructs;
 
-internal sealed record PatternRange : Pattern
+internal sealed record PatternRange : PatternEntity
 {
     #region Fields
-    private readonly string _begin;
-    private readonly string _end;
-    #endregion
-
-    #region Properties
-    public string Begin => _begin;
-    public string End => _end;
-
+    public readonly string Begin;
+    public readonly string End;
     #endregion
 
     #region Constructors
-    public PatternRange(string begin, string end, ParserContext context) : base(context)
+    public PatternRange(EntityRegistry registry, string begin, string end) : base(EPatternKind.Range, registry)
     {
-        _begin = begin;
-        _end = end;
+        Begin = begin;
+        End = end;
     }
     #endregion
 
@@ -35,19 +27,4 @@ internal sealed record PatternRange : Pattern
     public override int MaxConditions => 2;
     public override bool IsConditional => true;
     #endregion
-
-    public override Pattern Combine(Pattern other, ParserContext context)
-    {
-        return new PatternGroup(EPatternCondition.OneOf, context, this, other);
-    }
-
-    public override IEnumerator<Pattern> GetEnumerator()
-    {
-        yield break;
-    }
-
-    public override IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry)
-    {
-        yield break;
-    }
 }

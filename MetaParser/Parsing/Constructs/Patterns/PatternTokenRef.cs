@@ -5,20 +5,16 @@ using System.Collections.Generic;
 
 namespace MetaParser.Parsing.Constructs;
 
-internal sealed record PatternTokenRef : Pattern
+internal sealed record PatternTokenRef : PatternEntity
 {
     #region Fields
-    private readonly string _tokenName;
-    #endregion
-
-    #region Properties
-    public string TokenName => _tokenName;
+    public readonly string TokenName;
     #endregion
 
     #region Constructors
-    public PatternTokenRef(string value, ParserContext context) : base(context)
+    public PatternTokenRef(EntityRegistry registry, string tokenName) : base(EPatternKind.Token, registry)
     {
-        _tokenName = value;
+        TokenName = tokenName;
     }
     #endregion
 
@@ -40,32 +36,21 @@ internal sealed record PatternTokenRef : Pattern
     public override bool IsConditional => !IsInlinable;// if token isnt inlineable, it must be a logical check
     #endregion
 
-
-    public override Pattern Combine(Pattern other, ParserContext context)
+    public override IEnumerable<EntityLink> ResolveLinks(EntityRegistry Registry)
     {
-        return new PatternGroup(EPatternCondition.OneOf, context, this, other);
-    }
-
-    public override IEnumerator<Pattern> GetEnumerator()
-    {
-        yield break;
-    }
-
-    public override IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry)
-    {
-        if (!Registry.TryGetToken(_tokenName, out var token))
+        if (!Registry.TryGetEntityByName<TokenEntity>(TokenName, out var token))
         {
-            throw new UnknownTokenException(_tokenName);
+            throw new UnknownTokenException(TokenName);
         }
 
         yield return new EntityLink(Key, token.Key);
     }
 
-    public TokenInfo GetToken()
+    public TokenEntity GetToken()
     {
-        if (!Registry.TryGetToken(_tokenName, out var token))
+        if (!Registry.TryGetEntityByName<TokenEntity>(TokenName, out var token))
         {
-            throw new UnknownTokenException(_tokenName);
+            throw new UnknownTokenException(TokenName);
         }
         return token;
     }

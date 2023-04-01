@@ -13,7 +13,7 @@ internal class LogicLexerTokenProcessor : MetaCodeBuilder
 
     protected override void Write(ParserContext context)
     {
-        var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, EConsumerType.Lexer)}>");
+        var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, EConsumerKind.Lexer)}>");
         var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenValueStructName}>");
         const string VarNameResults = "results";
         const string VarNameProcesserReturn = "processed";

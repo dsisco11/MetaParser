@@ -1,6 +1,6 @@
 ﻿namespace MetaParser.Parsing.Constructs;
 
-internal enum EConsumerType
+internal enum EConsumerKind
 {
     Lexer,
     Syntax

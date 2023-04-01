@@ -24,7 +24,7 @@ internal class LogicConsumerSwitchBlock : MetaCodeBuilder
 
         for (int i = 0; i < context.WorkingSet.Consumers.Length; i++)
         {
-            Parsing.Constructs.Consumer? consumer = context.WorkingSet.Consumers[i];
+            Parsing.Constructs.ConsumerEntity? consumer = context.WorkingSet.Consumers[i];
             workContext.WorkingSet = new WorkingSet(consumer.Token, consumer, consumer.Start);
 
             writer.Write("[");

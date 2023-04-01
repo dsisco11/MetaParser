@@ -11,5 +11,5 @@ internal interface IParsingStageDefinition
     [JsonPropertyName("$type")]
     EParsingStage Type { get; }
     [JsonPropertyName("consumers")]
-    IEnumerable<KeyValuePair<string, IEnumerable<IConsumerDeclaration>>> Consumers { get; }
+    IEnumerable<KeyValuePair<string, IEnumerable<ConsumerDeclaration>>> Consumers { get; }
 }

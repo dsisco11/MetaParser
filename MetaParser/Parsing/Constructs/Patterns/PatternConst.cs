@@ -1,23 +1,17 @@
 ﻿using MetaParser.Core;
 
-using System.Collections.Generic;
-
 namespace MetaParser.Parsing.Constructs;
 
-internal sealed record PatternConst : Pattern
+internal sealed record PatternConst : PatternEntity
 {
     #region Fields
-    private readonly string _value;
-    #endregion
-
-    #region Properties
-    public string Value => _value;
+    public readonly string Value;
     #endregion
 
     #region Constructors
-    public PatternConst(string value, ParserContext context) : base(context)
+    public PatternConst(EntityRegistry registry, string value) : base(EPatternKind.Literal, registry)
     {
-        _value = value;
+        Value = value;
     }
     #endregion
 
@@ -31,20 +25,4 @@ internal sealed record PatternConst : Pattern
     public override int MaxConditions => 0;
     public override bool IsConditional => false;
     #endregion
-
-
-    public override Pattern Combine(Pattern other, ParserContext context)
-    {
-        return new PatternGroup(EPatternCondition.AllOf, context, this, other);
-    }
-
-    public override IEnumerator<Pattern> GetEnumerator()
-    {
-        yield break;
-    }
-
-    public override IEnumerable<EntityLink> ResolveLinks(TokenRegistry Registry)
-    {
-        yield break;
-    }
 }

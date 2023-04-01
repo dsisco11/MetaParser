@@ -2,11 +2,11 @@
 
 namespace MetaParser.Parsing.Constructs.Patterns;
 
-internal class PatternSorter : IComparer<Pattern>
+internal class PatternSorter : IComparer<PatternEntity>
 {
     public static readonly PatternSorter Instance = new PatternSorter();
 
-    public int Compare(Pattern left, Pattern right)
+    public int Compare(PatternEntity left, PatternEntity right)
     {
         // if any of these factors are different, then use the order of the factors to determine the comparison result
         // if all factors are the same, then compare the next pattern in the left and right enumerables
@@ -25,14 +25,14 @@ internal class PatternSorter : IComparer<Pattern>
         if (left.IsSequence)
         {
             // If both patterns are sequences, then we compare the children
-            IEnumerator<Pattern> leftEnumerator = left.GetEnumerator();
-            IEnumerator<Pattern> rightEnumerator = right.GetEnumerator();
+            IEnumerator<PatternEntity> leftEnumerator = left.GetEnumerator();
+            IEnumerator<PatternEntity> rightEnumerator = right.GetEnumerator();
             bool leftMoveNext = leftEnumerator.MoveNext();
             bool rightMoveNext = rightEnumerator.MoveNext();
             while (leftMoveNext && rightMoveNext)
             {
-                Pattern leftPattern = leftEnumerator.Current;
-                Pattern rightPattern = rightEnumerator.Current;
+                PatternEntity leftPattern = leftEnumerator.Current;
+                PatternEntity rightPattern = rightEnumerator.Current;
                 int compareResult = Compare(leftPattern, rightPattern);
                 if (compareResult != 0)
                 {

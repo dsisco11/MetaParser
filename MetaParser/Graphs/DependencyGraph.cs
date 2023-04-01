@@ -7,10 +7,10 @@ namespace MetaParser.Graphs;
 
 internal static class DependencyGraph
 {
-    public static DirectedGraph Build(TokenRegistry Registry)
+    public static DirectedGraph Build(EntityRegistry Registry)
     {
-        var graph = new DirectedGraph(Registry.GetNodeIDs());
-        foreach (IGraphableEntity entity in Registry.GetGraphEntities())
+        var graph = new DirectedGraph(Registry.Entities.Keys);
+        foreach (IGraphEntity entity in Registry.Entities.Values)
         {
             var resolvedLinks = entity.ResolveLinks(Registry);
             foreach (var link in resolvedLinks)
@@ -22,28 +22,7 @@ internal static class DependencyGraph
         var resolved = graph.Resolve();
         foreach (var entry in resolved)
         {
-            switch (entry.Key.Type)
-            {
-                case NodeType.Data:
-                    break;
-                case NodeType.Pattern:
-                    {
-                        Registry.Patterns[entry.Key].DependencyInfo = entry.Value;
-                    }
-                    break;
-                case NodeType.Consumer:
-                    {
-                        Registry.Consumers[entry.Key].DependencyInfo = entry.Value;
-                    }
-                    break;
-                case NodeType.Token:
-                    {
-                        Registry.Tokens[entry.Key].DependencyInfo = entry.Value;
-                    }
-                    break;
-                default:
-                    break;
-            }
+            Registry.Entities[entry.Key].DependencyInfo = entry.Value;
         }
 
         return graph;

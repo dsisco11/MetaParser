@@ -3,9 +3,9 @@
 using MetaParser.Builders.Core;
 using MetaParser.Builders.Parser;
 using MetaParser.Builders.Parser.Functions;
+using MetaParser.Compiler;
 using MetaParser.Core;
 using MetaParser.Exceptions;
-using MetaParser.Graphs;
 using MetaParser.Json.Definitions;
 using MetaParser.Json.JsonTypeConverters;
 using MetaParser.Parsing.Constructs;
@@ -15,7 +15,6 @@ using Microsoft.CodeAnalysis.CSharp;
 
 using System;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -33,8 +32,7 @@ public partial class Generator : IIncrementalGenerator
         {
             var deserializerOptions = new JsonSerializerOptions(JsonSerializerOptions.Default);
             deserializerOptions.Converters.Add(new JsonEnumerableConverter());
-            deserializerOptions.Converters.Add(new ValuePatternDeclarationConverterFactory());
-            deserializerOptions.Converters.Add(new TokenPatternDeclarationConverterFactory());
+            deserializerOptions.Converters.Add(new PatternDeclarationConverterFactory());
 
             deserializerOptions.AddContext<MetaParserJsonSerializer>();
             return deserializerOptions;
@@ -72,111 +70,52 @@ public partial class Generator : IIncrementalGenerator
             return (file, schema!);
         }));
 
-        IncrementalValuesProvider<ValueTuple<ParserContext, ParserDefinition>> ctxFull = ctxSchema.Select(static (ValueTuple<FileData, ParserDefinition> data, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider<ParserInterpreter> interpreterStart = ctxSchema.Select(static (ValueTuple<FileData, ParserDefinition> data, CancellationToken cancellationToken) =>
         {
             FileData file = data.Item1;
-            var schema = data.Item2;
-            var config = new ParserConfiguration()
-            {
-                BaseFileName = file.FileName,
-                Namespace = schema.Namespace!
-            };
+            var definition = data.Item2;
 
-            if (schema.ClassName is not null)
-            {
-                config.ClassName = schema.ClassName;
-            }
-
-            if (schema.ParserType is not null)
-            {
-                config.ParserType = schema.ParserType;
-            }
-
-            if (schema.Stages is not null)
-            {
-                // get a count of all distinct token names from all consumers in every stage
-                HashSet<string> allTokenNames = new();
-                foreach (var stage in schema.Stages)
-                {
-                    foreach (var consumer in stage.Consumers)
-                    {
-                        allTokenNames.Add(consumer.Key);
-                    }
-                }
-
-                // set the id type to the smallest possible type that can hold all the token names
-                config.IdType = Common.Get_Integer_Type(allTokenNames.Count);
-            }
-
-            return new ValueTuple<ParserContext, ParserDefinition>(new ParserContext() { Config = config }, schema);
+            return new ParserInterpreter(file.FileName, data.Item2);
         });
 
-        IncrementalValuesProvider<ParserContext> ctxParserOnly = ctxFull.Select(static (ValueTuple<ParserContext, ParserDefinition> data, CancellationToken cancellationToken) =>
+        #region Interpreter Steps
+
+        var declared = interpreterStart.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
         {
-            return data.Item1;
+            return interpreter.ExecuteNext();
+        });
+
+        var assigned = declared.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
+        {
+            return interpreter.ExecuteNext();
+        });
+
+        var specified = assigned.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
+        {
+            return interpreter.ExecuteNext();
+        });
+
+        var computed = specified.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
+        {
+            return interpreter.ExecuteNext();
+        });
+
+        var used = computed.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
+        {
+            return interpreter.ExecuteNext();
         });
         #endregion
 
-        #region Resolving
-
-        IncrementalValuesProvider<ValueTuple<ParserContext, Dictionary<string, List<IConsumerDeclaration>>>> ctxTokensMerged = ctxFull.Select(static (ValueTuple<ParserContext, ParserDefinition> data, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider<ParserContext> ctxParser = used.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
         {
-            var context = data.Item1 with { };// clone the context, so we don't end up mutating other providers
-            var parserDefinition = data.Item2;
-
-            // consolidate all consumers from all stages into a single list grouped by token name
-            var allConsumers = new Dictionary<string, List<IConsumerDeclaration>>();
-            foreach (var stage in parserDefinition.Stages)
-            {
-                foreach (var consumer in stage.Consumers)
-                {
-                    if (!allConsumers.TryGetValue(consumer.Key, out var consumers))
-                    {
-                        consumers = new List<IConsumerDeclaration>();
-                        allConsumers.Add(consumer.Key, consumers);
-                    }
-                    consumers.AddRange(consumer.Value);
-                }
-            }
-
-            return new ValueTuple<ParserContext, Dictionary<string, List<IConsumerDeclaration>>>(context, allConsumers);
+            return interpreter.Compile();
         });
 
-        IncrementalValuesProvider<ParserContext> ctxTokens = ctxTokensMerged.Select(static (ValueTuple<ParserContext, Dictionary<string, List<IConsumerDeclaration>>> data, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider<ParserContext> ctxRecursiveTokens = ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
         {
-            var context = data.Item1 with { };// clone the context, so we don't end up mutating other providers
-            var mergedTokens = data.Item2;
-
-            context.WorkingSet.Tokens = new TokenInfo[1];
-            context.WorkingSet.Consumers = new Consumer[1];
-
-            foreach(var definition in mergedTokens)
-            {
-                // create a token for each token name
-                string tokenKey = CodeCommon.Format_Token_Key(definition.Key);
-                var tokenInfo = new TokenInfo(tokenKey, context);
-                context.Registry.AddToken(tokenInfo);
-
-                // add the token to the working set, so consumers know which one they belong to when they're created
-                context.WorkingSet.Tokens[0] = tokenInfo;
-                // create a consumer for each consumer declaration
-                foreach (var consumerDeclaration in definition.Value)
-                {
-                    var consumer = new Consumer(context, consumerDeclaration);
-                }
-            }
-
-            context.DepsGraph = DependencyGraph.Build(context.Registry);
-            context.WorkingSet = new WorkingSet(context.Registry.Tokens.Values);
-            return context;
-        });
-
-        IncrementalValuesProvider<ParserContext> ctxRecursiveTokens = ctxTokens.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
-        {
-            var tokens = parser.Registry.Tokens.Values.Where(static (t) => t.DependencyInfo.NodeDepth.Max > 0);
+            var tokens = parser.Registry.Tokens.Where(static (entity) => entity.DependencyInfo.NodeDepth.Max > 0);
             return (parser with { WorkingSet = new WorkingSet(tokens) });
         });
-
         #endregion
 
         //#if DEBUG
@@ -205,7 +144,7 @@ public partial class Generator : IIncrementalGenerator
         //#endif
 
 #if DEBUG
-        context.RegisterSourceOutput(ctxTokens, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
@@ -213,19 +152,19 @@ public partial class Generator : IIncrementalGenerator
             writer.WriteLine("/*");
             writer.WriteLine("```");
             // write all items in the registry
-            foreach (var token in context.Registry.Tokens.Values)
+            foreach (var token in context.Registry.Tokens)
             {
                 writer.WriteLine(token);
             }
             writer.WriteLine();
 
-            foreach (var consumer in context.Registry.Consumers.Values)
+            foreach (var consumer in context.Registry.Consumers)
             {
                 writer.WriteLine(consumer.DependencyInfo);
             }
             writer.WriteLine();
 
-            foreach (var pattern in context.Registry.Patterns.Values)
+            foreach (var pattern in context.Registry.Patterns)
             {
                 writer.WriteLine(pattern.DependencyInfo);
             }
@@ -237,7 +176,7 @@ public partial class Generator : IIncrementalGenerator
 #endif
 
         #region Parser Class
-        context.RegisterSourceOutput(ctxParserOnly, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
@@ -255,9 +194,9 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Consumer Builders
-        context.RegisterSourceOutput(ctxTokens.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
+        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
         {
-            Consumer[] consumers = parser.Registry.Consumers.Values.Where(static (o) => !o.IsConstant).ToArray();
+            ConsumerEntity[] consumers = parser.Registry.Consumers.Where(static (o) => !o.IsConstant).ToArray();
             return (parser with { WorkingSet = new WorkingSet(consumers) });
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
@@ -306,9 +245,9 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Constant-Type Tokens
-        context.RegisterSourceOutput(ctxTokens.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
+        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
         {
-            Consumer[] consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Lexer).ToArray();
+            ConsumerEntity[] consumers = parser.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).ToArray();
             return (parser with { WorkingSet = new WorkingSet(consumers) });
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
@@ -316,7 +255,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Lexer, CodeCommon.LexerProcessingFunctionName);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerKind.Lexer, CodeCommon.LexerProcessingFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);
@@ -326,9 +265,9 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Compound-Type Tokens
-        context.RegisterSourceOutput(ctxTokens.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
+        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
         {
-            Consumer[] consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Syntax && !o.DependencyInfo!.IsRecursive).ToArray();
+            ConsumerEntity[] consumers = parser.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && !o.DependencyInfo!.IsRecursive).ToArray();
             return (parser with { WorkingSet = new WorkingSet(consumers) });
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
@@ -336,7 +275,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Syntax, CodeCommon.SyntaxProcessingFunctionName);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerKind.Syntax, CodeCommon.SyntaxProcessingFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);
@@ -346,9 +285,9 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Complex-Type Tokens
-        context.RegisterSourceOutput(ctxTokens.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
+        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext parser, CancellationToken cancellationToken) =>
         {
-            Consumer[] consumers = parser.Registry.Consumers.Values.Where(static (o) => o.Type == EConsumerType.Syntax && o.DependencyInfo!.IsRecursive).ToArray();
+            ConsumerEntity[] consumers = parser.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && o.DependencyInfo!.IsRecursive).ToArray();
             return (parser with { WorkingSet = new WorkingSet(consumers) });
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
@@ -356,7 +295,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerType.Syntax, CodeCommon.ComplexTokenProcessorFunctionName);
+            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerKind.Syntax, CodeCommon.ComplexTokenProcessorFunctionName);
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(consumer)
                 .WriteTo(context);
@@ -366,7 +305,7 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Result Structure
-        context.RegisterSourceOutput(ctxParserOnly, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
@@ -378,7 +317,7 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Token Structure
-        context.RegisterSourceOutput(ctxParserOnly, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
@@ -390,8 +329,8 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Token-ID Enums
-        context.RegisterSourceOutput(ctxTokens, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
-        {            
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
+        {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
@@ -410,7 +349,7 @@ public partial class Generator : IIncrementalGenerator
         #endregion
 
         #region Token-ID Constants
-        context.RegisterSourceOutput(ctxTokens, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;

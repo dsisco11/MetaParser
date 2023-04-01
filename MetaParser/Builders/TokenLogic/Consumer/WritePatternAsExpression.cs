@@ -2,6 +2,8 @@
 using MetaParser.Core;
 using MetaParser.Parsing.Constructs;
 
+using Microsoft.CodeAnalysis.CSharp;
+
 using System;
 using System.Linq;
 
@@ -18,19 +20,21 @@ internal class WritePatternAsExpression : MetaCodeBuilder
         writer.Write(Format(pattern));
     }
 
-    private static string Format(Pattern pattern)
+    private static string Format(PatternEntity pattern)
     {
         return pattern switch
         {
-            PatternConst c => c.Value,
-            PatternRange r => $"(>={r.Begin} and <={r.End})",
+            PatternConst c when c.Kind == EPatternKind.Literal && c.Value.Length == 1 => SymbolDisplay.FormatLiteral(c.Value[0], true),
+            PatternConst c => SymbolDisplay.FormatLiteral(c.Value, true),
+            // ranges
+            PatternRange r => $"(>={SymbolDisplay.FormatLiteral(r.Begin, true)} and <={SymbolDisplay.FormatLiteral(r.End, true)})",
             // tokens
             PatternTokenRef t when !t.IsInlinable => $"{Format_Token_Start_Detection_Function_Name(t.TokenName)}",
             PatternTokenRef t => Format_Token_Id_Const_Ref(t.TokenName),
             // groups
-            PatternGroup g when g.Condition == EPatternCondition.OneOf && g.Items.Length > 1 => $"({string.Join(g.ConditionJoiner, g.Items.Select(Format))})",
-            PatternGroup g when g.MaxConditions == 1 => Format(g.Items.Single()),
-            PatternGroup g => string.Join(g.ConditionJoiner, g.Items.Select(Format)),
+            PatternSequence g when g.Kind == EPatternKind.OneOf && g.Items.Length > 1 => $"({string.Join(g.ConditionJoiner, g.Items.Select(Format))})",
+            PatternSequence g when g.MaxConditions == 1 => Format(g.Items.Single()),
+            PatternSequence g => string.Join(g.ConditionJoiner, g.Items.Select(Format)),
             _ => throw new NotImplementedException()
         };
     }

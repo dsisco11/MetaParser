@@ -53,14 +53,14 @@ internal static class CodeCommon
 
     public static string Format_Token_Id(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(name);
     public static string Format_Token_Key(string? name) => name is null ? throw new ArgumentNullException(nameof(name)) : name.ToLowerInvariant();
-    public static string Format_Token_Key(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : Format_Token_Key(token.Name);
+    public static string Format_Token_Key(TokenEntity? token) => token is null ? throw new ArgumentNullException(nameof(token)) : Format_Token_Key(token.Name);
     public static string Format_Token_Id_Const_Ref(string? name) => $"{TokenConsts}.{Format_Token_Id(name)}";
-    public static string Format_Token_Id_Const_Ref(TokenInfo? token) => token is null ? throw new ArgumentNullException(nameof(token)) : $"{TokenConsts}.{Format_Token_Id(token.Name)}";
+    public static string Format_Token_Id_Const_Ref(TokenEntity? token) => token is null ? throw new ArgumentNullException(nameof(token)) : $"{TokenConsts}.{Format_Token_Id(token.Name)}";
     #endregion
 
     #region Builders
-    public static TypeSyntax Get_Consumer_Data_Type(ParserConfiguration config, EConsumerType type) => (type == EConsumerType.Lexer ? config.InputType : config.IdType);
-    public static TypeSyntax Get_Token_Buffer_Type(ParserConfiguration config, EConsumerType type) => SyntaxFactory.ParseTypeName($"{ReadOnlySpan}<{Get_Consumer_Data_Type(config, type)}>");
-    public static FunctionDefinition Get_Token_Processor_Function_Definition(ParserContext context, EConsumerType type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName(TypeConsumerResult), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Token_Processing_Logic());
+    public static TypeSyntax Get_Consumer_Data_Type(ParserConfiguration config, EConsumerKind type) => (type == EConsumerKind.Lexer ? config.InputType : config.IdType);
+    public static TypeSyntax Get_Token_Buffer_Type(ParserConfiguration config, EConsumerKind type) => SyntaxFactory.ParseTypeName($"{ReadOnlySpan}<{Get_Consumer_Data_Type(config, type)}>");
+    public static FunctionDefinition Get_Token_Processor_Function_Definition(ParserContext context, EConsumerKind type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName(TypeConsumerResult), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Token_Processing_Logic());
     #endregion
 }

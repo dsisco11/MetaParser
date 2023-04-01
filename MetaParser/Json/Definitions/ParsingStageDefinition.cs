@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace MetaParser.Json.Definitions;
 
 internal abstract record ParsingStageDefinition<T> : IParsingStageDefinition
-    where T : IConsumerDeclaration
+    where T : ConsumerDeclaration
 {
     #region Properties
     [JsonPropertyName("$type")]
@@ -14,7 +14,7 @@ internal abstract record ParsingStageDefinition<T> : IParsingStageDefinition
     public abstract Dictionary<string, IEnumerable<T>>? Consumers { get; set; }
     #endregion
 
-    IEnumerable<KeyValuePair<string, IEnumerable<IConsumerDeclaration>>> IParsingStageDefinition.Consumers
+    IEnumerable<KeyValuePair<string, IEnumerable<ConsumerDeclaration>>> IParsingStageDefinition.Consumers
     {
         get
         {
@@ -26,7 +26,7 @@ internal abstract record ParsingStageDefinition<T> : IParsingStageDefinition
 
             foreach (var pair in Consumers)
             {
-                yield return new KeyValuePair<string, IEnumerable<IConsumerDeclaration>>(pair.Key, pair.Value.Cast<IConsumerDeclaration>());
+                yield return new KeyValuePair<string, IEnumerable<ConsumerDeclaration>>(pair.Key, pair.Value.Cast<ConsumerDeclaration>());
             }
         }
     }
