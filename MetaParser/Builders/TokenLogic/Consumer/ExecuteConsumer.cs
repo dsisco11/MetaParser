@@ -21,7 +21,7 @@ internal class ExecuteConsumer : MetaCodeBuilder
         }
         else
         {
-            writer.Write($"{Format_Pattern_Consumer_Function_Name(consumer.Index)}({context.ActiveBufferName})");
+            writer.Write($"{Format_Pattern_Consumer_Function_Name(consumer.Index)}({context.State.ActiveBufferName})");
         }
     }
 }

@@ -15,7 +15,7 @@ internal class GenTokenStartDetectors : MetaCodeBuilder
         return (FunctionDefinition)new FunctionDefinition(SyntaxFactory.ParseTokens("private static"),
                                                           SyntaxFactory.ParseTypeName("bool"),
                                                           name,
-                                                          SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Logic_Single_Token_Detector());
+                                                          SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.State.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Logic_Single_Token_Detector());
     }
 
     protected override void Write(ParserContext context)

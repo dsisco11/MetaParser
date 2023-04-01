@@ -19,12 +19,12 @@ internal class LogicSyntaxTokenProcessor : MetaCodeBuilder
         const string VarNameProcesserReturn = "processed";
         var writer = context.Writer;
 
-        string VarBufferMajor = context.ActiveBufferName;
-        context.ActiveBuffer++;
-        string VarBufferMinor = context.ActiveBufferName;
-        context.ActiveBuffer++;
-        string VarBufferLocal = context.ActiveBufferName;
-        context.ActiveBuffer--;
+        string VarBufferMajor = context.State.ActiveBufferName;
+        context.Increment_Active_Bufffer();
+        string VarBufferMinor = context.State.ActiveBufferName;
+        context.Increment_Active_Bufffer();
+        string VarBufferLocal = context.State.ActiveBufferName;
+        context.Decrement_Active_Bufffer();
 
         writer.WriteLine($"private static {TokenRecordTypeName}[] {FunctionName}({argumentType} {VarBufferMajor})");
         writer.WriteLine("{");

@@ -18,7 +18,7 @@ internal class LogicConsumerSwitchBlock : MetaCodeBuilder
         var writer = context.Writer;
         var workContext = context with {};
 
-        writer.WriteLine($"return {context.ActiveBufferName} switch");
+        writer.WriteLine($"return {context.State.ActiveBufferName} switch");
         writer.WriteLine("{");
         writer.Indent++;
 

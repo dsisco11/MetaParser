@@ -19,11 +19,11 @@ internal class LogicPatternMatcher : MetaCodeBuilder
         {// This is a single non-inlineable item, so we execute the function
             //writer.Write(Format(pattern));
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context);
-            writer.Write($"({context.ActiveBufferName})");
+            writer.Write($"({context.State.ActiveBufferName})");
         }
         else if (!pattern.IsInlinable && pattern.IsSequence && pattern.Length > 1)
         {// wrap pattern detection condition in a local switch clause that returns true/false
-            writer.Write(context.ActiveBufferName);
+            writer.Write(context.State.ActiveBufferName);
             writer.WriteLine(" switch");
             writer.WriteLine("{");
             writer.Indent++;
@@ -41,13 +41,13 @@ internal class LogicPatternMatcher : MetaCodeBuilder
         else if (pattern.IsDeterministic && pattern.Length == 1)
         {// This is a single inlineable item, so do a length-1 buffer check
          // "buffer[0] == x"
-            //writer.Write($"{context.ActiveBufferName}[0] == {Format(pattern)}");
-            writer.Write($"{context.ActiveBufferName}[0] == ");
+            //writer.Write($"{context.State.ActiveBufferName}[0] == {Format(pattern)}");
+            writer.Write($"{context.State.ActiveBufferName}[0] == ");
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context);
         }
         else if (pattern.IsDeterministic)
         {// "buffer.StartsWith(stackalloc []{ x, y, z }"
-            writer.Write(context.ActiveBufferName);
+            writer.Write(context.State.ActiveBufferName);
             writer.Write(".StartsWith(stackalloc []{ ");
             //writer.Write(Format(pattern));
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context);
@@ -55,7 +55,7 @@ internal class LogicPatternMatcher : MetaCodeBuilder
         }
         else
         {// "buffer is [x, y, z, ..]"
-            writer.Write(context.ActiveBufferName);
+            writer.Write(context.State.ActiveBufferName);
             writer.Write(" ");
             writer.Write("is ");
             //writer.Write($"[ {Format(pattern)}, ..]");

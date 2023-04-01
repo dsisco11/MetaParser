@@ -14,7 +14,7 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
     {
         var writer = context.Writer;
 
-        writer.WriteLine($"return {context.ActiveBufferName} switch");
+        writer.WriteLine($"return {context.State.ActiveBufferName} switch");
         writer.WriteLine("{");
         writer.Indent++;
 
@@ -39,7 +39,7 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
 
             if (consumer.Consume is not null)
             {
-                writer.Write($"var {context.NextBufferName}] when (");
+                writer.Write($"var {context.State.NextBufferName}] when (");
 
                 bool first = true;
                 foreach (var pattern in consumer.Consume)
@@ -53,7 +53,7 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
 
                     if (pattern is PatternTokenRef tokenRef)
                     {
-                        writer.Write($"{Format_Token_Start_Detection_Function_Name(tokenRef.TokenName)}({context.NextBufferName})");
+                        writer.Write($"{Format_Token_Start_Detection_Function_Name(tokenRef.TokenName)}({context.State.NextBufferName})");
                     }
                 }
                 writer.Write(")");

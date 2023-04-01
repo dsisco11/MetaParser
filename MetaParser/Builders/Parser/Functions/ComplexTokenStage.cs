@@ -15,7 +15,7 @@ internal class ComplexTokenStage : MetaCodeBuilder
         var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{TokenRecordTypeName}>");
         var writer = context.Writer;
 
-        writer.WriteLine($"private static {TokenRecordTypeName}[] {FunctionName}({argumentType} {context.ActiveBufferName})");
+        writer.WriteLine($"private static {TokenRecordTypeName}[] {FunctionName}({argumentType} {context.State.ActiveBufferName})");
         writer.WriteLine("{");
         writer.Indent++;
         writer.WriteLine($"return Array.Empty<{TokenRecordTypeName}>();");

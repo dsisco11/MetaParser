@@ -23,7 +23,7 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
         for (int i = 0; i < context.WorkingSet.Tokens.Length; i++)
         {
             TokenEntity? token = context.WorkingSet.Tokens[i];
-            writer.WriteLine($"if ({Format_Token_Start_Detection_Function_Name(token.Name)}({context.ActiveBufferName}))");
+            writer.WriteLine($"if ({Format_Token_Start_Detection_Function_Name(token.Name)}({context.State.ActiveBufferName}))");
             writer.WriteLine("{");
             writer.Indent++;
 

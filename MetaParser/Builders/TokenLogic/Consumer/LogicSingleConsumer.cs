@@ -15,7 +15,9 @@ internal class LogicSingleConsumer : MetaCodeBuilder
     {
         Debug.Assert(context.WorkingSet.Consumers.Length == 1);
 
-        context = context with { ActiveBuffer = context.ActiveBuffer + 1 };
+        context = context with { };
+        context.Increment_Active_Bufffer();
+
         var writer = context.Writer;
         var consumer = context.WorkingSet.Consumers.Single();
         var detectionContext = context with { WorkingSet = context.WorkingSet with { Patterns = new PatternEntity[1] } };
@@ -33,13 +35,13 @@ internal class LogicSingleConsumer : MetaCodeBuilder
             {
                 writer.WriteLine("/* WARNING: consumer START sequence is of uncertain length, it is possible this could cause token parsing discrepancies */");
             }
-            writer.WriteLine($"var {context.ActiveBufferName} = {context.LastBufferName}.Slice({Math.Max(1, consumer.Start.Length)});");
+            writer.WriteLine($"var {context.State.ActiveBufferName} = {context.State.LastBufferName}.Slice({Math.Max(1, consumer.Start.Length)});");
         }
 
         // Check for escape sequence
         if (consumer.Stop is not null)
         {
-            writer.WriteLine($"while ({context.ActiveBufferName}.Length > 0)");
+            writer.WriteLine($"while ({context.State.ActiveBufferName}.Length > 0)");
             writer.WriteLine("{");
             writer.Indent++;
 
@@ -57,7 +59,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
                 #if DEBUG
                 writer.WriteLine("/* look past the ESCAPE sequence */");
                 #endif
-                writer.WriteLine($"var {context.NextBufferName} = {context.ActiveBufferName}.Slice({consumer.Escape.Length});");
+                writer.WriteLine($"var {context.State.NextBufferName} = {context.State.ActiveBufferName}.Slice({consumer.Escape.Length});");
                 #if DEBUG
                 writer.WriteLine("/* if the stop sequence immediately follows the ESCAPE sequence then they are consumed */");
                 #endif
@@ -65,13 +67,14 @@ internal class LogicSingleConsumer : MetaCodeBuilder
                 writer.Write("if (");
 
                 detectionContext.WorkingSet.Patterns[0] = consumer.Stop;
-                var tempContext = detectionContext with { ActiveBuffer = context.ActiveBuffer + 1 };
+                var tempContext = detectionContext with { };
+                tempContext.Increment_Active_Bufffer();
                 context.Config.CodeFactory.Get_Logic_Pattern_Match().WriteTo(tempContext);
 
                 writer.WriteLine(")");
                 writer.WriteLine("{");
                 writer.Indent++;
-                writer.WriteLine($"{context.ActiveBufferName} = {context.NextBufferName}.Slice({consumer.Stop.Length});");
+                writer.WriteLine($"{context.State.ActiveBufferName} = {context.State.NextBufferName}.Slice({consumer.Stop.Length});");
                 writer.WriteLine($"continue;");
                 writer.Indent--;
                 writer.WriteLine("}");
@@ -106,7 +109,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
         if (consumer.Consume is not null)
         {
             writer.WriteLine();
-            writer.WriteLine($"while ({context.ActiveBufferName}.Length > 0)");
+            writer.WriteLine($"while ({context.State.ActiveBufferName}.Length > 0)");
             writer.WriteLine("{");
             writer.Indent++;
             writer.Write("if (");
@@ -120,7 +123,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
         #endif
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"{context.ActiveBufferName} = {context.ActiveBufferName}.Slice({consumer.Consume.Length});");
+            writer.WriteLine($"{context.State.ActiveBufferName} = {context.State.ActiveBufferName}.Slice({consumer.Consume.Length});");
         #if DEBUG
             writer.WriteLine("/* consumer forces moving on to next loop */");
         #endif
@@ -143,7 +146,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
             #if DEBUG
                 writer.WriteLine("/* Token doesn't specify any explicit consumables, so ALL items are considered valid consumables */");
             #endif
-                writer.WriteLine($"{context.ActiveBufferName} = {context.ActiveBufferName}.Slice(1);");
+                writer.WriteLine($"{context.State.ActiveBufferName} = {context.State.ActiveBufferName}.Slice(1);");
             }
         }
 
@@ -163,7 +166,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
             writer.WriteLine(")");
             writer.WriteLine("{");
             writer.Indent++;
-            writer.WriteLine($"return new ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Stop.Length} + ({context.LastBufferName}.Length - {context.ActiveBufferName}.Length));");
+            writer.WriteLine($"return new ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Stop.Length} + ({context.State.LastBufferName}.Length - {context.State.ActiveBufferName}.Length));");
             writer.Indent--;
             writer.WriteLine("}");
             writer.WriteLine();
@@ -171,7 +174,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
         }
         else
         {
-            writer.WriteLine($"return new ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {context.LastBufferName}.Length - {context.ActiveBufferName}.Length);");
+            writer.WriteLine($"return new ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {context.State.LastBufferName}.Length - {context.State.ActiveBufferName}.Length);");
         }
 
     }

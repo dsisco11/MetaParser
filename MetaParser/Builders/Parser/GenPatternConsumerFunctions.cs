@@ -15,7 +15,7 @@ internal class GenPatternConsumerFunctions : MetaCodeBuilder
         return new FunctionDefinition(SyntaxFactory.ParseTokens("private static"),
                                                           SyntaxFactory.ParseTypeName(TypeConsumerResult),
                                                           name,
-                                                          SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}"));
+                                                          SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.State.ActiveBufferName}"));
     }
 
     protected override void Write(ParserContext context)

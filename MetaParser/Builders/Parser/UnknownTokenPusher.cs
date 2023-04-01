@@ -11,14 +11,14 @@ internal class UnknownTokenPusher : MetaCodeBuilder
     protected override void Write(ParserContext context)
     {
         var wr = context.Writer;
-        wr.WriteLine($"if ({context.ActiveBufferName}.Length != {context.NextBufferName}.Length)");
+        wr.WriteLine($"if ({context.State.ActiveBufferName}.Length != {context.State.NextBufferName}.Length)");
         wr.WriteLine("{");
         wr.Indent++;
-        wr.WriteLine($"var unk_content_size = {context.ActiveBufferName}.Length - {context.NextBufferName}.Length;");
-        wr.WriteLine($"var unk_content = {context.ActiveBufferName}.Slice(0, unk_content_size);");
+        wr.WriteLine($"var unk_content_size = {context.State.ActiveBufferName}.Length - {context.State.NextBufferName}.Length;");
+        wr.WriteLine($"var unk_content = {context.State.ActiveBufferName}.Slice(0, unk_content_size);");
         wr.WriteLine($"results.Add(new {TokenValueStructName}({Format_Token_Id_Const_Ref(UnknownToken)}, unk_content));");
-        wr.WriteLine($"{context.ActiveBufferName} = {context.ActiveBufferName}.Slice(unk_content_size);");
-        wr.WriteLine($"{context.NextBufferName} = {context.ActiveBufferName}.Span;");
+        wr.WriteLine($"{context.State.ActiveBufferName} = {context.State.ActiveBufferName}.Slice(unk_content_size);");
+        wr.WriteLine($"{context.State.NextBufferName} = {context.State.ActiveBufferName}.Span;");
         wr.Indent--;
         wr.WriteLine("}");
     }

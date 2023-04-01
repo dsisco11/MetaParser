@@ -19,11 +19,11 @@ internal class ParsingLogic : MetaCodeBuilder
         
 
         writer.Write("public ");
-        writer.WriteLine($"{tyTokenList} Parse({tyInputBuffer} {context.ActiveBufferName})");
+        writer.WriteLine($"{tyTokenList} Parse({tyInputBuffer} {context.State.ActiveBufferName})");
         writer.WriteLine("{");
         writer.Indent++;
         // constant-tokens
-        writer.WriteLine($"var {VarNameValueTokensArray} = {LogicLexerTokenProcessor.FunctionName}({context.ActiveBufferName});");
+        writer.WriteLine($"var {VarNameValueTokensArray} = {LogicLexerTokenProcessor.FunctionName}({context.State.ActiveBufferName});");
         // compound-tokens
         writer.WriteLine($"var {VarNameValueTokensBuffer} = new {ReadOnlyMemory}<{TokenValueStructName}>( {VarNameValueTokensArray} );");
         writer.WriteLine($"return {LogicSyntaxTokenProcessor.FunctionName}({VarNameValueTokensBuffer});");

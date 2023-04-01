@@ -61,6 +61,6 @@ internal static class CodeCommon
     #region Builders
     public static TypeSyntax Get_Consumer_Data_Type(ParserConfiguration config, EConsumerKind type) => (type == EConsumerKind.Lexer ? config.InputType : config.IdType);
     public static TypeSyntax Get_Token_Buffer_Type(ParserConfiguration config, EConsumerKind type) => SyntaxFactory.ParseTypeName($"{ReadOnlySpan}<{Get_Consumer_Data_Type(config, type)}>");
-    public static FunctionDefinition Get_Token_Processor_Function_Definition(ParserContext context, EConsumerKind type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName(TypeConsumerResult), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Token_Processing_Logic());
+    public static FunctionDefinition Get_Token_Processor_Function_Definition(ParserContext context, EConsumerKind type, string name) => (FunctionDefinition)new FunctionDefinition(SyntaxPrivateStatic, SyntaxFactory.ParseTypeName(TypeConsumerResult), name, SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.State.ActiveBufferName}")).And(context.Config.CodeFactory.Get_Token_Processing_Logic());
     #endregion
 }

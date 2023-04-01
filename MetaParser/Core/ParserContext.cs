@@ -1,5 +1,6 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Graphs;
+using MetaParser.Parsing.Constructs.Stages;
 
 using System.CodeDom.Compiler;
 
@@ -9,13 +10,14 @@ internal record ParserContext : ICodeBuilderContext
 {
     #region Fields
     private EntityRegistry? _registry;
+    public CodeGenState State;
     #endregion
 
     #region Properties
     public ParserConfiguration Config { get; set; }
     public DirectedGraph DepsGraph { get; set; }
     public WorkingSet WorkingSet { get; set; } = new();
-    public int ActiveBuffer { get; set; }
+    public ParsingStageContext Stage { get; set; }
     #endregion
 
     #region Accessors
@@ -30,14 +32,10 @@ internal record ParserContext : ICodeBuilderContext
         }
         set { _registry = value; }
     }
-
-
-    public string LastBufferName => FormatBufferName(ActiveBuffer - 1);
-    public string ActiveBufferName => FormatBufferName(ActiveBuffer);
-    public string NextBufferName => FormatBufferName(ActiveBuffer + 1);
     #endregion
 
     #region Methods
-    private static string FormatBufferName(int buffer) => $"buffer{buffer}";
+    public void Increment_Active_Bufffer() => State.ActiveBuffer += 1;
+    public void Decrement_Active_Bufffer() => State.ActiveBuffer -= 1;
     #endregion
 }
