@@ -113,11 +113,6 @@ internal sealed record ParserInterpreter
 
     public ParserContext Compile()
     {
-        var workingSet = new WorkingSet()
-        {
-            Tokens = new TokenEntity[1],
-            Consumers = new ConsumerEntity[1]
-        };
         var registry = new EntityRegistry();
 
         var mergedTokens = Get_Merged_Tokens(CurrentStep);
