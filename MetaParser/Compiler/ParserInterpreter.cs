@@ -5,8 +5,10 @@ using MetaParser.Graphs;
 using MetaParser.Json.Definitions;
 using MetaParser.Parsing.Constructs;
 using MetaParser.Parsing.Constructs.Patterns;
+using MetaParser.Parsing.Constructs.Stages;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 using System;
 using System.Collections.Generic;
@@ -153,12 +155,38 @@ internal sealed record ParserInterpreter
         var distinctTokenIds = registry.Tokens.Select(static (o) => o.ID).ToImmutableHashSet();
         _config.IdType = Common.Get_Integer_Type(distinctTokenIds.Count);
 
+        // Group all consumers in the registry by max node depth and then put each of the groups into a ParsingStageContext object which is linked to the previous one
+        var groups = registry.Consumers.GroupBy(static (x) => x.DependencyInfo.NodeDepth.Max).OrderBy(static (x) => x.Key);
+        var stages = new List<ParsingStageContext>();
+        foreach (var group in groups)
+        {
+            var inputType = group.Key == 0 ? _config.InputType : _config.IdType;
+            ImmutableHashSet<ConsumerEntity> consumerEntities = group.ToImmutableHashSet();
+            List<string> outputValues = new();
+            var stage = new ParsingStageContext(inputType, _config.IdType, outputValues, consumerEntities);
+            stages.Add(stage);
+        }
+        // create the parsing stage contexts
+        for (int i = 0; i < stages.Count; i++)
+        {
+            var stage = stages[i];
+            if (i + 1 < stages.Count)
+            {
+                stage.Tail = stages[i + 1];
+            }
+            if (i - 1 >= 0)
+            {
+                stage.Head = stages[i - 1];
+            }
+        }
+
         var context = new ParserContext()
         {
             Config = _config,
             Registry = registry,
             DepsGraph = DependencyGraph.Build(registry),
-            State = new CodeGenState(new WorkingSet(registry.Tokens))
+            State = new CodeGenState(new WorkingSet(registry.Tokens)),
+            ParsingStages = stages.ToImmutableArray()
         };
         return context;
     }

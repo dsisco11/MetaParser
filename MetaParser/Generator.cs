@@ -197,11 +197,17 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
         {
             ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => !o.IsConstant).ToArray();
-            return (context with { State = context.State with { Targets = new WorkingSet(consumers) } });
+            return context with 
+            { 
+                State = context.State with 
+                { 
+                    Targets = new WorkingSet(consumers) 
+                },
+                Writer = new IndentedTextWriter(new StringWriter())
+            };
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
-            context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
@@ -248,11 +254,17 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
         {
             ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).ToArray();
-            return (context with { State = context.State with { Targets = new WorkingSet(consumers) } });
+            return context with 
+            { 
+                State = context.State with 
+                { 
+                    Targets = new WorkingSet(consumers) 
+                },
+                Writer = new IndentedTextWriter(new StringWriter())
+            };
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
-            context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
             var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerKind.Lexer, CodeCommon.LexerProcessingFunctionName);
@@ -267,12 +279,18 @@ public partial class Generator : IIncrementalGenerator
         #region Compound-Type Tokens
         context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) => 
         { 
-            ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && !o.DependencyInfo!.IsRecursive).ToArray(); 
-            return context with { State = context.State with { Targets = new WorkingSet(consumers) } }; 
+            ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && !o.DependencyInfo!.IsRecursive).ToArray();
+            return context with 
+            { 
+                State = context.State with 
+                { 
+                    Targets = new WorkingSet(consumers) 
+                },
+                Writer = new IndentedTextWriter(new StringWriter())
+            };
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
-            context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
             var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerKind.Syntax, CodeCommon.SyntaxProcessingFunctionName);
@@ -288,11 +306,16 @@ public partial class Generator : IIncrementalGenerator
         context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) => 
         { 
             ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && o.DependencyInfo!.IsRecursive).ToArray(); 
-            return context with { State = context.State with { Targets = new WorkingSet(consumers) } }; 
+            return context with {
+                State = context.State with
+                {
+                    Targets = new WorkingSet(consumers)
+                },
+                Writer = new IndentedTextWriter(new StringWriter())
+            }; 
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
-            context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
             var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerKind.Syntax, CodeCommon.ComplexTokenProcessorFunctionName);

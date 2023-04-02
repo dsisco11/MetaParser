@@ -3,6 +3,7 @@ using MetaParser.Graphs;
 using MetaParser.Parsing.Constructs.Stages;
 
 using System.CodeDom.Compiler;
+using System.Collections.Immutable;
 
 namespace MetaParser.Core;
 
@@ -16,11 +17,12 @@ internal sealed record ParserContext : ICodeBuilderContext
     #region Properties
     public ParserConfiguration Config { get; set; }
     public DirectedGraph DepsGraph { get; set; }
-    public ParsingStageContext Stage { get; set; }
+    public ImmutableArray<ParsingStageContext> ParsingStages { get; set; }
+    public ParsingStageContext CurrentStage { get; set; }
     #endregion
 
     #region Accessors
-    public IndentedTextWriter Writer { get; set; }
+    public IndentedTextWriter? Writer { get; set; }
 
     public EntityRegistry Registry
     {
