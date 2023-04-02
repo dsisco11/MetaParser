@@ -13,7 +13,6 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
     private readonly IMetaCodeBuilder _parsing_struct_builder;
     private readonly IMetaCodeBuilder _parsing_table_executor;
     private readonly IMetaCodeBuilder _parsing_table_function;
-    private readonly IMetaCodeBuilder _token_processing_logic;
     private readonly IMetaCodeBuilder _token_id_constants_builder;
     private readonly IMetaCodeBuilder _token_id_enum_builder;
     private readonly IMetaCodeBuilder _token_struct_builder;
@@ -28,7 +27,6 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
         _parsing_struct_builder = new ResultStructBuilder();
         _parsing_table_executor = new FuncParsingTableExecutor();
         _parsing_table_function = new FuncProcessParserTable();
-        _token_processing_logic = new TokenProcessor();
         _token_id_constants_builder = new TokenIDConstBuilder();
         _token_id_enum_builder = new TokenIDEnumBuilder();
         _token_struct_builder = new TokenStructBuilder();
@@ -50,12 +48,7 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
     public IMetaCodeBuilder Get_Logic_Pattern_Match() => _token_pattern_matcher;
     public IMetaCodeBuilder Get_Pattern_Writer() => _token_pattern_expression_writer;
 
-
     public IMetaCodeBuilder Get_Token_ID_Constants_Builder() => _token_id_constants_builder;
-
     public IMetaCodeBuilder Get_Token_ID_Enum_Builder() => _token_id_enum_builder;
-
-    public IMetaCodeBuilder Get_Token_Processing_Logic() => _token_processing_logic;
-
     public IMetaCodeBuilder Get_Token_Struct_Builder() => _token_struct_builder;
 }

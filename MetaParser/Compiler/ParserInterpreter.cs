@@ -154,8 +154,10 @@ internal sealed record ParserInterpreter
         var distinctTokenIds = registry.Tokens.Select(static (o) => o.ID).ToImmutableHashSet();
         _config.IdType = Common.Get_Integer_Type(distinctTokenIds.Count);
 
+        var graph = DependencyGraph.Build(registry);
+
         // Group all consumers in the registry by max node depth and then put each of the groups into a ParsingStageContext object which is linked to the previous one
-        var groups = registry.Consumers.GroupBy(static (x) => x.DependencyInfo.NodeDepth.Max).OrderBy(static (x) => x.Key);
+        var groups = registry.Consumers.GroupBy(static (x) => x.DependencyInfo.TreeDepth.Max).OrderBy(static (x) => x.Key);
         var stages = new List<ParsingStageContext>();
         foreach (var group in groups)
         {
@@ -183,7 +185,7 @@ internal sealed record ParserInterpreter
         {
             Config = _config,
             Registry = registry,
-            DepsGraph = DependencyGraph.Build(registry),
+            DepsGraph = graph,
             Stages = stages.ToImmutableArray(),
             State = new CodeGenState(stages.First()),
         };

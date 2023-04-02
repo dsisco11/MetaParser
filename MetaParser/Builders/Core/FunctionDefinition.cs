@@ -32,7 +32,6 @@ internal class FunctionDefinition : MetaCodeBuilder
         Name = SyntaxFactory.ParseName(name);
         Arguments = arguments;
     }
-
     #endregion
 
     protected override void Write(ParserContext context)
@@ -61,7 +60,7 @@ internal class FunctionDefinition : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        base.WriteContent(context);
+        WriteContent(context);
 
         writer.Indent--;
         writer.WriteLine("}");

@@ -50,4 +50,8 @@
       <!--<ProjectReference Include="..\MetaParser\MetaParser.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />-->
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Snapshots\" />
+    </ItemGroup>
+
 </Project>

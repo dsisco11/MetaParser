@@ -27,12 +27,8 @@ internal partial class DirectedGraph
 
     public DirectedGraph(DirectedGraph other)
     {
-        foreach (var node in other.Nodes)
-        {
-            Nodes[node.Key].Incoming.UnionWith(node.Value.Incoming);
-            Nodes[node.Key].Outgoing.UnionWith(node.Value.Outgoing);
-        }
-   }
+        nodes = new Dictionary<EntityKey, Node>(other.nodes);
+    }
     #endregion
 
     #region Accessors

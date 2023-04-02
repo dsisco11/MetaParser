@@ -27,7 +27,7 @@ internal class DetectRecursiveTokensAndThen : MetaCodeBuilder
             writer.WriteLine("{");
             writer.Indent++;
 
-            base.WriteContent(context);
+            WriteContent(context);
 
             writer.Indent--;
             writer.WriteLine("}");

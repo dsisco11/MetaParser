@@ -60,7 +60,7 @@ internal class ClassBuilder : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        base.WriteContent(context);
+        WriteContent(context);
 
         writer.Indent--;
         writer.WriteLine("}");// end class

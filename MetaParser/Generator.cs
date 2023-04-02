@@ -6,8 +6,10 @@ using MetaParser.Builders.Parser.Functions;
 using MetaParser.Compiler;
 using MetaParser.Core;
 using MetaParser.Exceptions;
+using MetaParser.Graphs;
 using MetaParser.Json.Definitions;
 using MetaParser.Json.JsonTypeConverters;
+using MetaParser.Mermaid;
 using MetaParser.Parsing.Constructs;
 
 using Microsoft.CodeAnalysis;
@@ -118,30 +120,24 @@ public partial class Generator : IIncrementalGenerator
         });
         #endregion
 
-        //#if DEBUG
-        //        context.RegisterSourceOutput(ctxParserTokens, static (SourceProductionContext spc, [NotNull] MetaParserContext context) =>
-        //        {
-        //            
-        //context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
-        //var writer = context.Writer;
-        //            var graph = new DirectedGraph(context.DepsGraph);
-        //            // we only want to see a graph of our token relationships, so we'll remove everything else from the graph
-        //            var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token).ToList();
-        //            foreach (var key in trash)
-        //            {
-        //                graph.TryRemove(key);
-        //            }
+#if DEBUG
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
+        {
+            context.Writer = new IndentedTextWriter(new StringWriter());
+            var writer = context.Writer;
+            var graph = new DirectedGraph(context.DepsGraph);
+            DependencyGraph.Simplify_Graph(graph);
 
-        //            writer.WriteLine("/*");
-        //            writer.WriteLine("```mermaid");
-        //            var mermaidFormatter = new MermaidFormatter(context.Registry, graph);
-        //            mermaidFormatter.Write(writer, MermaidChartType.Graph);
-        //            writer.WriteLine("```");
-        //            writer.WriteLine("*/");
+            writer.WriteLine("/*");
+            writer.WriteLine("```mermaid");
+            var mermaidFormatter = new MermaidFormatter(context.Registry, graph);
+            mermaidFormatter.Write(writer, MermaidChartType.Graph);
+            writer.WriteLine("```");
+            writer.WriteLine("*/");
 
-        //            spc.AddSource($"{context.Config.BaseFileName}.dependency_graph.md", writer.InnerWriter.ToString());
-        //        });
-        //#endif
+            spc.AddSource($"{context.Config.BaseFileName}.dependency_graph.md", writer.InnerWriter.ToString());
+        });
+#endif
 
 #if DEBUG
         context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>

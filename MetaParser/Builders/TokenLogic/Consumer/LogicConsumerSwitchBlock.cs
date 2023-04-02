@@ -30,7 +30,7 @@ internal class LogicConsumerSwitchBlock : MetaCodeBuilder
             writer.Write("[");
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(workContext);
             writer.Write(", ..] => ");
-            base.WriteContent(workContext);
+            WriteContent(workContext);
             writer.WriteLine(",");
         }
 

@@ -24,7 +24,7 @@ internal class ParsingLogic : MetaCodeBuilder
         {
             var ctx = context with { State = context.State with { Stage = stage } };
             var executor = (IMetaCodeFunctionBuilder)context.Config.CodeFactory.Get_Parsing_Table_Executor();
-            var functionName = executor.Get_Function_Name(ctx);
+            var functionName = executor.Format_Function_Name(ctx);
             writer.WriteLine($"var {context.State.NextBufferName} = {functionName}({context.State.ActiveBufferName});");
             context.Increment_Active_Bufffer();
         }
