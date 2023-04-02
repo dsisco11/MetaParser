@@ -46,6 +46,7 @@ internal static class CodeCommon
     #endregion
 
     #region Formatting
+    public static string Format_Parsing_Table_Function_Name(int stageIndex) => $"process_parse_table_{stageIndex}";
     public static string Format_Pattern_Consumer_Function_Name(int consumerIndex) => $"consume_pattern_{consumerIndex}";
     public static string Format_Pattern_Start_Detection_Function_Name(int consumerIndex) => $"starts_consumer_{consumerIndex}";
     public static string Format_Token_Start_Detection_Function_Name(string tokenName) => $"starts_{tokenName.ToLowerInvariant()}_token";

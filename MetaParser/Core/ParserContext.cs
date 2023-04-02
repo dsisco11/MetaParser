@@ -17,8 +17,7 @@ internal sealed record ParserContext : ICodeBuilderContext
     #region Properties
     public ParserConfiguration Config { get; set; }
     public DirectedGraph DepsGraph { get; set; }
-    public ImmutableArray<ParsingStageContext> ParsingStages { get; set; }
-    public ParsingStageContext CurrentStage { get; set; }
+    public ImmutableArray<ParsingStageContext> Stages { get; set; }
     #endregion
 
     #region Accessors

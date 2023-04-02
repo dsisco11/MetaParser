@@ -10,23 +10,26 @@ internal class ParsingLogic : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)
     {
-        const string VarNameValueTokensArray = "tokensArray";
-        const string VarNameValueTokensBuffer = "tokensBuffer";
-        var writer = context.Writer;
+        var writer = context.Writer!;
 
         var tyInputBuffer = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{context.Config.InputType}>");
         var tyTokenList = SyntaxFactory.ParseTypeName($"{TokenRecordTypeName}[]");
-        
+        // TODO: we should be outputting an AST red-green tree
 
         writer.Write("public ");
         writer.WriteLine($"{tyTokenList} Parse({tyInputBuffer} {context.State.ActiveBufferName})");
         writer.WriteLine("{");
         writer.Indent++;
-        // constant-tokens
-        writer.WriteLine($"var {VarNameValueTokensArray} = {LogicLexerTokenProcessor.FunctionName}({context.State.ActiveBufferName});");
-        // compound-tokens
-        writer.WriteLine($"var {VarNameValueTokensBuffer} = new {ReadOnlyMemory}<{TokenValueStructName}>( {VarNameValueTokensArray} );");
-        writer.WriteLine($"return {LogicSyntaxTokenProcessor.FunctionName}({VarNameValueTokensBuffer});");
+        foreach (var stage in context.Stages)
+        {
+            var ctx = context with { State = context.State with { Stage = stage } };
+            var executor = (IMetaCodeFunctionBuilder)context.Config.CodeFactory.Get_Parsing_Table_Executor();
+            var functionName = executor.Get_Function_Name(ctx);
+            writer.WriteLine($"var {context.State.NextBufferName} = {functionName}({context.State.ActiveBufferName});");
+            context.Increment_Active_Bufffer();
+        }
+
+        writer.WriteLine($"return {context.State.ActiveBufferName};");
         writer.WriteLine();
 
         writer.Indent--;

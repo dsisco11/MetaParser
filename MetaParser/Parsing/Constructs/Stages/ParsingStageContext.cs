@@ -13,6 +13,7 @@ internal sealed record ParsingStageContext
     #region Fields
     public ParsingStageContext? Head;
     public ParsingStageContext? Tail;
+    public readonly int Index;
     public readonly TypeSyntax InputType;
     public readonly TypeSyntax OutputType;
     public readonly ImmutableHashSet<string> Outputs;
@@ -24,12 +25,13 @@ internal sealed record ParsingStageContext
     #endregion
 
     #region Constructors
-    public ParsingStageContext(TypeSyntax inputType, TypeSyntax outputType, IEnumerable<string> outputs, IEnumerable<ConsumerEntity> consumers)
+    public ParsingStageContext(int index, TypeSyntax inputType, TypeSyntax outputType, IEnumerable<string> outputs, IEnumerable<ConsumerEntity> consumers)
     {
         Outputs = outputs.ToImmutableHashSet();
         Consumers = consumers.ToImmutableArray();
         InputType = inputType;
         OutputType = outputType;
+        Index = index;
     }
     #endregion
 }

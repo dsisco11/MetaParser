@@ -1,23 +1,23 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
-using MetaParser.Parsing.Constructs;
 
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
 
-internal class LogicLexerTokenProcessor : MetaCodeBuilder
+internal class FuncParsingTableExecutor : MetaCodeBuilder, IMetaCodeFunctionBuilder
 {
-    public const string FunctionName = "Parse_Constant";
+    public string Get_Function_Name(ParserContext context) => $"Execute_Parsing_Table_{context.State.Stage.Index}";
 
     protected override void Write(ParserContext context)
     {
-        var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{Get_Consumer_Data_Type(context.Config, EConsumerKind.Lexer)}>");
-        var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{TokenValueStructName}>");
+        var stage = context.State.Stage;
+        var argumentType = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{stage.InputType}>");
+        var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{stage.OutputType}>");
         const string VarNameResults = "results";
         const string VarNameProcesserReturn = "processed";
-        var writer = context.Writer;
+        var writer = context.Writer!;
 
         string VarBufferMajor = context.State.ActiveBufferName;
         context.Increment_Active_Bufffer();
@@ -26,7 +26,7 @@ internal class LogicLexerTokenProcessor : MetaCodeBuilder
         string VarBufferLocal = context.State.ActiveBufferName;
         context.Decrement_Active_Bufffer();
 
-        writer.WriteLine($"private static {TokenValueStructName}[] {FunctionName}({argumentType} {VarBufferMajor})");
+        writer.WriteLine($"private static {stage.OutputType}[] {Get_Function_Name(context)}({argumentType} {VarBufferMajor})");
         writer.WriteLine("{");
         writer.Indent++;
         writer.WriteLine($"var {VarBufferMinor} = {VarBufferMajor};");
@@ -37,7 +37,8 @@ internal class LogicLexerTokenProcessor : MetaCodeBuilder
         writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"var {VarNameProcesserReturn} = {LexerProcessingFunctionName}({VarBufferLocal});");
+        var funcBuilder = (IMetaCodeFunctionBuilder)context.Config.CodeFactory.Get_Parsing_Table_Function();
+        writer.WriteLine($"var {VarNameProcesserReturn} = {funcBuilder.Get_Function_Name(context)}({VarBufferLocal});");
         writer.WriteLine($"if ({VarNameProcesserReturn}.length != default)");
         writer.WriteLine("{");
         writer.Indent++;

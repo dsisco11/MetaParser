@@ -8,7 +8,6 @@ using MetaParser.Parsing.Constructs.Patterns;
 using MetaParser.Parsing.Constructs.Stages;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 
 using System;
 using System.Collections.Generic;
@@ -163,7 +162,7 @@ internal sealed record ParserInterpreter
             var inputType = group.Key == 0 ? _config.InputType : _config.IdType;
             ImmutableHashSet<ConsumerEntity> consumerEntities = group.ToImmutableHashSet();
             List<string> outputValues = new();
-            var stage = new ParsingStageContext(inputType, _config.IdType, outputValues, consumerEntities);
+            var stage = new ParsingStageContext(group.Key, inputType, _config.IdType, outputValues, consumerEntities);
             stages.Add(stage);
         }
         // create the parsing stage contexts
@@ -185,8 +184,8 @@ internal sealed record ParserInterpreter
             Config = _config,
             Registry = registry,
             DepsGraph = DependencyGraph.Build(registry),
-            State = new CodeGenState(new WorkingSet(registry.Tokens)),
-            ParsingStages = stages.ToImmutableArray()
+            Stages = stages.ToImmutableArray(),
+            State = new CodeGenState(stages.First()),
         };
         return context;
     }

@@ -1,13 +1,8 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
-using MetaParser.Parsing.Constructs;
-
-using System;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
-using static CodeCommon;
-
 internal class LogicPatternMatcher : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)

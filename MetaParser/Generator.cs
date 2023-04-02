@@ -184,9 +184,7 @@ public partial class Generator : IIncrementalGenerator
             CodeBuilderFactory codeFactory = context.Config.CodeFactory;
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
             .And(codeFactory.Get_Parsing_Logic())
-            .And(new LogicLexerTokenProcessor())
-            .And(new LogicSyntaxTokenProcessor())
-            .And(new ComplexTokenStage())
+            .And(new GenParsingTableExecutors())
                 .WriteTo(context);
 
             AddSource(spc, $"{context.Config.BaseFileName}.parser.class", context.Writer.InnerWriter.ToString());
@@ -208,13 +206,13 @@ public partial class Generator : IIncrementalGenerator
         }),
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
-            var writer = context.Writer;
+            var writer = context.Writer!;
 
             new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
                 .And(new GenPatternConsumerFunctions())
                 .WriteTo(context);
 
-            AddSource(spc, $"{context.Config.BaseFileName}.consumers", context.Writer.InnerWriter.ToString());
+            AddSource(spc, $"{context.Config.BaseFileName}.consumers", writer.InnerWriter.ToString());
         });
         #endregion
 
@@ -250,80 +248,26 @@ public partial class Generator : IIncrementalGenerator
         });
         #endregion
 
-        #region Constant-Type Tokens
-        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
+        #region Parse Table Executors
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
-            ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).ToArray();
-            return context with 
-            { 
-                State = context.State with 
+            // for each stage in context, generate the parsing table function in a different file for the stage
+            foreach (var stage in context.Stages)
+            {
+                context = context with 
                 { 
-                    Targets = new WorkingSet(consumers) 
-                },
-                Writer = new IndentedTextWriter(new StringWriter())
-            };
-        }),
-        static (SourceProductionContext spc, [NotNull] ParserContext context) =>
-        {
-            var writer = context.Writer;
-
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerKind.Lexer, CodeCommon.LexerProcessingFunctionName);
-            new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
-                .And(consumer)
-                .WriteTo(context);
-
-            AddSource(spc, $"{context.Config.BaseFileName}.tokens.constant", context.Writer.InnerWriter.ToString());
-        });
-        #endregion
-
-        #region Compound-Type Tokens
-        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) => 
-        { 
-            ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && !o.DependencyInfo!.IsRecursive).ToArray();
-            return context with 
-            { 
-                State = context.State with 
-                { 
-                    Targets = new WorkingSet(consumers) 
-                },
-                Writer = new IndentedTextWriter(new StringWriter())
-            };
-        }),
-        static (SourceProductionContext spc, [NotNull] ParserContext context) =>
-        {
-            var writer = context.Writer;
-
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerKind.Syntax, CodeCommon.SyntaxProcessingFunctionName);
-            new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
-                .And(consumer)
-                .WriteTo(context);
-
-            AddSource(spc, $"{context.Config.BaseFileName}.tokens.compound", context.Writer.InnerWriter.ToString());
-        });
-        #endregion
-
-        #region Complex-Type Tokens
-        context.RegisterSourceOutput(ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) => 
-        { 
-            ConsumerEntity[] consumers = context.Registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Syntax && o.DependencyInfo!.IsRecursive).ToArray(); 
-            return context with {
-                State = context.State with
-                {
-                    Targets = new WorkingSet(consumers)
-                },
-                Writer = new IndentedTextWriter(new StringWriter())
-            }; 
-        }),
-        static (SourceProductionContext spc, [NotNull] ParserContext context) =>
-        {
-            var writer = context.Writer;
-
-            var consumer = CodeCommon.Get_Token_Processor_Function_Definition(context, EConsumerKind.Syntax, CodeCommon.ComplexTokenProcessorFunctionName);
-            new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
-                .And(consumer)
-                .WriteTo(context);
-
-            AddSource(spc, $"{context.Config.BaseFileName}.tokens.complex", context.Writer.InnerWriter.ToString());
+                    Writer = new IndentedTextWriter(new StringWriter()),
+                    State = context.State with
+                    {
+                        Stage = stage,
+                        Targets = new WorkingSet(stage.Consumers)
+                    }
+                };
+                new ClassBuilder(CodeCommon.ParserClassModifiers, context.Config.ClassName!)
+                    .And(context.Config.CodeFactory.Get_Parsing_Table_Function())
+                    .WriteTo(context);
+                AddSource(spc, $"{context.Config.BaseFileName}.parsing_table.stage_{stage.Index}", context.Writer.InnerWriter.ToString());
+            }
         });
         #endregion
 

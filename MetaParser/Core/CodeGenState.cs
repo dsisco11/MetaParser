@@ -1,10 +1,13 @@
-﻿namespace MetaParser.Core;
+﻿using MetaParser.Parsing.Constructs.Stages;
+
+namespace MetaParser.Core;
 
 internal record struct CodeGenState
 {
     #region Fields
-    public WorkingSet Targets;
     public int ActiveBuffer;
+    public WorkingSet Targets;
+    public ParsingStageContext Stage;
     #endregion
 
     #region Accessors
@@ -14,9 +17,10 @@ internal record struct CodeGenState
     #endregion
 
     #region Constructors
-    public CodeGenState(WorkingSet targets)
+    public CodeGenState(ParsingStageContext stage)
     {
-        Targets = targets;
+        Stage = stage;
+        Targets = new WorkingSet(stage.Consumers);
     }
     #endregion
 

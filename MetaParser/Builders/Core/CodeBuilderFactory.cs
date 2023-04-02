@@ -11,6 +11,8 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
     protected readonly ParserConfiguration Config;
     private readonly IMetaCodeBuilder _parsing_logic;
     private readonly IMetaCodeBuilder _parsing_struct_builder;
+    private readonly IMetaCodeBuilder _parsing_table_executor;
+    private readonly IMetaCodeBuilder _parsing_table_function;
     private readonly IMetaCodeBuilder _token_processing_logic;
     private readonly IMetaCodeBuilder _token_id_constants_builder;
     private readonly IMetaCodeBuilder _token_id_enum_builder;
@@ -24,6 +26,8 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
         Config = config;
         _parsing_logic = new ParsingLogic();
         _parsing_struct_builder = new ResultStructBuilder();
+        _parsing_table_executor = new FuncParsingTableExecutor();
+        _parsing_table_function = new FuncProcessParserTable();
         _token_processing_logic = new TokenProcessor();
         _token_id_constants_builder = new TokenIDConstBuilder();
         _token_id_enum_builder = new TokenIDEnumBuilder();
@@ -34,6 +38,8 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
 
     public IMetaCodeBuilder Get_Parsing_Logic() => _parsing_logic;
     public IMetaCodeBuilder Get_Parsing_Struct_Builder() => _parsing_struct_builder;
+    public IMetaCodeBuilder Get_Parsing_Table_Executor() => _parsing_table_executor;
+    public IMetaCodeBuilder Get_Parsing_Table_Function() => _parsing_table_function;
 
     public IMetaCodeBuilder Get_Logic_Consumer_Match() => new LogicSingleConsumer();
 
