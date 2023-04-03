@@ -31,7 +31,8 @@ internal static class DependencyGraph
     public static void Simplify_Graph(DirectedGraph graph)
     {
         // we only want to see a graph of our token relationships, so we'll remove everything else from the graph
-        var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token && k.Type != NodeType.Consumer).ToList();
+        //var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token && k.Type != NodeType.Consumer).ToList();
+        var trash = graph.Nodes.Keys.Where(static k => k.Type != NodeType.Token).ToList();
         foreach (var key in trash)
         {
             graph.TryRemove(key);

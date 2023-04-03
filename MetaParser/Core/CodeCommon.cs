@@ -1,5 +1,4 @@
-﻿using MetaParser.Builders.Core;
-using MetaParser.Parsing.Constructs;
+﻿using MetaParser.Parsing.Constructs;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

@@ -17,6 +17,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 using System;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -128,18 +129,48 @@ public partial class Generator : IIncrementalGenerator
             var graph = new DirectedGraph(context.DepsGraph);
             DependencyGraph.Simplify_Graph(graph);
 
-            writer.WriteLine("/*");
-            writer.WriteLine("```mermaid");
-            var mermaidFormatter = new MermaidFormatter(context.Registry, graph);
-            mermaidFormatter.Write(writer, MermaidChartType.Graph);
-            writer.WriteLine("```");
-            writer.WriteLine("*/");
+            var keys = graph.Nodes.Select(x => x.Key).ToList();
+            var hierarchy = new Dictionary<EntityKey, IEnumerable<EntityKey>>();
+            foreach (var key in keys)
+            {
+                var node = graph.Nodes[key];
+                hierarchy[key] = node.Outgoing;
+            }
 
+            MermaidFormatter.Write(writer, MermaidChartType.Graph, keys, hierarchy, (x) => context.Registry.TryGetEntity<TokenEntity>(x, out var entity) ? entity.Name : string.Empty);
             spc.AddSource($"{context.Config.BaseFileName}.dependency_graph.md", writer.InnerWriter.ToString());
         });
-#endif
 
-#if DEBUG
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
+        {
+            context.Writer = new IndentedTextWriter(new StringWriter());
+            var writer = context.Writer;
+            var tree = context.Registry.Tree;
+
+            var hierarchy = new Dictionary<EntityKey, IEnumerable<EntityKey>>();
+            foreach (var key in KeyTreeNodeWalker.Walk(tree.RootNode, KeyTreeNodeWalker.TraversalOrder.BreadthFirst))
+            {
+                var node = tree[key];
+                if (node is not null)
+                {
+                    hierarchy[key] = node.Children.Select(static (x) => x.Value);
+                }
+            }
+
+            MermaidFormatter.Write(writer, MermaidChartType.Graph, hierarchy.Keys, hierarchy, (key) =>
+            {
+                return key.Type switch
+                {
+                    NodeType.None => string.Empty,
+                    NodeType.Data => string.Empty,
+                    NodeType.Pattern => string.Empty,
+                    NodeType.Consumer => string.Empty,
+                    _ => context.Registry.TryGetEntity(key, out var entity) ? RegistryEntityFormatter.Format_Entity_Title(key, entity) : string.Empty
+                };
+            });
+            spc.AddSource($"{context.Config.BaseFileName}.hierarchy_graph.md", writer.InnerWriter.ToString());
+        });
+
         context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };

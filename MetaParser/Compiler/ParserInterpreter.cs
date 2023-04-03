@@ -142,10 +142,10 @@ internal sealed record ParserInterpreter
                         _ => throw new NotImplementedException()
                     };
 
-                    var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, registry);
+                    var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, tokenName, registry);
 
                     // add the consumer to the tree
-                    registry.Tree.AddEdge(tokenEntity.Key, consumerEntity.Key);
+                    registry.Tree.AddEdge(parent: tokenEntity.Key, child: consumerEntity.Key);
                 }
             }
         }
@@ -155,17 +155,15 @@ internal sealed record ParserInterpreter
         _config.IdType = Common.Get_Integer_Type(distinctTokenIds.Count);
 
         var graph = DependencyGraph.Build(registry);
+        var lexerConsumers = registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).ToImmutableHashSet();
+        var stages = new List<ParsingStageContext>();
 
         // Group all consumers in the registry by max node depth and then put each of the groups into a ParsingStageContext object which is linked to the previous one
-        var groups = registry.Consumers.GroupBy(static (x) => x.DependencyInfo.TreeDepth.Max).OrderBy(static (x) => x.Key);
-        var stages = new List<ParsingStageContext>();
+        var groups =registry.Consumers.GroupBy(static (x) => x.Token.DependencyInfo.NodeDepth.Max)
+                                      .OrderBy(static (x) => x.Key);
         foreach (var group in groups)
         {
-            var inputType = group.Key == 0 ? _config.InputType : _config.IdType;
-            ImmutableHashSet<ConsumerEntity> consumerEntities = group.ToImmutableHashSet();
-            List<string> outputValues = new();
-            var stage = new ParsingStageContext(group.Key, inputType, _config.IdType, outputValues, consumerEntities);
-            stages.Add(stage);
+            stages.Add(new ParsingStageContext(group.Key, _config.IdType, _config.IdType, group.ToImmutableHashSet()));
         }
         // create the parsing stage contexts
         for (int i = 0; i < stages.Count; i++)
@@ -277,7 +275,7 @@ internal sealed record ParserInterpreter
                     {
                         Items = new()
                     };
-                    stage.Items[tokenName] = tokenClause;
+                    stage.Items.Add(tokenName, tokenClause);
                 }
 
                 foreach (var defConsumer in defToken)
@@ -338,7 +336,7 @@ internal sealed record ParserInterpreter
                     {
                         Items = new()
                     };
-                    stage.Items[tokenName] = tokenClause;
+                    stage.Items.Add(tokenName, tokenClause);
                 }
 
                 foreach (var defConsumer in defToken)
@@ -396,7 +394,7 @@ internal sealed record ParserInterpreter
                         Name = get_token_alias_for_stage(defToken.Stage, tokenID),
                         Items = new()
                     };
-                    stage.Items[tokenID] = tokenClause;
+                    stage.Items.Add(tokenID, tokenClause);
                 }
 
                 foreach (var defConsumer in defToken)
@@ -410,15 +408,13 @@ internal sealed record ParserInterpreter
                     };
                     tokenClause.Items.Add(consumer);
                 }
-
-                tokenClause.Items.AddRange(defToken.Items);
             }
         }
 
         return stepData;
     }
 
-    private static PatternClause? process_computed_pattern(EParsingStage stage, PatternClause? pattern)
+    private static IPatternClause? process_computed_pattern(EParsingStage stage, IPatternClause? pattern)
     {
         if (pattern is null) return null;
 
@@ -471,7 +467,7 @@ internal sealed record ParserInterpreter
     public static InterpreterStep Process_Used(InterpreterStep Data)
     {
         // deduplication of pattern clauses
-        Dictionary<PatternClause, PatternClause> patterns = new Dictionary<PatternClause, PatternClause>();
+        Dictionary<IPatternClause, IPatternClause> patterns = new Dictionary<IPatternClause, IPatternClause>();
 
         var stepData = new InterpreterStep();
         foreach (var defStage in Data.Stages)
@@ -491,56 +487,63 @@ internal sealed record ParserInterpreter
                     {
                         Items = new()
                     };
-                    stage.Items[tokenID] = tokenClause;
+                    stage.Items.Add(tokenID, tokenClause);
                 }
 
                 foreach (var consumer in defToken)
                 {
-                    var clause = new ConsumerClause();
-
-                    if (consumer.Start is not null)
+                    var clause = new ConsumerClause()
                     {
-                        if (!patterns.TryGetValue(consumer.Start, out var outStart))
-                        {
-                            outStart = consumer.Start;
-                            patterns.Add(consumer.Start, consumer.Start);
-                        }
+                        Start = consumer.Start,
+                        Consume = consumer.Consume,
+                        Stop = consumer.Stop,
+                        Escape = consumer.Escape,
+                    };
 
-                        clause.Start = outStart;
-                    }
+                    //var clause = new ConsumerClause();
+                    //if (consumer.Start is not null)
+                    //{
+                    //    if (!patterns.TryGetValue(consumer.Start, out var outStart))
+                    //    {
+                    //        outStart = consumer.Start;
+                    //        patterns.Add(consumer.Start, consumer.Start);
+                    //    }
 
-                    if (consumer.Consume is not null)
-                    {
-                        if (!patterns.TryGetValue(consumer.Consume, out var outConsume))
-                        {
-                            outConsume = consumer.Consume;
-                            patterns.Add(consumer.Consume, consumer.Consume);
-                        }
+                    //    clause.Start = outStart;
+                    //}
 
-                        clause.Consume = outConsume;
-                    }
+                    //if (consumer.Consume is not null)
+                    //{
+                    //    if (!patterns.TryGetValue(consumer.Consume, out var outConsume))
+                    //    {
+                    //        outConsume = consumer.Consume;
+                    //        patterns.Add(consumer.Consume, consumer.Consume);
+                    //    }
 
-                    if (consumer.Stop is not null)
-                    {
-                        if (!patterns.TryGetValue(consumer.Stop, out var outStop))
-                        {
-                            outStop = consumer.Stop;
-                            patterns.Add(consumer.Stop, consumer.Stop);
-                        }
+                    //    clause.Consume = outConsume;
+                    //}
 
-                        clause.Stop = outStop;
-                    }
+                    //if (consumer.Stop is not null)
+                    //{
+                    //    if (!patterns.TryGetValue(consumer.Stop, out var outStop))
+                    //    {
+                    //        outStop = consumer.Stop;
+                    //        patterns.Add(consumer.Stop, consumer.Stop);
+                    //    }
 
-                    if (consumer.Escape is not null)
-                    {
-                        if (!patterns.TryGetValue(consumer.Escape, out var outEscape))
-                        {
-                            outEscape = consumer.Escape;
-                            patterns.Add(consumer.Escape, consumer.Escape);
-                        }
+                    //    clause.Stop = outStop;
+                    //}
 
-                        clause.Escape = outEscape;
-                    }
+                    //if (consumer.Escape is not null)
+                    //{
+                    //    if (!patterns.TryGetValue(consumer.Escape, out var outEscape))
+                    //    {
+                    //        outEscape = consumer.Escape;
+                    //        patterns.Add(consumer.Escape, consumer.Escape);
+                    //    }
+
+                    //    clause.Escape = outEscape;
+                    //}
 
                     tokenClause.Items.Add(clause);
                 }
@@ -562,12 +565,12 @@ internal sealed record ParserInterpreter
         {
             foreach (var item in stage.Value.Items)
             {
-                var tokenName = item.Key;
                 var token = item.Value;
+                var tokenName = token.Name;
                 if (!mergedTokens.TryGetValue(tokenName, out var tokenList))
                 {
                     tokenList = new List<TokenClause>();
-                    mergedTokens[tokenName] = tokenList;
+                    mergedTokens.Add(tokenName, tokenList);
                 }
                 tokenList.Add(token);
             }

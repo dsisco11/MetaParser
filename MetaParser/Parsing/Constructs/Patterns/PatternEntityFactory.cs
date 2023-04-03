@@ -8,7 +8,7 @@ namespace MetaParser.Parsing.Constructs.Patterns;
 
 internal static class PatternEntityFactory
 {
-    public static PatternEntity Create(PatternClause clause, EntityRegistry registry)
+    public static PatternEntity Create(IPatternClause clause, EntityRegistry registry)
     {
         PatternEntity entity = clause switch
         {
@@ -16,8 +16,8 @@ internal static class PatternEntityFactory
             PatternItemClause item => new PatternConst(registry, item.Value),
 
             PatternSequenceClause sequence when clause.Kind == EPatternKind.Range => new PatternRange(registry,
-                                                                                                      (sequence.Items[0] as PatternItemClause)?.Value ?? string.Empty,
-                                                                                                      (sequence.Items[1] as PatternItemClause)?.Value ?? string.Empty),
+                                                                                                      ((PatternItemClause)sequence.Items[0]).Value,
+                                                                                                      ((PatternItemClause)sequence.Items[1]).Value),
             PatternSequenceClause sequence => new PatternSequence(clause.Kind, registry, sequence.Select(x => Create(x, registry)).ToArray()),
             _ => throw new MetaParserException($"Cannot create pattern from clause of type '{clause.GetType().Name}'")
         };
@@ -30,7 +30,7 @@ internal static class PatternEntityFactory
             // add pattern children to graph & tree
             foreach (var child in group.Items)
             {
-                registry.Tree.AddEdge(child.Key, entity.Key);
+                registry.Tree.AddEdge(parent: entity.Key, child: child.Key);
             }
         }
 

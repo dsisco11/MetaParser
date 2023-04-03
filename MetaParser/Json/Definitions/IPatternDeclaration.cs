@@ -4,5 +4,5 @@ namespace MetaParser.Json.Definitions;
 
 internal interface IPatternDeclaration
 {
-    public PatternClause? Interpret();
+    public IPatternClause? Interpret();
 }

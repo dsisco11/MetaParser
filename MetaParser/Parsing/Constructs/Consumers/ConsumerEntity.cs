@@ -5,7 +5,6 @@ using MetaParser.Parsing.Constructs.Consumers;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace MetaParser.Parsing.Constructs;
@@ -13,6 +12,8 @@ internal record ConsumerEntity : GraphEntity, IComparable<ConsumerEntity>
 {
     #region Fields
     public readonly EConsumerKind Kind;
+    /// <summary>ID of the token which this consumer will output</summary>
+    public readonly string OutputTokenAlias;
     public PatternEntity Start;
     public PatternEntity? Consume;
     public PatternEntity? Stop;
@@ -75,13 +76,14 @@ internal record ConsumerEntity : GraphEntity, IComparable<ConsumerEntity>
     #endregion
 
     #region Constructors
-    public ConsumerEntity(EConsumerKind type, EntityRegistry registry, PatternEntity start, PatternEntity? consume, PatternEntity? stop, PatternEntity? escape) : base(NodeType.Consumer, registry)
+    public ConsumerEntity(EConsumerKind type, EntityRegistry registry, PatternEntity start, PatternEntity? consume, PatternEntity? stop, PatternEntity? escape, string outputTokenAlias) : base(NodeType.Consumer, registry)
     {
         Kind = type;
         Start = start;
         Consume = consume;
         Stop = stop;
         Escape = escape;
+        OutputTokenAlias = outputTokenAlias;
     }
     #endregion
 
@@ -110,10 +112,9 @@ internal record ConsumerEntity : GraphEntity, IComparable<ConsumerEntity>
         }
         else if (IsClosed)
         {// Closed tokens with an ambiguous consume clause are inherently dependent on all other defined tokens as they can consume anything
-            foreach (var token in Registry.Tokens.Except(new[] { Token }))
-            {
-                yield return new EntityLink(Token.Key, token.Key);
-            }
+            // ideally we would link to tokens which are possible inputs to the stage this consumer is in, meaning those whose maximum node depth is less than ours
+            // However; this is not possible as we do not have access to the stage graph at this point
+
         }
 
         if (Stop is not null)

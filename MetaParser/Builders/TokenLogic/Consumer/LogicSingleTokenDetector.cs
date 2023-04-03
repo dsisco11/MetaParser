@@ -44,7 +44,7 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
                 bool first = true;
                 foreach (var pattern in consumer.Consume)
                 {
-                    Debug.Assert(pattern is PatternTokenRef);
+                    //Debug.Assert(pattern is PatternTokenRef);
                     if (!first)
                     {
                         writer.Write(" or ");

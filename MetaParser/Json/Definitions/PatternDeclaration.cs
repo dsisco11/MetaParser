@@ -34,7 +34,7 @@ internal sealed record PatternDeclaration : IPatternDeclaration
     #endregion
 
     #region Interpreting
-    public PatternClause? Interpret()
+    public IPatternClause? Interpret()
     {
         if (value is not null)
         {
@@ -43,7 +43,7 @@ internal sealed record PatternDeclaration : IPatternDeclaration
         else if (oneof is not null)
         {
             var patterns = oneof.Select(o => o.Interpret()!).ToArray();
-            return new PatternSequenceClause(EPatternKind.OneOf, patterns ?? Array.Empty<PatternClause>());
+            return new PatternSequenceClause(EPatternKind.OneOf, patterns ?? Array.Empty<IPatternClause>());
         }
         else if (range is not null)
         {

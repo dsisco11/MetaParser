@@ -1,12 +1,12 @@
 ﻿namespace MetaParser.Compiler.Structs;
 
-internal record ConsumerClause
+internal record struct ConsumerClause
 {
     #region Properties
-    public PatternClause? Start { get; set; }
-    public PatternClause? Consume { get; set; }
-    public PatternClause? Stop { get; set; }
-    public PatternClause? Escape { get; set; }
+    public IPatternClause? Start { get; set; }
+    public IPatternClause? Consume { get; set; }
+    public IPatternClause? Stop { get; set; }
+    public IPatternClause? Escape { get; set; }
     #endregion
 
     #region State

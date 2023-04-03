@@ -20,6 +20,7 @@ internal sealed class KeyTree<T>
     public KeyTree(KeyTreeNode<T> rootNode)
     {
         _rootNode = rootNode;
+        nodes.Add(_rootNode.Value, _rootNode);
     }
 
     private KeyTree(KeyTree<T> other)
@@ -39,7 +40,9 @@ internal sealed class KeyTree<T>
     #region Mutators
     public void Add(T value)
     {
-        nodes.Add(value, new KeyTreeNode<T>(value, _rootNode));
+        var node = new KeyTreeNode<T>(value, _rootNode);
+        nodes.Add(node.Value, node);
+        _rootNode.Add(node);
     }
 
     public void AddEdge(T parent, T child)
@@ -48,6 +51,7 @@ internal sealed class KeyTree<T>
         {
             parentNode = new KeyTreeNode<T>(parent, _rootNode);
             nodes.Add(parent, parentNode);
+            _rootNode.Add(parentNode);
         }
 
         if (nodes.TryGetValue(child, out var childNode))

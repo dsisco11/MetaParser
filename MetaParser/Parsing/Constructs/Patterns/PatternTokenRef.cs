@@ -1,7 +1,9 @@
 ﻿using MetaParser.Core;
 using MetaParser.Exceptions;
+using MetaParser.Graphs;
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MetaParser.Parsing.Constructs;
 
@@ -43,7 +45,9 @@ internal sealed record PatternTokenRef : PatternEntity
             throw new UnknownTokenException(TokenName);
         }
 
-        yield return new EntityLink(Key, token.Key);
+        // find our parent token
+        var parentToken = KeyTreeNodeWalker.Walk(HierarchyNode, static (x) => x.Type == NodeType.Token, KeyTreeNodeWalker.TraversalOrder.Ascending).Single() ?? throw new MetaParserException($"Unable to find parent token for pattern: {this}");
+        yield return new EntityLink(parentToken, token.Key);
     }
 
     public TokenEntity GetToken()

@@ -48,10 +48,10 @@ namespace UnitTestParser
         public const byte Lexer_Identifier = 20;
         public const byte Comment = 21;
         public const byte Lexer_Comment = 21;
-        public const byte Comment = 22;
-        public const byte Syntax_Comment = 22;
-        public const byte Typename = 23;
-        public const byte Syntax_Typename = 23;
+        public const byte Typename = 22;
+        public const byte Syntax_Typename = 22;
+        public const byte Comment = 23;
+        public const byte Syntax_Comment = 23;
         public const byte Declaration = 24;
         public const byte Syntax_Declaration = 24;
         public const byte Codeblock = 25;

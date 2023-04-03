@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace MetaParser.Parsing.Constructs.Stages;
 
@@ -16,18 +17,18 @@ internal sealed record ParsingStageContext
     public readonly int Index;
     public readonly TypeSyntax InputType;
     public readonly TypeSyntax OutputType;
-    public readonly ImmutableHashSet<string> Outputs;
     public readonly ImmutableArray<ConsumerEntity> Consumers;
     #endregion
 
     #region Accessors
-    public ImmutableHashSet<string> Inputs => Head?.Outputs ?? ImmutableHashSet<string>.Empty;
+    public ImmutableHashSet<string> Outputs => Consumers.Select(static x => x.OutputTokenAlias).ToImmutableHashSet();
+    public bool IsHead => Head is null;
+    public bool IsTail => Tail is null;
     #endregion
 
     #region Constructors
-    public ParsingStageContext(int index, TypeSyntax inputType, TypeSyntax outputType, IEnumerable<string> outputs, IEnumerable<ConsumerEntity> consumers)
+    public ParsingStageContext(int index, TypeSyntax inputType, TypeSyntax outputType, IEnumerable<ConsumerEntity> consumers)
     {
-        Outputs = outputs.ToImmutableHashSet();
         Consumers = consumers.ToImmutableArray();
         InputType = inputType;
         OutputType = outputType;

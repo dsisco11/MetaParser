@@ -1,29 +1,17 @@
-﻿using MetaParser.Core;
-using MetaParser.Graphs;
-using MetaParser.Parsing.Constructs;
+﻿using MetaParser.Graphs;
 
-using Microsoft.CodeAnalysis.CSharp;
-
+using System;
 using System.CodeDom.Compiler;
-using System.Linq;
-
-using static MetaParser.Graphs.DirectedGraph;
+using System.Collections.Generic;
 
 namespace MetaParser.Mermaid;
 
-internal class MermaidFormatter
+internal static class MermaidFormatter
 {
-    private DirectedGraph Graph;
-    private EntityRegistry Registry;
-
-    public MermaidFormatter(EntityRegistry registry, DirectedGraph graph)
+    public static void Write(IndentedTextWriter writer, MermaidChartType chartType, IEnumerable<EntityKey> Nodes, IReadOnlyDictionary<EntityKey, IEnumerable<EntityKey>> Hierarchy, Func<EntityKey, string>? nodeTitleFormatter = null)
     {
-        Graph = graph;
-        Registry = registry;
-    }
-
-    public void Write(IndentedTextWriter writer, MermaidChartType chartType)
-    {
+        writer.WriteLine("/*");
+        writer.WriteLine("```mermaid");
         writer.WriteLine(chartType switch
         {
             MermaidChartType.Graph => "graph LR",
@@ -32,96 +20,39 @@ internal class MermaidFormatter
             _ => throw new System.NotImplementedException(),
         });
 
-        Write_Node_Definitions(writer, chartType);
-        Write_Node_Links(writer, chartType);
-    }
-
-    void Write_Node_Definitions(IndentedTextWriter writer, MermaidChartType chartType)
-    {
-        foreach (var entry in Graph.Nodes)
+        // First, write out all of the defined nodes
+        foreach (var node in Nodes)
         {
-            Write_Definition(writer, chartType, entry.Key, entry.Value);
-        }
-    }
-
-    void Write_Definition(IndentedTextWriter writer, MermaidChartType chartType, EntityKey Key, Node node)
-    {
-        if (!node.Incoming.Any() && !node.Outgoing.Any())
-        {
-            return;
-        }
-
-        switch (Key.Type)
-        {
-            case NodeType.Data:
-                break;
-            case NodeType.Pattern:
+            if (nodeTitleFormatter is not null)
+            {
+                string nodeTitle = nodeTitleFormatter(node);
+                if (!string.IsNullOrEmpty(nodeTitle))
                 {
-                    if (!node.Incoming.Any())
-                    {
-                        break;
-                    }
-
-                    writer.Write(Key);
-                    if (Registry.TryGetEntity(Key, out var patternEntity))
-                    {
-                        writer.Write("(");
-                        writer.Write(Get_Pattern_Contents(chartType, (PatternEntity)patternEntity));
-                        writer.Write(")");
-
-                    }
+                    writer.Write(node);
+                    writer.Write(@"[""");
+                    writer.Write(nodeTitle);
+                    writer.Write(@"""]");
                     writer.WriteLine();
+                    continue;
                 }
-                break;
-            case NodeType.Consumer:
-                {
-                    if (node.Incoming.Any())
-                    {
-                        writer.WriteLine($@"{Key}{{""{Key.Index}""}}");
-                    }
-                }
-                break;
-            case NodeType.Token:
-                {
-                    writer.Write(Key);
-                    if (Registry.TryGetEntity(Key, out var tokenEntity))
-                    {
-                        writer.Write(@"[""");
-                        writer.Write(((TokenEntity)tokenEntity).Name);
-                        writer.Write(@"""]");
-                    }
-                    writer.WriteLine();
-                }
-                break;
+            }
+
+            writer.WriteLine(node);
         }
-    }
 
-    string Get_Pattern_Contents(MermaidChartType chartType, PatternEntity pattern)
-    {
-        return pattern switch
+        // Last, write out all of the node hierarchal relationships
+        foreach (var entry in Hierarchy)
         {
-            PatternConst c => $@"{SymbolDisplay.FormatLiteral(c.Value, true)}",
-            PatternRange r => $"[{r.Begin}, {r.End}]",
-            PatternSequence g => $@"""{{{g.Key.Index}}}""",
-            PatternTokenRef t => $@"""#{t.TokenName}""",
-            _ => throw new System.NotImplementedException(),
-        };
-    }
-
-    void Write_Node_Links(IndentedTextWriter writer, MermaidChartType chartType)
-    {
-        var resolved = Graph.Resolve();
-
-        // output all resolved nodes in mermaid entity diagram format
-        foreach (var entry in resolved)
-        {
-            foreach (var entityKey in entry.Value.Outgoing)
+            foreach (var child in entry.Value)
             {
                 writer.Write(entry.Key);
                 writer.Write(" --> ");
-                writer.Write(entityKey);
+                writer.Write(child);
                 writer.WriteLine();
             }
         }
+
+        writer.WriteLine("```");
+        writer.WriteLine("*/");
     }
 }

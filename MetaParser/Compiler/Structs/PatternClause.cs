@@ -1,29 +1,94 @@
 ﻿using MetaParser.Parsing.Constructs;
-
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace MetaParser.Compiler.Structs;
 
-
-/// <summary>
-/// Represents an abstract pattern which can be used to create a matching sequence
-/// </summary>
-internal abstract record PatternClause : IEnumerable<PatternClause>
+internal record struct PatternItemClause : IPatternClause
 {
-    public abstract EPatternKind Kind { get; }
-    public abstract IEnumerator<PatternClause> GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    #region Fields
+    private readonly EPatternKind _kind = EPatternKind.Literal;
+    #endregion
 
-    /// <summary> Indicates whether the pattern is resolvable, meaning it can be represented as a simpler item </summary>
-    public bool IsReducible => this.Any(x => x.Kind == Kind || x.IsReducible);
+    #region Properties
+    public EPatternKind Kind => _kind;
+    public string Value { get; set; }
+    #endregion
 
-    public PatternClause Reduce()
+    #region Constructors
+    public PatternItemClause(EPatternKind kind, string value)
+    {
+        Value = value;
+        this._kind = kind;
+    }
+    #endregion
+    public bool IsReducible => false;
+    public IPatternClause Reduce() => this;
+
+    public IEnumerator<IPatternClause> GetEnumerator()
+    {
+        yield break;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        yield break;
+    }
+}
+
+internal record PatternSequenceClause : IPatternClause
+{
+    #region Fields
+    private readonly EPatternKind _kind;
+    #endregion
+
+    #region Properties
+    public EPatternKind Kind => _kind; 
+    public List<IPatternClause> Items { get; private set; }
+    #endregion
+
+    #region Constructors
+    public PatternSequenceClause(EPatternKind condition, List<IPatternClause> items)
+    {
+        _kind = condition;
+        Items = items;
+    }
+
+    public PatternSequenceClause(EPatternKind condition, IEnumerable<IPatternClause> items)
+    {
+        _kind = condition;
+        Items = new(items);
+    }
+
+    public PatternSequenceClause(EPatternKind condition, params IPatternClause[] items)
+    {
+        _kind = condition;
+        Items = new(items);
+    }
+    #endregion
+
+    public IEnumerator<IPatternClause> GetEnumerator() => Items.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => Items.GetEnumerator();
+
+    public bool IsReducible
+    {
+        get
+        {
+            foreach (IPatternClause clause in Items)
+            {
+                if (clause.IsReducible || clause.Kind == _kind)
+                    return true;
+            }
+
+            return false;
+        }
+    }
+
+    public IPatternClause Reduce()
     {
         if (IsReducible)
         {
-            var reduced = new List<PatternClause>();
+            var reduced = new List<IPatternClause>();
             foreach (var item in this)
             {
                 if (item.IsReducible)
@@ -32,7 +97,14 @@ internal abstract record PatternClause : IEnumerable<PatternClause>
                 }
                 else if (item.Kind == Kind)
                 {
-                    reduced.AddRange(item);
+                    if (item is PatternSequenceClause seq)
+                    {
+                        reduced.AddRange(seq.Items);
+                    }
+                    else
+                    {
+                        reduced.AddRange(item);
+                    }
                 }
                 else
                 {
@@ -45,63 +117,5 @@ internal abstract record PatternClause : IEnumerable<PatternClause>
         {
             return this;
         }
-    }
-}
-
-internal record PatternItemClause : PatternClause
-{
-    #region Fields
-    private readonly EPatternKind kind = EPatternKind.Literal;
-    #endregion
-
-    #region Properties
-    public override EPatternKind Kind => kind;
-    public string Value { get; set; }
-    #endregion
-
-    #region Constructors
-    public PatternItemClause(EPatternKind kind, string value)
-    {
-        Value = value;
-        this.kind = kind;
-    }
-    #endregion
-
-    public override IEnumerator<PatternClause> GetEnumerator()
-    {
-        yield break;
-    }
-}
-
-internal record PatternSequenceClause : PatternClause
-{
-    #region Properties
-    public override EPatternKind Kind { get; }
-    public List<PatternClause> Items { get; set; }
-    #endregion
-
-    #region Constructors
-    public PatternSequenceClause(EPatternKind condition, List<PatternClause> items)
-    {
-        Kind = condition;
-        Items = items;
-    }
-
-    public PatternSequenceClause(EPatternKind condition, IEnumerable<PatternClause> items)
-    {
-        Kind = condition;
-        Items = new (items);
-    }
-
-    public PatternSequenceClause(EPatternKind condition, params PatternClause[] items)
-    {
-        Kind = condition;
-        Items = new (items);
-    }
-    #endregion
-
-    public override IEnumerator<PatternClause> GetEnumerator()
-    {
-        return Items.GetEnumerator();
     }
 }
