@@ -8,9 +8,9 @@ internal class GenParsingTableExecutors : MetaCodeBuilder
     {
         foreach (var stage in context.Stages)
         {
-            context.State.Stage = stage;
+            var ctx = context with { State = context.State with { Stage = stage } };
             context.Config.CodeFactory.Get_Parsing_Table_Executor()
-                                      .WriteTo(context);
+                                      .WriteTo(ctx);
         }
     }
 }

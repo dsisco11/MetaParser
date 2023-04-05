@@ -1,6 +1,8 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
 
+using System;
+
 namespace MetaParser.Builders.Parser;
 using static CodeCommon;
 
@@ -10,16 +12,17 @@ internal class UnknownTokenPusher : MetaCodeBuilder
 
     protected override void Write(ParserContext context)
     {
-        var wr = context.Writer;
-        wr.WriteLine($"if ({context.State.ActiveBufferName}.Length != {context.State.NextBufferName}.Length)");
-        wr.WriteLine("{");
-        wr.Indent++;
-        wr.WriteLine($"var unk_content_size = {context.State.ActiveBufferName}.Length - {context.State.NextBufferName}.Length;");
-        wr.WriteLine($"var unk_content = {context.State.ActiveBufferName}.Slice(0, unk_content_size);");
-        wr.WriteLine($"results.Add(new {TokenValueStructName}({Format_Token_Id_Const_Ref(UnknownToken)}, unk_content));");
-        wr.WriteLine($"{context.State.ActiveBufferName} = {context.State.ActiveBufferName}.Slice(unk_content_size);");
-        wr.WriteLine($"{context.State.NextBufferName} = {context.State.ActiveBufferName}.Span;");
-        wr.Indent--;
-        wr.WriteLine("}");
+        var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
+
+        writer.WriteLine($"if ({context.State.ActiveBufferName}.Length != {context.State.NextBufferName}.Length)");
+        writer.WriteLine("{");
+        writer.Indent++;
+        writer.WriteLine($"var unk_content_size = {context.State.ActiveBufferName}.Length - {context.State.NextBufferName}.Length;");
+        writer.WriteLine($"var unk_content = {context.State.ActiveBufferName}.Slice(0, unk_content_size);");
+        writer.WriteLine($"results.Add(new {TokenValueStructName}({Format_Token_Id_Const_Ref(UnknownToken)}, unk_content));");
+        writer.WriteLine($"{context.State.ActiveBufferName} = {context.State.ActiveBufferName}.Slice(unk_content_size);");
+        writer.WriteLine($"{context.State.NextBufferName} = {context.State.ActiveBufferName}.Span;");
+        writer.Indent--;
+        writer.WriteLine("}");
     }
 }

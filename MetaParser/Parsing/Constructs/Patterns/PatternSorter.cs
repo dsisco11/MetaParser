@@ -82,6 +82,11 @@ internal class PatternSorter : IComparer<PatternEntity>
             return left.MinConditions.CompareTo(right.MinConditions);
         }
 
-        return 0;
+        if (left is PatternConst leftConst && right is PatternConst rightConst)
+        {
+            return string.Compare(leftConst.Value, rightConst.Value, System.StringComparison.Ordinal);
+        }
+
+        return left.Key.CompareTo(right.Key);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
+
+using System;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
@@ -15,7 +17,7 @@ internal class LogicConsumerSwitchBlock : MetaCodeBuilder
         // assert that all consumers are of the same type
         //Debug.Assert(context.State.Targets.Consumers.All(c => c.Type == context.State.Targets.Consumers[0].Type));
 
-        var writer = context.Writer;
+        var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
         var workContext = context with {};
 
         writer.WriteLine($"return {context.State.ActiveBufferName} switch");

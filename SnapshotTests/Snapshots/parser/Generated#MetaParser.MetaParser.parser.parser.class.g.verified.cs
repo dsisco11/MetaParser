@@ -11,128 +11,128 @@ namespace UnitTestParser
             return buffer3;
             
         }
-        private static global::System.Collections.Generic.List<byte> Execute_Parsing_Table_0(global::System.ReadOnlyMemory<byte> buffer3)
+        private static global::System.Collections.Generic.List<byte> Execute_Parsing_Table_0(global::System.ReadOnlyMemory<byte> buffer0)
         {
-                var buffer4 = buffer3;
-                var buffer5 = buffer4.Span;
+                var buffer1 = buffer0;
+                var buffer2 = buffer1.Span;
                 var results = new global::System.Collections.Generic.List<byte>();
                 
-                while (buffer5.Length > 0)
+                while (buffer2.Length > 0)
                 {
-                    var processed = process_parser_table_0(buffer5);
+                    var processed = process_parser_table_0(buffer2);
                     if (processed.length != default)
                     {
-                        if (buffer4.Length != buffer5.Length)
+                        if (buffer1.Length != buffer2.Length)
                         {
-                            var unk_content_size = buffer4.Length - buffer5.Length;
-                            var unk_content = buffer4.Slice(0, unk_content_size);
+                            var unk_content_size = buffer1.Length - buffer2.Length;
+                            var unk_content = buffer1.Slice(0, unk_content_size);
                             results.Add(new ValueToken(TokenId.Unknown, unk_content));
-                            buffer4 = buffer4.Slice(unk_content_size);
-                            buffer5 = buffer4.Span;
+                            buffer1 = buffer1.Slice(unk_content_size);
+                            buffer2 = buffer1.Span;
                         }
                         
-                        var consumed = buffer4.Slice(0, processed.length);
+                        var consumed = buffer1.Slice(0, processed.length);
                         results.Add( new ValueToken(processed.id, consumed) );
-                        buffer4 = buffer4.Slice(processed.length);
-                        buffer5 = buffer4.Span;
+                        buffer1 = buffer1.Slice(processed.length);
+                        buffer2 = buffer1.Span;
                     }
                     else
                     {
-                        buffer5 = buffer5.Slice(1);
+                        buffer2 = buffer2.Slice(1);
                     }
                 }
                 
-                if (buffer4.Length != buffer5.Length)
+                if (buffer1.Length != buffer2.Length)
                 {
-                    var unk_content_size = buffer4.Length - buffer5.Length;
-                    var unk_content = buffer4.Slice(0, unk_content_size);
+                    var unk_content_size = buffer1.Length - buffer2.Length;
+                    var unk_content = buffer1.Slice(0, unk_content_size);
                     results.Add(new ValueToken(TokenId.Unknown, unk_content));
-                    buffer4 = buffer4.Slice(unk_content_size);
-                    buffer5 = buffer4.Span;
+                    buffer1 = buffer1.Slice(unk_content_size);
+                    buffer2 = buffer1.Span;
                 }
                 
                 return results.ToArray();
             }
-            private static global::System.Collections.Generic.List<byte> Execute_Parsing_Table_1(global::System.ReadOnlyMemory<byte> buffer4)
+            private static global::System.Collections.Generic.List<byte> Execute_Parsing_Table_1(global::System.ReadOnlyMemory<byte> buffer0)
             {
-                    var buffer5 = buffer4;
-                    var buffer6 = buffer5.Span;
+                    var buffer1 = buffer0;
+                    var buffer2 = buffer1.Span;
                     var results = new global::System.Collections.Generic.List<byte>();
                     
-                    while (buffer6.Length > 0)
+                    while (buffer2.Length > 0)
                     {
-                        var processed = process_parser_table_1(buffer6);
+                        var processed = process_parser_table_1(buffer2);
                         if (processed.length != default)
                         {
-                            if (buffer5.Length != buffer6.Length)
+                            if (buffer1.Length != buffer2.Length)
                             {
-                                var unk_content_size = buffer5.Length - buffer6.Length;
-                                var unk_content = buffer5.Slice(0, unk_content_size);
+                                var unk_content_size = buffer1.Length - buffer2.Length;
+                                var unk_content = buffer1.Slice(0, unk_content_size);
                                 results.Add(new ValueToken(TokenId.Unknown, unk_content));
-                                buffer5 = buffer5.Slice(unk_content_size);
-                                buffer6 = buffer5.Span;
+                                buffer1 = buffer1.Slice(unk_content_size);
+                                buffer2 = buffer1.Span;
                             }
                             
-                            var consumed = buffer5.Slice(0, processed.length);
+                            var consumed = buffer1.Slice(0, processed.length);
                             results.Add( new ValueToken(processed.id, consumed) );
-                            buffer5 = buffer5.Slice(processed.length);
-                            buffer6 = buffer5.Span;
+                            buffer1 = buffer1.Slice(processed.length);
+                            buffer2 = buffer1.Span;
                         }
                         else
                         {
-                            buffer6 = buffer6.Slice(1);
+                            buffer2 = buffer2.Slice(1);
                         }
                     }
                     
-                    if (buffer5.Length != buffer6.Length)
+                    if (buffer1.Length != buffer2.Length)
                     {
-                        var unk_content_size = buffer5.Length - buffer6.Length;
-                        var unk_content = buffer5.Slice(0, unk_content_size);
+                        var unk_content_size = buffer1.Length - buffer2.Length;
+                        var unk_content = buffer1.Slice(0, unk_content_size);
                         results.Add(new ValueToken(TokenId.Unknown, unk_content));
-                        buffer5 = buffer5.Slice(unk_content_size);
-                        buffer6 = buffer5.Span;
+                        buffer1 = buffer1.Slice(unk_content_size);
+                        buffer2 = buffer1.Span;
                     }
                     
                     return results.ToArray();
                 }
-                private static global::System.Collections.Generic.List<byte> Execute_Parsing_Table_2(global::System.ReadOnlyMemory<byte> buffer5)
+                private static global::System.Collections.Generic.List<byte> Execute_Parsing_Table_2(global::System.ReadOnlyMemory<byte> buffer0)
                 {
-                        var buffer6 = buffer5;
-                        var buffer7 = buffer6.Span;
+                        var buffer1 = buffer0;
+                        var buffer2 = buffer1.Span;
                         var results = new global::System.Collections.Generic.List<byte>();
                         
-                        while (buffer7.Length > 0)
+                        while (buffer2.Length > 0)
                         {
-                            var processed = process_parser_table_2(buffer7);
+                            var processed = process_parser_table_2(buffer2);
                             if (processed.length != default)
                             {
-                                if (buffer6.Length != buffer7.Length)
+                                if (buffer1.Length != buffer2.Length)
                                 {
-                                    var unk_content_size = buffer6.Length - buffer7.Length;
-                                    var unk_content = buffer6.Slice(0, unk_content_size);
+                                    var unk_content_size = buffer1.Length - buffer2.Length;
+                                    var unk_content = buffer1.Slice(0, unk_content_size);
                                     results.Add(new ValueToken(TokenId.Unknown, unk_content));
-                                    buffer6 = buffer6.Slice(unk_content_size);
-                                    buffer7 = buffer6.Span;
+                                    buffer1 = buffer1.Slice(unk_content_size);
+                                    buffer2 = buffer1.Span;
                                 }
                                 
-                                var consumed = buffer6.Slice(0, processed.length);
+                                var consumed = buffer1.Slice(0, processed.length);
                                 results.Add( new ValueToken(processed.id, consumed) );
-                                buffer6 = buffer6.Slice(processed.length);
-                                buffer7 = buffer6.Span;
+                                buffer1 = buffer1.Slice(processed.length);
+                                buffer2 = buffer1.Span;
                             }
                             else
                             {
-                                buffer7 = buffer7.Slice(1);
+                                buffer2 = buffer2.Slice(1);
                             }
                         }
                         
-                        if (buffer6.Length != buffer7.Length)
+                        if (buffer1.Length != buffer2.Length)
                         {
-                            var unk_content_size = buffer6.Length - buffer7.Length;
-                            var unk_content = buffer6.Slice(0, unk_content_size);
+                            var unk_content_size = buffer1.Length - buffer2.Length;
+                            var unk_content = buffer1.Slice(0, unk_content_size);
                             results.Add(new ValueToken(TokenId.Unknown, unk_content));
-                            buffer6 = buffer6.Slice(unk_content_size);
-                            buffer7 = buffer6.Span;
+                            buffer1 = buffer1.Slice(unk_content_size);
+                            buffer2 = buffer1.Span;
                         }
                         
                         return results.ToArray();

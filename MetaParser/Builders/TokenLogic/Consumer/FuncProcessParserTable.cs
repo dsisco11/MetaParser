@@ -3,6 +3,7 @@ using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
 using Microsoft.CodeAnalysis.CSharp;
 
+using System;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
@@ -26,11 +27,11 @@ internal class FuncProcessParserTable : MetaCodeBuilder, IMetaCodeFunctionBuilde
         definition.WriteTo(context);
     }
 
-    private class FunctionLogic : MetaCodeBuilder
+    private class FunctionLogic : FunctionBodyBuilder
     {
         protected override void Write(ParserContext context)
         {
-            var writer = context.Writer!;
+            var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
 
             var groups = context.State.Targets.Consumers.GroupBy(static c => c.DependencyInfo!.IsRecursive && c.Consume is not null);
 

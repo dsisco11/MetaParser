@@ -8,9 +8,11 @@ namespace UnitTestParser
             return buffer0 switch
             {
                 [TokenId.Keyword_Var, ..] => true,
+                [TokenId.Keyword_Vars, ..] => true,
                 [TokenId.Keyword_Byte, ..] => true,
                 [TokenId.Keyword_Short, ..] => true,
                 [TokenId.Keyword_Int, ..] => true,
+                [TokenId.Keyword_Uint, ..] => true,
                 [TokenId.Keyword_Float, ..] => true,
                 _ => false
             };
@@ -19,8 +21,8 @@ namespace UnitTestParser
         {
             return buffer0 switch
             {
-                [TokenId.Char_Solidus, TokenId.Char_Asterisk, ..] => true,
                 [TokenId.Char_Solidus, TokenId.Char_Solidus, ..] => true,
+                [TokenId.Char_Solidus, TokenId.Char_Asterisk, ..] => true,
                 _ => false
             };
         }

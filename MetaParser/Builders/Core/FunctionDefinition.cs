@@ -36,7 +36,7 @@ internal class FunctionDefinition : MetaCodeBuilder
 
     protected override void Write(ParserContext context)
     {
-        var writer = context.Writer;
+        var writer = context.Writer ?? throw new System.InvalidOperationException("Writer is null");
         if (Modifiers is not null)
         {
             foreach (var mod in Modifiers)
@@ -60,7 +60,7 @@ internal class FunctionDefinition : MetaCodeBuilder
         writer.WriteLine("{");
         writer.Indent++;
 
-        WriteContent(context);
+        WriteContent(context with { State = context.State with { ActiveBuffer = 0 } } );
 
         writer.Indent--;
         writer.WriteLine("}");

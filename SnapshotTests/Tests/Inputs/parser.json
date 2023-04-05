@@ -5,8 +5,17 @@
     {
       "$type": "lexer",
       "consumers": {
+        "whitespace": {
+          "consume": [ " ", "\t", "\f" ]
+        },
+        "newline": {
+          "consume": [ "\r", "\n" ]
+        },
         "keyword_var": {
           "start": "var"
+        },
+        "keyword_vars": {
+          "start": "vars"
         },
         "keyword_function": {
           "start": "function"
@@ -19,6 +28,9 @@
         },
         "keyword_int": {
           "start": "int"
+        },
+        "keyword_uint": {
+          "start": "uint"
         },
         "keyword_float": {
           "start": "float"
@@ -56,14 +68,8 @@
         "char_reverse_solidus": {
           "start": "\\"
         },
-        "whitespace": {
-          "consume": [ " ", "\t", "\f" ]
-        },
         "digits": {
           "consume": { "range": [ "0", "9" ] }
-        },
-        "newline": {
-          "consume": [ "\r", "\n" ]
         },
         "identifier": [
           {
@@ -106,6 +112,9 @@
             "start": "keyword_var"
           },
           {
+            "start": "keyword_vars"
+          },
+          {
             "start": "keyword_byte"
           },
           {
@@ -113,6 +122,9 @@
           },
           {
             "start": "keyword_int"
+          },
+          {
+            "start": "keyword_uint"
           },
           {
             "start": "keyword_float"

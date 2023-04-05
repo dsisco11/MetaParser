@@ -10,7 +10,7 @@ namespace MetaParser.Core;
 /// <summary>
 /// Holds a list of tokens, consumers, or patterns that are being targeted by the current action
 /// </summary>
-internal record WorkingSet
+internal sealed record WorkingSet
 {
     #region Properties
     public TokenEntity[] Tokens { get; set; } = Array.Empty<TokenEntity>();

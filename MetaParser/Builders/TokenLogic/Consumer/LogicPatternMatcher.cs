@@ -1,5 +1,7 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
+
+using System;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
@@ -7,7 +9,7 @@ internal class LogicPatternMatcher : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)
     {
-        var writer = context.Writer;
+        var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
         var pattern = context.State.Targets.Patterns.Single();
 
         if (!pattern.IsInlinable && pattern.IsConditional && pattern.Length == 1)

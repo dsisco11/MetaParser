@@ -3,6 +3,8 @@ using MetaParser.Core;
 
 using Microsoft.CodeAnalysis.CSharp;
 
+using System;
+
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
 
@@ -10,7 +12,7 @@ internal class ParsingLogic : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)
     {
-        var writer = context.Writer!;
+        var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
 
         var tyInputBuffer = SyntaxFactory.ParseTypeName($"{ReadOnlyMemory}<{context.Config.InputType}>");
         var tyTokenList = SyntaxFactory.ParseTypeName($"{TokenRecordTypeName}[]");

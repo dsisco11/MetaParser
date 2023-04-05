@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 
 namespace MetaParser.Core;
 
-internal sealed record ParserContext : ICodeBuilderContext
+internal record struct ParserContext : ICodeBuilderContext
 {
     #region Fields
     private EntityRegistry? _registry;

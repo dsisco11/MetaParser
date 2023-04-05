@@ -7,7 +7,7 @@ namespace UnitTestParser
         {
             return buffer0 switch
             {
-                [TokenId.Char_Open_Bracket, ..] => consume_pattern_31(buffer0),
+                [TokenId.Char_Open_Bracket, ..] => consume_pattern_35(buffer0),
                 _ => new (default, default)
             };
             

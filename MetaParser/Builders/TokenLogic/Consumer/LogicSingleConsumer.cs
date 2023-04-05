@@ -18,7 +18,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
         context = context with { };
         context.Increment_Active_Bufffer();
 
-        var writer = context.Writer;
+        var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
         var consumer = context.State.Targets.Consumers.Single();
         var detectionContext = context with { State = context.State with { Targets = new(new PatternEntity[1]) } };
 
@@ -181,7 +181,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
 
     static void write_debug_header(ParserContext context)
     {
-        var writer = context.Writer;
+        var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
         var consumer = context.State.Targets.Consumers.Single();
 
         writer.WriteLine($"/*");

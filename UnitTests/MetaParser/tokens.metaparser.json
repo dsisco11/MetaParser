@@ -5,8 +5,17 @@
     {
       "$type": "lexer",
       "consumers": {
+        "whitespace": {
+          "consume": [ " ", "\t", "\f" ]
+        },
+        "newline": {
+          "consume": [ "\r", "\n" ]
+        },
         "keyword_var": {
           "start": "var"
+        },
+        "keyword_vars": {
+          "start": "vars"
         },
         "keyword_function": {
           "start": "function"
@@ -19,6 +28,9 @@
         },
         "keyword_int": {
           "start": "int"
+        },
+        "keyword_uint": {
+          "start": "uint"
         },
         "keyword_float": {
           "start": "float"
@@ -50,20 +62,23 @@
         "char_asterisk": {
           "start": "*"
         },
+        "char_at_symbol": {
+          "start": "@"
+        },
+        "char_single_quote": {
+          "start": "'"
+        },
+        "char_double_quote": {
+          "start": "\""
+        },
         "char_solidus": {
           "start": "/"
         },
         "char_reverse_solidus": {
           "start": "\\"
         },
-        "whitespace": {
-          "consume": [ " ", "\t", "\f" ]
-        },
         "digits": {
           "consume": { "range": [ "0", "9" ] }
-        },
-        "newline": {
-          "consume": [ "\r", "\n" ]
         },
         "identifier": [
           {
@@ -106,6 +121,9 @@
             "start": "keyword_var"
           },
           {
+            "start": "keyword_vars"
+          },
+          {
             "start": "keyword_byte"
           },
           {
@@ -115,7 +133,36 @@
             "start": "keyword_int"
           },
           {
+            "start": "keyword_uint"
+          },
+          {
             "start": "keyword_float"
+          }
+        ],
+        "string_single_line": [
+          {
+            "start": [ "char_single_quote" ],
+            "consume": { "not": "newline" },
+            "stop": [ "char_single_quote" ],
+            "escape": [ "char_reverse_solidus" ]
+          },
+          {
+            "start": [ "char_double_quote" ],
+            "consume": { "not": "newline" },
+            "stop": [ "char_double_quote" ],
+            "escape": [ "char_reverse_solidus" ]
+          }
+        ],
+        "string_multi_line": [
+          {
+            "start": [ "char_at_symbol", "char_single_quote" ],
+            "stop": [ "char_single_quote" ],
+            "escape": [ "char_reverse_solidus" ]
+          },
+          {
+            "start": [ "char_at_symbol", "char_double_quote" ],
+            "stop": [ "char_double_quote" ],
+            "escape": [ "char_reverse_solidus" ]
           }
         ],
         "comment": [

@@ -2,6 +2,7 @@
 using MetaParser.Core;
 using MetaParser.Parsing.Constructs;
 
+using System;
 using System.Diagnostics;
 using System.Linq;
 
@@ -12,7 +13,7 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)
     {
-        var writer = context.Writer;
+        var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
 
         writer.WriteLine($"return {context.State.ActiveBufferName} switch");
         writer.WriteLine("{");

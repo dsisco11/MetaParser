@@ -27,7 +27,7 @@ internal class FuncParsingTableExecutor : MetaCodeBuilder, IMetaCodeFunctionBuil
         definition.WriteTo(context);
     }
 
-    private class FunctionLogic : MetaCodeBuilder
+    private class FunctionLogic : FunctionBodyBuilder
     {
         protected override void Write(ParserContext context)
         {
