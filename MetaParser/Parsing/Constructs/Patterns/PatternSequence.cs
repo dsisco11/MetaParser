@@ -1,4 +1,5 @@
 ﻿using MetaParser.Core;
+
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,12 +30,13 @@ internal record PatternSequence : PatternEntity, IEnumerable<PatternEntity>
         };
     }
 
-    public override bool IsSequence => Items.Length > 0;
+    public override bool IsSequence => Items.Length > 1;
     public override int Length
     {
         get => Kind switch
         {
             EPatternKind.OneOf => Items.Length > 0 ? Items.Min(static (x) => x.Length) : 0,// a 'oneof' is the minimum length of all items
+            EPatternKind.AllOf => Items.Sum(static (x) => x.Length),// sequences which do not represent an open set of possibilities, are the sum of all items condition lengths
             _ => Items.Length// most sequence lengths are the sum of all items
         };
     }
@@ -66,7 +68,10 @@ internal record PatternSequence : PatternEntity, IEnumerable<PatternEntity>
             if (Items.Length == 1) return Items[0].MinConditions;
             return Kind switch
             {
-                EPatternKind.OneOf => Items.Min(static (x) => x.MinConditions),// a 'oneof' is the minimum number of conditions of all items
+                // when pattern is a 'oneof' then the minimum number of conditions is the number of items which are not sequences, plus the minimum number of conditions of all sequences
+                EPatternKind.OneOf when Items.Length == 1 && Items[0] is not PatternSequence => 0,
+                EPatternKind.OneOf when Items.Length == 1 && Items[0] is PatternSequence s => s.MinConditions,
+                EPatternKind.OneOf => Items.Count(static (x) => x is not PatternSequence) + Items.Min(static (x) => x is PatternSequence s ? s.MinConditions : 0),
                 _ => Items.Sum(static (x) => x.MinConditions)// sequences which do not represent an open set of possibilities, are the sum of all items condition lengths
             };
         }
@@ -79,7 +84,10 @@ internal record PatternSequence : PatternEntity, IEnumerable<PatternEntity>
             if (Items.Length == 1) return Items[0].MaxConditions;
             return Kind switch
             {
-                EPatternKind.OneOf => Items.Max(static (x) => x.MaxConditions),// a 'oneof' is the maximum number of conditions of all items
+                // when pattern is a 'oneof' the maximum number of conditions is the number of items which are not sequences, plus the maximum number of conditions of all sequences
+                EPatternKind.OneOf when Items.Length == 1 && Items[0] is not PatternSequence => 0,
+                EPatternKind.OneOf when Items.Length == 1 && Items[0] is PatternSequence s => s.MaxConditions,
+                EPatternKind.OneOf => Items.Count(static (x) => x is not PatternSequence) + Items.Max(static (x) => x is PatternSequence s ? s.MaxConditions : 0),
                 _ => Items.Sum(static (x) => x.MaxConditions)// sequences which do not represent an open set of possibilities, are the sum of all items condition lengths
             };
         }
