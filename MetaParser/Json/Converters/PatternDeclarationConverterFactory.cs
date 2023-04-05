@@ -77,6 +77,7 @@ internal sealed class PatternDeclarationConverterFactory : JsonConverterFactory
                 "value" => new PatternDeclaration() { value = reader.GetString() },
                 "range" => new PatternDeclaration() { range = s_stringArrayConverter.Read(ref reader, _stringArrayType, options) },
                 "oneof" => new PatternDeclaration() { oneof = read_array(ref reader, typeToConvert, options) },
+                "not" => new PatternDeclaration() { not = Read(ref reader, typeToConvert, options) },
                 _ => throw new NotSupportedException()
             };
 

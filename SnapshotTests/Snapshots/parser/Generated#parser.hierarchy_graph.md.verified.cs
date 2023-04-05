@@ -70,41 +70,44 @@ Consumer_17
 Token_18["lexer_char_asterisk"]
 Pattern_83
 Consumer_18
-Token_19["lexer_char_solidus"]
+Token_19["lexer_char_at_symbol"]
 Pattern_85
 Consumer_19
-Token_20["lexer_char_reverse_solidus"]
+Token_20["lexer_char_single_quote"]
 Pattern_87
 Consumer_20
-Token_21["lexer_digits"]
+Token_21["lexer_char_double_quote"]
 Pattern_89
-Pattern_91
 Consumer_21
-Token_22["lexer_identifier"]
-Pattern_94
-Pattern_100
-Pattern_101
-Pattern_107
+Token_22["lexer_char_solidus"]
+Pattern_91
 Consumer_22
-Token_23["lexer_comment"]
-Pattern_110
-Pattern_111
-Pattern_114
-Pattern_115
-Pattern_117
+Token_23["lexer_char_reverse_solidus"]
+Pattern_93
 Consumer_23
+Token_24["lexer_digits"]
+Pattern_95
+Pattern_97
+Consumer_24
+Token_25["lexer_identifier"]
+Pattern_100
+Pattern_106
+Pattern_107
+Pattern_113
+Consumer_25
+Token_26["lexer_comment"]
+Pattern_116
+Pattern_117
 Pattern_120
 Pattern_121
 Pattern_123
-Pattern_125
-Consumer_24
-Token_24["syntax_typename"]
-Pattern_127
-Consumer_25
-Pattern_129
 Consumer_26
+Pattern_126
+Pattern_127
+Pattern_129
 Pattern_131
 Consumer_27
+Token_27["syntax_typename"]
 Pattern_133
 Consumer_28
 Pattern_135
@@ -113,29 +116,57 @@ Pattern_137
 Consumer_30
 Pattern_139
 Consumer_31
-Token_25["syntax_comment"]
-Pattern_142
-Pattern_144
+Pattern_141
 Consumer_32
+Pattern_143
+Consumer_33
+Pattern_145
+Consumer_34
+Token_28["syntax_string_single_line"]
 Pattern_147
+Pattern_149
 Pattern_150
 Pattern_152
-Consumer_33
-Token_26["syntax_declaration"]
-Pattern_155
-Pattern_157
-Consumer_34
-Token_27["syntax_codeblock"]
+Pattern_154
+Consumer_35
+Pattern_156
+Pattern_158
 Pattern_159
 Pattern_161
 Pattern_163
-Consumer_35
-Token_28["syntax_program"]
-Pattern_166
-Pattern_177
-Pattern_178
-Pattern_189
 Consumer_36
+Token_29["syntax_string_multi_line"]
+Pattern_166
+Pattern_168
+Pattern_170
+Consumer_37
+Pattern_173
+Pattern_175
+Pattern_177
+Consumer_38
+Token_30["syntax_comment"]
+Pattern_180
+Pattern_182
+Consumer_39
+Pattern_185
+Pattern_188
+Pattern_190
+Consumer_40
+Token_31["syntax_declaration"]
+Pattern_193
+Pattern_195
+Consumer_41
+Token_32["syntax_codeblock"]
+Pattern_197
+Pattern_199
+Pattern_201
+Consumer_42
+Token_33["syntax_program"]
+Pattern_204
+Pattern_215
+Pattern_216
+Pattern_227
+Consumer_43
 Pattern_0
 Pattern_1
 Pattern_2
@@ -196,27 +227,27 @@ Pattern_86
 Pattern_88
 Pattern_90
 Pattern_92
-Pattern_93
-Pattern_95
+Pattern_94
 Pattern_96
-Pattern_97
 Pattern_98
 Pattern_99
+Pattern_101
 Pattern_102
 Pattern_103
 Pattern_104
 Pattern_105
-Pattern_106
 Pattern_108
 Pattern_109
+Pattern_110
+Pattern_111
 Pattern_112
-Pattern_113
-Pattern_116
+Pattern_114
+Pattern_115
 Pattern_118
 Pattern_119
 Pattern_122
 Pattern_124
-Pattern_126
+Pattern_125
 Pattern_128
 Pattern_130
 Pattern_132
@@ -224,41 +255,60 @@ Pattern_134
 Pattern_136
 Pattern_138
 Pattern_140
-Pattern_141
-Pattern_143
-Pattern_145
+Pattern_142
+Pattern_144
 Pattern_146
 Pattern_148
-Pattern_149
 Pattern_151
 Pattern_153
-Pattern_154
-Pattern_156
-Pattern_158
+Pattern_155
+Pattern_157
 Pattern_160
 Pattern_162
 Pattern_164
 Pattern_165
 Pattern_167
-Pattern_168
 Pattern_169
-Pattern_170
 Pattern_171
 Pattern_172
-Pattern_173
 Pattern_174
-Pattern_175
 Pattern_176
+Pattern_178
 Pattern_179
-Pattern_180
 Pattern_181
-Pattern_182
 Pattern_183
 Pattern_184
-Pattern_185
 Pattern_186
 Pattern_187
-Pattern_188
+Pattern_189
+Pattern_191
+Pattern_192
+Pattern_194
+Pattern_196
+Pattern_198
+Pattern_200
+Pattern_202
+Pattern_203
+Pattern_205
+Pattern_206
+Pattern_207
+Pattern_208
+Pattern_209
+Pattern_210
+Pattern_211
+Pattern_212
+Pattern_213
+Pattern_214
+Pattern_217
+Pattern_218
+Pattern_219
+Pattern_220
+Pattern_221
+Pattern_222
+Pattern_223
+Pattern_224
+Pattern_225
+Pattern_226
 None_0 --> Token_0
 None_0 --> Pattern_3
 None_0 --> Pattern_7
@@ -334,33 +384,36 @@ None_0 --> Pattern_87
 None_0 --> Consumer_20
 None_0 --> Token_21
 None_0 --> Pattern_89
-None_0 --> Pattern_91
 None_0 --> Consumer_21
 None_0 --> Token_22
-None_0 --> Pattern_94
-None_0 --> Pattern_100
-None_0 --> Pattern_101
-None_0 --> Pattern_107
+None_0 --> Pattern_91
 None_0 --> Consumer_22
 None_0 --> Token_23
-None_0 --> Pattern_110
-None_0 --> Pattern_111
-None_0 --> Pattern_114
-None_0 --> Pattern_115
-None_0 --> Pattern_117
+None_0 --> Pattern_93
 None_0 --> Consumer_23
+None_0 --> Token_24
+None_0 --> Pattern_95
+None_0 --> Pattern_97
+None_0 --> Consumer_24
+None_0 --> Token_25
+None_0 --> Pattern_100
+None_0 --> Pattern_106
+None_0 --> Pattern_107
+None_0 --> Pattern_113
+None_0 --> Consumer_25
+None_0 --> Token_26
+None_0 --> Pattern_116
+None_0 --> Pattern_117
 None_0 --> Pattern_120
 None_0 --> Pattern_121
 None_0 --> Pattern_123
-None_0 --> Pattern_125
-None_0 --> Consumer_24
-None_0 --> Token_24
-None_0 --> Pattern_127
-None_0 --> Consumer_25
-None_0 --> Pattern_129
 None_0 --> Consumer_26
+None_0 --> Pattern_126
+None_0 --> Pattern_127
+None_0 --> Pattern_129
 None_0 --> Pattern_131
 None_0 --> Consumer_27
+None_0 --> Token_27
 None_0 --> Pattern_133
 None_0 --> Consumer_28
 None_0 --> Pattern_135
@@ -369,29 +422,57 @@ None_0 --> Pattern_137
 None_0 --> Consumer_30
 None_0 --> Pattern_139
 None_0 --> Consumer_31
-None_0 --> Token_25
-None_0 --> Pattern_142
-None_0 --> Pattern_144
+None_0 --> Pattern_141
 None_0 --> Consumer_32
+None_0 --> Pattern_143
+None_0 --> Consumer_33
+None_0 --> Pattern_145
+None_0 --> Consumer_34
+None_0 --> Token_28
 None_0 --> Pattern_147
+None_0 --> Pattern_149
 None_0 --> Pattern_150
 None_0 --> Pattern_152
-None_0 --> Consumer_33
-None_0 --> Token_26
-None_0 --> Pattern_155
-None_0 --> Pattern_157
-None_0 --> Consumer_34
-None_0 --> Token_27
+None_0 --> Pattern_154
+None_0 --> Consumer_35
+None_0 --> Pattern_156
+None_0 --> Pattern_158
 None_0 --> Pattern_159
 None_0 --> Pattern_161
 None_0 --> Pattern_163
-None_0 --> Consumer_35
-None_0 --> Token_28
-None_0 --> Pattern_166
-None_0 --> Pattern_177
-None_0 --> Pattern_178
-None_0 --> Pattern_189
 None_0 --> Consumer_36
+None_0 --> Token_29
+None_0 --> Pattern_166
+None_0 --> Pattern_168
+None_0 --> Pattern_170
+None_0 --> Consumer_37
+None_0 --> Pattern_173
+None_0 --> Pattern_175
+None_0 --> Pattern_177
+None_0 --> Consumer_38
+None_0 --> Token_30
+None_0 --> Pattern_180
+None_0 --> Pattern_182
+None_0 --> Consumer_39
+None_0 --> Pattern_185
+None_0 --> Pattern_188
+None_0 --> Pattern_190
+None_0 --> Consumer_40
+None_0 --> Token_31
+None_0 --> Pattern_193
+None_0 --> Pattern_195
+None_0 --> Consumer_41
+None_0 --> Token_32
+None_0 --> Pattern_197
+None_0 --> Pattern_199
+None_0 --> Pattern_201
+None_0 --> Consumer_42
+None_0 --> Token_33
+None_0 --> Pattern_204
+None_0 --> Pattern_215
+None_0 --> Pattern_216
+None_0 --> Pattern_227
+None_0 --> Consumer_43
 Token_0 --> Consumer_0
 Pattern_3 --> Pattern_0
 Pattern_3 --> Pattern_1
@@ -503,59 +584,62 @@ Pattern_87 --> Pattern_86
 Consumer_20 --> Pattern_87
 Token_21 --> Consumer_21
 Pattern_89 --> Pattern_88
-Pattern_91 --> Pattern_90
 Consumer_21 --> Pattern_89
-Consumer_21 --> Pattern_91
 Token_22 --> Consumer_22
-Pattern_94 --> Pattern_92
-Pattern_94 --> Pattern_93
-Pattern_100 --> Pattern_95
-Pattern_100 --> Pattern_96
-Pattern_100 --> Pattern_97
+Pattern_91 --> Pattern_90
+Consumer_22 --> Pattern_91
+Token_23 --> Consumer_23
+Pattern_93 --> Pattern_92
+Consumer_23 --> Pattern_93
+Token_24 --> Consumer_24
+Pattern_95 --> Pattern_94
+Pattern_97 --> Pattern_96
+Consumer_24 --> Pattern_95
+Consumer_24 --> Pattern_97
+Token_25 --> Consumer_25
 Pattern_100 --> Pattern_98
 Pattern_100 --> Pattern_99
-Pattern_101 --> Pattern_94
-Pattern_101 --> Pattern_100
-Pattern_107 --> Pattern_102
-Pattern_107 --> Pattern_103
-Pattern_107 --> Pattern_104
-Pattern_107 --> Pattern_105
+Pattern_106 --> Pattern_101
+Pattern_106 --> Pattern_102
+Pattern_106 --> Pattern_103
+Pattern_106 --> Pattern_104
+Pattern_106 --> Pattern_105
+Pattern_107 --> Pattern_100
 Pattern_107 --> Pattern_106
-Consumer_22 --> Pattern_101
-Consumer_22 --> Pattern_107
-Token_23 --> Consumer_23
-Token_23 --> Consumer_24
-Pattern_110 --> Pattern_108
-Pattern_110 --> Pattern_109
-Pattern_111 --> Pattern_110
-Pattern_114 --> Pattern_112
-Pattern_114 --> Pattern_113
-Pattern_115 --> Pattern_114
+Pattern_113 --> Pattern_108
+Pattern_113 --> Pattern_109
+Pattern_113 --> Pattern_110
+Pattern_113 --> Pattern_111
+Pattern_113 --> Pattern_112
+Consumer_25 --> Pattern_107
+Consumer_25 --> Pattern_113
+Token_26 --> Consumer_26
+Token_26 --> Consumer_27
+Pattern_116 --> Pattern_114
+Pattern_116 --> Pattern_115
 Pattern_117 --> Pattern_116
-Consumer_23 --> Pattern_111
-Consumer_23 --> Pattern_115
-Consumer_23 --> Pattern_117
 Pattern_120 --> Pattern_118
 Pattern_120 --> Pattern_119
 Pattern_121 --> Pattern_120
 Pattern_123 --> Pattern_122
-Pattern_125 --> Pattern_124
-Consumer_24 --> Pattern_121
-Consumer_24 --> Pattern_123
-Consumer_24 --> Pattern_125
-Token_24 --> Consumer_25
-Token_24 --> Consumer_26
-Token_24 --> Consumer_27
-Token_24 --> Consumer_28
-Token_24 --> Consumer_29
-Token_24 --> Consumer_30
-Token_24 --> Consumer_31
+Consumer_26 --> Pattern_117
+Consumer_26 --> Pattern_121
+Consumer_26 --> Pattern_123
+Pattern_126 --> Pattern_124
+Pattern_126 --> Pattern_125
 Pattern_127 --> Pattern_126
-Consumer_25 --> Pattern_127
 Pattern_129 --> Pattern_128
-Consumer_26 --> Pattern_129
 Pattern_131 --> Pattern_130
+Consumer_27 --> Pattern_127
+Consumer_27 --> Pattern_129
 Consumer_27 --> Pattern_131
+Token_27 --> Consumer_28
+Token_27 --> Consumer_29
+Token_27 --> Consumer_30
+Token_27 --> Consumer_31
+Token_27 --> Consumer_32
+Token_27 --> Consumer_33
+Token_27 --> Consumer_34
 Pattern_133 --> Pattern_132
 Consumer_28 --> Pattern_133
 Pattern_135 --> Pattern_134
@@ -564,60 +648,102 @@ Pattern_137 --> Pattern_136
 Consumer_30 --> Pattern_137
 Pattern_139 --> Pattern_138
 Consumer_31 --> Pattern_139
-Token_25 --> Consumer_32
-Token_25 --> Consumer_33
-Pattern_142 --> Pattern_140
-Pattern_142 --> Pattern_141
-Pattern_144 --> Pattern_143
-Consumer_32 --> Pattern_142
-Consumer_32 --> Pattern_144
-Pattern_147 --> Pattern_145
+Pattern_141 --> Pattern_140
+Consumer_32 --> Pattern_141
+Pattern_143 --> Pattern_142
+Consumer_33 --> Pattern_143
+Pattern_145 --> Pattern_144
+Consumer_34 --> Pattern_145
+Token_28 --> Consumer_35
+Token_28 --> Consumer_36
 Pattern_147 --> Pattern_146
-Pattern_150 --> Pattern_148
+Pattern_149 --> Pattern_148
 Pattern_150 --> Pattern_149
 Pattern_152 --> Pattern_151
-Consumer_33 --> Pattern_147
-Consumer_33 --> Pattern_150
-Consumer_33 --> Pattern_152
-Token_26 --> Consumer_34
-Pattern_155 --> Pattern_153
-Pattern_155 --> Pattern_154
-Pattern_157 --> Pattern_156
-Consumer_34 --> Pattern_155
-Consumer_34 --> Pattern_157
-Token_27 --> Consumer_35
+Pattern_154 --> Pattern_153
+Consumer_35 --> Pattern_147
+Consumer_35 --> Pattern_150
+Consumer_35 --> Pattern_152
+Consumer_35 --> Pattern_154
+Pattern_156 --> Pattern_155
+Pattern_158 --> Pattern_157
 Pattern_159 --> Pattern_158
 Pattern_161 --> Pattern_160
 Pattern_163 --> Pattern_162
-Consumer_35 --> Pattern_159
-Consumer_35 --> Pattern_161
-Consumer_35 --> Pattern_163
-Token_28 --> Consumer_36
+Consumer_36 --> Pattern_156
+Consumer_36 --> Pattern_159
+Consumer_36 --> Pattern_161
+Consumer_36 --> Pattern_163
+Token_29 --> Consumer_37
+Token_29 --> Consumer_38
 Pattern_166 --> Pattern_164
 Pattern_166 --> Pattern_165
-Pattern_177 --> Pattern_167
-Pattern_177 --> Pattern_168
-Pattern_177 --> Pattern_169
-Pattern_177 --> Pattern_170
-Pattern_177 --> Pattern_171
-Pattern_177 --> Pattern_172
-Pattern_177 --> Pattern_173
-Pattern_177 --> Pattern_174
-Pattern_177 --> Pattern_175
+Pattern_168 --> Pattern_167
+Pattern_170 --> Pattern_169
+Consumer_37 --> Pattern_166
+Consumer_37 --> Pattern_168
+Consumer_37 --> Pattern_170
+Pattern_173 --> Pattern_171
+Pattern_173 --> Pattern_172
+Pattern_175 --> Pattern_174
 Pattern_177 --> Pattern_176
-Pattern_178 --> Pattern_166
-Pattern_178 --> Pattern_177
-Pattern_189 --> Pattern_179
-Pattern_189 --> Pattern_180
-Pattern_189 --> Pattern_181
-Pattern_189 --> Pattern_182
-Pattern_189 --> Pattern_183
-Pattern_189 --> Pattern_184
-Pattern_189 --> Pattern_185
-Pattern_189 --> Pattern_186
-Pattern_189 --> Pattern_187
-Pattern_189 --> Pattern_188
-Consumer_36 --> Pattern_178
-Consumer_36 --> Pattern_189
+Consumer_38 --> Pattern_173
+Consumer_38 --> Pattern_175
+Consumer_38 --> Pattern_177
+Token_30 --> Consumer_39
+Token_30 --> Consumer_40
+Pattern_180 --> Pattern_178
+Pattern_180 --> Pattern_179
+Pattern_182 --> Pattern_181
+Consumer_39 --> Pattern_180
+Consumer_39 --> Pattern_182
+Pattern_185 --> Pattern_183
+Pattern_185 --> Pattern_184
+Pattern_188 --> Pattern_186
+Pattern_188 --> Pattern_187
+Pattern_190 --> Pattern_189
+Consumer_40 --> Pattern_185
+Consumer_40 --> Pattern_188
+Consumer_40 --> Pattern_190
+Token_31 --> Consumer_41
+Pattern_193 --> Pattern_191
+Pattern_193 --> Pattern_192
+Pattern_195 --> Pattern_194
+Consumer_41 --> Pattern_193
+Consumer_41 --> Pattern_195
+Token_32 --> Consumer_42
+Pattern_197 --> Pattern_196
+Pattern_199 --> Pattern_198
+Pattern_201 --> Pattern_200
+Consumer_42 --> Pattern_197
+Consumer_42 --> Pattern_199
+Consumer_42 --> Pattern_201
+Token_33 --> Consumer_43
+Pattern_204 --> Pattern_202
+Pattern_204 --> Pattern_203
+Pattern_215 --> Pattern_205
+Pattern_215 --> Pattern_206
+Pattern_215 --> Pattern_207
+Pattern_215 --> Pattern_208
+Pattern_215 --> Pattern_209
+Pattern_215 --> Pattern_210
+Pattern_215 --> Pattern_211
+Pattern_215 --> Pattern_212
+Pattern_215 --> Pattern_213
+Pattern_215 --> Pattern_214
+Pattern_216 --> Pattern_204
+Pattern_216 --> Pattern_215
+Pattern_227 --> Pattern_217
+Pattern_227 --> Pattern_218
+Pattern_227 --> Pattern_219
+Pattern_227 --> Pattern_220
+Pattern_227 --> Pattern_221
+Pattern_227 --> Pattern_222
+Pattern_227 --> Pattern_223
+Pattern_227 --> Pattern_224
+Pattern_227 --> Pattern_225
+Pattern_227 --> Pattern_226
+Consumer_43 --> Pattern_216
+Consumer_43 --> Pattern_227
 ```
 */

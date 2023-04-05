@@ -62,6 +62,15 @@
         "char_asterisk": {
           "start": "*"
         },
+        "char_at_symbol": {
+          "start": "@"
+        },
+        "char_single_quote": {
+          "start": "'"
+        },
+        "char_double_quote": {
+          "start": "\""
+        },
         "char_solidus": {
           "start": "/"
         },
@@ -128,6 +137,32 @@
           },
           {
             "start": "keyword_float"
+          }
+        ],
+        "string_single_line": [
+          {
+            "start": [ "char_single_quote" ],
+            "consume": { "not": "newline" },
+            "stop": [ "char_single_quote" ],
+            "escape": [ "char_reverse_solidus" ]
+          },
+          {
+            "start": [ "char_double_quote" ],
+            "consume": { "not": "newline" },
+            "stop": [ "char_double_quote" ],
+            "escape": [ "char_reverse_solidus" ]
+          }
+        ],
+        "string_multi_line": [
+          {
+            "start": [ "char_at_symbol", "char_single_quote" ],
+            "stop": [ "char_single_quote" ],
+            "escape": [ "char_reverse_solidus" ]
+          },
+          {
+            "start": [ "char_at_symbol", "char_double_quote" ],
+            "stop": [ "char_double_quote" ],
+            "escape": [ "char_reverse_solidus" ]
           }
         ],
         "comment": [

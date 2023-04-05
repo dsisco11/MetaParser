@@ -32,6 +32,8 @@ internal class WritePatternAsExpression : MetaCodeBuilder
             PatternTokenRef t when !t.IsInlinable => $"{Format_Token_Start_Detection_Function_Name(t.TokenName)}",
             PatternTokenRef t => Format_Token_Id_Const_Ref(t.TokenName),
             // groups
+            PatternSequence g when g.Kind == EPatternKind.Not && g.Items.Length > 1 => $"not ({string.Join(g.ConditionJoiner, g.Items.Select(Format))})",
+            PatternSequence g when g.Kind == EPatternKind.Not => $"not {string.Join(g.ConditionJoiner, g.Items.Select(Format))}",
             PatternSequence g when g.Kind == EPatternKind.OneOf && g.Items.Length > 1 => $"({string.Join(g.ConditionJoiner, g.Items.Select(Format))})",
             PatternSequence g when g.MaxConditions == 1 => Format(g.Items.Single()),
             PatternSequence g => string.Join(g.ConditionJoiner, g.Items.Select(Format)),

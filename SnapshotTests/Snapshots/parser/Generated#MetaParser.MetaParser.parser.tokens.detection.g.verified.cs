@@ -17,6 +17,24 @@ namespace UnitTestParser
                 _ => false
             };
         }
+        private static bool starts_syntax_string_single_line_token(global::System.ReadOnlySpan<byte> buffer0)
+        {
+            return buffer0 switch
+            {
+                [TokenId.Char_Single_Quote, var buffer1] when () => true,
+                [TokenId.Char_Double_Quote, var buffer1] when () => true,
+                _ => false
+            };
+        }
+        private static bool starts_syntax_string_multi_line_token(global::System.ReadOnlySpan<byte> buffer0)
+        {
+            return buffer0 switch
+            {
+                [TokenId.Char_At_Symbol, TokenId.Char_Single_Quote, ..] => true,
+                [TokenId.Char_At_Symbol, TokenId.Char_Double_Quote, ..] => true,
+                _ => false
+            };
+        }
         private static bool starts_syntax_comment_token(global::System.ReadOnlySpan<byte> buffer0)
         {
             return buffer0 switch

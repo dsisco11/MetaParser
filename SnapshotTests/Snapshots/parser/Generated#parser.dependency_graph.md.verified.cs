@@ -21,40 +21,53 @@ Token_15["lexer_char_close_parenthesis"]
 Token_16["lexer_char_colon"]
 Token_17["lexer_char_semicolon"]
 Token_18["lexer_char_asterisk"]
-Token_19["lexer_char_solidus"]
-Token_20["lexer_char_reverse_solidus"]
-Token_21["lexer_digits"]
-Token_22["lexer_identifier"]
-Token_23["lexer_comment"]
-Token_24["syntax_typename"]
-Token_25["syntax_comment"]
-Token_26["syntax_declaration"]
-Token_27["syntax_codeblock"]
-Token_28["syntax_program"]
-Token_24 --> Token_2
-Token_24 --> Token_3
-Token_24 --> Token_5
-Token_24 --> Token_6
-Token_24 --> Token_7
-Token_24 --> Token_8
-Token_24 --> Token_9
-Token_25 --> Token_19
-Token_25 --> Token_1
-Token_25 --> Token_18
-Token_25 --> Token_20
-Token_26 --> Token_22
-Token_26 --> Token_16
-Token_26 --> Token_17
-Token_27 --> Token_10
-Token_27 --> Token_26
-Token_27 --> Token_11
-Token_28 --> Token_2
-Token_28 --> Token_4
-Token_28 --> Token_0
-Token_28 --> Token_22
-Token_28 --> Token_14
-Token_28 --> Token_15
-Token_28 --> Token_10
-Token_28 --> Token_11
+Token_19["lexer_char_at_symbol"]
+Token_20["lexer_char_single_quote"]
+Token_21["lexer_char_double_quote"]
+Token_22["lexer_char_solidus"]
+Token_23["lexer_char_reverse_solidus"]
+Token_24["lexer_digits"]
+Token_25["lexer_identifier"]
+Token_26["lexer_comment"]
+Token_27["syntax_typename"]
+Token_28["syntax_string_single_line"]
+Token_29["syntax_string_multi_line"]
+Token_30["syntax_comment"]
+Token_31["syntax_declaration"]
+Token_32["syntax_codeblock"]
+Token_33["syntax_program"]
+Token_27 --> Token_2
+Token_27 --> Token_3
+Token_27 --> Token_5
+Token_27 --> Token_6
+Token_27 --> Token_7
+Token_27 --> Token_8
+Token_27 --> Token_9
+Token_28 --> Token_20
+Token_28 --> Token_1
+Token_28 --> Token_23
+Token_28 --> Token_21
+Token_29 --> Token_19
+Token_29 --> Token_20
+Token_29 --> Token_23
+Token_29 --> Token_21
+Token_30 --> Token_22
+Token_30 --> Token_1
+Token_30 --> Token_18
+Token_30 --> Token_23
+Token_31 --> Token_25
+Token_31 --> Token_16
+Token_31 --> Token_17
+Token_32 --> Token_10
+Token_32 --> Token_31
+Token_32 --> Token_11
+Token_33 --> Token_2
+Token_33 --> Token_4
+Token_33 --> Token_0
+Token_33 --> Token_25
+Token_33 --> Token_14
+Token_33 --> Token_15
+Token_33 --> Token_10
+Token_33 --> Token_11
 ```
 */

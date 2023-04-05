@@ -22,8 +22,9 @@ internal record PatternSequence : PatternEntity, IEnumerable<PatternEntity>
     {
         get => Kind switch
         {
-            EPatternKind.AllOf => ", ",// an allof is a comma separated list
-            EPatternKind.OneOf => " or ",// a oneof is an or separated list
+            EPatternKind.AllOf => ", ",// an 'allof' is a comma separated list
+            EPatternKind.OneOf => " or ",// a 'oneof' is an 'or' separated list
+            EPatternKind.Not => " and ",// a 'not' is an 'and' separated list
             _ => string.Empty// no joiner
         };
     }
@@ -33,8 +34,8 @@ internal record PatternSequence : PatternEntity, IEnumerable<PatternEntity>
     {
         get => Kind switch
         {
-            EPatternKind.OneOf => Items.Length > 0 ? Items.Min(static (x) => x.Length) : 0,// a oneof is the minimum length of all items
-            _ => Items.Length// an allof is the sum of all items
+            EPatternKind.OneOf => Items.Length > 0 ? Items.Min(static (x) => x.Length) : 0,// a 'oneof' is the minimum length of all items
+            _ => Items.Length// most sequence lengths are the sum of all items
         };
     }
 
@@ -44,8 +45,9 @@ internal record PatternSequence : PatternEntity, IEnumerable<PatternEntity>
         {
             return Kind switch
             {
-                EPatternKind.AllOf => Items.All(static (x) => x.IsDeterministic),// an allof is deterministic if all items are deterministic
-                EPatternKind.OneOf => false,// a oneof is never deterministic, as it can be any of the items
+                EPatternKind.AllOf => Items.All(static (x) => x.IsDeterministic),// an 'allof' is deterministic if all items are deterministic
+                EPatternKind.OneOf => false,// a 'oneof' is never deterministic, as it can be any of the items
+                EPatternKind.Not => false,// a 'not' is never deterministic, as it is a logical exclusion
                 _ => false
             };
         }
@@ -64,8 +66,8 @@ internal record PatternSequence : PatternEntity, IEnumerable<PatternEntity>
             if (Items.Length == 1) return Items[0].MinConditions;
             return Kind switch
             {
-                EPatternKind.OneOf => Items.Min(static (x) => x.MinConditions),// a oneof is the minimum number of conditions of all items
-                _ => Items.Sum(static (x) => x.MinConditions)// an allof is the sum of all items
+                EPatternKind.OneOf => Items.Min(static (x) => x.MinConditions),// a 'oneof' is the minimum number of conditions of all items
+                _ => Items.Sum(static (x) => x.MinConditions)// sequences which do not represent an open set of possibilities, are the sum of all items condition lengths
             };
         }
     }
@@ -77,8 +79,8 @@ internal record PatternSequence : PatternEntity, IEnumerable<PatternEntity>
             if (Items.Length == 1) return Items[0].MaxConditions;
             return Kind switch
             {
-                EPatternKind.OneOf => Items.Max(static (x) => x.MaxConditions),// a oneof is the maximum number of conditions of all items
-                _ => Items.Sum(static (x) => x.MaxConditions)// an allof is the sum of all items
+                EPatternKind.OneOf => Items.Max(static (x) => x.MaxConditions),// a 'oneof' is the maximum number of conditions of all items
+                _ => Items.Sum(static (x) => x.MaxConditions)// sequences which do not represent an open set of possibilities, are the sum of all items condition lengths
             };
         }
     }
@@ -90,7 +92,8 @@ internal record PatternSequence : PatternEntity, IEnumerable<PatternEntity>
             if (Items.Length == 1) return Items[0].IsConditional;
             return Kind switch
             {
-                EPatternKind.OneOf when Items.Length > 1 => true,// a oneof is always conditional, as it can be any of the items
+                EPatternKind.OneOf when Items.Length > 1 => true,// a 'oneof' is always conditional, as it can be any of the items
+                EPatternKind.Not => true,// a 'not' is always conditional, as it is a logical exclusion
                 _ => Items.Any(static (x) => x.IsConditional)// otherwise it is conditional if any of the items are conditional
             };
         }

@@ -17,6 +17,9 @@ internal sealed record PatternDeclaration : IPatternDeclaration
 
     [JsonPropertyName("oneof")]
     public PatternDeclaration[]? oneof { get; set; }
+
+    [JsonPropertyName("not")]
+    public PatternDeclaration? not { get; set; }
     #endregion
 
     #region Constructors
@@ -25,11 +28,12 @@ internal sealed record PatternDeclaration : IPatternDeclaration
     }
 
     [JsonConstructor]
-    public PatternDeclaration(string? value, string[]? range, PatternDeclaration[]? oneof)
+    public PatternDeclaration(string? value, string[]? range, PatternDeclaration[]? oneof, PatternDeclaration? not)
     {
         this.value = value;
         this.range = range;
         this.oneof = oneof;
+        this.not = not;
     }
     #endregion
 
@@ -40,9 +44,13 @@ internal sealed record PatternDeclaration : IPatternDeclaration
         {
             return new PatternItemClause(EPatternKind.Literal, value);
         }
+        else if (not is not null)
+        {
+            return new PatternSequenceClause(EPatternKind.Not, not.Interpret()!);
+        }
         else if (oneof is not null)
         {
-            var patterns = oneof.Select(o => o.Interpret()!).ToArray();
+            var patterns = oneof.Select(static (o) => o.Interpret()!).ToArray();
             return new PatternSequenceClause(EPatternKind.OneOf, patterns ?? Array.Empty<IPatternClause>());
         }
         else if (range is not null)
