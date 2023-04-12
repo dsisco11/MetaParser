@@ -19,7 +19,55 @@ internal class PatternSorter : IComparer<PatternEntity>
         // First we make sure both patterns either are/are not sequences
         if (left.IsSequence != right.IsSequence)
         {
-            return !left.IsSequence ? -1 : 1;// patterns with no children come before patterns with children
+            return left.IsSequence ? -1 : 1;// patterns with no children come before patterns with children
+        }
+
+        if (left.IsDeterministic != right.IsDeterministic)
+        {
+            return left.IsDeterministic ? -1 : 1; // deterministic values come before non-deterministic
+        }
+
+        if (left.IsInlinable != right.IsInlinable)
+        {
+            return left.IsInlinable ? -1 : 1; // inlineable values come before non-inlineables
+        }
+
+        if (left.IsConditional != right.IsConditional)
+        {
+            return left.IsConditional ? 1 : -1; // logical values come after non-logic
+        }
+
+        if (left.IsConstantLength != right.IsConstantLength)
+        {
+            return left.IsConstantLength ? -1 : 1;
+        }
+
+        if (left.MaxConditions != right.MaxConditions)
+        {
+            return left.MaxConditions > right.MaxConditions ? 1 : -1;
+        }
+
+        if (left.MinConditions != right.MinConditions)
+        {
+            return left.MinConditions < right.MinConditions ? 1 : -1;
+        }
+
+        //if (left is PatternConst leftConst && right is PatternConst rightConst)
+        //{
+        //    var result = string.CompareOrdinal(leftConst.Value, rightConst.Value);
+        //    if (result != 0)
+        //    {
+        //        return result > 0 ? 1 : -1;
+        //    }
+        //}
+
+        if (left is PatternTokenRef leftToken && right is PatternTokenRef rightToken)
+        {
+            var result = leftToken.GetToken().CompareTo(rightToken.GetToken());
+            if (result != 0)
+            {
+                return result > 0 ? 1 : -1;
+            }
         }
 
         if (left.IsSequence)
@@ -52,41 +100,6 @@ internal class PatternSorter : IComparer<PatternEntity>
             }
         }
 
-        if (left.IsDeterministic != right.IsDeterministic)
-        {
-            return left.IsDeterministic ? -1 : 1; // deterministic values come before non-deterministic
-        }
-
-        if (left.IsInlinable != right.IsInlinable)
-        {
-            return left.IsInlinable ? -1 : 1; // inlineable values come before non-inlineables
-        }
-
-        if (left.IsConditional != right.IsConditional)
-        {
-            return left.IsConditional ? 1 : -1; // logical values come after non-logic
-        }
-
-        if (left.IsConstantLength != right.IsConstantLength)
-        {
-            return left.IsConstantLength ? -1 : 1;
-        }
-
-        if (left.MaxConditions != right.MaxConditions)
-        {
-            return left.MaxConditions.CompareTo(right.MaxConditions);
-        }
-
-        if (left.MinConditions != right.MinConditions)
-        {
-            return left.MinConditions.CompareTo(right.MinConditions);
-        }
-
-        if (left is PatternConst leftConst && right is PatternConst rightConst)
-        {
-            return string.Compare(leftConst.Value, rightConst.Value, System.StringComparison.Ordinal);
-        }
-
-        return left.Key.CompareTo(right.Key);
+        return 0;
     }
 }

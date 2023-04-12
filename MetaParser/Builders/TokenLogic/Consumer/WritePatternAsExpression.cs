@@ -27,10 +27,10 @@ internal class WritePatternAsExpression : MetaCodeBuilder
             PatternConst c when c.Kind == EPatternKind.Literal && c.Value.Length == 1 => SymbolDisplay.FormatLiteral(c.Value[0], true),
             PatternConst c => SymbolDisplay.FormatLiteral(c.Value, true),
             // ranges
-            PatternRange r => $"(>={SymbolDisplay.FormatLiteral(r.Begin, true)} and <={SymbolDisplay.FormatLiteral(r.End, true)})",
+            PatternRange r => $"(>={SymbolDisplay.FormatLiteral(r.Begin[0], true)} and <={SymbolDisplay.FormatLiteral(r.End[0], true)})",
             // tokens
-            PatternTokenRef t when !t.IsInlinable => $"{Format_Token_Start_Detection_Function_Name(t.TokenName)}",
-            PatternTokenRef t => Format_Token_Id_Const_Ref(t.TokenName),
+            PatternTokenRef t when !t.IsInlinable => $"{Format_Token_Start_Detection_Function_Name(t.GetToken().Name)}",
+            PatternTokenRef t => Format_Token_Id_Const_Ref(t.GetToken().Name),
             // groups
             PatternSequence g when g.Kind == EPatternKind.Not && g.Items.Length > 1 => $"not ({string.Join(g.ConditionJoiner, g.Items.Select(Format))})",
             PatternSequence g when g.Kind == EPatternKind.Not => $"not {string.Join(g.ConditionJoiner, g.Items.Select(Format))}",

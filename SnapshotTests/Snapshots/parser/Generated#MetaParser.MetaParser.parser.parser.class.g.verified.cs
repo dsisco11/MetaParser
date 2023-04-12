@@ -5,17 +5,23 @@ namespace UnitTestParser
     {
         public Token[] Parse(global::System.ReadOnlyMemory<char> buffer0)
         {
-            var buffer1 = Execute_Parsing_Table_0(buffer0);
-            var buffer2 = Execute_Parsing_Table_1(buffer1);
-            var buffer3 = Execute_Parsing_Table_2(buffer2);
-            return buffer3;
+            StageInputChunk<char, byte> input0 = new(buffer0);
+            var output0 = Execute_Parsing_Table_0(input0);
+            StageInputChunk<byte, byte> input1 = new(input0.Outputs);
+            var output1 = Execute_Parsing_Table_1(input1);
+            StageInputChunk<byte, byte> input2 = new(input1.Outputs);
+            var output2 = Execute_Parsing_Table_2(input2);
+            return Array.Empty<Token>();
             
         }
-        private static global::System.Collections.Generic.List<byte> Execute_Parsing_Table_0(global::System.ReadOnlyMemory<byte> buffer0)
+        private static StageOutput Execute_Parsing_Table_0(StageInputChunk<char, byte> buffer0)
         {
-                var buffer1 = buffer0;
+                var buffer1 = buffer0.Inputs;
                 var buffer2 = buffer1.Span;
-                var results = new global::System.Collections.Generic.List<byte>();
+                int inIndex = 0;
+                int outIndex = 0;
+                var outId = buffer0.Outputs;
+                var outLength = buffer0.Lengths;
                 
                 while (buffer2.Length > 0)
                 {
@@ -25,14 +31,19 @@ namespace UnitTestParser
                         if (buffer1.Length != buffer2.Length)
                         {
                             var unk_content_size = buffer1.Length - buffer2.Length;
-                            var unk_content = buffer1.Slice(0, unk_content_size);
-                            results.Add(new ValueToken(TokenId.Unknown, unk_content));
+                            outId.Span[outIndex] = TokenId.Unknown;
+                            outLength.Span[outIndex] = unk_content_size;
+                            inIndex += unk_content_size;
+                            outIndex++;
                             buffer1 = buffer1.Slice(unk_content_size);
                             buffer2 = buffer1.Span;
                         }
                         
                         var consumed = buffer1.Slice(0, processed.length);
-                        results.Add( new ValueToken(processed.id, consumed) );
+                        outId.Span[outIndex] = processed.id;
+                        outLength.Span[outIndex] = processed.length;
+                        inIndex += processed.length;
+                        outIndex++;
                         buffer1 = buffer1.Slice(processed.length);
                         buffer2 = buffer1.Span;
                     }
@@ -45,19 +56,24 @@ namespace UnitTestParser
                 if (buffer1.Length != buffer2.Length)
                 {
                     var unk_content_size = buffer1.Length - buffer2.Length;
-                    var unk_content = buffer1.Slice(0, unk_content_size);
-                    results.Add(new ValueToken(TokenId.Unknown, unk_content));
+                    outId.Span[outIndex] = TokenId.Unknown;
+                    outLength.Span[outIndex] = unk_content_size;
+                    inIndex += unk_content_size;
+                    outIndex++;
                     buffer1 = buffer1.Slice(unk_content_size);
                     buffer2 = buffer1.Span;
                 }
                 
-                return results.ToArray();
+                return new (outIndex, inIndex);
             }
-            private static global::System.Collections.Generic.List<byte> Execute_Parsing_Table_1(global::System.ReadOnlyMemory<byte> buffer0)
+            private static StageOutput Execute_Parsing_Table_1(StageInputChunk<byte, byte> buffer0)
             {
-                    var buffer1 = buffer0;
+                    var buffer1 = buffer0.Inputs;
                     var buffer2 = buffer1.Span;
-                    var results = new global::System.Collections.Generic.List<byte>();
+                    int inIndex = 0;
+                    int outIndex = 0;
+                    var outId = buffer0.Outputs;
+                    var outLength = buffer0.Lengths;
                     
                     while (buffer2.Length > 0)
                     {
@@ -67,14 +83,19 @@ namespace UnitTestParser
                             if (buffer1.Length != buffer2.Length)
                             {
                                 var unk_content_size = buffer1.Length - buffer2.Length;
-                                var unk_content = buffer1.Slice(0, unk_content_size);
-                                results.Add(new ValueToken(TokenId.Unknown, unk_content));
+                                outId.Span[outIndex] = TokenId.Unknown;
+                                outLength.Span[outIndex] = unk_content_size;
+                                inIndex += unk_content_size;
+                                outIndex++;
                                 buffer1 = buffer1.Slice(unk_content_size);
                                 buffer2 = buffer1.Span;
                             }
                             
                             var consumed = buffer1.Slice(0, processed.length);
-                            results.Add( new ValueToken(processed.id, consumed) );
+                            outId.Span[outIndex] = processed.id;
+                            outLength.Span[outIndex] = processed.length;
+                            inIndex += processed.length;
+                            outIndex++;
                             buffer1 = buffer1.Slice(processed.length);
                             buffer2 = buffer1.Span;
                         }
@@ -87,19 +108,24 @@ namespace UnitTestParser
                     if (buffer1.Length != buffer2.Length)
                     {
                         var unk_content_size = buffer1.Length - buffer2.Length;
-                        var unk_content = buffer1.Slice(0, unk_content_size);
-                        results.Add(new ValueToken(TokenId.Unknown, unk_content));
+                        outId.Span[outIndex] = TokenId.Unknown;
+                        outLength.Span[outIndex] = unk_content_size;
+                        inIndex += unk_content_size;
+                        outIndex++;
                         buffer1 = buffer1.Slice(unk_content_size);
                         buffer2 = buffer1.Span;
                     }
                     
-                    return results.ToArray();
+                    return new (outIndex, inIndex);
                 }
-                private static global::System.Collections.Generic.List<byte> Execute_Parsing_Table_2(global::System.ReadOnlyMemory<byte> buffer0)
+                private static StageOutput Execute_Parsing_Table_2(StageInputChunk<byte, byte> buffer0)
                 {
-                        var buffer1 = buffer0;
+                        var buffer1 = buffer0.Inputs;
                         var buffer2 = buffer1.Span;
-                        var results = new global::System.Collections.Generic.List<byte>();
+                        int inIndex = 0;
+                        int outIndex = 0;
+                        var outId = buffer0.Outputs;
+                        var outLength = buffer0.Lengths;
                         
                         while (buffer2.Length > 0)
                         {
@@ -109,14 +135,19 @@ namespace UnitTestParser
                                 if (buffer1.Length != buffer2.Length)
                                 {
                                     var unk_content_size = buffer1.Length - buffer2.Length;
-                                    var unk_content = buffer1.Slice(0, unk_content_size);
-                                    results.Add(new ValueToken(TokenId.Unknown, unk_content));
+                                    outId.Span[outIndex] = TokenId.Unknown;
+                                    outLength.Span[outIndex] = unk_content_size;
+                                    inIndex += unk_content_size;
+                                    outIndex++;
                                     buffer1 = buffer1.Slice(unk_content_size);
                                     buffer2 = buffer1.Span;
                                 }
                                 
                                 var consumed = buffer1.Slice(0, processed.length);
-                                results.Add( new ValueToken(processed.id, consumed) );
+                                outId.Span[outIndex] = processed.id;
+                                outLength.Span[outIndex] = processed.length;
+                                inIndex += processed.length;
+                                outIndex++;
                                 buffer1 = buffer1.Slice(processed.length);
                                 buffer2 = buffer1.Span;
                             }
@@ -129,13 +160,15 @@ namespace UnitTestParser
                         if (buffer1.Length != buffer2.Length)
                         {
                             var unk_content_size = buffer1.Length - buffer2.Length;
-                            var unk_content = buffer1.Slice(0, unk_content_size);
-                            results.Add(new ValueToken(TokenId.Unknown, unk_content));
+                            outId.Span[outIndex] = TokenId.Unknown;
+                            outLength.Span[outIndex] = unk_content_size;
+                            inIndex += unk_content_size;
+                            outIndex++;
                             buffer1 = buffer1.Slice(unk_content_size);
                             buffer2 = buffer1.Span;
                         }
                         
-                        return results.ToArray();
+                        return new (outIndex, inIndex);
                     }
                 }
             }

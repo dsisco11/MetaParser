@@ -16,7 +16,6 @@ internal record struct ParserContext : ICodeBuilderContext
 
     #region Properties
     public ParserConfiguration Config { get; set; }
-    public DirectedGraph DepsGraph { get; set; }
     public ImmutableArray<ParsingStageContext> Stages { get; set; }
     #endregion
 

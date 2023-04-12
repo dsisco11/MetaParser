@@ -3,18 +3,15 @@ using System.Diagnostics;
 
 namespace MetaParser.Graphs;
 
-internal partial class DirectedGraph
+[DebuggerDisplay(@"[In: {Incoming.Count}] [Out: {Outgoing.Count}]", Name = @"{Id}")]
+public sealed record Node<T> where T : notnull
 {
-    #region Records
-    [DebuggerDisplay(@"[In: {Incoming.Count}] [Out: {Outgoing.Count}]", Name = @"{Id}")]
-    public readonly record struct Node
-    {
-        public readonly HashSet<EntityKey> Incoming = new();
-        public readonly HashSet<EntityKey> Outgoing = new();
+    public readonly HashSet<T> Incoming;
+    public readonly HashSet<T> Outgoing;
 
-        public Node()
-        {
-        }
+    public Node()
+    {
+        Incoming = new();
+        Outgoing = new();
     }
-    #endregion
 }

@@ -1,40 +1,44 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
+using MetaParser.Parsing.Constructs.Patterns;
 
 using System;
-using System.Linq;
+using System.Collections.Immutable;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
 internal class LogicConsumerSwitchBlock : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)
     {
-        if (!context.State.Targets.Consumers.Any())
-        {
-            return;
-        }
-
-        // assert that all consumers are of the same type
-        //Debug.Assert(context.State.Targets.Consumers.All(c => c.Type == context.State.Targets.Consumers[0].Type));
-
         var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
-        var workContext = context with {};
 
         writer.WriteLine($"return {context.State.ActiveBufferName} switch");
         writer.WriteLine("{");
         writer.Indent++;
 
-        for (int i = 0; i < context.State.Targets.Consumers.Length; i++)
+        Parsing.Constructs.ConsumerEntity[] consumers = context.State.Targets.Consumers;
+        var patternConsumerMap = consumers.ToImmutableDictionary(static (k) => k.Start, static (c) => c);
+        //var patternConsumerMap = consumers.ToImmutableSortedDictionary(static (k) => k.Start, static (c) => c);
+        var patterns = patternConsumerMap.Keys.ToImmutableArray().Sort();
+        foreach (var pattern in patterns)
         {
-            Parsing.Constructs.ConsumerEntity? consumer = context.State.Targets.Consumers[i];
-            workContext.State.Targets = new WorkingSet(consumer.Token, consumer, consumer.Start);
+            var consumer = patternConsumerMap[pattern];
 
             writer.Write("[");
-            context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(workContext);
+            context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context with { State = context.State with { Targets = new WorkingSet(pattern) } });
             writer.Write(", ..] => ");
-            WriteContent(workContext);
+            WriteContent(context with { State = context.State with { Targets = new WorkingSet(consumer) } });
             writer.WriteLine(",");
         }
+
+        //foreach (var consumer in context.State.Targets.Consumers)
+        //{
+        //    writer.Write("[");
+        //    context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context with { State = context.State with { Targets = new WorkingSet(consumer.Start) } });
+        //    writer.Write(", ..] => ");
+        //    WriteContent(context with { State = context.State with { Targets = new WorkingSet(consumer) } });
+        //    writer.WriteLine(",");
+        //}
 
         writer.WriteLine("_ => new (default, default)");
         writer.Indent--;

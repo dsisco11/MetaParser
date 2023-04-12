@@ -16,6 +16,7 @@ internal static class CodeCommon
 
     public static SyntaxTokenList ParserClassModifiers = SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("public sealed partial"));
     public static SyntaxTokenList SyntaxPrivateStatic = SyntaxFactory.TokenList(SyntaxFactory.ParseTokens("private static"));
+    public static TypeSyntax TypeStageOutput = SyntaxFactory.ParseTypeName(StageOutput);
     internal static readonly string s_generatedCodeAttributeSource = $@"
 [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{_assemblyName.Name}"", ""{_assemblyName.Version}"")]
 ";
@@ -23,6 +24,9 @@ internal static class CodeCommon
 
     #region Constants
     public const string List = "global::System.Collections.Generic.List";
+    public const string ArrayPool = "global::System.Buffers.ArrayPool";
+    public const string MemoryPool = "global::System.Buffers.MemoryPool";
+    public const string IMemoryOwner = "global::System.Buffers.IMemoryOwner";
     public const string Span = "global::System.Span";
     public const string Memory = "global::System.Memory";
 
@@ -37,7 +41,10 @@ internal static class CodeCommon
     public const string TokenValueStructName = "ValueToken";
     public const string TokenRecordTypeName = "Token";
 
-    public const string TypeConsumerResult = "ConsumerResult";
+    public const string ConsumerResult = "ConsumerResult";
+    public const string StageInput = "StageInput";
+    public const string StageOutput = "StageOutput";
+    public const string StageInputChunk = "StageInputChunk";
 
     public const string LexerProcessingFunctionName = "TryProcessingLexerToken";
     public const string SyntaxProcessingFunctionName = "TryProcessingSyntaxToken";

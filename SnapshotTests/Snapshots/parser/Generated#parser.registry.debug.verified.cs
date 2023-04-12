@@ -1,313 +1,302 @@
 ﻿//HintName: parser.registry.debug.cs
 /*
 ```
-Token_0 | Name: lexer_whitespace | DependencyInfo: Token_0 | Order: 258 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_1 | Name: lexer_newline | DependencyInfo: Token_1 | Order: 259 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_2 | Name: lexer_keyword_var | DependencyInfo: Token_2 | Order: 289 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
-Token_3 | Name: lexer_keyword_vars | DependencyInfo: Token_3 | Order: 290 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
-Token_4 | Name: lexer_keyword_function | DependencyInfo: Token_4 | Order: 291 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
-Token_5 | Name: lexer_keyword_byte | DependencyInfo: Token_5 | Order: 292 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
-Token_6 | Name: lexer_keyword_short | DependencyInfo: Token_6 | Order: 293 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
-Token_7 | Name: lexer_keyword_int | DependencyInfo: Token_7 | Order: 294 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
-Token_8 | Name: lexer_keyword_uint | DependencyInfo: Token_8 | Order: 295 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
-Token_9 | Name: lexer_keyword_float | DependencyInfo: Token_9 | Order: 296 | IsRecursive: False | TreeDepth: [4, 4] | NodeDepth: [0, 0]
-Token_10 | Name: lexer_char_open_bracket | DependencyInfo: Token_10 | Order: 268 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_11 | Name: lexer_char_close_bracket | DependencyInfo: Token_11 | Order: 269 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_12 | Name: lexer_char_open_sqbracket | DependencyInfo: Token_12 | Order: 270 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_13 | Name: lexer_char_close_sqbracket | DependencyInfo: Token_13 | Order: 271 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_14 | Name: lexer_char_open_parenthesis | DependencyInfo: Token_14 | Order: 272 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_15 | Name: lexer_char_close_parenthesis | DependencyInfo: Token_15 | Order: 273 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_16 | Name: lexer_char_colon | DependencyInfo: Token_16 | Order: 274 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_17 | Name: lexer_char_semicolon | DependencyInfo: Token_17 | Order: 275 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_18 | Name: lexer_char_asterisk | DependencyInfo: Token_18 | Order: 276 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_19 | Name: lexer_char_at_symbol | DependencyInfo: Token_19 | Order: 277 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_20 | Name: lexer_char_single_quote | DependencyInfo: Token_20 | Order: 278 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_21 | Name: lexer_char_double_quote | DependencyInfo: Token_21 | Order: 279 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_22 | Name: lexer_char_solidus | DependencyInfo: Token_22 | Order: 280 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_23 | Name: lexer_char_reverse_solidus | DependencyInfo: Token_23 | Order: 281 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_24 | Name: lexer_digits | DependencyInfo: Token_24 | Order: 282 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Token_25 | Name: lexer_identifier | DependencyInfo: Token_25 | Order: 299 | IsRecursive: False | TreeDepth: [3, 4] | NodeDepth: [0, 0]
-Token_26 | Name: lexer_comment | DependencyInfo: Token_26 | Order: 300 | IsRecursive: False | TreeDepth: [3, 4] | NodeDepth: [0, 0]
-Token_27 | Name: syntax_typename | DependencyInfo: Token_27 | Order: 302 | IsRecursive: False | TreeDepth: [3, 5] | NodeDepth: [1, 1]
-Token_28 | Name: syntax_string_single_line | DependencyInfo: Token_28 | Order: 301 | IsRecursive: False | TreeDepth: [3, 4] | NodeDepth: [1, 1]
-Token_29 | Name: syntax_string_multi_line | DependencyInfo: Token_29 | Order: 297 | IsRecursive: False | TreeDepth: [3, 4] | NodeDepth: [1, 1]
-Token_30 | Name: syntax_comment | DependencyInfo: Token_30 | Order: 298 | IsRecursive: False | TreeDepth: [3, 4] | NodeDepth: [1, 1]
-Token_31 | Name: syntax_declaration | DependencyInfo: Token_31 | Order: 303 | IsRecursive: False | TreeDepth: [3, 5] | NodeDepth: [1, 1]
-Token_32 | Name: syntax_codeblock | DependencyInfo: Token_32 | Order: 305 | IsRecursive: False | TreeDepth: [3, 6] | NodeDepth: [1, 2]
-Token_33 | Name: syntax_program | DependencyInfo: Token_33 | Order: 304 | IsRecursive: False | TreeDepth: [3, 5] | NodeDepth: [1, 1]
+Token_0 | Name: lexer_whitespace | DependencyInfo: NodeData { Order = 0, Depth = 0, IsRecursive = False }
+Token_1 | Name: lexer_newline | DependencyInfo: NodeData { Order = 1, Depth = 0, IsRecursive = False }
+Token_2 | Name: lexer_keyword_var | DependencyInfo: NodeData { Order = 2, Depth = 0, IsRecursive = False }
+Token_3 | Name: lexer_keyword_vars | DependencyInfo: NodeData { Order = 3, Depth = 0, IsRecursive = False }
+Token_4 | Name: lexer_keyword_function | DependencyInfo: NodeData { Order = 4, Depth = 0, IsRecursive = False }
+Token_5 | Name: lexer_keyword_byte | DependencyInfo: NodeData { Order = 5, Depth = 0, IsRecursive = False }
+Token_6 | Name: lexer_keyword_short | DependencyInfo: NodeData { Order = 6, Depth = 0, IsRecursive = False }
+Token_7 | Name: lexer_keyword_int | DependencyInfo: NodeData { Order = 7, Depth = 0, IsRecursive = False }
+Token_8 | Name: lexer_keyword_uint | DependencyInfo: NodeData { Order = 8, Depth = 0, IsRecursive = False }
+Token_9 | Name: lexer_keyword_float | DependencyInfo: NodeData { Order = 9, Depth = 0, IsRecursive = False }
+Token_10 | Name: lexer_char_open_bracket | DependencyInfo: NodeData { Order = 10, Depth = 0, IsRecursive = False }
+Token_11 | Name: lexer_char_close_bracket | DependencyInfo: NodeData { Order = 11, Depth = 0, IsRecursive = False }
+Token_12 | Name: lexer_char_open_sqbracket | DependencyInfo: NodeData { Order = 12, Depth = 0, IsRecursive = False }
+Token_13 | Name: lexer_char_close_sqbracket | DependencyInfo: NodeData { Order = 13, Depth = 0, IsRecursive = False }
+Token_14 | Name: lexer_char_open_parenthesis | DependencyInfo: NodeData { Order = 14, Depth = 0, IsRecursive = False }
+Token_15 | Name: lexer_char_close_parenthesis | DependencyInfo: NodeData { Order = 15, Depth = 0, IsRecursive = False }
+Token_16 | Name: lexer_char_colon | DependencyInfo: NodeData { Order = 16, Depth = 0, IsRecursive = False }
+Token_17 | Name: lexer_char_semicolon | DependencyInfo: NodeData { Order = 17, Depth = 0, IsRecursive = False }
+Token_18 | Name: lexer_char_asterisk | DependencyInfo: NodeData { Order = 18, Depth = 0, IsRecursive = False }
+Token_19 | Name: lexer_char_at_symbol | DependencyInfo: NodeData { Order = 19, Depth = 0, IsRecursive = False }
+Token_20 | Name: lexer_char_single_quote | DependencyInfo: NodeData { Order = 20, Depth = 0, IsRecursive = False }
+Token_21 | Name: lexer_char_double_quote | DependencyInfo: NodeData { Order = 21, Depth = 0, IsRecursive = False }
+Token_22 | Name: lexer_char_solidus | DependencyInfo: NodeData { Order = 22, Depth = 0, IsRecursive = False }
+Token_23 | Name: lexer_char_reverse_solidus | DependencyInfo: NodeData { Order = 23, Depth = 0, IsRecursive = False }
+Token_24 | Name: lexer_digits | DependencyInfo: NodeData { Order = 24, Depth = 0, IsRecursive = False }
+Token_25 | Name: lexer_identifier | DependencyInfo: NodeData { Order = 25, Depth = 0, IsRecursive = False }
+Token_26 | Name: lexer_comment | DependencyInfo: NodeData { Order = 26, Depth = 0, IsRecursive = False }
+Token_27 | Name: syntax_typename | DependencyInfo: NodeData { Order = 27, Depth = 1, IsRecursive = False }
+Token_28 | Name: syntax_string_single_line | DependencyInfo: NodeData { Order = 28, Depth = 1, IsRecursive = False }
+Token_29 | Name: syntax_string_multi_line | DependencyInfo: NodeData { Order = 29, Depth = 1, IsRecursive = False }
+Token_30 | Name: syntax_comment | DependencyInfo: NodeData { Order = 30, Depth = 1, IsRecursive = False }
+Token_31 | Name: syntax_declaration | DependencyInfo: NodeData { Order = 31, Depth = 1, IsRecursive = False }
+Token_32 | Name: syntax_codeblock | DependencyInfo: NodeData { Order = 33, Depth = 2, IsRecursive = False }
+Token_33 | Name: syntax_program | DependencyInfo: NodeData { Order = 32, Depth = 1, IsRecursive = False }
 
-Consumer_0 | Order: 213 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_1 | Order: 214 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_2 | Order: 260 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Consumer_3 | Order: 261 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Consumer_4 | Order: 262 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Consumer_5 | Order: 263 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Consumer_6 | Order: 264 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Consumer_7 | Order: 265 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Consumer_8 | Order: 266 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Consumer_9 | Order: 267 | IsRecursive: False | TreeDepth: [3, 3] | NodeDepth: [0, 0]
-Consumer_10 | Order: 223 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_11 | Order: 224 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_12 | Order: 225 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_13 | Order: 226 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_14 | Order: 227 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_15 | Order: 228 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_16 | Order: 229 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_17 | Order: 230 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_18 | Order: 231 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_19 | Order: 232 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_20 | Order: 233 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_21 | Order: 234 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_22 | Order: 235 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_23 | Order: 236 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_24 | Order: 237 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_25 | Order: 283 | IsRecursive: False | TreeDepth: [2, 3] | NodeDepth: [0, 0]
-Consumer_26 | Order: 284 | IsRecursive: False | TreeDepth: [2, 3] | NodeDepth: [0, 0]
-Consumer_27 | Order: 285 | IsRecursive: False | TreeDepth: [2, 3] | NodeDepth: [0, 0]
-Consumer_28 | Order: 242 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_29 | Order: 243 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_30 | Order: 244 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_31 | Order: 245 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_32 | Order: 246 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_33 | Order: 247 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_34 | Order: 248 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_35 | Order: 286 | IsRecursive: False | TreeDepth: [2, 3] | NodeDepth: [0, 0]
-Consumer_36 | Order: 287 | IsRecursive: False | TreeDepth: [2, 3] | NodeDepth: [0, 0]
-Consumer_37 | Order: 251 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_38 | Order: 252 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_39 | Order: 253 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_40 | Order: 254 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_41 | Order: 255 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_42 | Order: 256 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [0, 0]
-Consumer_43 | Order: 288 | IsRecursive: False | TreeDepth: [2, 3] | NodeDepth: [0, 0]
+NodeData { Order = 0, Depth = 0, IsRecursive = False }
+NodeData { Order = 1, Depth = 0, IsRecursive = False }
+NodeData { Order = 2, Depth = 0, IsRecursive = False }
+NodeData { Order = 3, Depth = 0, IsRecursive = False }
+NodeData { Order = 4, Depth = 0, IsRecursive = False }
+NodeData { Order = 5, Depth = 0, IsRecursive = False }
+NodeData { Order = 6, Depth = 0, IsRecursive = False }
+NodeData { Order = 7, Depth = 0, IsRecursive = False }
+NodeData { Order = 8, Depth = 0, IsRecursive = False }
+NodeData { Order = 9, Depth = 0, IsRecursive = False }
+NodeData { Order = 10, Depth = 0, IsRecursive = False }
+NodeData { Order = 11, Depth = 0, IsRecursive = False }
+NodeData { Order = 12, Depth = 0, IsRecursive = False }
+NodeData { Order = 13, Depth = 0, IsRecursive = False }
+NodeData { Order = 14, Depth = 0, IsRecursive = False }
+NodeData { Order = 15, Depth = 0, IsRecursive = False }
+NodeData { Order = 16, Depth = 0, IsRecursive = False }
+NodeData { Order = 17, Depth = 0, IsRecursive = False }
+NodeData { Order = 18, Depth = 0, IsRecursive = False }
+NodeData { Order = 19, Depth = 0, IsRecursive = False }
+NodeData { Order = 20, Depth = 0, IsRecursive = False }
+NodeData { Order = 21, Depth = 0, IsRecursive = False }
+NodeData { Order = 22, Depth = 0, IsRecursive = False }
+NodeData { Order = 23, Depth = 0, IsRecursive = False }
+NodeData { Order = 24, Depth = 0, IsRecursive = False }
+NodeData { Order = 25, Depth = 0, IsRecursive = False }
+NodeData { Order = 26, Depth = 0, IsRecursive = False }
+NodeData { Order = 27, Depth = 0, IsRecursive = False }
+NodeData { Order = 28, Depth = 0, IsRecursive = False }
+NodeData { Order = 29, Depth = 0, IsRecursive = False }
+NodeData { Order = 30, Depth = 0, IsRecursive = False }
+NodeData { Order = 31, Depth = 0, IsRecursive = False }
+NodeData { Order = 32, Depth = 0, IsRecursive = False }
+NodeData { Order = 33, Depth = 0, IsRecursive = False }
+NodeData { Order = 34, Depth = 0, IsRecursive = False }
+NodeData { Order = 35, Depth = 0, IsRecursive = False }
+NodeData { Order = 36, Depth = 0, IsRecursive = False }
+NodeData { Order = 37, Depth = 0, IsRecursive = False }
+NodeData { Order = 38, Depth = 0, IsRecursive = False }
+NodeData { Order = 39, Depth = 0, IsRecursive = False }
+NodeData { Order = 40, Depth = 0, IsRecursive = False }
+NodeData { Order = 41, Depth = 0, IsRecursive = False }
+NodeData { Order = 42, Depth = 0, IsRecursive = False }
+NodeData { Order = 43, Depth = 0, IsRecursive = False }
 
-Pattern_0 | Order: 0 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_1 | Order: 1 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_2 | Order: 2 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_3 | Order: 142 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_4 | Order: 3 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_5 | Order: 4 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_6 | Order: 5 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_7 | Order: 143 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_8 | Order: 6 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_9 | Order: 7 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_10 | Order: 144 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_11 | Order: 8 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_12 | Order: 9 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_13 | Order: 145 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_14 | Order: 10 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_15 | Order: 11 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_16 | Order: 12 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_17 | Order: 146 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_18 | Order: 215 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_19 | Order: 13 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_20 | Order: 14 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_21 | Order: 15 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_22 | Order: 16 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_23 | Order: 147 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_24 | Order: 216 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_25 | Order: 17 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_26 | Order: 18 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_27 | Order: 19 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_28 | Order: 20 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_29 | Order: 21 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_30 | Order: 22 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_31 | Order: 23 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_32 | Order: 24 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_33 | Order: 148 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_34 | Order: 217 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_35 | Order: 25 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_36 | Order: 26 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_37 | Order: 27 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_38 | Order: 28 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_39 | Order: 149 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_40 | Order: 218 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_41 | Order: 29 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_42 | Order: 30 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_43 | Order: 31 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_44 | Order: 32 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_45 | Order: 33 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_46 | Order: 150 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_47 | Order: 219 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_48 | Order: 34 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_49 | Order: 35 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_50 | Order: 36 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_51 | Order: 151 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_52 | Order: 220 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_53 | Order: 37 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_54 | Order: 38 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_55 | Order: 39 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_56 | Order: 40 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_57 | Order: 152 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_58 | Order: 221 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_59 | Order: 41 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_60 | Order: 42 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_61 | Order: 43 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_62 | Order: 44 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_63 | Order: 45 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_64 | Order: 153 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_65 | Order: 222 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_66 | Order: 46 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_67 | Order: 154 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_68 | Order: 47 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_69 | Order: 155 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_70 | Order: 48 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_71 | Order: 156 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_72 | Order: 49 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_73 | Order: 157 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_74 | Order: 50 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_75 | Order: 158 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_76 | Order: 51 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_77 | Order: 159 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_78 | Order: 52 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_79 | Order: 160 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_80 | Order: 53 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_81 | Order: 161 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_82 | Order: 54 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_83 | Order: 162 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_84 | Order: 55 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_85 | Order: 163 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_86 | Order: 56 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_87 | Order: 164 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_88 | Order: 57 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_89 | Order: 165 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_90 | Order: 58 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_91 | Order: 166 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_92 | Order: 59 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_93 | Order: 167 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_94 | Order: 60 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_95 | Order: 168 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_96 | Order: 61 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_97 | Order: 169 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_98 | Order: 62 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_99 | Order: 63 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_100 | Order: 170 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_101 | Order: 64 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_102 | Order: 65 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_103 | Order: 66 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_104 | Order: 67 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_105 | Order: 68 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_106 | Order: 171 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_107 | Order: 238 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_108 | Order: 69 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_109 | Order: 70 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_110 | Order: 71 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_111 | Order: 72 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_112 | Order: 73 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_113 | Order: 172 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_114 | Order: 74 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_115 | Order: 75 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_116 | Order: 173 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_117 | Order: 239 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_118 | Order: 76 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_119 | Order: 77 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_120 | Order: 174 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_121 | Order: 240 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_122 | Order: 78 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_123 | Order: 175 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_124 | Order: 79 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_125 | Order: 80 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_126 | Order: 176 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_127 | Order: 241 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_128 | Order: 81 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_129 | Order: 177 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_130 | Order: 82 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_131 | Order: 178 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_132 | Order: 83 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_133 | Order: 179 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_134 | Order: 84 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_135 | Order: 180 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_136 | Order: 85 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_137 | Order: 181 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_138 | Order: 86 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_139 | Order: 182 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_140 | Order: 87 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_141 | Order: 183 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_142 | Order: 88 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_143 | Order: 184 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_144 | Order: 89 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_145 | Order: 185 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_146 | Order: 90 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_147 | Order: 186 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_148 | Order: 91 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_149 | Order: 187 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_150 | Order: 249 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_151 | Order: 92 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_152 | Order: 188 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_153 | Order: 93 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_154 | Order: 189 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_155 | Order: 94 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_156 | Order: 190 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_157 | Order: 95 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_158 | Order: 191 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_159 | Order: 250 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_160 | Order: 96 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_161 | Order: 192 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_162 | Order: 97 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_163 | Order: 193 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_164 | Order: 98 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_165 | Order: 99 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_166 | Order: 194 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_167 | Order: 100 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_168 | Order: 195 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_169 | Order: 101 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_170 | Order: 196 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_171 | Order: 102 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_172 | Order: 103 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_173 | Order: 197 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_174 | Order: 104 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_175 | Order: 198 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_176 | Order: 105 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_177 | Order: 199 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_178 | Order: 106 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_179 | Order: 107 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_180 | Order: 200 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_181 | Order: 108 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_182 | Order: 201 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_183 | Order: 109 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_184 | Order: 110 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_185 | Order: 202 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_186 | Order: 111 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_187 | Order: 112 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_188 | Order: 203 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_189 | Order: 113 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_190 | Order: 204 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_191 | Order: 114 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_192 | Order: 115 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_193 | Order: 205 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_194 | Order: 116 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_195 | Order: 206 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_196 | Order: 117 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_197 | Order: 207 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_198 | Order: 118 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_199 | Order: 208 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_200 | Order: 119 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_201 | Order: 209 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_202 | Order: 120 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_203 | Order: 121 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_204 | Order: 210 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_205 | Order: 122 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_206 | Order: 123 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_207 | Order: 124 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_208 | Order: 125 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_209 | Order: 126 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_210 | Order: 127 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_211 | Order: 128 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_212 | Order: 129 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_213 | Order: 130 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_214 | Order: 131 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_215 | Order: 211 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
-Pattern_216 | Order: 257 | IsRecursive: False | TreeDepth: [2, 2] | NodeDepth: [2, 2]
-Pattern_217 | Order: 132 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_218 | Order: 133 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_219 | Order: 134 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_220 | Order: 135 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_221 | Order: 136 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_222 | Order: 137 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_223 | Order: 138 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_224 | Order: 139 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_225 | Order: 140 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_226 | Order: 141 | IsRecursive: False | TreeDepth: [0, 0] | NodeDepth: [0, 0]
-Pattern_227 | Order: 212 | IsRecursive: False | TreeDepth: [1, 1] | NodeDepth: [1, 1]
+NodeData { Order = 0, Depth = 0, IsRecursive = False }
+NodeData { Order = 1, Depth = 0, IsRecursive = False }
+NodeData { Order = 2, Depth = 0, IsRecursive = False }
+NodeData { Order = 142, Depth = 1, IsRecursive = False }
+NodeData { Order = 3, Depth = 0, IsRecursive = False }
+NodeData { Order = 4, Depth = 0, IsRecursive = False }
+NodeData { Order = 5, Depth = 0, IsRecursive = False }
+NodeData { Order = 143, Depth = 1, IsRecursive = False }
+NodeData { Order = 6, Depth = 0, IsRecursive = False }
+NodeData { Order = 7, Depth = 0, IsRecursive = False }
+NodeData { Order = 144, Depth = 1, IsRecursive = False }
+NodeData { Order = 8, Depth = 0, IsRecursive = False }
+NodeData { Order = 9, Depth = 0, IsRecursive = False }
+NodeData { Order = 145, Depth = 1, IsRecursive = False }
+NodeData { Order = 10, Depth = 0, IsRecursive = False }
+NodeData { Order = 11, Depth = 0, IsRecursive = False }
+NodeData { Order = 12, Depth = 0, IsRecursive = False }
+NodeData { Order = 146, Depth = 1, IsRecursive = False }
+NodeData { Order = 13, Depth = 0, IsRecursive = False }
+NodeData { Order = 14, Depth = 0, IsRecursive = False }
+NodeData { Order = 15, Depth = 0, IsRecursive = False }
+NodeData { Order = 16, Depth = 0, IsRecursive = False }
+NodeData { Order = 147, Depth = 1, IsRecursive = False }
+NodeData { Order = 17, Depth = 0, IsRecursive = False }
+NodeData { Order = 18, Depth = 0, IsRecursive = False }
+NodeData { Order = 19, Depth = 0, IsRecursive = False }
+NodeData { Order = 20, Depth = 0, IsRecursive = False }
+NodeData { Order = 21, Depth = 0, IsRecursive = False }
+NodeData { Order = 22, Depth = 0, IsRecursive = False }
+NodeData { Order = 23, Depth = 0, IsRecursive = False }
+NodeData { Order = 24, Depth = 0, IsRecursive = False }
+NodeData { Order = 148, Depth = 1, IsRecursive = False }
+NodeData { Order = 25, Depth = 0, IsRecursive = False }
+NodeData { Order = 26, Depth = 0, IsRecursive = False }
+NodeData { Order = 27, Depth = 0, IsRecursive = False }
+NodeData { Order = 28, Depth = 0, IsRecursive = False }
+NodeData { Order = 149, Depth = 1, IsRecursive = False }
+NodeData { Order = 29, Depth = 0, IsRecursive = False }
+NodeData { Order = 30, Depth = 0, IsRecursive = False }
+NodeData { Order = 31, Depth = 0, IsRecursive = False }
+NodeData { Order = 32, Depth = 0, IsRecursive = False }
+NodeData { Order = 33, Depth = 0, IsRecursive = False }
+NodeData { Order = 150, Depth = 1, IsRecursive = False }
+NodeData { Order = 34, Depth = 0, IsRecursive = False }
+NodeData { Order = 35, Depth = 0, IsRecursive = False }
+NodeData { Order = 36, Depth = 0, IsRecursive = False }
+NodeData { Order = 151, Depth = 1, IsRecursive = False }
+NodeData { Order = 37, Depth = 0, IsRecursive = False }
+NodeData { Order = 38, Depth = 0, IsRecursive = False }
+NodeData { Order = 39, Depth = 0, IsRecursive = False }
+NodeData { Order = 40, Depth = 0, IsRecursive = False }
+NodeData { Order = 152, Depth = 1, IsRecursive = False }
+NodeData { Order = 41, Depth = 0, IsRecursive = False }
+NodeData { Order = 42, Depth = 0, IsRecursive = False }
+NodeData { Order = 43, Depth = 0, IsRecursive = False }
+NodeData { Order = 44, Depth = 0, IsRecursive = False }
+NodeData { Order = 45, Depth = 0, IsRecursive = False }
+NodeData { Order = 153, Depth = 1, IsRecursive = False }
+NodeData { Order = 46, Depth = 0, IsRecursive = False }
+NodeData { Order = 154, Depth = 1, IsRecursive = False }
+NodeData { Order = 47, Depth = 0, IsRecursive = False }
+NodeData { Order = 155, Depth = 1, IsRecursive = False }
+NodeData { Order = 48, Depth = 0, IsRecursive = False }
+NodeData { Order = 156, Depth = 1, IsRecursive = False }
+NodeData { Order = 49, Depth = 0, IsRecursive = False }
+NodeData { Order = 157, Depth = 1, IsRecursive = False }
+NodeData { Order = 50, Depth = 0, IsRecursive = False }
+NodeData { Order = 158, Depth = 1, IsRecursive = False }
+NodeData { Order = 51, Depth = 0, IsRecursive = False }
+NodeData { Order = 159, Depth = 1, IsRecursive = False }
+NodeData { Order = 52, Depth = 0, IsRecursive = False }
+NodeData { Order = 160, Depth = 1, IsRecursive = False }
+NodeData { Order = 53, Depth = 0, IsRecursive = False }
+NodeData { Order = 161, Depth = 1, IsRecursive = False }
+NodeData { Order = 54, Depth = 0, IsRecursive = False }
+NodeData { Order = 162, Depth = 1, IsRecursive = False }
+NodeData { Order = 55, Depth = 0, IsRecursive = False }
+NodeData { Order = 163, Depth = 1, IsRecursive = False }
+NodeData { Order = 56, Depth = 0, IsRecursive = False }
+NodeData { Order = 164, Depth = 1, IsRecursive = False }
+NodeData { Order = 57, Depth = 0, IsRecursive = False }
+NodeData { Order = 165, Depth = 1, IsRecursive = False }
+NodeData { Order = 58, Depth = 0, IsRecursive = False }
+NodeData { Order = 166, Depth = 1, IsRecursive = False }
+NodeData { Order = 59, Depth = 0, IsRecursive = False }
+NodeData { Order = 167, Depth = 1, IsRecursive = False }
+NodeData { Order = 60, Depth = 0, IsRecursive = False }
+NodeData { Order = 168, Depth = 1, IsRecursive = False }
+NodeData { Order = 61, Depth = 0, IsRecursive = False }
+NodeData { Order = 169, Depth = 1, IsRecursive = False }
+NodeData { Order = 62, Depth = 0, IsRecursive = False }
+NodeData { Order = 63, Depth = 0, IsRecursive = False }
+NodeData { Order = 170, Depth = 1, IsRecursive = False }
+NodeData { Order = 64, Depth = 0, IsRecursive = False }
+NodeData { Order = 65, Depth = 0, IsRecursive = False }
+NodeData { Order = 66, Depth = 0, IsRecursive = False }
+NodeData { Order = 67, Depth = 0, IsRecursive = False }
+NodeData { Order = 68, Depth = 0, IsRecursive = False }
+NodeData { Order = 171, Depth = 1, IsRecursive = False }
+NodeData { Order = 213, Depth = 2, IsRecursive = False }
+NodeData { Order = 69, Depth = 0, IsRecursive = False }
+NodeData { Order = 70, Depth = 0, IsRecursive = False }
+NodeData { Order = 71, Depth = 0, IsRecursive = False }
+NodeData { Order = 72, Depth = 0, IsRecursive = False }
+NodeData { Order = 73, Depth = 0, IsRecursive = False }
+NodeData { Order = 172, Depth = 1, IsRecursive = False }
+NodeData { Order = 74, Depth = 0, IsRecursive = False }
+NodeData { Order = 75, Depth = 0, IsRecursive = False }
+NodeData { Order = 173, Depth = 1, IsRecursive = False }
+NodeData { Order = 76, Depth = 0, IsRecursive = False }
+NodeData { Order = 77, Depth = 0, IsRecursive = False }
+NodeData { Order = 174, Depth = 1, IsRecursive = False }
+NodeData { Order = 78, Depth = 0, IsRecursive = False }
+NodeData { Order = 175, Depth = 1, IsRecursive = False }
+NodeData { Order = 79, Depth = 0, IsRecursive = False }
+NodeData { Order = 80, Depth = 0, IsRecursive = False }
+NodeData { Order = 176, Depth = 1, IsRecursive = False }
+NodeData { Order = 81, Depth = 0, IsRecursive = False }
+NodeData { Order = 177, Depth = 1, IsRecursive = False }
+NodeData { Order = 82, Depth = 0, IsRecursive = False }
+NodeData { Order = 178, Depth = 1, IsRecursive = False }
+NodeData { Order = 83, Depth = 0, IsRecursive = False }
+NodeData { Order = 179, Depth = 1, IsRecursive = False }
+NodeData { Order = 84, Depth = 0, IsRecursive = False }
+NodeData { Order = 180, Depth = 1, IsRecursive = False }
+NodeData { Order = 85, Depth = 0, IsRecursive = False }
+NodeData { Order = 181, Depth = 1, IsRecursive = False }
+NodeData { Order = 86, Depth = 0, IsRecursive = False }
+NodeData { Order = 182, Depth = 1, IsRecursive = False }
+NodeData { Order = 87, Depth = 0, IsRecursive = False }
+NodeData { Order = 183, Depth = 1, IsRecursive = False }
+NodeData { Order = 88, Depth = 0, IsRecursive = False }
+NodeData { Order = 184, Depth = 1, IsRecursive = False }
+NodeData { Order = 89, Depth = 0, IsRecursive = False }
+NodeData { Order = 185, Depth = 1, IsRecursive = False }
+NodeData { Order = 90, Depth = 0, IsRecursive = False }
+NodeData { Order = 186, Depth = 1, IsRecursive = False }
+NodeData { Order = 91, Depth = 0, IsRecursive = False }
+NodeData { Order = 187, Depth = 1, IsRecursive = False }
+NodeData { Order = 214, Depth = 2, IsRecursive = False }
+NodeData { Order = 92, Depth = 0, IsRecursive = False }
+NodeData { Order = 188, Depth = 1, IsRecursive = False }
+NodeData { Order = 93, Depth = 0, IsRecursive = False }
+NodeData { Order = 189, Depth = 1, IsRecursive = False }
+NodeData { Order = 94, Depth = 0, IsRecursive = False }
+NodeData { Order = 190, Depth = 1, IsRecursive = False }
+NodeData { Order = 95, Depth = 0, IsRecursive = False }
+NodeData { Order = 191, Depth = 1, IsRecursive = False }
+NodeData { Order = 215, Depth = 2, IsRecursive = False }
+NodeData { Order = 96, Depth = 0, IsRecursive = False }
+NodeData { Order = 192, Depth = 1, IsRecursive = False }
+NodeData { Order = 97, Depth = 0, IsRecursive = False }
+NodeData { Order = 193, Depth = 1, IsRecursive = False }
+NodeData { Order = 98, Depth = 0, IsRecursive = False }
+NodeData { Order = 99, Depth = 0, IsRecursive = False }
+NodeData { Order = 194, Depth = 1, IsRecursive = False }
+NodeData { Order = 100, Depth = 0, IsRecursive = False }
+NodeData { Order = 195, Depth = 1, IsRecursive = False }
+NodeData { Order = 101, Depth = 0, IsRecursive = False }
+NodeData { Order = 196, Depth = 1, IsRecursive = False }
+NodeData { Order = 102, Depth = 0, IsRecursive = False }
+NodeData { Order = 103, Depth = 0, IsRecursive = False }
+NodeData { Order = 197, Depth = 1, IsRecursive = False }
+NodeData { Order = 104, Depth = 0, IsRecursive = False }
+NodeData { Order = 198, Depth = 1, IsRecursive = False }
+NodeData { Order = 105, Depth = 0, IsRecursive = False }
+NodeData { Order = 199, Depth = 1, IsRecursive = False }
+NodeData { Order = 106, Depth = 0, IsRecursive = False }
+NodeData { Order = 107, Depth = 0, IsRecursive = False }
+NodeData { Order = 200, Depth = 1, IsRecursive = False }
+NodeData { Order = 108, Depth = 0, IsRecursive = False }
+NodeData { Order = 201, Depth = 1, IsRecursive = False }
+NodeData { Order = 109, Depth = 0, IsRecursive = False }
+NodeData { Order = 110, Depth = 0, IsRecursive = False }
+NodeData { Order = 202, Depth = 1, IsRecursive = False }
+NodeData { Order = 111, Depth = 0, IsRecursive = False }
+NodeData { Order = 112, Depth = 0, IsRecursive = False }
+NodeData { Order = 203, Depth = 1, IsRecursive = False }
+NodeData { Order = 113, Depth = 0, IsRecursive = False }
+NodeData { Order = 204, Depth = 1, IsRecursive = False }
+NodeData { Order = 114, Depth = 0, IsRecursive = False }
+NodeData { Order = 115, Depth = 0, IsRecursive = False }
+NodeData { Order = 205, Depth = 1, IsRecursive = False }
+NodeData { Order = 116, Depth = 0, IsRecursive = False }
+NodeData { Order = 206, Depth = 1, IsRecursive = False }
+NodeData { Order = 117, Depth = 0, IsRecursive = False }
+NodeData { Order = 207, Depth = 1, IsRecursive = False }
+NodeData { Order = 118, Depth = 0, IsRecursive = False }
+NodeData { Order = 208, Depth = 1, IsRecursive = False }
+NodeData { Order = 119, Depth = 0, IsRecursive = False }
+NodeData { Order = 209, Depth = 1, IsRecursive = False }
+NodeData { Order = 120, Depth = 0, IsRecursive = False }
+NodeData { Order = 121, Depth = 0, IsRecursive = False }
+NodeData { Order = 210, Depth = 1, IsRecursive = False }
+NodeData { Order = 122, Depth = 0, IsRecursive = False }
+NodeData { Order = 123, Depth = 0, IsRecursive = False }
+NodeData { Order = 124, Depth = 0, IsRecursive = False }
+NodeData { Order = 125, Depth = 0, IsRecursive = False }
+NodeData { Order = 126, Depth = 0, IsRecursive = False }
+NodeData { Order = 127, Depth = 0, IsRecursive = False }
+NodeData { Order = 128, Depth = 0, IsRecursive = False }
+NodeData { Order = 129, Depth = 0, IsRecursive = False }
+NodeData { Order = 130, Depth = 0, IsRecursive = False }
+NodeData { Order = 131, Depth = 0, IsRecursive = False }
+NodeData { Order = 211, Depth = 1, IsRecursive = False }
+NodeData { Order = 216, Depth = 2, IsRecursive = False }
+NodeData { Order = 132, Depth = 0, IsRecursive = False }
+NodeData { Order = 133, Depth = 0, IsRecursive = False }
+NodeData { Order = 134, Depth = 0, IsRecursive = False }
+NodeData { Order = 135, Depth = 0, IsRecursive = False }
+NodeData { Order = 136, Depth = 0, IsRecursive = False }
+NodeData { Order = 137, Depth = 0, IsRecursive = False }
+NodeData { Order = 138, Depth = 0, IsRecursive = False }
+NodeData { Order = 139, Depth = 0, IsRecursive = False }
+NodeData { Order = 140, Depth = 0, IsRecursive = False }
+NodeData { Order = 141, Depth = 0, IsRecursive = False }
+NodeData { Order = 212, Depth = 1, IsRecursive = False }
 ```
 */

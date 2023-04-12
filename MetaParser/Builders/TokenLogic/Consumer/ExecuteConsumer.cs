@@ -1,6 +1,7 @@
 ﻿using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
 
+using System;
 using System.Diagnostics;
 using System.Linq;
 
@@ -11,13 +12,14 @@ internal class ExecuteConsumer : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)
     {
+        var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
+
         Debug.Assert(context.State.Targets.Consumers.Length == 1);
-        var writer = context.Writer;
         var consumer = context.State.Targets.Consumers.Single();
 
         if (consumer.IsConstant)
         {
-            writer.Write($"new {TypeConsumerResult} ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Start!.Length})");
+            writer.Write($"new {ConsumerResult} ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Start!.Length})");
         }
         else
         {

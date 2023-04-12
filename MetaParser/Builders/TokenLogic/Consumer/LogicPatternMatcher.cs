@@ -14,7 +14,6 @@ internal class LogicPatternMatcher : MetaCodeBuilder
 
         if (!pattern.IsInlinable && pattern.IsConditional && pattern.Length == 1)
         {// This is a single non-inlineable item, so we execute the function
-            //writer.Write(Format(pattern));
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context);
             writer.Write($"({context.State.ActiveBufferName})");
         }
@@ -26,7 +25,6 @@ internal class LogicPatternMatcher : MetaCodeBuilder
             writer.Indent++;
             foreach (var item in pattern)
             {
-                //writer.Write(Format(item));
                 context.Config.CodeFactory.Get_Pattern_Writer()
                     .WriteTo(context with { State = context.State with { Targets = new WorkingSet(item) } });
                 writer.WriteLine(" => true,");
@@ -38,7 +36,6 @@ internal class LogicPatternMatcher : MetaCodeBuilder
         else if (pattern.IsDeterministic && pattern.Length == 1)
         {// This is a single inlineable item, so do a length-1 buffer check
          // "buffer[0] == x"
-            //writer.Write($"{context.State.ActiveBufferName}[0] == {Format(pattern)}");
             writer.Write($"{context.State.ActiveBufferName}[0] == ");
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context);
         }
@@ -46,7 +43,6 @@ internal class LogicPatternMatcher : MetaCodeBuilder
         {// "buffer.StartsWith(stackalloc []{ x, y, z }"
             writer.Write(context.State.ActiveBufferName);
             writer.Write(".StartsWith(stackalloc []{ ");
-            //writer.Write(Format(pattern));
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context);
             writer.Write(" })");
         }
@@ -55,7 +51,6 @@ internal class LogicPatternMatcher : MetaCodeBuilder
             writer.Write(context.State.ActiveBufferName);
             writer.Write(" ");
             writer.Write("is ");
-            //writer.Write($"[ {Format(pattern)}, ..]");
             writer.Write($"[ ");
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context);
             writer.Write($", ..]");

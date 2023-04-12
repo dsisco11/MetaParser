@@ -31,7 +31,7 @@ internal record ResolvedNode
 
     public ResolvedNode(EntityKey key, ImmutableHashSet<EntityKey> incoming, ImmutableHashSet<EntityKey> outgoing, int order, bool isRecursive, NodeDepth? treeDepth, NodeDepth? nodeDepth)
     {
-        Key = key ?? throw new ArgumentNullException(nameof(key));
+        Key = key;
         Incoming = incoming;
         Outgoing = outgoing;
 

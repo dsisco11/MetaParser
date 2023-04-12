@@ -16,7 +16,7 @@ internal abstract record GraphEntity : IGraphEntity, IComparable<GraphEntity>
     #endregion
 
     #region Properties
-    public ResolvedNode DependencyInfo { get; set; } = ResolvedNode.Default;
+    public NodeData GraphInfo { get; set; } = NodeData.Default;
     #endregion
 
     #region Accessors

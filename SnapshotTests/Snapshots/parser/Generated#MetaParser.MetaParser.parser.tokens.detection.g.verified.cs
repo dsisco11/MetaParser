@@ -3,44 +3,12 @@ namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        private static bool starts_syntax_typename_token(global::System.ReadOnlySpan<byte> buffer0)
-        {
-            return buffer0 switch
-            {
-                [TokenId.Keyword_Var, ..] => true,
-                [TokenId.Keyword_Vars, ..] => true,
-                [TokenId.Keyword_Byte, ..] => true,
-                [TokenId.Keyword_Short, ..] => true,
-                [TokenId.Keyword_Int, ..] => true,
-                [TokenId.Keyword_Uint, ..] => true,
-                [TokenId.Keyword_Float, ..] => true,
-                _ => false
-            };
-        }
-        private static bool starts_syntax_string_single_line_token(global::System.ReadOnlySpan<byte> buffer0)
-        {
-            return buffer0 switch
-            {
-                [TokenId.Char_Single_Quote, var buffer1] when () => true,
-                [TokenId.Char_Double_Quote, var buffer1] when () => true,
-                _ => false
-            };
-        }
-        private static bool starts_syntax_string_multi_line_token(global::System.ReadOnlySpan<byte> buffer0)
-        {
-            return buffer0 switch
-            {
-                [TokenId.Char_At_Symbol, TokenId.Char_Single_Quote, ..] => true,
-                [TokenId.Char_At_Symbol, TokenId.Char_Double_Quote, ..] => true,
-                _ => false
-            };
-        }
         private static bool starts_syntax_comment_token(global::System.ReadOnlySpan<byte> buffer0)
         {
             return buffer0 switch
             {
-                [TokenId.Char_Solidus, TokenId.Char_Solidus, ..] => true,
-                [TokenId.Char_Solidus, TokenId.Char_Asterisk, ..] => true,
+                [TokenId.Lexer_Char_Solidus, TokenId.Lexer_Char_Asterisk, ..] => true,
+                [TokenId.Lexer_Char_Solidus, TokenId.Lexer_Char_Solidus, ..] => true,
                 _ => false
             };
         }
@@ -48,15 +16,7 @@ namespace UnitTestParser
         {
             return buffer0 switch
             {
-                [TokenId.Identifier, TokenId.Char_Colon, ..] => true,
-                _ => false
-            };
-        }
-        private static bool starts_syntax_codeblock_token(global::System.ReadOnlySpan<byte> buffer0)
-        {
-            return buffer0 switch
-            {
-                [TokenId.Char_Open_Bracket, var buffer1] when (starts_declaration_token(buffer1)) => true,
+                [TokenId.Lexer_Identifier, TokenId.Lexer_Char_Colon, ..] => true,
                 _ => false
             };
         }
@@ -64,7 +24,47 @@ namespace UnitTestParser
         {
             return buffer0 switch
             {
-                [(TokenId.Keyword_Var or TokenId.Keyword_Function), (TokenId.Whitespace or TokenId.Identifier or TokenId.Whitespace or TokenId.Char_Open_Parenthesis or TokenId.Whitespace or TokenId.Char_Close_Parenthesis or TokenId.Whitespace or TokenId.Char_Open_Bracket or TokenId.Whitespace or TokenId.Char_Close_Bracket), var buffer1] when (starts_whitespace_token(buffer1) or starts_identifier_token(buffer1) or starts_whitespace_token(buffer1) or starts_char_open_parenthesis_token(buffer1) or starts_whitespace_token(buffer1) or starts_char_close_parenthesis_token(buffer1) or starts_whitespace_token(buffer1) or starts_char_open_bracket_token(buffer1) or starts_whitespace_token(buffer1) or starts_char_close_bracket_token(buffer1)) => true,
+                [(TokenId.Lexer_Keyword_Var or TokenId.Lexer_Keyword_Function), (TokenId.Lexer_Whitespace or TokenId.Lexer_Identifier or TokenId.Lexer_Whitespace or TokenId.Lexer_Char_Open_Parenthesis or TokenId.Lexer_Whitespace or TokenId.Lexer_Char_Close_Parenthesis or TokenId.Lexer_Whitespace or TokenId.Lexer_Char_Open_Bracket or TokenId.Lexer_Whitespace or TokenId.Lexer_Char_Close_Bracket), ..] => true,
+                _ => false
+            };
+        }
+        private static bool starts_syntax_string_multi_line_token(global::System.ReadOnlySpan<byte> buffer0)
+        {
+            return buffer0 switch
+            {
+                [TokenId.Lexer_Char_At_Symbol, TokenId.Lexer_Char_Double_Quote, ..] => true,
+                [TokenId.Lexer_Char_At_Symbol, TokenId.Lexer_Char_Single_Quote, ..] => true,
+                _ => false
+            };
+        }
+        private static bool starts_syntax_string_single_line_token(global::System.ReadOnlySpan<byte> buffer0)
+        {
+            return buffer0 switch
+            {
+                [TokenId.Lexer_Char_Single_Quote, ..] => true,
+                [TokenId.Lexer_Char_Double_Quote, ..] => true,
+                _ => false
+            };
+        }
+        private static bool starts_syntax_typename_token(global::System.ReadOnlySpan<byte> buffer0)
+        {
+            return buffer0 switch
+            {
+                [TokenId.Lexer_Keyword_Var, ..] => true,
+                [TokenId.Lexer_Keyword_Vars, ..] => true,
+                [TokenId.Lexer_Keyword_Byte, ..] => true,
+                [TokenId.Lexer_Keyword_Short, ..] => true,
+                [TokenId.Lexer_Keyword_Int, ..] => true,
+                [TokenId.Lexer_Keyword_Uint, ..] => true,
+                [TokenId.Lexer_Keyword_Float, ..] => true,
+                _ => false
+            };
+        }
+        private static bool starts_syntax_codeblock_token(global::System.ReadOnlySpan<byte> buffer0)
+        {
+            return buffer0 switch
+            {
+                [TokenId.Lexer_Char_Open_Bracket, ..] => true,
                 _ => false
             };
         }

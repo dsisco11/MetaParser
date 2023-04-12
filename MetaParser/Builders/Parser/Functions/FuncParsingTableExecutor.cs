@@ -3,6 +3,7 @@ using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
 
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
@@ -15,9 +16,8 @@ internal class FuncParsingTableExecutor : MetaCodeBuilder, IMetaCodeFunctionBuil
     public FunctionDefinition Get_Definition(ParserContext context)
     {
         var stage = context.State.Stage;
-        var funcInput = SyntaxFactory.ParseArgumentList($"{ReadOnlyMemory}<{stage.InputType}> {context.State.ActiveBufferName}");
-        var funcOutput = SyntaxFactory.ParseTypeName($"{List}<{stage.OutputType}>");
-        return new FunctionDefinition(SyntaxPrivateStatic, funcOutput, Format_Function_Name(context), funcInput);
+        var funcInput = SyntaxFactory.ParseArgumentList($"{StageInputChunk}<{stage.InputType}, {stage.OutputType}> {context.State.ActiveBufferName}");
+        return new FunctionDefinition(SyntaxPrivateStatic, TypeStageOutput, Format_Function_Name(context), funcInput);
     }
 
     protected override void Write(ParserContext context)
@@ -32,9 +32,12 @@ internal class FuncParsingTableExecutor : MetaCodeBuilder, IMetaCodeFunctionBuil
         protected override void Write(ParserContext context)
         {
             var stage = context.State.Stage;
-            var resultsBuilderType = SyntaxFactory.ParseTypeName($"{List}<{stage.OutputType}>");
-            const string VarNameResults = "results";
+            var resultsBuilderType = stage.OutputType;
             const string VarNameProcesserReturn = "processed";
+            const string VarNameOutputIndex = "outIndex";
+            const string VarNameInputIndex = "inIndex";
+            const string VarNameOutputId = "outId";
+            const string VarNameOutputLength = "outLength";
             var writer = context.Writer!;
 
             string VarBufferMajor = context.State.ActiveBufferName;
@@ -45,9 +48,12 @@ internal class FuncParsingTableExecutor : MetaCodeBuilder, IMetaCodeFunctionBuil
             context.Decrement_Active_Bufffer();
 
             writer.Indent++;
-            writer.WriteLine($"var {VarBufferMinor} = {VarBufferMajor};");
+            writer.WriteLine($"var {VarBufferMinor} = {VarBufferMajor}.Inputs;");
             writer.WriteLine($"var {VarBufferLocal} = {VarBufferMinor}.Span;");
-            writer.WriteLine($"var {VarNameResults} = new {resultsBuilderType}();");
+            writer.WriteLine($"int {VarNameInputIndex} = 0;");
+            writer.WriteLine($"int {VarNameOutputIndex} = 0;");
+            writer.WriteLine($"var {VarNameOutputId} = {VarBufferMajor}.Outputs;");
+            writer.WriteLine($"var {VarNameOutputLength} = {VarBufferMajor}.Lengths;");
             writer.WriteLine();
 
             writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");
@@ -62,7 +68,11 @@ internal class FuncParsingTableExecutor : MetaCodeBuilder, IMetaCodeFunctionBuil
             UnknownTokenPusher.Instance.WriteTo(context);
             writer.WriteLine();
             writer.WriteLine($"var consumed = {VarBufferMinor}.Slice(0, {VarNameProcesserReturn}.length);");
-            writer.WriteLine($"{VarNameResults}.Add( new {TokenValueStructName}({VarNameProcesserReturn}.id, consumed) );");
+            //writer.WriteLine($"{VarNameOutput}.Add( new {TokenValueStructName}({VarNameProcesserReturn}.id, consumed) );");
+            writer.WriteLine($"{VarNameOutputId}.Span[{VarNameOutputIndex}] = {VarNameProcesserReturn}.id;");
+            writer.WriteLine($"{VarNameOutputLength}.Span[{VarNameOutputIndex}] = {VarNameProcesserReturn}.length;");
+            writer.WriteLine($"{VarNameInputIndex} += {VarNameProcesserReturn}.length;");
+            writer.WriteLine($"{VarNameOutputIndex}++;");
             writer.WriteLine($"{VarBufferMinor} = {VarBufferMinor}.Slice({VarNameProcesserReturn}.length);");
             writer.WriteLine($"{VarBufferLocal} = {VarBufferMinor}.Span;");
             writer.Indent--;
@@ -81,7 +91,7 @@ internal class FuncParsingTableExecutor : MetaCodeBuilder, IMetaCodeFunctionBuil
             // Be sure to push unknown token if its lingering
             UnknownTokenPusher.Instance.WriteTo(context);
             writer.WriteLine();
-            writer.WriteLine($"return {VarNameResults}.ToArray();");
+            writer.WriteLine($"return new ({VarNameOutputIndex}, {VarNameInputIndex});");
         }
     }
 }

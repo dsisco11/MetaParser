@@ -22,47 +22,45 @@ internal class LogicSingleTokenDetector : MetaCodeBuilder
         Debug.Assert(context.State.Targets.Tokens.Length == 1);
 
         var targetToken = context.State.Targets.Tokens.Single();
+        var tokenConsumers = context.State.Targets.Consumers;
 
-        // TODO: Obsolete this once we move to the new lexer/parser split design
-        // Check if its possible for the token to appear in the stream already from a lower stage.
-        bool hasEarlierStages = targetToken.GetConsumers().Any(static (c) => c.Kind == EConsumerKind.Lexer);
-        if (hasEarlierStages)
-        {
-            writer.WriteLine($"[{Format_Token_Id_Const_Ref(targetToken)}, ..] => true,");
-        }
-
-        var tokenConsumers = context.State.Targets.Consumers.Where(static (c) => c.Kind == EConsumerKind.Syntax);
         foreach (var consumer in tokenConsumers)
         {
             writer.Write("[");
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context with { State = context.State with { Targets = new WorkingSet(consumer.Token, consumer, consumer.Start) } });
             writer.Write(", ");
 
-            if (consumer.Consume is not null)
-            {
-                writer.Write($"var {context.State.NextBufferName}] when (");
+            //if (consumer.Consume is not null)
+            //{
+            //    writer.Write($"var {context.State.NextBufferName}] when (");
 
-                bool first = true;
-                foreach (var pattern in consumer.Consume)
-                {
-                    //Debug.Assert(pattern is PatternTokenRef);
-                    if (!first)
-                    {
-                        writer.Write(" or ");
-                    }
-                    first = false;
+            //    bool first = true;
+            //    foreach (var pattern in consumer.Consume)
+            //    {
+            //        //Debug.Assert(pattern is PatternTokenRef);
+            //        if (!first)
+            //        {
+            //            writer.Write(" or ");
+            //        }
+            //        first = false;
 
-                    if (pattern is PatternTokenRef tokenRef)
-                    {
-                        writer.Write($"{Format_Token_Start_Detection_Function_Name(tokenRef.TokenName)}({context.State.NextBufferName})");
-                    }
-                }
-                writer.Write(")");
-            }
-            else
-            {
-                writer.Write("..]");
-            }
+            //        // TODO: We only have to check this token with a function IF the token is part of the same stage as us
+            //        if (pattern is PatternTokenRef tokenRef && tokenRef.GetToken().GraphInfo.Depth >= targetToken.GraphInfo.Depth)
+            //        {
+            //            writer.Write($"{Format_Token_Start_Detection_Function_Name(tokenRef.TokenName)}({context.State.NextBufferName})");
+            //        }
+            //        else
+            //        {
+            //            context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context with { State = context.State with { Targets = new WorkingSet(pattern) } });
+            //        }
+            //    }
+            //    writer.Write(")");
+            //}
+            //else
+            //{
+            //    writer.Write("..]");
+            //}
+            writer.Write("..]");
 
             writer.WriteLine(" => true,");
         }

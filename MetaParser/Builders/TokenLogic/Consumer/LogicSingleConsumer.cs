@@ -20,7 +20,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
 
         var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
         var consumer = context.State.Targets.Consumers.Single();
-        var detectionContext = context with { State = context.State with { Targets = new(new PatternEntity[1]) } };
+        var detectionContext = context with { State = context.State with { Targets = new(consumer.Token, consumer, new PatternEntity[1]) } };
 
 #if DEBUG
         write_debug_header(context);

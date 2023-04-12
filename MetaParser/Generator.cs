@@ -116,7 +116,7 @@ public partial class Generator : IIncrementalGenerator
 
         IncrementalValuesProvider<ParserContext> ctxRecursiveTokens = ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
         {
-            var tokens = context.Registry.Tokens.Where(static (entity) => entity.DependencyInfo.NodeDepth.Max > 0);
+            var tokens = context.Registry.Tokens.Where(static (entity) => entity.GraphInfo.Depth > 0);
             return (context with { State = context.State with { Targets = new WorkingSet(tokens) } });
         });
         #endregion
@@ -126,8 +126,7 @@ public partial class Generator : IIncrementalGenerator
         {
             context.Writer = new IndentedTextWriter(new StringWriter());
             var writer = context.Writer;
-            var graph = new DirectedGraph(context.DepsGraph);
-            DependencyGraph.Simplify_Graph(graph);
+            var graph = context.Registry.TokenGraph;
 
             var keys = graph.Nodes.Select(x => x.Key).ToList();
             var hierarchy = new Dictionary<EntityKey, IEnumerable<EntityKey>>();
@@ -187,13 +186,13 @@ public partial class Generator : IIncrementalGenerator
 
             foreach (var consumer in context.Registry.Consumers)
             {
-                writer.WriteLine(consumer.DependencyInfo);
+                writer.WriteLine(consumer.GraphInfo);
             }
             writer.WriteLine();
 
             foreach (var pattern in context.Registry.Patterns)
             {
-                writer.WriteLine(pattern.DependencyInfo);
+                writer.WriteLine(pattern.GraphInfo);
             }
             writer.WriteLine("```");
             writer.WriteLine("*/");

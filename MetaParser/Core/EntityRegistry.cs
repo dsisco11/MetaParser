@@ -18,6 +18,10 @@ internal class EntityRegistry
     private readonly Dictionary<NodeType, int> _tracker = new();
     private readonly Dictionary<EntityKey, GraphEntity> _entities = new();
     private readonly Dictionary<string, EntityKey> _entity_ids = new();
+
+    private readonly DirectedNodeGraph<EntityKey> _tokenGraph = new();
+    private readonly DirectedNodeGraph<EntityKey> _consumerGraph = new();
+    private readonly DirectedNodeGraph<EntityKey> _patternGraph = new();
     #endregion
 
     #region Accessors
@@ -26,6 +30,10 @@ internal class EntityRegistry
     public IEnumerable<TokenEntity> Tokens => GetEntitiesOfType<TokenEntity>(NodeType.Token);
     public IEnumerable<ConsumerEntity> Consumers => GetEntitiesOfType<ConsumerEntity>(NodeType.Consumer);
     public IEnumerable<PatternEntity> Patterns => GetEntitiesOfType<PatternEntity>(NodeType.Pattern);
+
+    internal DirectedNodeGraph<EntityKey> TokenGraph => _tokenGraph;
+    internal DirectedNodeGraph<EntityKey> ConsumerGraph => _consumerGraph;
+    internal DirectedNodeGraph<EntityKey> PatternGraph => _patternGraph;
     #endregion
 
     #region Item Management
@@ -122,6 +130,71 @@ internal class EntityRegistry
             {
                 yield return (T)entry.Value;
             }
+        }
+    }
+    #endregion
+
+    #region Graph Building
+    public void BuildGraphs()
+    {
+        _tokenGraph.Clear();
+        _consumerGraph.Clear();
+        _patternGraph.Clear();
+
+        foreach (var entry in _entities)
+        {
+            switch (entry.Key.Type)
+            {
+                case NodeType.Token:
+                    _tokenGraph.TryAdd(entry.Key);
+                    break;
+                case NodeType.Consumer:
+                    _consumerGraph.TryAdd(entry.Key);
+                    break;
+                case NodeType.Pattern:
+                    _patternGraph.TryAdd(entry.Key);
+                    break;
+            }
+        }
+
+        foreach (var entity in _entities.Values)
+        {
+            var resolvedLinks = entity.ResolveLinks(this);
+            foreach (var link in resolvedLinks)
+            {
+                if (link.Source.Type != link.Target.Type)
+                {
+                    continue;
+                }
+
+                switch (link.Source.Type)
+                {
+                    case NodeType.Token:
+                        _tokenGraph.TryLink(link.Source, link.Target);
+                        break;
+                    case NodeType.Consumer:
+                        _consumerGraph.TryLink(link.Source, link.Target);
+                        break;
+                    case NodeType.Pattern:
+                        _patternGraph.TryLink(link.Source, link.Target);
+                        break;
+                }
+            }
+        }
+        var resolved = _tokenGraph.Data;
+        foreach (var entry in resolved)
+        {
+            _entities[entry.Key].GraphInfo = entry.Value;
+        }
+        resolved = _consumerGraph.Data;
+        foreach (var entry in resolved)
+        {
+            _entities[entry.Key].GraphInfo = entry.Value;
+        }
+        resolved = _patternGraph.Data;
+        foreach (var entry in resolved)
+        {
+            _entities[entry.Key].GraphInfo = entry.Value;
         }
     }
     #endregion

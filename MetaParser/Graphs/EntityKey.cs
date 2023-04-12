@@ -4,7 +4,7 @@ using System;
 
 namespace MetaParser.Graphs;
 
-internal sealed record EntityKey : IComparable<EntityKey>
+internal record struct EntityKey : IComparable<EntityKey>
 {
     #region Statics
     public static readonly EntityKey Default = new(NodeType.None, 0);

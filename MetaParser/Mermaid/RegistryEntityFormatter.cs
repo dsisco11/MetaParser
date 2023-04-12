@@ -43,7 +43,7 @@ internal static class RegistryEntityFormatter
             PatternRange r => $"[{r.Begin}, {r.End}]",
             //PatternSequence g => $@"""{{{g.Key.Index}}}""",
             PatternSequence g => "Group",
-            PatternTokenRef t => $@"""#{t.TokenName}""",
+            PatternTokenRef t => $@"""#{t.Value}""",
             _ => throw new System.NotImplementedException(),
         };
     }

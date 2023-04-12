@@ -1,5 +1,6 @@
 ﻿using MetaParser.Core;
 using MetaParser.Graphs;
+using MetaParser.Parsing.Constructs.Consumers;
 
 using System;
 using System.Collections.Generic;
@@ -52,12 +53,12 @@ internal record TokenEntity : GraphEntity, IComparable<TokenEntity>
     #region IComparable
     public int CompareTo(TokenEntity other)
     {
-        return Key.CompareTo(other.Key);
+        return TokenSorter.Instance.Compare(this, other);
     }
     #endregion
 
     public override string ToString()
     {
-        return $"{Key} | Name: {Name} | DependencyInfo: {DependencyInfo}";
+        return $"{Key} | Name: {Name} | DependencyInfo: {GraphInfo}";
     }
 }

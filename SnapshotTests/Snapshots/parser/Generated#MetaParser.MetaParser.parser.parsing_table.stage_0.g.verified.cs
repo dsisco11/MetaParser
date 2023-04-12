@@ -1,20 +1,25 @@
-﻿//HintName: MetaParser.MetaParser.parser.parsing_table.stage_0.g.cs
+//HintName: MetaParser.MetaParser.parser.parsing_table.stage_0.g.cs
 namespace UnitTestParser
 {
     public sealed partial class Parser
     {
-        private static byte process_parser_table_0(global::System.ReadOnlySpan<byte> buffer0)
+        private static ConsumerResult process_parser_table_0(global::System.ReadOnlySpan<char> buffer0)
         {
             return buffer0 switch
             {
-                ['v', 'a', 'r', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Var, 3),
-                ['v', 'a', 'r', 's', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Vars, 4),
                 ['f', 'u', 'n', 'c', 't', 'i', 'o', 'n', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Function, 8),
-                ['b', 'y', 't', 'e', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Byte, 4),
                 ['s', 'h', 'o', 'r', 't', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Short, 5),
-                ['i', 'n', 't', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Int, 3),
-                ['u', 'i', 'n', 't', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Uint, 4),
                 ['f', 'l', 'o', 'a', 't', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Float, 5),
+                ['v', 'a', 'r', 's', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Vars, 4),
+                ['b', 'y', 't', 'e', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Byte, 4),
+                ['u', 'i', 'n', 't', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Uint, 4),
+                ['v', 'a', 'r', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Var, 3),
+                ['i', 'n', 't', ..] => new ConsumerResult (TokenId.Lexer_Keyword_Int, 3),
+                ['/', '*', ..] => consume_pattern_26(buffer0),
+                ['/', '/', ..] => consume_pattern_27(buffer0),
+                [('\r' or '\n'), ..] => consume_pattern_1(buffer0),
+                [(' ' or '\t' or '\f'), ..] => consume_pattern_0(buffer0),
+                [((>='a' and <='z') or (>='A' and <='Z')), ((>='a' and <='z') or (>='A' and <='Z') or (>='0' and <='9') or '-' or '_'), ..] => consume_pattern_25(buffer0),
                 ['{', ..] => new ConsumerResult (TokenId.Lexer_Char_Open_Bracket, 1),
                 ['}', ..] => new ConsumerResult (TokenId.Lexer_Char_Close_Bracket, 1),
                 ['[', ..] => new ConsumerResult (TokenId.Lexer_Char_Open_Sqbracket, 1),
@@ -29,12 +34,7 @@ namespace UnitTestParser
                 ['"', ..] => new ConsumerResult (TokenId.Lexer_Char_Double_Quote, 1),
                 ['/', ..] => new ConsumerResult (TokenId.Lexer_Char_Solidus, 1),
                 ['\\', ..] => new ConsumerResult (TokenId.Lexer_Char_Reverse_Solidus, 1),
-                ['/', '*', ..] => consume_pattern_26(buffer0),
-                ['/', '/', ..] => consume_pattern_27(buffer0),
-                [(>="0" and <="9"), ..] => consume_pattern_24(buffer0),
-                [('\r' or '\n'), ..] => consume_pattern_1(buffer0),
-                [(' ' or '\t' or '\f'), ..] => consume_pattern_0(buffer0),
-                [((>="a" and <="z") or (>="A" and <="Z")), ((>="a" and <="z") or (>="A" and <="Z") or (>="0" and <="9") or '-' or '_'), ..] => consume_pattern_25(buffer0),
+                [(>='0' and <='9'), ..] => consume_pattern_24(buffer0),
                 _ => new (default, default)
             };
             

@@ -2,11 +2,13 @@
 using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
 using System.Linq;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
+using static CodeCommon;
 
 internal class FuncProcessParserTable : MetaCodeBuilder, IMetaCodeFunctionBuilder
 {
@@ -16,8 +18,9 @@ internal class FuncProcessParserTable : MetaCodeBuilder, IMetaCodeFunctionBuilde
     public FunctionDefinition Get_Definition(ParserContext context)
     {
         var stage = context.State.Stage;
-        var funcParams = SyntaxFactory.ParseArgumentList($"{CodeCommon.ReadOnlySpan}<{stage.InputType}> {context.State.ActiveBufferName}");
-        return new FunctionDefinition(CodeCommon.SyntaxPrivateStatic, stage.OutputType, Format_Function_Name(context), funcParams);
+        var funcParams = SyntaxFactory.ParseArgumentList($"{ReadOnlySpan}<{stage.InputType}> {context.State.ActiveBufferName}");
+        TypeSyntax outputType = SyntaxFactory.ParseTypeName(ConsumerResult);
+        return new FunctionDefinition(SyntaxPrivateStatic, outputType, Format_Function_Name(context), funcParams);
     }
 
     protected override void Write(ParserContext context)
@@ -33,7 +36,7 @@ internal class FuncProcessParserTable : MetaCodeBuilder, IMetaCodeFunctionBuilde
         {
             var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
 
-            var groups = context.State.Targets.Consumers.GroupBy(static c => c.DependencyInfo!.IsRecursive && c.Consume is not null);
+            var groups = context.State.Targets.Consumers.GroupBy(static c => c.GraphInfo!.IsRecursive && c.Consume is not null);
 
             var consumersRecursive = groups.Where(static b => b.Key == true).SelectMany(static b => b);
             if (consumersRecursive.Any())

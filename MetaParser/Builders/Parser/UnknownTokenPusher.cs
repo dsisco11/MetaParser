@@ -12,15 +12,20 @@ internal class UnknownTokenPusher : MetaCodeBuilder
 
     protected override void Write(ParserContext context)
     {
+        const string VarNameUnkContent = "unk_content";
+        const string VarNameUnkContentSize = "unk_content_size";
         var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
 
         writer.WriteLine($"if ({context.State.ActiveBufferName}.Length != {context.State.NextBufferName}.Length)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"var unk_content_size = {context.State.ActiveBufferName}.Length - {context.State.NextBufferName}.Length;");
-        writer.WriteLine($"var unk_content = {context.State.ActiveBufferName}.Slice(0, unk_content_size);");
-        writer.WriteLine($"results.Add(new {TokenValueStructName}({Format_Token_Id_Const_Ref(UnknownToken)}, unk_content));");
-        writer.WriteLine($"{context.State.ActiveBufferName} = {context.State.ActiveBufferName}.Slice(unk_content_size);");
+        writer.WriteLine($"var {VarNameUnkContentSize} = {context.State.ActiveBufferName}.Length - {context.State.NextBufferName}.Length;");
+        //writer.WriteLine($"var {VarNameUnkContent} = {context.State.ActiveBufferName}.Slice(0, {VarNameUnkContentSize});");
+        writer.WriteLine($"outId.Span[outIndex] = {Format_Token_Id_Const_Ref(UnknownToken)};");
+        writer.WriteLine($"outLength.Span[outIndex] = {VarNameUnkContentSize};");
+        writer.WriteLine($"inIndex += {VarNameUnkContentSize};");
+        writer.WriteLine($"outIndex++;");
+        writer.WriteLine($"{context.State.ActiveBufferName} = {context.State.ActiveBufferName}.Slice({VarNameUnkContentSize});");
         writer.WriteLine($"{context.State.NextBufferName} = {context.State.ActiveBufferName}.Span;");
         writer.Indent--;
         writer.WriteLine("}");

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace MetaParser.Parsing.Constructs;
-internal record ConsumerEntity : GraphEntity, IComparable<ConsumerEntity>
+internal sealed record ConsumerEntity : GraphEntity, IComparable<ConsumerEntity>
 {
     #region Fields
     public readonly EConsumerKind Kind;
@@ -136,7 +136,7 @@ internal record ConsumerEntity : GraphEntity, IComparable<ConsumerEntity>
     {
         StringBuilder sb = new StringBuilder($"{Key} | Type: {Kind}");
 
-        sb.Append($" | DependencyInfo: {DependencyInfo}");
+        sb.Append($" | DependencyInfo: {GraphInfo}");
         sb.Append($" | Start: {Start}");
         // write consume
         if (Consume is null)

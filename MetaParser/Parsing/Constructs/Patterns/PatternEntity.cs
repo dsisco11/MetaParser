@@ -65,7 +65,13 @@ internal abstract record PatternEntity : GraphEntity, IEnumerable<PatternEntity>
     #region Comparison
     public int CompareTo(PatternEntity other)
     {
-        return PatternSorter.Instance.Compare(this, other);
+        var sorterCompare = PatternSorter.Instance.Compare(this, other);
+        if (sorterCompare != 0)
+        {
+            return sorterCompare;
+        }
+
+        return Key.CompareTo(other.Key);
     }
     #endregion
 }

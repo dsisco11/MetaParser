@@ -13,7 +13,7 @@ internal class GenPatternConsumerFunctions : MetaCodeBuilder
     public static FunctionDefinition Get_Function_Definition(ParserContext context, EConsumerKind type, string name)
     {
         return new FunctionDefinition(SyntaxFactory.ParseTokens("private static"),
-                                                          SyntaxFactory.ParseTypeName(TypeConsumerResult),
+                                                          SyntaxFactory.ParseTypeName(ConsumerResult),
                                                           name,
                                                           SyntaxFactory.ParseArgumentList($"{Get_Token_Buffer_Type(context.Config, type)} {context.State.ActiveBufferName}"));
     }

@@ -24,8 +24,16 @@ internal record struct TokenClause : IEnumerable<ConsumerClause>
     {
         ID = id;
         Name = name;
-        Items = new();
         Stage = stage;
+        Items = new();
+    }
+
+    public TokenClause(TokenClause other)
+    {
+        ID = other.ID;
+        Name = other.Name;
+        Stage = other.Stage;
+        Items = new();
     }
     #endregion
 

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MetaParser.Parsing.Constructs.Patterns;
+
+using System.Collections.Generic;
 
 namespace MetaParser.Parsing.Constructs.Consumers;
 
@@ -6,26 +8,20 @@ internal class ConsumerSorter : IComparer<ConsumerEntity>
 {
     public readonly static ConsumerSorter Instance = new ConsumerSorter();
 
-    public int Compare(ConsumerEntity x, ConsumerEntity y)
+    public int Compare(ConsumerEntity left, ConsumerEntity right)
     {
-        // compare tokens by max node depth
-        var depthCompare = x.Token.DependencyInfo.NodeDepth.Max.CompareTo(y.Token.DependencyInfo.NodeDepth.Max);
-        if (depthCompare != 0)
-        {
-            return depthCompare;
-        }
         // compare each pattern of each consumer
-        var startCompare = x.Start.CompareTo(y.Start);
+        var startCompare = PatternSorter.Instance.Compare(left.Start, right.Start);
         if (startCompare != 0)
         {
             return startCompare;
         }
 
-        if (x.Consume is not null)
+        if (left.Consume is not null)
         {
-            if (y.Consume is not null)
+            if (right.Consume is not null)
             {
-                var consumeCompare = x.Consume.CompareTo(y.Consume);
+                var consumeCompare = PatternSorter.Instance.Compare(left.Consume, right.Consume);
                 if (consumeCompare != 0)
                 {
                     return consumeCompare;
@@ -34,11 +30,11 @@ internal class ConsumerSorter : IComparer<ConsumerEntity>
             return -1;
         }
 
-        if (x.Stop is not null)
+        if (left.Stop is not null)
         {
-            if (y.Stop is not null)
+            if (right.Stop is not null)
             {
-                var stopCompare = x.Stop.CompareTo(y.Stop);
+                var stopCompare = PatternSorter.Instance.Compare(left.Stop, right.Stop);
                 if (stopCompare != 0)
                 {
                     return stopCompare;
@@ -47,11 +43,11 @@ internal class ConsumerSorter : IComparer<ConsumerEntity>
             return -1;
         }
 
-        if (x.Escape is not null)
+        if (left.Escape is not null)
         {
-            if (y.Escape is not null)
+            if (right.Escape is not null)
             {
-                var escapeCompare = x.Escape.CompareTo(y.Escape);
+                var escapeCompare = PatternSorter.Instance.Compare(left.Escape, right.Escape);
                 return escapeCompare;
             }
             return -1;

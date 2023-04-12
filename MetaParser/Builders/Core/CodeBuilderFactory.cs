@@ -24,7 +24,7 @@ internal class CodeBuilderFactory : ICodeBuilderFactory
     {
         Config = config;
         _parsing_logic = new ParsingLogic();
-        _parsing_struct_builder = new ResultStructBuilder();
+        _parsing_struct_builder = new StageIOStructBuilder();
         _parsing_table_executor = new FuncParsingTableExecutor();
         _parsing_table_function = new FuncProcessParserTable();
         _token_id_constants_builder = new TokenIDConstBuilder();
