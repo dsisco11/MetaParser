@@ -1,5 +1,6 @@
 ﻿using JetBrains.Annotations;
 
+using MetaParser.Builders;
 using MetaParser.Builders.Core;
 using MetaParser.Builders.Parser;
 using MetaParser.Builders.Parser.Functions;
@@ -114,7 +115,7 @@ public partial class Generator : IIncrementalGenerator
             return interpreter.Compile();
         });
 
-        IncrementalValuesProvider<ParserContext> ctxRecursiveTokens = ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider<ParserContext> ctxCompoundTokens = ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
         {
             var tokens = context.Registry.Tokens.Where(static (entity) => entity.GraphInfo.Depth > 0);
             return (context with { State = context.State with { Targets = new WorkingSet(tokens) } });
@@ -244,7 +245,7 @@ public partial class Generator : IIncrementalGenerator
 
         #region Token Start Detection
         // Any token which has an incoming link must have a start detection function
-        context.RegisterSourceOutput(ctxRecursiveTokens,
+        context.RegisterSourceOutput(ctxCompoundTokens,
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
@@ -260,7 +261,7 @@ public partial class Generator : IIncrementalGenerator
 
         #region Token Builders
         // Any token which has an incoming link must have a dedicated consumption function
-        context.RegisterSourceOutput(ctxRecursiveTokens,
+        context.RegisterSourceOutput(ctxCompoundTokens,
         static (SourceProductionContext spc, [NotNull] ParserContext context) =>
         {
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
@@ -327,7 +328,7 @@ public partial class Generator : IIncrementalGenerator
             context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
             var writer = context.Writer;
 
-            writer.WriteLine($"namespace {context.Config.Namespace};");
+            NamespaceStatement.Instance.WriteTo(context);
             writer.WriteLine($"public enum {CodeCommon.TokenEnum} : {context.Config.IdType}");
             writer.WriteLine("{");
             writer.Indent++;
@@ -352,6 +353,19 @@ public partial class Generator : IIncrementalGenerator
                 .WriteTo(context);
 
             AddSource(spc, $"{context.Config.BaseFileName}.constants", context.Writer.InnerWriter.ToString());
+        });
+        #endregion
+
+        #region RedGreenTree
+        context.RegisterSourceOutput(ctxParser, static (SourceProductionContext spc, [NotNull] ParserContext context) =>
+        {
+            context = context with { Writer = new IndentedTextWriter(new StringWriter()) };
+            var writer = context.Writer;
+
+            NamespaceStatement.Instance.WriteTo(context);
+            RedGreenTreeBuilder.Instance.WriteTo(context);
+
+            AddSource(spc, $"{context.Config.BaseFileName}.RedGreenTree", context.Writer.InnerWriter.ToString());
         });
         #endregion
 

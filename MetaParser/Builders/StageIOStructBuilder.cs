@@ -14,7 +14,7 @@ internal class StageIOStructBuilder : MetaCodeBuilder
         writer.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 0)]");
         writer.WriteLine($"public readonly record struct {ConsumerResult}({context.Config.IdType} id, int length);");
         // Stage Input
-        writer.WriteLine($"public readonly record struct {StageInput}<InputType, OutputType>({ReadOnlyMemory}<InputType> Inputs, {Memory}<OutputType> Outputs, {Memory}<int> Lengths);");
+        writer.WriteLine($"public readonly record struct {StageInput}<InputType, OutputType>({ReadOnlyMemory}<InputType> Input, {Memory}<OutputType> Output, {Memory}<int> Length);");
         // Stage Output
         writer.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 0)]");
         writer.WriteLine($"public readonly record struct {StageOutput}(int TokenCount, int ConsumedCount);");
@@ -26,14 +26,14 @@ internal class StageIOStructBuilder : MetaCodeBuilder
         writer.WriteLine($"private readonly {IMemoryOwner}<OutputType> outPtr;");
         writer.WriteLine($"private readonly {IMemoryOwner}<int> lenPtr;");
         writer.WriteLine();
-        writer.WriteLine($"public readonly {ReadOnlyMemory}<InputType> Inputs;");
-        writer.WriteLine($"public {Memory}<OutputType> Outputs => outPtr.Memory;");
-        writer.WriteLine($"public {Memory}<int> Lengths => lenPtr.Memory;");
+        writer.WriteLine($"public readonly {ReadOnlyMemory}<InputType> Input;");
+        writer.WriteLine($"public {Memory}<OutputType> Output => outPtr.Memory;");
+        writer.WriteLine($"public {Memory}<int> Length => lenPtr.Memory;");
         writer.WriteLine();
-        writer.WriteLine($"public {StageInputChunk} ({ReadOnlyMemory}<InputType> Input)");
+        writer.WriteLine($"public {StageInputChunk} ({ReadOnlyMemory}<InputType> input)");
         writer.WriteLine("{");
         writer.Indent++;
-        writer.WriteLine($"Inputs = Input;");
+        writer.WriteLine($"Input = input;");
         writer.WriteLine($"outPtr = {MemoryPool}<OutputType>.Shared.Rent(CHUNK_SIZE);");
         writer.WriteLine($"lenPtr = {MemoryPool}<int>.Shared.Rent(CHUNK_SIZE);");
         writer.WriteLine($"");

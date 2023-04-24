@@ -1,6 +1,7 @@
 ﻿using MetaParser.Builders.Core;
 using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
+
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -10,16 +11,16 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-internal class FuncProcessParserTable : MetaCodeBuilder, IMetaCodeFunctionBuilder
+internal class FuncParseNextChunk : MetaCodeBuilder, IMetaCodeFunctionBuilder
 {
     private static readonly FunctionLogic functionLogic = new();
 
-    public string Format_Function_Name(ParserContext context) => $"process_parser_table_{context.State.Stage.Index}";
+    public string Format_Function_Name(ParserContext context) => $"process_next_chunk";
     public FunctionDefinition Get_Definition(ParserContext context)
     {
         var stage = context.State.Stage;
-        var funcParams = SyntaxFactory.ParseArgumentList($"{ReadOnlySpan}<{stage.InputType}> {context.State.ActiveBufferName}");
-        TypeSyntax outputType = SyntaxFactory.ParseTypeName(ConsumerResult);
+        var funcParams = SyntaxFactory.ParseArgumentList($"{ReadOnlyMemory}<{context.Config.InputType}> {context.State.ActiveBufferName}");
+        TypeSyntax outputType = SyntaxFactory.ParseTypeName($"IEnumerable<{TokenRecordTypeName}>");
         return new FunctionDefinition(SyntaxPrivateStatic, outputType, Format_Function_Name(context), funcParams);
     }
 
@@ -55,7 +56,7 @@ internal class FuncProcessParserTable : MetaCodeBuilder, IMetaCodeFunctionBuilde
             }
             else
             {
-                writer.WriteLine("return new (0, 0);");
+                writer.WriteLine("return new (default, default);");
             }
 
             writer.WriteLine();

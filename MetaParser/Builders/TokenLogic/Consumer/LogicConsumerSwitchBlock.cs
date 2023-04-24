@@ -31,16 +31,7 @@ internal class LogicConsumerSwitchBlock : MetaCodeBuilder
             writer.WriteLine(",");
         }
 
-        //foreach (var consumer in context.State.Targets.Consumers)
-        //{
-        //    writer.Write("[");
-        //    context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context with { State = context.State with { Targets = new WorkingSet(consumer.Start) } });
-        //    writer.Write(", ..] => ");
-        //    WriteContent(context with { State = context.State with { Targets = new WorkingSet(consumer) } });
-        //    writer.WriteLine(",");
-        //}
-
-        writer.WriteLine("_ => new (default, default)");
+        writer.WriteLine("_ => new (0, 1)");
         writer.Indent--;
         writer.WriteLine("};");// end switch
     }

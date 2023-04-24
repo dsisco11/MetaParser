@@ -1,70 +1,29 @@
-﻿using System;
+﻿//HintName: MetaParser.MetaParser.parser.RedGreenTree.g.cs
+namespace UnitTestParser;
+#nullable enable
+
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace MetaParser.Trees;
 public abstract record GreenNode
 {
-    public int TokenID { get; }
+    public ETokenType Id { get; }
     public int Width { get; }
 
-    protected GreenNode(int tokenID, int width)
+    protected GreenNode(ETokenType id, int width)
     {
-        TokenID = tokenID;
+        Id = id;
         Width = width;
     }
 
+    protected GreenNode(byte id, int width)
+    {
+        Id = (ETokenType)id;
+        Width = width;
+    }
+
+
     public abstract bool TryReplaceChild(GreenNode oldChild, GreenNode newChild, out GreenNode? result);
-}
-
-public sealed record GreenLexerToken : GreenNode
-{
-    public string Value { get; }
-    public GreenLexerToken(int tokenID, string value)
-        : base(tokenID, value.Length)
-    {
-        Value = value;
-    }
-    public override bool TryReplaceChild(GreenNode oldChild, GreenNode newChild, out GreenNode? result)
-    {
-        throw new InvalidOperationException("Cannot replace a child of a lexer token");
-    }
-}
-
-public sealed record GreenSyntaxToken : GreenNode
-{
-    public GreenNode[] Children { get; }
-
-    public GreenSyntaxToken(int tokenID, GreenNode[] children)
-        : base(tokenID, children.Sum(child => child.Width))
-    {
-        Children = children;
-    }
-    public override bool TryReplaceChild(GreenNode oldChild, GreenNode newChild, out GreenNode? result)
-    {
-        if (oldChild is null || newChild is null)
-        {
-            result = null;
-            return false;
-        }
-
-        int index = Array.IndexOf(Children, oldChild);
-
-        if (index >= 0)
-        {
-            var newChildren = (GreenNode[])Children.Clone();
-            newChildren[index] = newChild;
-
-            result = new GreenSyntaxToken(TokenID, newChildren);
-            return true;
-        }
-        else
-        {
-            result = null;
-            return false;
-        }
-    }
 }
 
 public class RedNode : IEnumerable<RedNode>
@@ -73,6 +32,9 @@ public class RedNode : IEnumerable<RedNode>
     public int Position { get; set; }
     public RedNode? Parent { get; set; }
 
+    public ETokenType Id => Green.Id;
+    public int Width => Green.Width;
+
     public RedNode(GreenNode green, int position = 0, RedNode? parent = null)
     {
         Green = green;
@@ -80,11 +42,24 @@ public class RedNode : IEnumerable<RedNode>
         Parent = parent;
     }
 
+    public int Length
+    {
+        get
+        {
+            if (Green is SyntaxNode greenSyntaxToken)
+            {
+                return greenSyntaxToken.Children.Length;
+            }
+
+            return 0;
+        }
+    }
+
     public IEnumerable<RedNode> Children
     {
         get
         {
-            if (Green is GreenSyntaxToken greenSyntaxToken)
+            if (Green is SyntaxNode greenSyntaxToken)
             {
                 foreach (var child in greenSyntaxToken.Children)
                 {
@@ -112,14 +87,19 @@ public class RedNode : IEnumerable<RedNode>
     #endregion
 }
 
-public class RedGreenTree
+public class RedGreenTree : IEnumerable<RedNode>
 {
+    #region Properties
     public RedNode Root { get; private set; }
+    public int Length => Root.Length;
+    #endregion
 
     public RedGreenTree(GreenNode rootGreen)
     {
         Root = new RedNode(rootGreen);
     }
+
+    #region Methods
     public bool TryReplaceNode(RedNode nodeToReplace, GreenNode newGreenNode)
     {
         if (nodeToReplace is null || newGreenNode is null) return false;
@@ -142,4 +122,12 @@ public class RedGreenTree
 
         return false;
     }
+    #endregion
+
+    #region IEnumerator
+    public IEnumerator<RedNode> GetEnumerator() => Root.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    #endregion
 }
+
+#nullable restore

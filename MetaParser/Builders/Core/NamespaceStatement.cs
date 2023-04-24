@@ -5,12 +5,13 @@ using System;
 
 namespace MetaParser.Builders.Core;
 
-internal class StatementBuilder : MetaCodeBuilder
+internal class NamespaceStatement : MetaCodeBuilder
 {
+    public static readonly NamespaceStatement Instance = new NamespaceStatement();
+
     protected override void Write(ParserContext context)
     {
         var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
-        WriteContent(context);
-        writer.WriteLine(";");
+        writer.WriteLine($"namespace {context.Config.Namespace};");
     }
 }

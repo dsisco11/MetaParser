@@ -22,7 +22,7 @@ internal class LogicSingleConsumer : MetaCodeBuilder
         var consumer = context.State.Targets.Consumers.Single();
         var detectionContext = context with { State = context.State with { Targets = new(consumer.Token, consumer, new PatternEntity[1]) } };
 
-#if DEBUG
+        #if DEBUG
         write_debug_header(context);
         #endif
 
@@ -158,6 +158,9 @@ internal class LogicSingleConsumer : MetaCodeBuilder
             writer.WriteLine("}");// end while loop
             writer.WriteLine();
 
+            writer.WriteLine($"if ({context.State.ActiveBufferName}.Length > 0)");
+            writer.WriteLine("{");
+            writer.Indent++;
             writer.Write("if (");
 
             detectionContext.State.Targets.Patterns[0] = consumer.Stop;
@@ -167,6 +170,8 @@ internal class LogicSingleConsumer : MetaCodeBuilder
             writer.WriteLine("{");
             writer.Indent++;
             writer.WriteLine($"return new ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Stop.Length} + ({context.State.LastBufferName}.Length - {context.State.ActiveBufferName}.Length));");
+            writer.Indent--;
+            writer.WriteLine("}");
             writer.Indent--;
             writer.WriteLine("}");
             writer.WriteLine();

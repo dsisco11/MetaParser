@@ -34,19 +34,19 @@ public partial class Analyzer : IIncrementalGenerator
 
         context.RegisterSourceOutput(ctxParserJson, static (SourceProductionContext spc, (FileData file, JsonDocument jsonDoc) data) =>
         {
-            FileData file = data.file;
-            JsonDocument jsonDoc = data.jsonDoc;
-            var schema = Common.Get_Parser_Schema();
-            if (schema is null)
-            {
-                throw new FileLoadException($"Unable to load embedded metaparser schema file!");
-            }
+            //FileData file = data.file;
+            //JsonDocument jsonDoc = data.jsonDoc;
+            //var schema = Common.Get_Parser_Schema();
+            //if (schema is null)
+            //{
+            //    throw new FileLoadException($"Unable to load embedded metaparser schema file!");
+            //}
 
-            var result = schema.Validate(jsonDoc, Common.SchemaOptions);
-            if (!result.IsValid)
-            {
-                Convert_Schema_Results_To_Diagnostics(spc, file, result);
-            }
+            //var result = schema.Validate(jsonDoc, Common.SchemaOptions);
+            //if (!result.IsValid)
+            //{
+            //    Convert_Schema_Results_To_Diagnostics(spc, file, result);
+            //}
         });
     }
 

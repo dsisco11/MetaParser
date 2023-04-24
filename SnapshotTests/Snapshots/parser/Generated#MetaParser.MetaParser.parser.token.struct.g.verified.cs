@@ -1,26 +1,65 @@
 ﻿//HintName: MetaParser.MetaParser.parser.token.struct.g.cs
 namespace UnitTestParser;
-[System.Diagnostics.DebuggerDisplay("{Data}", Name = "{(ETokenType)Id}")]
-[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-public readonly record struct ValueToken(byte Id, global::System.ReadOnlyMemory<char> Data)
+#nullable enable
+
+
+public sealed record LexerNode : GreenNode
 {
-    public override string ToString()
+    public global::System.ReadOnlyMemory<char> Value { get; }
+
+    public LexerNode(ETokenType id, global::System.ReadOnlyMemory<char> value) : base(id, value.Length)
     {
-        return Data.ToString();
+        Value = value;
+    }
+
+    public LexerNode(byte id, global::System.ReadOnlyMemory<char> value) : base(id, value.Length)
+    {
+        Value = value;
+    }
+
+    public override bool TryReplaceChild(GreenNode oldChild, GreenNode newChild, out GreenNode? result)
+    {
+        throw new InvalidOperationException("Cannot replace a child of a lexer token");
     }
 }
 
-[System.Diagnostics.DebuggerDisplay("{this.ToString()}", Name = "{(ETokenType)Id}")]
-public sealed record Token(ETokenType Id, ValueToken[] Values)
+public sealed record SyntaxNode : GreenNode
 {
-    public override string ToString()
+    public GreenNode[] Children { get; }
+
+    public SyntaxNode(byte id, GreenNode[] children) : base(id, children.Sum(child => child.Width))
     {
-        var sb = new global::System.Text.StringBuilder();
-        for (int i=0; i<Values.Length; i++)
+        Children = children;
+    }
+
+    public SyntaxNode(ETokenType id, GreenNode[] children) : base(id, children.Sum(child => child.Width))
+    {
+        Children = children;
+    }
+
+    public override bool TryReplaceChild(GreenNode oldChild, GreenNode newChild, out GreenNode? result)
+    {
+        if (oldChild is null || newChild is null)
         {
-            sb.Append(Values[i].Data.ToString());
+            result = null;
+            return false;
         }
-        
-        return sb.ToString();
+
+        var index = Array.IndexOf(Children, oldChild);
+
+        if (index >= 0)
+        {
+            var newChildren = (GreenNode[])Children.Clone();
+            newChildren[index] = newChild;
+
+            result = new SyntaxNode(Id, newChildren);
+            return true;
+        }
+        else
+        {
+            result = null;
+            return false;
+        }
     }
 }
+

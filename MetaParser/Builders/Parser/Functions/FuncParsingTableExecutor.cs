@@ -3,7 +3,6 @@ using MetaParser.Builders.Interfaces;
 using MetaParser.Core;
 
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MetaParser.Builders.Parser.Functions;
 using static CodeCommon;
@@ -47,13 +46,12 @@ internal class FuncParsingTableExecutor : MetaCodeBuilder, IMetaCodeFunctionBuil
             string VarBufferLocal = context.State.ActiveBufferName;
             context.Decrement_Active_Bufffer();
 
-            writer.Indent++;
-            writer.WriteLine($"var {VarBufferMinor} = {VarBufferMajor}.Inputs;");
+            writer.WriteLine($"var {VarBufferMinor} = {VarBufferMajor}.Input;");
             writer.WriteLine($"var {VarBufferLocal} = {VarBufferMinor}.Span;");
             writer.WriteLine($"int {VarNameInputIndex} = 0;");
             writer.WriteLine($"int {VarNameOutputIndex} = 0;");
-            writer.WriteLine($"var {VarNameOutputId} = {VarBufferMajor}.Outputs;");
-            writer.WriteLine($"var {VarNameOutputLength} = {VarBufferMajor}.Lengths;");
+            writer.WriteLine($"var {VarNameOutputId} = {VarBufferMajor}.Output;");
+            writer.WriteLine($"var {VarNameOutputLength} = {VarBufferMajor}.Length;");
             writer.WriteLine();
 
             writer.WriteLine($"while ({VarBufferLocal}.Length > 0)");

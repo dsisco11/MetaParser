@@ -24,19 +24,19 @@ public class Formation
         Assert.Single(results);
         var token = results.First();
         Assert.Equal(expected, token.Id);
-        Assert.NotEmpty(token.Values);
+        Assert.NotEmpty(token);
 
         // verify token starts at input start
-        var inputStart = input.AsMemory()[0..1];
-        var tokenStartData = token.Values.First().Data;
-        var tokenStart = tokenStartData[0..1];
-        Assert.Equal(inputStart, tokenStart);
+        //var inputStart = input.AsMemory()[0..1];
+        //var tokenStartData = token.First().Data;
+        //var tokenStart = tokenStartData[0..1];
+        Assert.Equal(0, token.Position);
 
         // verify token ends at input end
-        var inputEnd = input.AsMemory()[^1..^0];
-        var tokenEndData = token.Values.Last().Data;
-        var tokenEnd = tokenEndData[^1..^0];
-        Assert.Equal(inputEnd, tokenEnd);
+        //var inputEnd = input.AsMemory()[^1..^0];
+        //var tokenEndData = token.Last().Data;
+        //var tokenEnd = tokenEndData[^1..^0];
+        Assert.Equal(input.Length, token.Width);
     }
 
     /// <summary>
@@ -60,26 +60,27 @@ public class Formation
     public void Segment(string input, int indice, ETokenType id, int startIndex, int endIndex)
     {
         var parser = new Parser();
-        var results = parser.Parse(input.AsMemory());
+        var results = parser.Parse(input.AsMemory()).ToArray();
 
         Assert.True(results.Length > indice);
         Assert.NotNull(results[indice]);
         var token = results[indice];
         Assert.Equal(id, token.Id);
-        Assert.NotEmpty(token.Values);
+        Assert.NotEmpty(token);
 
         // verify that the start of the tokens first value matches the range start
-        var inputStartRange = new Range(startIndex, startIndex + 1);
-        var inputStart = input.AsMemory()[inputStartRange];
-        var tokenStartData = token.Values.First().Data;
-        var tokenStart = tokenStartData[0..1];
-        Assert.Equal(inputStart, tokenStart);
+        //var inputStartRange = new Range(startIndex, startIndex + 1);
+        //var inputStart = input.AsMemory()[inputStartRange];
+        //var tokenStartData = token.Values.First().Data;
+        //var tokenStart = tokenStartData[0..1];
+        Assert.Equal(startIndex, token.Position);
 
         // verify that the end of the tokens last value matches the range end
-        var inputEndRange = new Range(endIndex - 1, endIndex);
-        var inputEnd = input.AsMemory()[inputEndRange];
-        var tokenEndData = token.Values.Last().Data;
-        var tokenEnd = tokenEndData[^1..^0];
-        Assert.Equal(inputEnd, tokenEnd);
+        //var inputEndRange = new Range(endIndex - 1, endIndex);
+        //var inputEnd = input.AsMemory()[inputEndRange];
+        //var tokenEndData = token.Values.Last().Data;
+        //var tokenEnd = tokenEndData[^1..^0];
+        var tokenEnd = token.Position + token.Width;
+        Assert.Equal(endIndex, tokenEnd);
     }
 }

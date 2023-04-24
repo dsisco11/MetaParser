@@ -25,6 +25,7 @@ internal static class CodeCommon
     #region Constants
     public const string List = "global::System.Collections.Generic.List";
     public const string ArrayPool = "global::System.Buffers.ArrayPool";
+    public const string ArraySegment = "global::System.ArraySegment";
     public const string MemoryPool = "global::System.Buffers.MemoryPool";
     public const string IMemoryOwner = "global::System.Buffers.IMemoryOwner";
     public const string Span = "global::System.Span";
@@ -35,16 +36,24 @@ internal static class CodeCommon
 
     public const string TokenEnum = "ETokenType";
     public const string TokenConsts = "TokenId";
-    public const string UnknownToken = "unknown";
+    public const string UnknownToken = "Unknown";
 
     public const string TokenDataClassName = "TokenData";
     public const string TokenValueStructName = "ValueToken";
     public const string TokenRecordTypeName = "Token";
 
+    public const string TokenNodeType = "GreenNode";
+    public const string ValueTokenNodeType = "LexerNode";
+    public const string SyntaxTokenNodeType = "SyntaxNode";
+
     public const string ConsumerResult = "ConsumerResult";
     public const string StageInput = "StageInput";
     public const string StageOutput = "StageOutput";
     public const string StageInputChunk = "StageInputChunk";
+
+    public const string TypeRedGreenTree = "RedGreenTree";
+    public const string TypeRedNode = "RedNode";
+    public const string TypeGreenNode = "GreenNode";
 
     public const string LexerProcessingFunctionName = "TryProcessingLexerToken";
     public const string SyntaxProcessingFunctionName = "TryProcessingSyntaxToken";
