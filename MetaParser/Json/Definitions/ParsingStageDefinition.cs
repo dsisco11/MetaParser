@@ -10,6 +10,13 @@ internal abstract record ParsingStageDefinition<T> : IParsingStageDefinition
     #region Properties
     [JsonPropertyName("$type")]
     public abstract EParsingStage Type { get; }
+
+    [JsonPropertyName("ignored")]
+    public abstract string[]? Ignored { get; set; }
+
+    [JsonPropertyName("dropped")]
+    public abstract T[]? Dropped { get; set; }
+
     [JsonPropertyName("consumers")]
     public abstract Dictionary<string, IEnumerable<T>>? Consumers { get; set; }
     #endregion
@@ -30,4 +37,6 @@ internal abstract record ParsingStageDefinition<T> : IParsingStageDefinition
             }
         }
     }
+
+    ConsumerDeclaration[] IParsingStageDefinition.Dropped => Dropped;
 }

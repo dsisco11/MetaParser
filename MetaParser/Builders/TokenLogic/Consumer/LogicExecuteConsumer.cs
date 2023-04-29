@@ -8,8 +8,10 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-internal class ExecuteConsumer : MetaCodeBuilder
+internal class LogicExecuteConsumer : MetaCodeBuilder
 {
+    public static LogicExecuteConsumer Instance { get; private set; } = new LogicExecuteConsumer();
+
     protected override void Write(ParserContext context)
     {
         var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");

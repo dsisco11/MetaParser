@@ -37,8 +37,12 @@ internal class FuncParseNextChunk : MetaCodeBuilder, IMetaCodeFunctionBuilder
         {
             var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
 
-            var groups = context.State.Targets.Consumers.GroupBy(static c => c.GraphInfo!.IsRecursive && c.Consume is not null);
+            context.Config.CodeFactory.Get_Switch_Block_For_Consumers()
+                                      .And(LogicReturnDroppedConsumer.Instance)
+                                      .WriteTo(context with { State = context.State with { Targets = new WorkingSet(context.State.Stage.Dropped) } });
 
+
+            var groups = context.State.Targets.Consumers.GroupBy(static c => c.GraphInfo!.IsRecursive && c.Consume is not null);
             var consumersRecursive = groups.Where(static b => b.Key == true).SelectMany(static b => b);
             if (consumersRecursive.Any())
             {
@@ -50,8 +54,8 @@ internal class FuncParseNextChunk : MetaCodeBuilder, IMetaCodeFunctionBuilder
             var consumersLinear = groups.Where(static b => b.Key == false).SelectMany(static b => b);
             if (consumersLinear.Any())
             {
-                context.Config.CodeFactory.Get_Switch_Block_For_Consumers()
-                                          .And(new ExecuteConsumer())
+                context.Config.CodeFactory.Get_Switch_Return_For_Consumers()
+                                          .And(LogicExecuteConsumer.Instance)
                                           .WriteTo(context with { State = context.State with { Targets = new WorkingSet(consumersLinear.ToArray()) } });
             }
             else

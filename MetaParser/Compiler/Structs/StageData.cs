@@ -9,23 +9,34 @@ internal record StageData
 {
     #region Properties
     public readonly EParsingStage Stage;
+    public readonly List<string> Ignored;
+    public readonly List<ConsumerClause> Dropped;
     public readonly Dictionary<string, TokenClause> Items;
-    public readonly DirectedNodeGraph<string> Graph;
+    public readonly DirectedNodeGraph<string> graph;
     #endregion
 
     #region Constructors
-    public StageData(EParsingStage stage)
+    protected StageData()
+    {
+        Dropped = new();
+        Ignored = new();
+        Items = new();
+        graph = new();
+    }
+
+
+    public StageData(EParsingStage stage) : this()
     {
         Stage = stage;
-        Items = new();
-        Graph = new DirectedNodeGraph<string>();
     }
 
     public StageData(StageData other)
     {
         Stage = other.Stage;
-        Items = new();
-        Graph = new();
+        Ignored = new (other.Ignored);
+        Dropped = new ();
+        Items = new ();
+        graph = new ();
     }
     #endregion
 }

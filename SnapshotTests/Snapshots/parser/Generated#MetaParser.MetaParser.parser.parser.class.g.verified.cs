@@ -85,7 +85,14 @@ public sealed partial class Parser
         while (buffer2.Length > 0)
         {
             var processed = process_parser_table_0(buffer2);
-            if (processed.length != default)
+            var consumed = buffer1.Slice(0, processed.advance);
+            if (processed.success)
+            {
+                outId.Span[outIndex] = processed.tokenid;
+                outLength.Span[outIndex] = processed.advance;
+                outIndex++;
+            }
+            if (processed.tokenid != default)
             {
                 if (buffer1.Length != buffer2.Length)
                 {
@@ -98,12 +105,8 @@ public sealed partial class Parser
                     buffer2 = buffer1.Span;
                 }
                 
-                var consumed = buffer1.Slice(0, processed.length);
-                outId.Span[outIndex] = processed.id;
-                outLength.Span[outIndex] = processed.length;
-                inIndex += processed.length;
-                outIndex++;
-                buffer1 = buffer1.Slice(processed.length);
+                inIndex += processed.advance;
+                buffer1 = buffer1.Slice(processed.advance);
                 buffer2 = buffer1.Span;
             }
             else
@@ -137,7 +140,14 @@ public sealed partial class Parser
         while (buffer2.Length > 0)
         {
             var processed = process_parser_table_1(buffer2);
-            if (processed.length != default)
+            var consumed = buffer1.Slice(0, processed.advance);
+            if (processed.success)
+            {
+                outId.Span[outIndex] = processed.tokenid;
+                outLength.Span[outIndex] = processed.advance;
+                outIndex++;
+            }
+            if (processed.tokenid != default)
             {
                 if (buffer1.Length != buffer2.Length)
                 {
@@ -150,12 +160,8 @@ public sealed partial class Parser
                     buffer2 = buffer1.Span;
                 }
                 
-                var consumed = buffer1.Slice(0, processed.length);
-                outId.Span[outIndex] = processed.id;
-                outLength.Span[outIndex] = processed.length;
-                inIndex += processed.length;
-                outIndex++;
-                buffer1 = buffer1.Slice(processed.length);
+                inIndex += processed.advance;
+                buffer1 = buffer1.Slice(processed.advance);
                 buffer2 = buffer1.Span;
             }
             else
@@ -189,7 +195,14 @@ public sealed partial class Parser
         while (buffer2.Length > 0)
         {
             var processed = process_parser_table_2(buffer2);
-            if (processed.length != default)
+            var consumed = buffer1.Slice(0, processed.advance);
+            if (processed.success)
+            {
+                outId.Span[outIndex] = processed.tokenid;
+                outLength.Span[outIndex] = processed.advance;
+                outIndex++;
+            }
+            if (processed.tokenid != default)
             {
                 if (buffer1.Length != buffer2.Length)
                 {
@@ -202,12 +215,8 @@ public sealed partial class Parser
                     buffer2 = buffer1.Span;
                 }
                 
-                var consumed = buffer1.Slice(0, processed.length);
-                outId.Span[outIndex] = processed.id;
-                outLength.Span[outIndex] = processed.length;
-                inIndex += processed.length;
-                outIndex++;
-                buffer1 = buffer1.Slice(processed.length);
+                inIndex += processed.advance;
+                buffer1 = buffer1.Slice(processed.advance);
                 buffer2 = buffer1.Span;
             }
             else

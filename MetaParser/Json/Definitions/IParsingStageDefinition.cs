@@ -11,6 +11,12 @@ internal interface IParsingStageDefinition
     [JsonPropertyName("$type")]
     EParsingStage Type { get; }
 
+    [JsonPropertyName("ignored")]
+    string[] Ignored { get; }
+
+    [JsonPropertyName("dropped")]
+    ConsumerDeclaration[] Dropped { get; }
+
     [JsonPropertyName("consumers")]
     IEnumerable<KeyValuePair<string, IEnumerable<ConsumerDeclaration>>> Consumers { get; }
 }

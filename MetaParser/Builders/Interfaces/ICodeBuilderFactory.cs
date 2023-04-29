@@ -6,6 +6,7 @@ internal interface ICodeBuilderFactory
     IMetaCodeBuilder Get_Parsing_Struct_Builder();
     IMetaCodeBuilder Get_Parsing_Table_Executor();
     IMetaCodeBuilder Get_Logic_Consumer_Match();
+    IMetaCodeBuilder Get_Switch_Return_For_Consumers();
     IMetaCodeBuilder Get_Switch_Block_For_Consumers();
     IMetaCodeBuilder Get_Logic_Detect_Recursive_Token();
     IMetaCodeBuilder Get_Token_ID_Constants_Builder();

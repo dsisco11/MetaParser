@@ -59,19 +59,26 @@ internal class FuncParsingTableExecutor : MetaCodeBuilder, IMetaCodeFunctionBuil
             writer.Indent++;
             var funcBuilder = (IMetaCodeFunctionBuilder)context.Config.CodeFactory.Get_Parsing_Table_Function();
             writer.WriteLine($"var {VarNameProcesserReturn} = {funcBuilder.Format_Function_Name(context)}({VarBufferLocal});");
-            writer.WriteLine($"if ({VarNameProcesserReturn}.length != default)");
+            writer.WriteLine($"var consumed = {VarBufferMinor}.Slice(0, {VarNameProcesserReturn}.advance);");
+
+            writer.WriteLine($"if ({VarNameProcesserReturn}.success)");
+            writer.WriteLine("{");
+            writer.Indent++;
+            // TODO: Move to using AdvancedStreamReader thing rather than hand managing buffers
+            writer.WriteLine($"{VarNameOutputId}.Span[{VarNameOutputIndex}] = {VarNameProcesserReturn}.tokenid;");
+            writer.WriteLine($"{VarNameOutputLength}.Span[{VarNameOutputIndex}] = {VarNameProcesserReturn}.advance;");
+            writer.WriteLine($"{VarNameOutputIndex}++;");
+            writer.Indent--;
+            writer.WriteLine("}");
+
+            writer.WriteLine($"if ({VarNameProcesserReturn}.tokenid != default)");
             writer.WriteLine("{");
             writer.Indent++;
             // Be sure to push unknown token if its lingering
             UnknownTokenPusher.Instance.WriteTo(context);
             writer.WriteLine();
-            writer.WriteLine($"var consumed = {VarBufferMinor}.Slice(0, {VarNameProcesserReturn}.length);");
-            //writer.WriteLine($"{VarNameOutput}.Add( new {TokenValueStructName}({VarNameProcesserReturn}.id, consumed) );");
-            writer.WriteLine($"{VarNameOutputId}.Span[{VarNameOutputIndex}] = {VarNameProcesserReturn}.id;");
-            writer.WriteLine($"{VarNameOutputLength}.Span[{VarNameOutputIndex}] = {VarNameProcesserReturn}.length;");
-            writer.WriteLine($"{VarNameInputIndex} += {VarNameProcesserReturn}.length;");
-            writer.WriteLine($"{VarNameOutputIndex}++;");
-            writer.WriteLine($"{VarBufferMinor} = {VarBufferMinor}.Slice({VarNameProcesserReturn}.length);");
+            writer.WriteLine($"{VarNameInputIndex} += {VarNameProcesserReturn}.advance;");
+            writer.WriteLine($"{VarBufferMinor} = {VarBufferMinor}.Slice({VarNameProcesserReturn}.advance);");
             writer.WriteLine($"{VarBufferLocal} = {VarBufferMinor}.Span;");
             writer.Indent--;
             writer.WriteLine("}");

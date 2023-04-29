@@ -8,8 +8,10 @@ using System.Linq;
 namespace MetaParser.Builders.TokenLogic.Consumer;
 using static CodeCommon;
 
-internal class ExecuteConsumerAndReturn : MetaCodeBuilder
+internal class LogicReturnDroppedConsumer : MetaCodeBuilder
 {
+    public static LogicReturnDroppedConsumer Instance { get; } = new();
+
     protected override void Write(ParserContext context)
     {
         Debug.Assert(context.State.Targets.Consumers.Length == 1);
@@ -18,7 +20,7 @@ internal class ExecuteConsumerAndReturn : MetaCodeBuilder
 
         if (consumer.IsConstant)
         {
-            writer.WriteLine($"return new {ConsumerResult} ({Format_Token_Id_Const_Ref(consumer.Token.Name)}, {consumer.Start!.Length});");
+            writer.WriteLine($"return new (0, {consumer.Start!.Length}, false);");
         }
         else
         {

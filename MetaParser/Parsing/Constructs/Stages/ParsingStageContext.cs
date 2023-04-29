@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using MetaParser.Compiler.Structs;
+
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -17,6 +19,8 @@ internal sealed record ParsingStageContext
     public readonly int Index;
     public readonly TypeSyntax InputType;
     public readonly TypeSyntax OutputType;
+    public readonly ImmutableHashSet<ConsumerEntity> Dropped;
+    public readonly ImmutableHashSet<TokenEntity> Ignored;
     public readonly ImmutableArray<ConsumerEntity> Consumers;
     #endregion
 
@@ -27,12 +31,14 @@ internal sealed record ParsingStageContext
     #endregion
 
     #region Constructors
-    public ParsingStageContext(int index, TypeSyntax inputType, TypeSyntax outputType, IEnumerable<ConsumerEntity> consumers)
+    public ParsingStageContext(int index, TypeSyntax inputType, TypeSyntax outputType, IEnumerable<ConsumerEntity> consumers, ImmutableHashSet<TokenEntity> ignored, ImmutableHashSet<ConsumerEntity> dropped)
     {
         Consumers = consumers.ToImmutableArray();
         InputType = inputType;
         OutputType = outputType;
         Index = index;
+        Ignored = ignored;
+        Dropped = dropped;
     }
     #endregion
 }

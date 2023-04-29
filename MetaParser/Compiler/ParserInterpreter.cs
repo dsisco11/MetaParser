@@ -114,9 +114,12 @@ internal sealed record ParserInterpreter
 
     public ParserContext Compile()
     {
-        var registry = new EntityRegistry();
+        StageData lexingStage = CurrentStep.Stages[EParsingStage.Lexer];
+        StageData syntaxStage = CurrentStep.Stages[EParsingStage.Syntax];
 
+        var registry = new EntityRegistry();
         var mergedTokens = Get_Merged_Tokens(CurrentStep);
+
         // loop through each token clause and create an entity for each token, consumer, and pattern clause in the definition and without any duplicates
         foreach (var entry in mergedTokens)
         {
@@ -135,12 +138,7 @@ internal sealed record ParserInterpreter
                 // create a consumer for each consumer declaration
                 foreach (var consumerClause in tokenClause.Items)
                 {
-                    EConsumerKind consumerKind = tokenClause.Stage switch
-                    {
-                        EParsingStage.Lexer => EConsumerKind.Lexer,
-                        EParsingStage.Syntax => EConsumerKind.Syntax,
-                        _ => throw new NotImplementedException()
-                    };
+                    EConsumerKind consumerKind = get_consumer_kind_for_stage(tokenClause.Stage);
 
                     var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, tokenName, registry);
 
@@ -150,25 +148,49 @@ internal sealed record ParserInterpreter
             }
         }
 
+        List<ConsumerEntity> lexerDropped = new();
+        // add any dropped consumers to the graph aswell
+        foreach (var consumerClause in syntaxStage.Dropped)
+        {
+            EConsumerKind consumerKind = get_consumer_kind_for_stage(EParsingStage.Lexer);
+            var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, string.Empty, registry);
+            lexerDropped.Add(consumerEntity);
+        }
+
+        List<ConsumerEntity> syntaxDropped = new();
+        // add any dropped consumers to the graph aswell
+        foreach (var consumerClause in syntaxStage.Dropped)
+        {
+            EConsumerKind consumerKind = get_consumer_kind_for_stage(EParsingStage.Syntax);
+            var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, string.Empty, registry);
+            syntaxDropped.Add(consumerEntity);
+        }
+
         // set the id type to the smallest possible type that can hold all the token names
         var distinctTokenIds = registry.Tokens.Select(static (o) => o.ID).ToImmutableHashSet();
         _config.IdType = Common.Get_Integer_Type(distinctTokenIds.Count);
 
         // build the final graph
         registry.BuildGraphs();
+
         // Handle the lexers specially, to avoid any ordering mishaps
-        var lexerConsumers = registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).ToImmutableHashSet();
+        var lexerConsumers = registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).Except(lexerDropped).ToImmutableHashSet();
         var stages = new List<ParsingStageContext>()
         {
-            new ParsingStageContext(0, _config.InputType, _config.IdType, lexerConsumers)
+            new ParsingStageContext(0, _config.InputType, _config.IdType, lexerConsumers, ImmutableHashSet<TokenEntity>.Empty, lexerDropped.ToImmutableHashSet())
         };
 
+        // get all token entities from the registry which are listed by name in syntaxStage.Ignored
+        var ignoredTokens = registry.Tokens.Where((o) => syntaxStage.Ignored.Contains(o.Name)).ToImmutableHashSet();
+
         // Group all consumers in the registry by max node depth and then put each of the groups into a ParsingStageContext object which is linked to the previous one
-        var groups =registry.Consumers.Except(lexerConsumers).GroupBy(static (x) => x.Token.GraphInfo.Depth)
+        var groups = registry.Consumers.Except(lexerConsumers).Except(syntaxDropped).GroupBy(static (x) => x.Token.GraphInfo.Depth)
                                       .OrderBy(static (x) => x.Key);
         foreach (var group in groups)
         {
-            stages.Add(new ParsingStageContext(group.Key, _config.IdType, _config.IdType, group.ToImmutableHashSet()));
+            var groupIgnored = ignoredTokens.Where(x => x.GraphInfo.Depth <= group.Key).ToImmutableHashSet();
+            var groupDropped = syntaxDropped.Where(x => x.Token.GraphInfo.Depth <= group.Key).ToImmutableHashSet();
+            stages.Add(new ParsingStageContext(group.Key, _config.IdType, _config.IdType, group.ToImmutableHashSet(), groupIgnored, groupDropped));
         }
         // create the parsing stage contexts
         for (int i = 0; i < stages.Count; i++)
@@ -192,11 +214,21 @@ internal sealed record ParserInterpreter
             State = new CodeGenState(stages.First()),
         };
         return context;
+
+        static EConsumerKind get_consumer_kind_for_stage(EParsingStage stage)
+        {
+            return stage switch
+            {
+                EParsingStage.Lexer => EConsumerKind.Lexer,
+                EParsingStage.Syntax => EConsumerKind.Syntax,
+                _ => throw new NotImplementedException()
+            };
+        }
     }
     #endregion
 
     #region Discrete Steps
-    private delegate ConsumerClause StageConsumerTransformer(StageData stage, TokenClause token, ConsumerClause consumer);
+    private delegate ConsumerClause StageConsumerTransformer(StageData stage, ConsumerClause consumer);
 
     /// <summary>
     /// assigned values with simplification applied, meaning that patterns are inlined and any redundant patterns are removed
@@ -212,6 +244,12 @@ internal sealed record ParserInterpreter
             var stage = new StageData(defStage.Value);
             stepData.Stages.Add(defStage.Key, stage);
 
+            foreach (var dropClause in defStage.Value.Dropped)
+            {
+                var processed = consumerTransformer(stage, dropClause);
+                stage.Dropped.Add(processed);
+            }
+
             foreach (var defItem in defStage.Value.Items)
             {
                 var tokenName = defItem.Key;
@@ -226,10 +264,12 @@ internal sealed record ParserInterpreter
 
                 foreach (var defConsumer in defToken)
                 {
-                    var processed = consumerTransformer(stage, defToken, defConsumer);
+                    var processed = consumerTransformer(stage, defConsumer);
                     tokenClause.Items.Add(processed);
                 }
             }
+
+
         }
 
         return stepData;
@@ -245,7 +285,14 @@ internal sealed record ParserInterpreter
         foreach (var defStage in definition.Stages)
         {
             var stage = new StageData(defStage.Type);
+            stage.Ignored.AddRange(defStage.Ignored);
             stepData.Stages.Add(defStage.Type, stage);
+
+            foreach (var defDrop in defStage.Dropped)
+            {
+                var processed = process_consumer_declaration_into_clause(defDrop);
+                stage.Dropped.Add(processed);
+            }
 
             foreach (var defItem in defStage.Consumers)
             {
@@ -264,24 +311,7 @@ internal sealed record ParserInterpreter
                 // for each item in the consumer, call Interpret on the item and add it to the consumer items
                 foreach (var defConsumer in defConsumerList)
                 {
-                    var seqStart = defConsumer.Start.Select(static (c) => c.Interpret()).Where(static x => x is not null).Select(static x => x!);
-                    var seqConsume = defConsumer.Consume.Select(static (c) => c.Interpret()).Where(static x => x is not null).Select(static x => x!);
-                    var seqStop = defConsumer.Stop.Select(static (c) => c.Interpret()).Where(static x => x is not null).Select(static x => x!);
-                    var seqEscape = defConsumer.Escape.Select(static (c) => c.Interpret()).Where(static x => x is not null).Select(static x => x!);
-
-                    if (seqStart is null && seqConsume is null)
-                    {
-                        throw new IllegalTokenException($@"Illegal consumer definition (""{defTokenID}"") (tokens require at minimum either a START or CONSUME sequence)");
-                    }
-
-                    var consumer = new ConsumerClause()
-                    {
-                        Start = seqStart.Any() ? new PatternSequenceClause(EPatternKind.AllOf, seqStart!) : null,
-                        Consume = seqConsume.Any() ? new PatternSequenceClause(EPatternKind.OneOf, seqConsume!) : null,
-                        Stop = seqStop.Any() ? new PatternSequenceClause(EPatternKind.AllOf, seqStop!) : null,
-                        Escape = seqEscape.Any() ? new PatternSequenceClause(EPatternKind.AllOf, seqEscape!) : null,
-                    };
-
+                    var consumer = process_consumer_declaration_into_clause(defConsumer);
                     tokenClause.Items.Add(consumer);
                 }
             }
@@ -290,6 +320,26 @@ internal sealed record ParserInterpreter
         return stepData;
     }
 
+    private static ConsumerClause process_consumer_declaration_into_clause(ConsumerDeclaration declaration)
+    {
+        var seqStart = declaration.Start.Select(static (c) => c.Interpret()).Where(static x => x is not null).Select(static x => x!);
+        var seqConsume = declaration.Consume.Select(static (c) => c.Interpret()).Where(static x => x is not null).Select(static x => x!);
+        var seqStop = declaration.Stop.Select(static (c) => c.Interpret()).Where(static x => x is not null).Select(static x => x!);
+        var seqEscape = declaration.Escape.Select(static (c) => c.Interpret()).Where(static x => x is not null).Select(static x => x!);
+
+        if (seqStart is null && seqConsume is null)
+        {
+            throw new IllegalTokenException($@"Illegal consumer definition ({declaration}) (tokens require at minimum either a START or CONSUME sequence)");
+        }
+
+        return new ConsumerClause()
+        {
+            Start = seqStart.Any() ? new PatternSequenceClause(EPatternKind.AllOf, seqStart!) : null,
+            Consume = seqConsume.Any() ? new PatternSequenceClause(EPatternKind.OneOf, seqConsume!) : null,
+            Stop = seqStop.Any() ? new PatternSequenceClause(EPatternKind.AllOf, seqStop!) : null,
+            Escape = seqEscape.Any() ? new PatternSequenceClause(EPatternKind.AllOf, seqEscape!) : null,
+        };
+    }
 
     /// <summary>
     /// declared values with any "blanks" filled in with defaults, such as 'Start' becoming 'Start = None' if it was left blank
@@ -323,7 +373,7 @@ internal sealed record ParserInterpreter
     /// <exception cref="NotImplementedException"></exception>
     public static InterpreterStep Process_Used(InterpreterStep Data) => Process_Stage(Data, process_used);
     #endregion
-    private static ConsumerClause simplify_patterns(StageData stage, TokenClause token, ConsumerClause consumer)
+    private static ConsumerClause simplify_patterns(StageData stage, ConsumerClause consumer)
     {
         return new ConsumerClause()
         {
@@ -334,18 +384,18 @@ internal sealed record ParserInterpreter
         };
     }
 
-    private static ConsumerClause perform_pattern_subclassing(StageData stage, TokenClause token, ConsumerClause consumer)
+    private static ConsumerClause perform_pattern_subclassing(StageData stage, ConsumerClause consumer)
     {
         return new ConsumerClause()
         {
-            Start = process(stage, token, consumer.Start),
-            Consume = process(stage, token, consumer.Consume),
-            Stop = process(stage, token, consumer.Stop),
-            Escape = process(stage, token, consumer.Escape),
+            Start = process(stage, consumer.Start),
+            Consume = process(stage, consumer.Consume),
+            Stop = process(stage, consumer.Stop),
+            Escape = process(stage, consumer.Escape),
         };
 
 
-        static IPatternClause? process(StageData stage, TokenClause token, IPatternClause? pattern)
+        static IPatternClause? process(StageData stage, IPatternClause? pattern)
         {
             if (pattern is null) return null;
 
@@ -357,7 +407,7 @@ internal sealed record ParserInterpreter
                         var newSequence = new PatternSequenceClause(sequence.Kind);
                         foreach (var item in sequence.Items)
                         {
-                            var computed = process(stage, token, item);
+                            var computed = process(stage, item);
                             if (computed is not null) newSequence.Items.Add(computed);
                         }
                         return newSequence;
@@ -388,7 +438,7 @@ internal sealed record ParserInterpreter
         }
     }
 
-    private static ConsumerClause inline_implied_patterns(StageData stage, TokenClause token, ConsumerClause consumer)
+    private static ConsumerClause inline_implied_patterns(StageData stage, ConsumerClause consumer)
     {
         return new ConsumerClause()
         {
@@ -407,7 +457,7 @@ internal sealed record ParserInterpreter
         };
     }
 
-    private static ConsumerClause process_used(StageData stage, TokenClause token, ConsumerClause consumer)
+    private static ConsumerClause process_used(StageData stage, ConsumerClause consumer)
     {
         return consumer;// with { };
     }

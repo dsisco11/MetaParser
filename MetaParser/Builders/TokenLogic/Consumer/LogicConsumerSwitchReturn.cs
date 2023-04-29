@@ -5,14 +5,13 @@ using System;
 using System.Collections.Immutable;
 
 namespace MetaParser.Builders.TokenLogic.Consumer;
-
-internal class LogicConsumerSwitchBlock : MetaCodeBuilder
+internal class LogicConsumerSwitchReturn : MetaCodeBuilder
 {
     protected override void Write(ParserContext context)
     {
         var writer = context.Writer ?? throw new InvalidOperationException("Writer is null");
 
-        writer.WriteLine($"switch ({context.State.ActiveBufferName})");
+        writer.WriteLine($"return {context.State.ActiveBufferName} switch");
         writer.WriteLine("{");
         writer.Indent++;
 
@@ -23,16 +22,15 @@ internal class LogicConsumerSwitchBlock : MetaCodeBuilder
         {
             var consumer = patternConsumerMap[pattern];
 
-            writer.Write("case [");
+            writer.Write("[");
             context.Config.CodeFactory.Get_Pattern_Writer().WriteTo(context with { State = context.State with { Targets = new WorkingSet(pattern) } });
-            writer.WriteLine(", ..]");
-            writer.Indent++;
-            writer.Write("return ");
+            writer.Write(", ..] => ");
             WriteContent(context with { State = context.State with { Targets = new WorkingSet(consumer) } });
-            writer.WriteLine(";");
-            writer.Indent--;
+            writer.WriteLine(",");
         }
+
+        writer.WriteLine("_ => new (0, 1)");
         writer.Indent--;
-        writer.WriteLine("}");// end switch
+        writer.WriteLine("};");// end switch
     }
 }

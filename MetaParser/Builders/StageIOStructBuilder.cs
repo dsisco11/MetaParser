@@ -12,7 +12,7 @@ internal class StageIOStructBuilder : MetaCodeBuilder
 
         writer.WriteLine($"namespace {context.Config.Namespace};");
         writer.WriteLine("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 0)]");
-        writer.WriteLine($"public readonly record struct {ConsumerResult}({context.Config.IdType} id, int length);");
+        writer.WriteLine($"public readonly record struct {ConsumerResult}({context.Config.IdType} tokenid, int advance, bool success = true);");
         // Stage Input
         writer.WriteLine($"public readonly record struct {StageInput}<InputType, OutputType>({ReadOnlyMemory}<InputType> Input, {Memory}<OutputType> Output, {Memory}<int> Length);");
         // Stage Output
