@@ -74,52 +74,24 @@ public partial class Generator : IIncrementalGenerator
             return (file, schema!);
         }));
 
-        IncrementalValuesProvider<ParserInterpreter> interpreterStart = ctxSchema.Select(static (ValueTuple<FileData, ParserDefinition> data, CancellationToken cancellationToken) =>
+        IncrementalValuesProvider<Syntax.SyntaxTree> syntaxTree = ctxSchema.Select(static (ValueTuple<FileData, ParserDefinition> data, CancellationToken cancellationToken) =>
         {
             FileData file = data.Item1;
             var definition = data.Item2;
 
-            return new ParserInterpreter(file.FileName, data.Item2);
+            return ParserInterpreter.Build(definition);
         });
 
-        #region Interpreter Steps
+        //IncrementalValuesProvider<ParserContext> ctxParser = syntaxTree.Select(static (RedGreenTree syntaxTree, CancellationToken cancellationToken) =>
+        //{
+        //    return ParserInterpreter.Compile(syntaxTree);
+        //});
 
-        var declared = interpreterStart.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
-        {
-            return interpreter.ExecuteNext();
-        });
-
-        var assigned = declared.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
-        {
-            return interpreter.ExecuteNext();
-        });
-
-        var specified = assigned.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
-        {
-            return interpreter.ExecuteNext();
-        });
-
-        var computed = specified.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
-        {
-            return interpreter.ExecuteNext();
-        });
-
-        var used = computed.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
-        {
-            return interpreter.ExecuteNext();
-        });
-        #endregion
-
-        IncrementalValuesProvider<ParserContext> ctxParser = used.Select(static (ParserInterpreter interpreter, CancellationToken cancellationToken) =>
-        {
-            return interpreter.Compile();
-        });
-
-        IncrementalValuesProvider<ParserContext> ctxCompoundTokens = ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
-        {
-            var tokens = context.Registry.Tokens.Where(static (entity) => entity.GraphInfo.Depth > 0);
-            return (context with { State = context.State with { Targets = new WorkingSet(tokens) } });
-        });
+        //IncrementalValuesProvider<ParserContext> ctxCompoundTokens = ctxParser.Select(static (ParserContext context, CancellationToken cancellationToken) =>
+        //{
+        //    var tokens = context.Registry.Tokens.Where(static (entity) => entity.GraphInfo.Depth > 0);
+        //    return (context with { State = context.State with { Targets = new WorkingSet(tokens) } });
+        //});
         #endregion
 
 #if DEBUG

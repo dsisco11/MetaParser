@@ -39,7 +39,7 @@ internal static class RegistryEntityFormatter
     {
         return pattern switch
         {
-            PatternConst c => $@"{SymbolDisplay.FormatLiteral(c.Value, true)}",
+            PatternLiteral c => $@"{SymbolDisplay.FormatLiteral(c.Value, true)}",
             PatternRange r => $"[{r.Begin}, {r.End}]",
             //PatternSequence g => $@"""{{{g.Key.Index}}}""",
             PatternSequence g => "Group",

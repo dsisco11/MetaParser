@@ -16,4 +16,6 @@ public enum EPatternKind
     OneOf,
     /// <summary>[is not 'x' and is not 'y']</summary>
     Not,
+    /// <summary>matches anything</summary>
+    Any,
 };

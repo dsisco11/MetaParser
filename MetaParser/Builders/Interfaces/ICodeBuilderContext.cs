@@ -1,4 +1,6 @@
-﻿using System.CodeDom.Compiler;
+﻿using MetaParser.Core;
+
+using System.CodeDom.Compiler;
 
 namespace MetaParser.Builders.Interfaces;
 

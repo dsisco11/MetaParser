@@ -13,7 +13,7 @@ internal static class PatternEntityFactory
         PatternEntity entity = clause switch
         {
             PatternItemClause item when clause.Kind == EPatternKind.Token => new PatternTokenRef(registry, item.Value),
-            PatternItemClause item => new PatternConst(registry, item.Value),
+            PatternItemClause item => new PatternLiteral(registry, item.Value),
 
             PatternSequenceClause sequence when clause.Kind == EPatternKind.Range => new PatternRange(registry,
                                                                                                       ((PatternItemClause)sequence.Items[0]).Value,

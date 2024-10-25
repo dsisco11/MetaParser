@@ -2,14 +2,14 @@
 
 namespace MetaParser.Parsing.Constructs;
 
-internal sealed record PatternConst : PatternEntity
+internal sealed record PatternLiteral : PatternEntity
 {
     #region Fields
     public readonly string Value;
     #endregion
 
     #region Constructors
-    public PatternConst(EntityRegistry registry, string value) : base(EPatternKind.Literal, registry)
+    public PatternLiteral(EntityRegistry registry, string value) : base(EPatternKind.Literal, registry)
     {
         Value = value;
     }

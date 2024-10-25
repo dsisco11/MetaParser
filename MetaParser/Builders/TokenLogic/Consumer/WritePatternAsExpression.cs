@@ -24,8 +24,8 @@ internal class WritePatternAsExpression : MetaCodeBuilder
     {
         return pattern switch
         {
-            PatternConst c when c.Kind == EPatternKind.Literal && c.Value.Length == 1 => SymbolDisplay.FormatLiteral(c.Value[0], true),
-            PatternConst c => SymbolDisplay.FormatLiteral(c.Value, true),
+            PatternLiteral c when c.Kind == EPatternKind.Literal && c.Value.Length == 1 => SymbolDisplay.FormatLiteral(c.Value[0], true),
+            PatternLiteral c => SymbolDisplay.FormatLiteral(c.Value, true),
             // ranges
             PatternRange r => $"(>={SymbolDisplay.FormatLiteral(r.Begin[0], true)} and <={SymbolDisplay.FormatLiteral(r.End[0], true)})",
             // tokens

@@ -1,4 +1,5 @@
-﻿using MetaParser.Compiler.Structs;
+﻿using MetaParser.Builders;
+using MetaParser.Compiler.Structs;
 using MetaParser.Core;
 using MetaParser.Exceptions;
 using MetaParser.Graphs;
@@ -6,13 +7,20 @@ using MetaParser.Json.Definitions;
 using MetaParser.Parsing.Constructs;
 using MetaParser.Parsing.Constructs.Patterns;
 using MetaParser.Parsing.Constructs.Stages;
+using MetaParser.Parsing.Constructs.Tokens;
+using MetaParser.Syntax;
+using MetaParser.Syntax.Nodes;
+using MetaParser.Trees;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+
+using SyntaxTree = MetaParser.Syntax.SyntaxTree;
 
 namespace MetaParser.Compiler;
 
@@ -98,228 +106,176 @@ internal sealed record ParserInterpreter
     #endregion
 
     #region Compiling
-    public ParserInterpreter ExecuteNext()
+    //public ParserContext Compile()
+    //{
+    //    StageData lexingStage = CurrentStep.Stages[EParsingStage.Lexer];
+    //    StageData syntaxStage = CurrentStep.Stages[EParsingStage.Syntax];
+
+    //    var registry = new EntityRegistry();
+    //    var mergedTokens = Get_Merged_Tokens(CurrentStep);
+
+    //    // loop through each token clause and create an entity for each token, consumer, and pattern clause in the definition and without any duplicates
+    //    foreach (var entry in mergedTokens)
+    //    {
+    //        var tokenList = entry.Value;
+    //        // create a token for each token name
+    //        foreach (var tokenClause in tokenList)
+    //        {
+    //            string tokenID = CodeCommon.Format_Token_Key(tokenClause.ID);
+    //            string tokenName = CodeCommon.Format_Token_Key(tokenClause.Name);
+    //            var tokenEntity = new TokenEntity(registry, tokenID, tokenName);
+    //            // add the token to the registry
+    //            registry.Add(tokenEntity);
+    //            // add the token to the tree
+    //            registry.Tree.Add(tokenEntity.Key);
+
+    //            // create a consumer for each consumer declaration
+    //            foreach (var consumerClause in tokenClause.Items)
+    //            {
+    //                EConsumerKind consumerKind = get_consumer_kind_for_stage(tokenClause.Stage);
+
+    //                var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, tokenName, registry);
+
+    //                // add the consumer to the tree
+    //                registry.Tree.AddEdge(parent: tokenEntity.Key, child: consumerEntity.Key);
+    //            }
+    //        }
+    //    }
+
+    //    List<ConsumerEntity> lexerDropped = new();
+    //    // add any dropped consumers to the graph aswell
+    //    foreach (var consumerClause in syntaxStage.Dropped)
+    //    {
+    //        EConsumerKind consumerKind = get_consumer_kind_for_stage(EParsingStage.Lexer);
+    //        var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, string.Empty, registry);
+    //        lexerDropped.Add(consumerEntity);
+    //    }
+
+    //    List<ConsumerEntity> syntaxDropped = new();
+    //    // add any dropped consumers to the graph aswell
+    //    foreach (var consumerClause in syntaxStage.Dropped)
+    //    {
+    //        EConsumerKind consumerKind = get_consumer_kind_for_stage(EParsingStage.Syntax);
+    //        var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, string.Empty, registry);
+    //        syntaxDropped.Add(consumerEntity);
+    //    }
+
+    //    // set the id type to the smallest possible type that can hold all the token names
+    //    var distinctTokenIds = registry.Tokens.Select(static (o) => o.ID).ToImmutableHashSet();
+    //    _config.IdType = Common.Get_Integer_Type(distinctTokenIds.Count);
+
+    //    // build the final graph
+    //    registry.BuildGraphs();
+
+    //    // Handle the lexers specially, to avoid any ordering mishaps
+    //    var lexerConsumers = registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).Except(lexerDropped).ToImmutableHashSet();
+    //    var stages = new List<ParsingStageContext>()
+    //    {
+    //        new ParsingStageContext(0, _config.InputType, _config.IdType, lexerConsumers, ImmutableHashSet<TokenEntity>.Empty, lexerDropped.ToImmutableHashSet())
+    //    };
+
+    //    // get all token entities from the registry which are listed by name in syntaxStage.Ignored
+    //    var ignoredTokens = registry.Tokens.Where((o) => syntaxStage.Ignored.Contains(o.Name)).ToImmutableHashSet();
+
+    //    // Group all consumers in the registry by max node depth and then put each of the groups into a ParsingStageContext object which is linked to the previous one
+    //    var groups = registry.Consumers.Except(lexerConsumers).Except(syntaxDropped).GroupBy(static (x) => x.Token.GraphInfo.Depth)
+    //                                  .OrderBy(static (x) => x.Key);
+    //    foreach (var group in groups)
+    //    {
+    //        var groupIgnored = ignoredTokens.Where(x => x.GraphInfo.Depth <= group.Key).ToImmutableHashSet();
+    //        var groupDropped = syntaxDropped.Where(x => x.Token.GraphInfo.Depth <= group.Key).ToImmutableHashSet();
+    //        stages.Add(new ParsingStageContext(group.Key, _config.IdType, _config.IdType, group.ToImmutableHashSet(), groupIgnored, groupDropped));
+    //    }
+    //    // create the parsing stage contexts
+    //    for (int i = 0; i < stages.Count; i++)
+    //    {
+    //        var stage = stages[i];
+    //        if (i + 1 < stages.Count)
+    //        {
+    //            stage.Tail = stages[i + 1];
+    //        }
+    //        if (i - 1 >= 0)
+    //        {
+    //            stage.Head = stages[i - 1];
+    //        }
+    //    }
+
+    //    var context = new ParserContext()
+    //    {
+    //        Config = _config,
+    //        Registry = registry,
+    //        Stages = stages.ToImmutableArray(),
+    //        State = new CodeGenState(stages.First()),
+    //    };
+    //    return context;
+
+    //    static EConsumerKind get_consumer_kind_for_stage(EParsingStage stage)
+    //    {
+    //        return stage switch
+    //        {
+    //            EParsingStage.Lexer => EConsumerKind.Lexer,
+    //            EParsingStage.Syntax => EConsumerKind.Syntax,
+    //            _ => throw new NotImplementedException()
+    //        };
+    //    }
+    //}
+    #endregion
+
+    #region AST Tree Construction
+    public static Syntax.SyntaxTree Build(ParserDefinition definition)
     {
-        return Stage switch
+        var rootItems = new List<GreenNode>();
+        foreach (var stageDef in definition.Stages)
         {
-            EInterpreterStage.Declared => this with { Stage = EInterpreterStage.Assigned, Declared = Process_Declared(Definition) },
-            EInterpreterStage.Assigned => this with { Stage = EInterpreterStage.Specified, Assigned = Process_Assigned(Declared) },
-            EInterpreterStage.Specified => this with { Stage = EInterpreterStage.Computed, Specified = Process_Specified(Assigned) },
-            EInterpreterStage.Computed => this with { Stage = EInterpreterStage.Used, Computed = Process_Computed(Specified) },
-            EInterpreterStage.Used => this with { Stage = EInterpreterStage.Ready, Used = Process_Used(Computed) },
-            EInterpreterStage.Ready => this,
-            _ => throw new NotImplementedException()
-        };
-    }
-
-    public ParserContext Compile()
-    {
-        StageData lexingStage = CurrentStep.Stages[EParsingStage.Lexer];
-        StageData syntaxStage = CurrentStep.Stages[EParsingStage.Syntax];
-
-        var registry = new EntityRegistry();
-        var mergedTokens = Get_Merged_Tokens(CurrentStep);
-
-        // loop through each token clause and create an entity for each token, consumer, and pattern clause in the definition and without any duplicates
-        foreach (var entry in mergedTokens)
-        {
-            var tokenList = entry.Value;
-            // create a token for each token name
-            foreach (var tokenClause in tokenList)
+            foreach (var dropDef in stageDef.Dropped)
             {
-                string tokenID = CodeCommon.Format_Token_Key(tokenClause.ID);
-                string tokenName = CodeCommon.Format_Token_Key(tokenClause.Name);
-                var tokenEntity = new TokenEntity(registry, tokenID, tokenName);
-                // add the token to the registry
-                registry.Add(tokenEntity);
-                // add the token to the tree
-                registry.Tree.Add(tokenEntity.Key);
+                var clause = process_consumer_declaration_into_clause(dropDef);
+                var start = clause.Start is null ? null : pattern_clause_to_node(clause.Start);
+                var consume = clause.Consume is null ? null : pattern_clause_to_node(clause.Consume);
+                var stop = clause.Stop is null ? null : pattern_clause_to_node(clause.Stop);
+                var escape = clause.Escape is null ? null : pattern_clause_to_node(clause.Escape);
 
-                // create a consumer for each consumer declaration
-                foreach (var consumerClause in tokenClause.Items)
+                var consumerNode = new DropConsumerNode(start, consume, stop, escape);
+
+                rootItems.Add(consumerNode);
+            }
+
+            foreach (var tokenDef in stageDef.Consumers)
+            {
+                foreach (var consumerDef in tokenDef.Value)
                 {
-                    EConsumerKind consumerKind = get_consumer_kind_for_stage(tokenClause.Stage);
+                    var clause = process_consumer_declaration_into_clause(consumerDef);
 
-                    var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, tokenName, registry);
+                    var start = clause.Start is null ? null : pattern_clause_to_node(clause.Start);
+                    var consume = clause.Consume is null ? null : pattern_clause_to_node(clause.Consume);
+                    var stop = clause.Stop is null ? null : pattern_clause_to_node(clause.Stop);
+                    var escape = clause.Escape is null ? null : pattern_clause_to_node(clause.Escape);
 
-                    // add the consumer to the tree
-                    registry.Tree.AddEdge(parent: tokenEntity.Key, child: consumerEntity.Key);
+                    var tokenInfo = new TokenInfo(tokenDef.Key, stageDef.Type, false);
+
+                    var consumerNode = new TokenConsumerNode(tokenInfo, start, consume, stop, escape);
+                    rootItems.Add(consumerNode);
                 }
             }
         }
 
-        List<ConsumerEntity> lexerDropped = new();
-        // add any dropped consumers to the graph aswell
-        foreach (var consumerClause in syntaxStage.Dropped)
-        {
-            EConsumerKind consumerKind = get_consumer_kind_for_stage(EParsingStage.Lexer);
-            var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, string.Empty, registry);
-            lexerDropped.Add(consumerEntity);
-        }
+        return new SyntaxTree(new[] { new ParserDefinitionNode(definition.ClassName, definition.Namespace, rootItems.ToArray()) });
+    }
+    #endregion
 
-        List<ConsumerEntity> syntaxDropped = new();
-        // add any dropped consumers to the graph aswell
-        foreach (var consumerClause in syntaxStage.Dropped)
-        {
-            EConsumerKind consumerKind = get_consumer_kind_for_stage(EParsingStage.Syntax);
-            var consumerEntity = ConsumerEntityFactory.Create(consumerKind, consumerClause, string.Empty, registry);
-            syntaxDropped.Add(consumerEntity);
-        }
-
-        // set the id type to the smallest possible type that can hold all the token names
-        var distinctTokenIds = registry.Tokens.Select(static (o) => o.ID).ToImmutableHashSet();
-        _config.IdType = Common.Get_Integer_Type(distinctTokenIds.Count);
-
-        // build the final graph
-        registry.BuildGraphs();
-
-        // Handle the lexers specially, to avoid any ordering mishaps
-        var lexerConsumers = registry.Consumers.Where(static (o) => o.Kind == EConsumerKind.Lexer).Except(lexerDropped).ToImmutableHashSet();
-        var stages = new List<ParsingStageContext>()
-        {
-            new ParsingStageContext(0, _config.InputType, _config.IdType, lexerConsumers, ImmutableHashSet<TokenEntity>.Empty, lexerDropped.ToImmutableHashSet())
+    #region Converters
+    private static PatternNode pattern_clause_to_node(IPatternClause patternClause)
+    {
+        return patternClause switch { 
+            PatternItemClause clause when clause.Kind == EPatternKind.Literal => NodeFactory.Create_Pattern_Literal(clause.Value),
+            PatternItemClause clause when clause.Kind == EPatternKind.Token => NodeFactory.Create_Pattern_Token(clause.Value),
+            PatternSequenceClause clause => new PatternNode(clause.Kind, clause.Items.Select(pattern_clause_to_node).ToArray()),
+            _ => throw new NotImplementedException()
         };
-
-        // get all token entities from the registry which are listed by name in syntaxStage.Ignored
-        var ignoredTokens = registry.Tokens.Where((o) => syntaxStage.Ignored.Contains(o.Name)).ToImmutableHashSet();
-
-        // Group all consumers in the registry by max node depth and then put each of the groups into a ParsingStageContext object which is linked to the previous one
-        var groups = registry.Consumers.Except(lexerConsumers).Except(syntaxDropped).GroupBy(static (x) => x.Token.GraphInfo.Depth)
-                                      .OrderBy(static (x) => x.Key);
-        foreach (var group in groups)
-        {
-            var groupIgnored = ignoredTokens.Where(x => x.GraphInfo.Depth <= group.Key).ToImmutableHashSet();
-            var groupDropped = syntaxDropped.Where(x => x.Token.GraphInfo.Depth <= group.Key).ToImmutableHashSet();
-            stages.Add(new ParsingStageContext(group.Key, _config.IdType, _config.IdType, group.ToImmutableHashSet(), groupIgnored, groupDropped));
-        }
-        // create the parsing stage contexts
-        for (int i = 0; i < stages.Count; i++)
-        {
-            var stage = stages[i];
-            if (i + 1 < stages.Count)
-            {
-                stage.Tail = stages[i + 1];
-            }
-            if (i - 1 >= 0)
-            {
-                stage.Head = stages[i - 1];
-            }
-        }
-
-        var context = new ParserContext()
-        {
-            Config = _config,
-            Registry = registry,
-            Stages = stages.ToImmutableArray(),
-            State = new CodeGenState(stages.First()),
-        };
-        return context;
-
-        static EConsumerKind get_consumer_kind_for_stage(EParsingStage stage)
-        {
-            return stage switch
-            {
-                EParsingStage.Lexer => EConsumerKind.Lexer,
-                EParsingStage.Syntax => EConsumerKind.Syntax,
-                _ => throw new NotImplementedException()
-            };
-        }
     }
     #endregion
 
     #region Discrete Steps
-    private delegate ConsumerClause StageConsumerTransformer(StageData stage, ConsumerClause consumer);
-
-    /// <summary>
-    /// assigned values with simplification applied, meaning that patterns are inlined and any redundant patterns are removed
-    /// </summary>
-    /// <param name="Data"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    private static InterpreterStep Process_Stage(InterpreterStep Data, StageConsumerTransformer consumerTransformer)
-    {
-        var stepData = new InterpreterStep();
-        foreach (var defStage in Data.Stages)
-        {
-            var stage = new StageData(defStage.Value);
-            stepData.Stages.Add(defStage.Key, stage);
-
-            foreach (var dropClause in defStage.Value.Dropped)
-            {
-                var processed = consumerTransformer(stage, dropClause);
-                stage.Dropped.Add(processed);
-            }
-
-            foreach (var defItem in defStage.Value.Items)
-            {
-                var tokenName = defItem.Key;
-                var defToken = defItem.Value;
-
-                // initialize if needed
-                if (!stage.Items.TryGetValue(tokenName, out var tokenClause))
-                {
-                    tokenClause = new TokenClause(defToken);
-                    stage.Items.Add(tokenName, tokenClause);
-                }
-
-                foreach (var defConsumer in defToken)
-                {
-                    var processed = consumerTransformer(stage, defConsumer);
-                    tokenClause.Items.Add(processed);
-                }
-            }
-
-
-        }
-
-        return stepData;
-    }
-
-    /// <summary>
-    /// Processess JSON structures from the definition and translates them into C# structures
-    /// </summary>
-    public static InterpreterStep Process_Declared(ParserDefinition definition)
-    {
-        var stepData = new InterpreterStep();
-        // for each item in every stage of the definition, call Interpret on the item and add it to the data objects stage
-        foreach (var defStage in definition.Stages)
-        {
-            var stage = new StageData(defStage.Type);
-            stage.Ignored.AddRange(defStage.Ignored);
-            stepData.Stages.Add(defStage.Type, stage);
-
-            foreach (var defDrop in defStage.Dropped)
-            {
-                var processed = process_consumer_declaration_into_clause(defDrop);
-                stage.Dropped.Add(processed);
-            }
-
-            foreach (var defItem in defStage.Consumers)
-            {
-                string defTokenID = defItem.Key;
-                IEnumerable<ConsumerDeclaration> defConsumerList = defItem.Value;
-
-                // initialize the list of clauses if needed
-                if (!stage.Items.TryGetValue(defTokenID, out var tokenClause))
-                {
-                    tokenClause = new TokenClause(defTokenID, stage.Stage) { 
-                        Name = $"{stage.Stage.ToString().ToUpperInvariant()}_{defTokenID}"
-                    };
-                    stage.Items.Add(defTokenID, tokenClause);
-                }
-
-                // for each item in the consumer, call Interpret on the item and add it to the consumer items
-                foreach (var defConsumer in defConsumerList)
-                {
-                    var consumer = process_consumer_declaration_into_clause(defConsumer);
-                    tokenClause.Items.Add(consumer);
-                }
-            }
-        }
-
-        return stepData;
-    }
-
     private static ConsumerClause process_consumer_declaration_into_clause(ConsumerDeclaration declaration)
     {
         var seqStart = declaration.Start.Select(static (c) => c.Interpret()).Where(static x => x is not null).Select(static x => x!);
@@ -332,48 +288,49 @@ internal sealed record ParserInterpreter
             throw new IllegalTokenException($@"Illegal consumer definition ({declaration}) (tokens require at minimum either a START or CONSUME sequence)");
         }
 
-        return new ConsumerClause()
+        var clause = new ConsumerClause()
         {
             Start = seqStart.Any() ? new PatternSequenceClause(EPatternKind.AllOf, seqStart!) : null,
             Consume = seqConsume.Any() ? new PatternSequenceClause(EPatternKind.OneOf, seqConsume!) : null,
             Stop = seqStop.Any() ? new PatternSequenceClause(EPatternKind.AllOf, seqStop!) : null,
             Escape = seqEscape.Any() ? new PatternSequenceClause(EPatternKind.AllOf, seqEscape!) : null,
         };
+
+        clause = inline_implied_patterns(clause);
+        clause = simplify_patterns(clause);
+        clause = perform_pattern_subclassing(declaration.Stage, clause);
+
+        return clause;
     }
 
-    /// <summary>
-    /// declared values with any "blanks" filled in with defaults, such as 'Start' becoming 'Start = None' if it was left blank
-    /// </summary>
-    /// <param name="Data"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public static InterpreterStep Process_Assigned(InterpreterStep Data) => Process_Stage(Data, inline_implied_patterns);
+    private static ConsumerClause inline_implied_patterns(ConsumerClause consumer)
+    {
+        return new ConsumerClause()
+        {
+            Start = consumer.IsOpen switch
+            {
+                false when consumer.Start is not null => consumer.Start,
+                // no start condition, only a CONSUME criteria
+                true when consumer.Start is null => consumer.Consume!,
+                // for open ended consumers it is implied that their consume criteria is part of their start condition
+                true when consumer.Start is not null => new PatternSequenceClause(EPatternKind.AllOf, consumer.Start, consumer.Consume!),
+                _ => throw new NotImplementedException()
+            },
+            Consume = consumer.Consume switch
+            {                
+                // if there is no consume criteria, but there is a stop criteria, then the consume criteria is a wildcard
+                null when consumer.Stop is not null => new PatternSequenceClause(EPatternKind.Any),
+                // if there is no consume criteria, then there is no consume criteria
+                null => null,
+                _ => consumer.Consume
+            },
+            Stop = consumer.Stop,
+            Escape = consumer.Escape,
+        };
+    }
 
-    /// <summary>
-    /// assigned values with simplification applied, meaning that patterns are inlined and any redundant patterns are removed
-    /// </summary>
-    /// <param name="Data"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public static InterpreterStep Process_Specified(InterpreterStep Data) => Process_Stage(Data, perform_pattern_subclassing);
-
-    /// <summary>
-    /// Resolving specified values into concrete values, meaning that a pattern with collissions is expanded into virtual sub-patterns (as such, token collissions result in the creation of virtual tokens)
-    /// </summary>
-    /// <param name="Data"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public static InterpreterStep Process_Computed(InterpreterStep Data) => Process_Stage(Data, simplify_patterns);
-
-    /// <summary>
-    /// Deduplication of patterns and registration of data structures with the registry
-    /// </summary>
-    /// <param name="Data"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public static InterpreterStep Process_Used(InterpreterStep Data) => Process_Stage(Data, process_used);
     #endregion
-    private static ConsumerClause simplify_patterns(StageData stage, ConsumerClause consumer)
+    private static ConsumerClause simplify_patterns(ConsumerClause consumer)
     {
         return new ConsumerClause()
         {
@@ -384,7 +341,7 @@ internal sealed record ParserInterpreter
         };
     }
 
-    private static ConsumerClause perform_pattern_subclassing(StageData stage, ConsumerClause consumer)
+    private static ConsumerClause perform_pattern_subclassing(EParsingStage stage, ConsumerClause consumer)
     {
         return new ConsumerClause()
         {
@@ -395,7 +352,7 @@ internal sealed record ParserInterpreter
         };
 
 
-        static IPatternClause? process(StageData stage, IPatternClause? pattern)
+        static IPatternClause? process(EParsingStage stage, IPatternClause? pattern)
         {
             if (pattern is null) return null;
 
@@ -414,7 +371,7 @@ internal sealed record ParserInterpreter
                     }
                 case PatternItemClause literal:
                     {
-                        if (stage.Stage == EParsingStage.Lexer)
+                        if (stage == EParsingStage.Lexer)
                         {
                             if (literal.Value.Length > 1)
                             {
@@ -436,30 +393,6 @@ internal sealed record ParserInterpreter
 
             return pattern;
         }
-    }
-
-    private static ConsumerClause inline_implied_patterns(StageData stage, ConsumerClause consumer)
-    {
-        return new ConsumerClause()
-        {
-            Start = consumer.IsOpen switch
-            {
-                false when consumer.Start is not null => consumer.Start,
-                // no start condition, only a CONSUME criteria
-                true when consumer.Start is null => consumer.Consume!,
-                // for open ended consumers it is implied that their consume criteria is part of their start condition
-                true when consumer.Start is not null => new PatternSequenceClause(EPatternKind.AllOf, consumer.Start, consumer.Consume!),
-                _ => throw new NotImplementedException()
-            },
-            Consume = consumer.Consume,
-            Stop = consumer.Stop,
-            Escape = consumer.Escape,
-        };
-    }
-
-    private static ConsumerClause process_used(StageData stage, ConsumerClause consumer)
-    {
-        return consumer;// with { };
     }
 
     #region Statics

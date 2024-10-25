@@ -170,13 +170,13 @@ internal class EntityRegistry
                 switch (link.Source.Type)
                 {
                     case NodeType.Token:
-                        _tokenGraph.TryLink(link.Source, link.Target);
+                        _tokenGraph.TryAddEdge(link.Source, link.Target);
                         break;
                     case NodeType.Consumer:
-                        _consumerGraph.TryLink(link.Source, link.Target);
+                        _consumerGraph.TryAddEdge(link.Source, link.Target);
                         break;
                     case NodeType.Pattern:
-                        _patternGraph.TryLink(link.Source, link.Target);
+                        _patternGraph.TryAddEdge(link.Source, link.Target);
                         break;
                 }
             }

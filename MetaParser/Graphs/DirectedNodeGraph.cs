@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace MetaParser.Graphs
 {
-    internal sealed class DirectedNodeGraph<T> where T : IEquatable<T>
+    internal sealed class DirectedNodeGraph<T> : IDirectedNodeGraph<T> where T : IEquatable<T>
     {
         #region Fields
         private readonly Dictionary<T, Node<T>> nodes;
@@ -99,7 +99,7 @@ namespace MetaParser.Graphs
         #endregion
 
         #region Linking
-        public bool TryLink(T source, T destination)
+        public bool TryAddEdge(T source, T destination)
         {
             if (!nodes.TryGetValue(source, out var leftNode))
             {
@@ -136,7 +136,7 @@ namespace MetaParser.Graphs
                 {
                     if (newGraph.nodes.ContainsKey(outgoing))
                     {
-                        newGraph.TryLink(newNode.Key, outgoing);
+                        newGraph.TryAddEdge(newNode.Key, outgoing);
                     }
                 }
             }
