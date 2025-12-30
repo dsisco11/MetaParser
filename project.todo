@@ -67,12 +67,12 @@ Architecture Principle:
       ✔ Test generated lexer tokenizes simple input @done
 
   Phase 5 - Trivia Attachment Code Generation:
-    ☐ Create Generation/TriviaAttachmentGenerator.cs (emits trivia splitting logic)
+    ✔ Create Generation/TriviaAttachmentGenerator.cs (emits trivia splitting logic) @done
     Generated output includes:
       - TriviaAttacher class (Roslyn-compatible trivia splitting)
     Tests:
-      ☐ Test generated trivia attaches to following token
-      ☐ Test generated trivia splits at newline
+      ✔ Test generated trivia attaches to following token @done
+      ✔ Test generated trivia splits at newline @done
 
   Phase 6 - Red Node Code Generation:
     ☐ Create Generation/RedNodeGenerator.cs (emits RedNode wrapper)
