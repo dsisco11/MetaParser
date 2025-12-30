@@ -1,125 +1,104 @@
 MetaParser v2 Implementation Plan:
 
-  Phase 1 - Schema V2 Models:
-    ✔ Create Schema/TokenDefinition.cs (Start, Consume, Stop, Escape pattern properties) @done
-    ✔ Create Schema/SchemaDefinition.cs (Namespace, Classname, Tokens, Trivia properties) @done
-    ✔ Create Schema/PatternDefinition.cs (LiteralPattern, RangePattern, TokenReferencePattern with $token syntax) @done
+Architecture Principle:
+  MetaParser is a PURE SOURCE GENERATOR with ZERO runtime dependency.
+  All code that runs in the user's application is GENERATED, not referenced.
+
+  Phase 1 - Schema V2 Models (Generator-side):
+    ✔ Create Schema/TokenDefinition.cs @done
+    ✔ Create Schema/SchemaDefinition.cs @done
+    ✔ Create Schema/PatternDefinition.cs @done
+    ✔ Create Schema/SchemaValidator.cs @done
     ✔ Update Generator.cs for v2 schema parsing @done
-    ✔ Add schema validation (unique names, valid refs, no cycles, valid ranges) @done
     Tests:
-      ✔ Test schema deserialization from JSON @done
-      ✔ Test literal pattern parsing @done
-      ✔ Test range pattern parsing @done
-      ✔ Test $token reference parsing @done
-      ✔ Test validation: duplicate token names error @done
-      ✔ Test validation: invalid token reference error @done
-      ✔ Test validation: invalid range error @done
-      ✔ Test trivia array parsing @done
+      ✔ Test schema deserialization @done
+      ✔ Test pattern parsing @done
+      ✔ Test validation errors @done
 
-  Phase 2 - Green Node Hierarchy:
-    ✔ Create Syntax/Green/GreenNode.cs (base class with packed data: kind, flags, slotCount, fullWidth) @done
-    ✔ Create Syntax/Green/GreenToken.cs (token base with GetText(), trivia support) @done
-    ✔ Create Syntax/Green/GreenTrivia.cs (ReadOnlyMemory<char> backed trivia) @done
-    ✔ Create trivia variants (GreenTokenWithNoTrivia, WithLeadingTrivia, WithTrailingTrivia, WithTrivia) @done
-    ✔ Create Syntax/Green/GreenTokenFactory.cs (caching for keywords/operators) @done
-    ✔ Implement IFormattable (ToText(), ToMermaid(), ToDebugString() formatters) @done
-    ✔ Implement ToOwned() for ownership transfer @done
+  Phase 2 - Code Generation Infrastructure:
+    ✔ Create Generation/CodeBuilder.cs (StringBuilder wrapper with indentation) @done
+    ✔ Create Generation/GeneratedFileBuilder.cs (file header, namespace, usings) @done
+    ✔ Create Generation/SourceProductionContextExtensions.cs (helper to add sources) @done
     Tests:
-      ✔ Test GreenNode width calculations @done
-      ✔ Test GreenToken text retrieval (string-backed) @done
-      ✔ Test GreenToken text retrieval (memory-backed) @done
-      ✔ Test trivia attachment (leading only) @done
-      ✔ Test trivia attachment (trailing only) @done
-      ✔ Test trivia attachment (both) @done
-      ✔ Test factory caching (same keyword returns same instance) @done
-      ✔ Test ToText() reconstructs source @done
-      ✔ Test ToMermaid() produces valid diagram @done
-      ✔ Test ToOwned() creates independent copy @done
+      ✔ Test CodeBuilder indentation @done
+      ✔ Test GeneratedFileBuilder produces valid C# @done
 
-  Phase 3 - Consumer Chain Infrastructure:
-    ☐ Create Consumers/IConsumer.cs (Priority, TokenKind, TryConsume(ref SequenceReader<T>))
-    ☐ Create Consumers/ILexerConsumer.cs (Level 0 with IsTrivia)
-    ☐ Create Consumers/IParserConsumer.cs (Level 1+ with StarterKinds)
-    ☐ Create Consumers/SequenceReaderExtensions.cs (SIMD-optimized TryReadExact, AdvanceWhileAny, AdvanceUntilAny using SearchValues<char>)
-    ☐ Create Consumers/ConsumerChain.cs (orchestrator with RunLexer, RunParserLevel)
-    ☐ Create Consumers/TriviaAttachment.cs (Roslyn-compatible trivia splitting)
+  Phase 3 - Green Node Code Generation:
+    ✔ Create Generation/GreenNodeGenerator.cs (emits GreenNode base class) @done
+    ✔ Create Generation/GreenTriviaGenerator.cs (emits GreenTrivia classes) @done
+    ✔ Create Generation/GreenTokenGenerator.cs (emits GreenToken variants) @done
+    ✔ Create Generation/GreenTokenFactoryGenerator.cs (emits factory with caching) @done
+    Generated output includes:
+      - GreenNode (IFormattable, ISpanFormattable)
+      - GreenTrivia, GreenTriviaList
+      - GreenTokenWithNoTrivia, WithLeadingTrivia, WithTrailingTrivia, WithTrivia
+      - GreenTokenFactory with keyword caching
+      - All format specifiers (T, C, M, D, J, G)
     Tests:
-      ☐ Test TryReadExact with matching string
-      ☐ Test TryReadExact with non-matching string
-      ☐ Test AdvanceWhileAny with SearchValues
-      ☐ Test AdvanceUntilAny finds delimiter
-      ☐ Test consumer priority ordering
-      ☐ Test lexer consumer produces tokens
-      ☐ Test parser consumer composes tokens
-      ☐ Test trivia splitting at newline boundary
-      ☐ Test ConsumerChain end-to-end lexing
-      ☐ Test ConsumerChain multi-level parsing
+      ✔ Test generated GreenNode compiles @done
+      ✔ Test generated IFormattable works @done
+      ✔ Test all generators use correct namespace @done
 
-  Phase 4 - Red Node Wrappers:
-    ☐ Create Syntax/Red/RedNode.cs (lazy wrapper with Parent, Position, Green reference)
-    ☐ Create Syntax/Red/RedToken.cs (token wrapper with span access)
+  Phase 4 - TokenKind & Consumer Code Generation:
+    ☐ Create Generation/TokenKindGenerator.cs (emits TokenKind enum from schema)
+    ☐ Create Generation/ConsumerInterfaceGenerator.cs (emits IConsumer, ILexerConsumer)
+    ☐ Create Generation/SequenceReaderExtensionsGenerator.cs (emits SIMD helpers)
+    ☐ Create Generation/TokenConsumerGenerator.cs (emits consumer per token)
+    ☐ Create Generation/LexerGenerator.cs (emits lexer orchestrator)
+    Generated output includes:
+      - TokenKind enum with all token types
+      - IConsumer<T>, ILexerConsumer interfaces
+      - SequenceReaderExtensions (TryReadExact, AdvanceWhileAny, etc.)
+      - Per-token consumer classes
+      - Lexer class with Run() method
     Tests:
-      ☐ Test RedNode parent navigation
-      ☐ Test RedNode position calculation
-      ☐ Test RedNode child enumeration
-      ☐ Test RedToken span access
-      ☐ Test lazy creation (same green, different red instances)
+      ☐ Test generated TokenKind enum has all tokens
+      ☐ Test generated consumer interface compiles
+      ☐ Test generated lexer tokenizes simple input
 
-  Phase 5 - Graffs Integration:
-    ☐ Add Graffs package reference (when available)
-    ☐ Wire up schema → Graffs graph (tokens as nodes, $token refs as edges)
-    ☐ Use Graffs to compute consumer levels (topological sort)
-    ☐ Use Graffs to detect circular dependencies
+  Phase 5 - Trivia Attachment Code Generation:
+    ☐ Create Generation/TriviaAttachmentGenerator.cs (emits trivia splitting logic)
+    Generated output includes:
+      - TriviaAttacher class (Roslyn-compatible trivia splitting)
     Tests:
-      ☐ Test graph construction from schema
-      ☐ Test level 0 assignment (no dependencies)
-      ☐ Test level 1 assignment (depends on level 0)
-      ☐ Test multi-level dependency chain
-      ☐ Test circular dependency detection
+      ☐ Test generated trivia attaches to following token
+      ☐ Test generated trivia splits at newline
 
-  Phase 6 - Code Generation (Incremental Pipeline):
-    ☐ Update Generator.cs to use IIncrementalGenerator with proper pipeline stages
-    ☐ Create Generation/TokenKindGenerator.cs (generates TokenKind enum)
-    ☐ Create Generation/GreenTokenGenerator.cs (per-token green classes with SearchValues fields)
-    ☐ Create Generation/ConsumerGenerator.cs (consumer classes per level)
-    ☐ Create Generation/ParserFactoryGenerator.cs (ConsumerChain factory)
-    ☐ Create Generation/RedTokenGenerator.cs (red wrappers)
+  Phase 6 - Red Node Code Generation:
+    ☐ Create Generation/RedNodeGenerator.cs (emits RedNode wrapper)
+    ☐ Create Generation/RedTokenGenerator.cs (emits RedToken wrapper)
+    Generated output includes:
+      - RedNode (lazy wrapper with Parent, Position)
+      - RedToken (token wrapper with span access)
     Tests:
-      ☐ Test TokenKind enum generation
-      ☐ Test GreenToken class generation (keyword)
-      ☐ Test GreenToken class generation (identifier)
-      ☐ Test Consumer class generation (lexer level)
-      ☐ Test Consumer class generation (parser level)
-      ☐ Test SearchValues field generation
-      ☐ Test ParserFactory generation
-      ☐ Test incremental generation (unchanged input = no regeneration)
+      ☐ Test generated RedNode parent navigation
+      ☐ Test generated RedNode position calculation
 
-  Phase 7 - Diagnostics:
+  Phase 7 - Full Parser Code Generation:
+    ☐ Create Generation/ParserGenerator.cs (emits full parser class)
+    ☐ Create Generation/SyntaxTreeGenerator.cs (emits SyntaxTree class)
+    Generated output includes:
+      - Parser class (lexer + trivia + tree building)
+      - SyntaxTree (root accessor, diagnostics)
+    Tests:
+      ☐ Test generated parser produces valid tree
+      ☐ Test generated parser round-trips source
+
+  Phase 8 - Diagnostics:
     ☐ Create Diagnostics/DiagnosticDescriptors.cs (v2 diagnostic definitions)
-    ☐ Update DIAGNOSTIC_DEFS.cs with new codes for v2 errors
     Tests:
-      ☐ Test diagnostic for missing consume pattern
-      ☐ Test diagnostic for invalid token reference
-      ☐ Test diagnostic for circular dependency
-      ☐ Test diagnostic for invalid character range
-      ☐ Test diagnostic location points to correct span
+      ☐ Test diagnostic for invalid schema
+      ☐ Test diagnostic location accuracy
 
-  Phase 8 - Integration Testing:
-    ☐ Add Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit package
-    ☐ Create test infrastructure in UnitTests/
+  Phase 9 - Integration Testing:
+    ☐ Create test project that consumes generated code
     Tests:
       ☐ Test simple calculator schema end-to-end
-      ☐ Test identifier/keyword priority resolution
-      ☐ Test string literal with escape sequences
-      ☐ Test trivia preservation round-trip
-      ☐ Test large file parsing performance
+      ☐ Test string literal with escapes
+      ☐ Test trivia preservation
+      ☐ Test incremental generation
 
 Target Frameworks:
-  Generator: netstandard2.0
-  Generated Output: .NET 8.0 (C# 12+)
+  Generator: netstandard2.0 (required for Roslyn)
+  Generated Output: net8.0+ (C# 12, SearchValues<char>)
 
-Reference Documents:
-  @file:docs/REDESIGN_GOALS.md
-  @file:docs/SCHEMA_V2_SPEC.md
-  @file:docs/GREEN_TOKEN_HIERARCHY.md
-  @file:docs/CONSUMER_CHAIN.md
