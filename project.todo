@@ -38,6 +38,16 @@ Architecture Principle:
       ✔ Test generated GreenNode compiles @done
       ✔ Test generated IFormattable works @done
       ✔ Test all generators use correct namespace @done
+    Integration Tests (compile generated code and run):
+      ✔ Test GreenTrivia string/memory construction @done
+      ✔ Test GreenTrivia ToOwned @done
+      ✔ Test GreenTriviaList width calculation @done
+      ✔ Test GreenTokenWithNoTrivia properties @done
+      ✔ Test GreenTokenWithLeading/TrailingTrivia widths @done
+      ✔ Test GreenTokenWithTrivia all trivia @done
+      ✔ Test GreenTokenFactory caching behavior @done
+      ✔ Test IFormattable T/C/M/D/J/G formats @done
+      ✔ Test source reconstruction @done
 
   Phase 4 - TokenKind & Consumer Code Generation:
     ☐ Create Generation/TokenKindGenerator.cs (emits TokenKind enum from schema)
