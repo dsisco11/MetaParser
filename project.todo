@@ -17,24 +17,24 @@ MetaParser v2 Implementation Plan:
       ✔ Test trivia array parsing @done
 
   Phase 2 - Green Node Hierarchy:
-    ☐ Create Syntax/Green/GreenNode.cs (base class with packed data: kind, flags, slotCount, fullWidth)
-    ☐ Create Syntax/Green/GreenToken.cs (token base with GetText(), trivia support)
-    ☐ Create Syntax/Green/GreenTrivia.cs (ReadOnlyMemory<char> backed trivia)
-    ☐ Create trivia variants (GreenTokenWithNoTrivia, WithLeadingTrivia, WithTrailingTrivia, WithTrivia)
-    ☐ Create Syntax/Green/GreenTokenFactory.cs (caching for keywords/operators)
-    ☐ Implement IFormattable (ToText(), ToMermaid(), ToDebugString() formatters)
-    ☐ Implement ToOwned() for ownership transfer
+    ✔ Create Syntax/Green/GreenNode.cs (base class with packed data: kind, flags, slotCount, fullWidth) @done
+    ✔ Create Syntax/Green/GreenToken.cs (token base with GetText(), trivia support) @done
+    ✔ Create Syntax/Green/GreenTrivia.cs (ReadOnlyMemory<char> backed trivia) @done
+    ✔ Create trivia variants (GreenTokenWithNoTrivia, WithLeadingTrivia, WithTrailingTrivia, WithTrivia) @done
+    ✔ Create Syntax/Green/GreenTokenFactory.cs (caching for keywords/operators) @done
+    ✔ Implement IFormattable (ToText(), ToMermaid(), ToDebugString() formatters) @done
+    ✔ Implement ToOwned() for ownership transfer @done
     Tests:
-      ☐ Test GreenNode width calculations
-      ☐ Test GreenToken text retrieval (string-backed)
-      ☐ Test GreenToken text retrieval (memory-backed)
-      ☐ Test trivia attachment (leading only)
-      ☐ Test trivia attachment (trailing only)
-      ☐ Test trivia attachment (both)
-      ☐ Test factory caching (same keyword returns same instance)
-      ☐ Test ToText() reconstructs source
-      ☐ Test ToMermaid() produces valid diagram
-      ☐ Test ToOwned() creates independent copy
+      ✔ Test GreenNode width calculations @done
+      ✔ Test GreenToken text retrieval (string-backed) @done
+      ✔ Test GreenToken text retrieval (memory-backed) @done
+      ✔ Test trivia attachment (leading only) @done
+      ✔ Test trivia attachment (trailing only) @done
+      ✔ Test trivia attachment (both) @done
+      ✔ Test factory caching (same keyword returns same instance) @done
+      ✔ Test ToText() reconstructs source @done
+      ✔ Test ToMermaid() produces valid diagram @done
+      ✔ Test ToOwned() creates independent copy @done
 
   Phase 3 - Consumer Chain Infrastructure:
     ☐ Create Consumers/IConsumer.cs (Priority, TokenKind, TryConsume(ref SequenceReader<T>))
