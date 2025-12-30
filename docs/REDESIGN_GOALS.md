@@ -149,14 +149,16 @@ public static GreenToken Create(TokenKind kind, string text)
 
 ### Trivia Handling
 
-Green tokens support **leading** and **trailing trivia** (whitespace, comments, etc.). The system follows a **leading-trivia-preferred** strategy:
+Green tokens support **leading** and **trailing trivia** (whitespace, comments, etc.). The system follows **Roslyn's trivia attachment rules**:
 
-| Scenario           | Trivia Assignment                                              |
-| ------------------ | -------------------------------------------------------------- |
-| Normal tokens      | Trivia attaches as **leading** to the next token               |
-| End of file (EOF)  | Remaining trivia attaches as **trailing** to last token        |
-| End of block/scope | Trivia may attach as **trailing** to preserve logical grouping |
-| Start of file      | No leading trivia possible on first token                      |
+| Scenario                      | Trivia Assignment                                                  |
+| ----------------------------- | ------------------------------------------------------------------ |
+| Same-line content after token | **Trailing trivia** on current token (up to and including newline) |
+| Content after newline         | **Leading trivia** on the following token                          |
+| Start of file                 | All initial trivia becomes **leading** on first token              |
+| End of file (EOF)             | Remaining trivia attaches as **trailing** to EOF token             |
+
+> **Key Rule:** A token owns any trivia after it on the same line up to the next token. Any trivia after a newline is associated with the following token. (Per [Roslyn Overview](https://github.com/dotnet/roslyn/blob/main/docs/wiki/Roslyn-Overview.md))
 
 ```csharp
 /// <summary>
@@ -174,33 +176,49 @@ public abstract class GreenToken
 }
 ```
 
-**Example:** Parsing `if (x)` with leading whitespace:
+**Example 1:** Parsing `if (x)` with leading whitespace:
 
 ```
 Input: "  if (x)"
-        ^^-- Leading trivia for 'if' token
+        ^^-- Leading trivia for 'if' token (start of file)
 
 GreenToken {
     Kind: Keyword_If,
     LeadingTrivia: [Whitespace("  ")],
-    TrailingTrivia: [],
+    TrailingTrivia: [Whitespace(" ")],  // space before '('
     Width: 2,       // "if"
-    FullWidth: 4    // "  if"
+    FullWidth: 5    // "  if "
 }
 ```
 
-**Trailing trivia fallback** (EOF example):
+**Example 2:** Same-line trailing trivia:
 
 ```
-Input: "return; // done"
-                ^^^^^^^^-- Trailing trivia for ';' (no next token)
+Input: "return; // done\n"
+                ^^^^^^^^^^^-- Trailing trivia for ';' (same line)
 
 GreenToken {
     Kind: Semicolon,
     LeadingTrivia: [],
-    TrailingTrivia: [Whitespace(" "), Comment("// done")],
+    TrailingTrivia: [Whitespace(" "), Comment("// done"), EndOfLine("\n")],
     Width: 1,
-    FullWidth: 9
+    FullWidth: 16
+}
+```
+
+**Example 3:** Multi-line with leading trivia on next token:
+
+```
+Input: "x = 1;\n    y = 2;"
+              ^^^^^^^-- Leading trivia for 'y' token (after newline)
+
+// Token 'y' has:
+GreenToken {
+    Kind: Identifier,
+    LeadingTrivia: [Whitespace("    ")],  // indentation after newline
+    TrailingTrivia: [Whitespace(" ")],
+    Width: 1,
+    FullWidth: 6
 }
 ```
 

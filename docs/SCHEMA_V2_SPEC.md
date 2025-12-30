@@ -52,10 +52,10 @@ Each token receives a virtual priority value equal to its index (0-based) in the
 }
 ```
 
-| Token | Priority | Notes |
-|-------|----------|-------|
-| `keyword_if` | 0 | Tried first - matches "if" exactly |
-| `identifier` | 1 | Tried second - would also match "if" as letters |
+| Token        | Priority | Notes                                           |
+| ------------ | -------- | ----------------------------------------------- |
+| `keyword_if` | 0        | Tried first - matches "if" exactly              |
+| `identifier` | 1        | Tried second - would also match "if" as letters |
 
 **Best Practice:** Define more specific tokens (keywords, operators) before general tokens (identifiers, numbers).
 
@@ -86,13 +86,13 @@ This ensures `if` is recognized as `keyword_if` rather than as an `identifier`.
 }
 ```
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `$schema` | string | No | Schema URL for IDE validation |
-| `namespace` | string | **Yes** | Namespace for generated code |
-| `classname` | string | No | Parser class name (default: `"Parser"`) |
-| `tokens` | object | **Yes** | Token definitions (see below) |
-| `trivia` | array | No | Token names to treat as trivia |
+| Property    | Type   | Required | Description                             |
+| ----------- | ------ | -------- | --------------------------------------- |
+| `$schema`   | string | No       | Schema URL for IDE validation           |
+| `namespace` | string | **Yes**  | Namespace for generated code            |
+| `classname` | string | No       | Parser class name (default: `"Parser"`) |
+| `tokens`    | object | **Yes**  | Token definitions (see below)           |
+| `trivia`    | array  | No       | Token names to treat as trivia          |
 
 ---
 
@@ -115,12 +115,12 @@ Tokens are defined as named properties within the `tokens` object. Each token sp
 }
 ```
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `start` | pattern | No | Pattern that must match to begin consuming |
-| `consume` | pattern | **Yes** | Pattern(s) to consume repeatedly |
-| `stop` | pattern | No | Pattern that ends consumption (not consumed) |
-| `escape` | pattern | No | Pattern that escapes the next character/token |
+| Property  | Type    | Required | Description                                   |
+| --------- | ------- | -------- | --------------------------------------------- |
+| `start`   | pattern | No       | Pattern that must match to begin consuming    |
+| `consume` | pattern | **Yes**  | Pattern(s) to consume repeatedly              |
+| `stop`    | pattern | No       | Pattern that ends consumption (not consumed)  |
+| `escape`  | pattern | No       | Pattern that escapes the next character/token |
 
 ### Consumption Behavior
 
@@ -187,10 +187,7 @@ Combine multiple ranges in an array.
 ```json
 {
   "letter": {
-    "consume": [
-      { "range": ["a", "z"] },
-      { "range": ["A", "Z"] }
-    ]
+    "consume": [{ "range": ["a", "z"] }, { "range": ["A", "Z"] }]
   },
   "alphanumeric": {
     "consume": [
@@ -245,6 +242,7 @@ To consume other tokens (rather than raw characters), use the `$token` syntax. T
 ```
 
 In this example:
+
 - `digit` consumes raw characters (Level 0)
 - `number` consumes `digit` tokens (Level 1)
 
@@ -259,19 +257,16 @@ In this example:
     "consume": { "$token": "identifier_char" }
   },
   "value": {
-    "consume": [
-      { "$token": "number" },
-      { "$token": "identifier" }
-    ]
+    "consume": [{ "$token": "number" }, { "$token": "identifier" }]
   }
 }
 ```
 
 ### Literal vs Token Reference
 
-| Pattern | Meaning |
-|---------|---------|
-| `"digit"` | Literal string "digit" |
+| Pattern                 | Meaning                          |
+| ----------------------- | -------------------------------- |
+| `"digit"`               | Literal string "digit"           |
 | `{ "$token": "digit" }` | Reference to token named `digit` |
 
 ```json
@@ -320,10 +315,23 @@ Trivia tokens represent non-semantic content (whitespace, comments). They are at
 }
 ```
 
-### Trivia Attachment Rules
+### Trivia Attachment Rules (Roslyn-Compatible)
 
-1. **Leading-preferred:** Trivia attaches as leading to the next token
-2. **Trailing fallback:** At EOF or end-of-block, trivia attaches as trailing
+Following [Roslyn's trivia model](https://github.com/dotnet/roslyn/blob/main/docs/wiki/Roslyn-Overview.md):
+
+1. **Same-line trailing:** A token owns any trivia after it on the same line (including the newline itself)
+2. **Cross-line leading:** Any trivia after a newline becomes leading trivia on the following token
+3. **Start of file:** All initial trivia attaches as leading to the first token
+4. **End of file:** Remaining trivia attaches as trailing to the EOF token
+
+**Example:**
+
+```
+// Input: "x = 1; // comment\n    y = 2;"
+
+Token ';' → TrailingTrivia: [" ", "// comment", "\n"]
+Token 'y' → LeadingTrivia: ["    "]  // indentation after newline
+```
 
 ---
 
@@ -465,6 +473,7 @@ All items in `trivia` array must reference defined tokens.
 ```
 
 **Dependency Analysis:**
+
 ```
 Level 0: whitespace, newline, digit, plus, minus, multiply, divide, lparen, rparen
 Level 1: number (depends on digit)
@@ -486,27 +495,17 @@ Level 1: number (depends on digit)
     },
     "line_comment": {
       "start": "//",
-      "consume": [
-        { "range": [" ", "~"] },
-        "\t"
-      ],
+      "consume": [{ "range": [" ", "~"] }, "\t"],
       "stop": "\n"
     },
     "digit": {
       "consume": { "range": ["0", "9"] }
     },
     "letter": {
-      "consume": [
-        { "range": ["a", "z"] },
-        { "range": ["A", "Z"] }
-      ]
+      "consume": [{ "range": ["a", "z"] }, { "range": ["A", "Z"] }]
     },
     "identifier_start": {
-      "consume": [
-        { "range": ["a", "z"] },
-        { "range": ["A", "Z"] },
-        "_"
-      ]
+      "consume": [{ "range": ["a", "z"] }, { "range": ["A", "Z"] }, "_"]
     },
     "identifier_continue": {
       "consume": [
@@ -525,10 +524,7 @@ Level 1: number (depends on digit)
     },
     "string_literal": {
       "start": "\"",
-      "consume": [
-        { "range": [" ", "!"] },
-        { "range": ["#", "~"] }
-      ],
+      "consume": [{ "range": [" ", "!"] }, { "range": ["#", "~"] }],
       "stop": "\"",
       "escape": "\\"
     },
@@ -554,6 +550,7 @@ Level 1: number (depends on digit)
 ```
 
 **Dependency Analysis:**
+
 ```
 Level 0: whitespace, newline, line_comment, digit, letter, identifier_start,
          identifier_continue, string_literal, all keywords, all operators,
@@ -725,14 +722,14 @@ The formal JSON Schema for MetaParser v2 definition files:
 
 ## Appendix: Pattern Quick Reference
 
-| Pattern Type | Syntax | Example | Matches |
-|--------------|--------|---------|---------|
-| Literal string | `"text"` | `"if"` | Exact text "if" |
-| Literal array | `["a", "b"]` | `["+", "-"]` | "+" or "-" |
-| Character range | `{ "range": ["x", "y"] }` | `{ "range": ["0", "9"] }` | Any digit |
-| Token reference | `{ "$token": "name" }` | `{ "$token": "digit" }` | Token of type `digit` |
-| Mixed array | `[..., ...]` | `[{ "range": ["a","z"] }, "_"]` | Lowercase letter or underscore |
+| Pattern Type    | Syntax                    | Example                         | Matches                        |
+| --------------- | ------------------------- | ------------------------------- | ------------------------------ |
+| Literal string  | `"text"`                  | `"if"`                          | Exact text "if"                |
+| Literal array   | `["a", "b"]`              | `["+", "-"]`                    | "+" or "-"                     |
+| Character range | `{ "range": ["x", "y"] }` | `{ "range": ["0", "9"] }`       | Any digit                      |
+| Token reference | `{ "$token": "name" }`    | `{ "$token": "digit" }`         | Token of type `digit`          |
+| Mixed array     | `[..., ...]`              | `[{ "range": ["a","z"] }, "_"]` | Lowercase letter or underscore |
 
 ---
 
-*This specification defines the v2 JSON schema for MetaParser definition files. The schema prioritizes simplicity while providing full expressiveness for token definitions.*
+_This specification defines the v2 JSON schema for MetaParser definition files. The schema prioritizes simplicity while providing full expressiveness for token definitions._
