@@ -7,14 +7,14 @@ MetaParser v2 Implementation Plan:
     ✔ Update Generator.cs for v2 schema parsing @done
     ✔ Add schema validation (unique names, valid refs, no cycles, valid ranges) @done
     Tests:
-      ☐ Test schema deserialization from JSON
-      ☐ Test literal pattern parsing
-      ☐ Test range pattern parsing
-      ☐ Test $token reference parsing
-      ☐ Test validation: duplicate token names error
-      ☐ Test validation: invalid token reference error
-      ☐ Test validation: invalid range error
-      ☐ Test trivia array parsing
+      ✔ Test schema deserialization from JSON @done
+      ✔ Test literal pattern parsing @done
+      ✔ Test range pattern parsing @done
+      ✔ Test $token reference parsing @done
+      ✔ Test validation: duplicate token names error @done
+      ✔ Test validation: invalid token reference error @done
+      ✔ Test validation: invalid range error @done
+      ✔ Test trivia array parsing @done
 
   Phase 2 - Green Node Hierarchy:
     ☐ Create Syntax/Green/GreenNode.cs (base class with packed data: kind, flags, slotCount, fullWidth)

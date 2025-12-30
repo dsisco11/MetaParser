@@ -194,7 +194,7 @@ internal sealed class PatternDefinitionConverter : JsonConverter<PatternDefiniti
 
     private static PatternDefinition ReadObjectPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
-        string? propertyName = null;
+        PatternDefinition? result = null;
 
         while (reader.Read())
         {
@@ -203,19 +203,21 @@ internal sealed class PatternDefinitionConverter : JsonConverter<PatternDefiniti
 
             if (reader.TokenType == JsonTokenType.PropertyName)
             {
-                propertyName = reader.GetString();
+                var propertyName = reader.GetString();
                 reader.Read(); // Move to value
 
                 switch (propertyName)
                 {
                     case "range":
-                        return ReadRangePattern(ref reader);
+                        result = ReadRangePattern(ref reader);
+                        break;
 
                     case "$token":
                         var tokenName = reader.GetString();
                         if (string.IsNullOrEmpty(tokenName))
                             throw new JsonException("$token value cannot be empty");
-                        return new TokenReferencePattern(tokenName!);
+                        result = new TokenReferencePattern(tokenName!);
+                        break;
 
                     default:
                         throw new JsonException($"Unknown pattern property: {propertyName}");
@@ -223,7 +225,10 @@ internal sealed class PatternDefinitionConverter : JsonConverter<PatternDefiniti
             }
         }
 
-        throw new JsonException("Empty object pattern");
+        if (result is null)
+            throw new JsonException("Empty object pattern");
+        
+        return result;
     }
 
     private static RangePattern ReadRangePattern(ref Utf8JsonReader reader)

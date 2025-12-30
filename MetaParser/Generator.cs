@@ -31,7 +31,7 @@ public sealed class Generator : IIncrementalGenerator
         options.Converters.Add(new PatternDefinitionConverter());
         
         // Add the source-generated context for other types
-        options.AddContext<SchemaJsonContext>();
+        options.TypeInfoResolverChain.Add(SchemaJsonContext.Default);
         
         return options;
     }
