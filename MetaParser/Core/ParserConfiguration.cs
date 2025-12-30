@@ -1,28 +1,35 @@
-﻿using MetaParser.Builders.Core;
-
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 namespace MetaParser.Core;
 
-internal record ParserConfiguration
+/// <summary>
+/// Configuration for parser code generation.
+/// </summary>
+internal sealed class ParserConfiguration
 {
-    #region Fields
-    private string? className;
-    #endregion
-
-    #region Properties
+    /// <summary>
+    /// Base file name for generated output (derived from schema file name).
+    /// </summary>
     public string BaseFileName { get; set; } = string.Empty;
-    public string ClassName { get => className ?? "Parser"; set => className = value; }
-    public TypeSyntax IdType { get; set; } = SyntaxFactory.ParseTypeName("int");
-    public TypeSyntax InputType { get; set; } = SyntaxFactory.ParseTypeName("char");
-    public string Namespace { get; set; } = string.Empty;
-    public string? ParserType { get; set; }
-    public readonly CodeBuilderFactory CodeFactory;
-    #endregion
 
-    public ParserConfiguration()
+    /// <summary>
+    /// Name of the generated parser class.
+    /// </summary>
+    public string ClassName { get; set; } = "Parser";
+
+    /// <summary>
+    /// Namespace for generated code.
+    /// </summary>
+    public string Namespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Creates configuration from a schema definition.
+    /// </summary>
+    public static ParserConfiguration FromSchema(Schema.SchemaDefinition schema, string baseFileName)
     {
-        CodeFactory = new CodeBuilderFactory(this);
+        return new ParserConfiguration
+        {
+            BaseFileName = baseFileName,
+            ClassName = schema.Classname,
+            Namespace = schema.Namespace
+        };
     }
 }

@@ -1,10 +1,10 @@
 MetaParser v2 Implementation Plan:
 
   Phase 1 - Schema V2 Models:
-    ☐ Create Schema/TokenDefinition.cs (Start, Consume, Stop, Escape pattern properties)
-    ☐ Create Schema/SchemaDefinition.cs (Namespace, Classname, Tokens, Trivia properties)
-    ☐ Create Schema/PatternTypes.cs (LiteralPattern, RangePattern, TokenReferencePattern with $token syntax)
-    ☐ Update Json/Converters/PatternDeclarationConverterFactory.cs for v2 $token syntax
+    ✔ Create Schema/TokenDefinition.cs (Start, Consume, Stop, Escape pattern properties) @done
+    ✔ Create Schema/SchemaDefinition.cs (Namespace, Classname, Tokens, Trivia properties) @done
+    ✔ Create Schema/PatternDefinition.cs (LiteralPattern, RangePattern, TokenReferencePattern with $token syntax) @done
+    ✔ Update Generator.cs for v2 schema parsing @done
     ☐ Add schema validation (unique names, valid refs, no cycles, valid ranges)
     Tests:
       ☐ Test schema deserialization from JSON
