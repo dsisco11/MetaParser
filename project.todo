@@ -1,0 +1,125 @@
+MetaParser v2 Implementation Plan:
+
+  Phase 1 - Schema V2 Models:
+    ☐ Create Schema/TokenDefinition.cs (Start, Consume, Stop, Escape pattern properties)
+    ☐ Create Schema/SchemaDefinition.cs (Namespace, Classname, Tokens, Trivia properties)
+    ☐ Create Schema/PatternTypes.cs (LiteralPattern, RangePattern, TokenReferencePattern with $token syntax)
+    ☐ Update Json/Converters/PatternDeclarationConverterFactory.cs for v2 $token syntax
+    ☐ Add schema validation (unique names, valid refs, no cycles, valid ranges)
+    Tests:
+      ☐ Test schema deserialization from JSON
+      ☐ Test literal pattern parsing
+      ☐ Test range pattern parsing
+      ☐ Test $token reference parsing
+      ☐ Test validation: duplicate token names error
+      ☐ Test validation: invalid token reference error
+      ☐ Test validation: invalid range error
+      ☐ Test trivia array parsing
+
+  Phase 2 - Green Node Hierarchy:
+    ☐ Create Syntax/Green/GreenNode.cs (base class with packed data: kind, flags, slotCount, fullWidth)
+    ☐ Create Syntax/Green/GreenToken.cs (token base with GetText(), trivia support)
+    ☐ Create Syntax/Green/GreenTrivia.cs (ReadOnlyMemory<char> backed trivia)
+    ☐ Create trivia variants (GreenTokenWithNoTrivia, WithLeadingTrivia, WithTrailingTrivia, WithTrivia)
+    ☐ Create Syntax/Green/GreenTokenFactory.cs (caching for keywords/operators)
+    ☐ Implement IFormattable (ToText(), ToMermaid(), ToDebugString() formatters)
+    ☐ Implement ToOwned() for ownership transfer
+    Tests:
+      ☐ Test GreenNode width calculations
+      ☐ Test GreenToken text retrieval (string-backed)
+      ☐ Test GreenToken text retrieval (memory-backed)
+      ☐ Test trivia attachment (leading only)
+      ☐ Test trivia attachment (trailing only)
+      ☐ Test trivia attachment (both)
+      ☐ Test factory caching (same keyword returns same instance)
+      ☐ Test ToText() reconstructs source
+      ☐ Test ToMermaid() produces valid diagram
+      ☐ Test ToOwned() creates independent copy
+
+  Phase 3 - Consumer Chain Infrastructure:
+    ☐ Create Consumers/IConsumer.cs (Priority, TokenKind, TryConsume(ref SequenceReader<T>))
+    ☐ Create Consumers/ILexerConsumer.cs (Level 0 with IsTrivia)
+    ☐ Create Consumers/IParserConsumer.cs (Level 1+ with StarterKinds)
+    ☐ Create Consumers/SequenceReaderExtensions.cs (SIMD-optimized TryReadExact, AdvanceWhileAny, AdvanceUntilAny using SearchValues<char>)
+    ☐ Create Consumers/ConsumerChain.cs (orchestrator with RunLexer, RunParserLevel)
+    ☐ Create Consumers/TriviaAttachment.cs (Roslyn-compatible trivia splitting)
+    Tests:
+      ☐ Test TryReadExact with matching string
+      ☐ Test TryReadExact with non-matching string
+      ☐ Test AdvanceWhileAny with SearchValues
+      ☐ Test AdvanceUntilAny finds delimiter
+      ☐ Test consumer priority ordering
+      ☐ Test lexer consumer produces tokens
+      ☐ Test parser consumer composes tokens
+      ☐ Test trivia splitting at newline boundary
+      ☐ Test ConsumerChain end-to-end lexing
+      ☐ Test ConsumerChain multi-level parsing
+
+  Phase 4 - Red Node Wrappers:
+    ☐ Create Syntax/Red/RedNode.cs (lazy wrapper with Parent, Position, Green reference)
+    ☐ Create Syntax/Red/RedToken.cs (token wrapper with span access)
+    Tests:
+      ☐ Test RedNode parent navigation
+      ☐ Test RedNode position calculation
+      ☐ Test RedNode child enumeration
+      ☐ Test RedToken span access
+      ☐ Test lazy creation (same green, different red instances)
+
+  Phase 5 - Graffs Integration:
+    ☐ Add Graffs package reference (when available)
+    ☐ Wire up schema → Graffs graph (tokens as nodes, $token refs as edges)
+    ☐ Use Graffs to compute consumer levels (topological sort)
+    ☐ Use Graffs to detect circular dependencies
+    Tests:
+      ☐ Test graph construction from schema
+      ☐ Test level 0 assignment (no dependencies)
+      ☐ Test level 1 assignment (depends on level 0)
+      ☐ Test multi-level dependency chain
+      ☐ Test circular dependency detection
+
+  Phase 6 - Code Generation (Incremental Pipeline):
+    ☐ Update Generator.cs to use IIncrementalGenerator with proper pipeline stages
+    ☐ Create Generation/TokenKindGenerator.cs (generates TokenKind enum)
+    ☐ Create Generation/GreenTokenGenerator.cs (per-token green classes with SearchValues fields)
+    ☐ Create Generation/ConsumerGenerator.cs (consumer classes per level)
+    ☐ Create Generation/ParserFactoryGenerator.cs (ConsumerChain factory)
+    ☐ Create Generation/RedTokenGenerator.cs (red wrappers)
+    Tests:
+      ☐ Test TokenKind enum generation
+      ☐ Test GreenToken class generation (keyword)
+      ☐ Test GreenToken class generation (identifier)
+      ☐ Test Consumer class generation (lexer level)
+      ☐ Test Consumer class generation (parser level)
+      ☐ Test SearchValues field generation
+      ☐ Test ParserFactory generation
+      ☐ Test incremental generation (unchanged input = no regeneration)
+
+  Phase 7 - Diagnostics:
+    ☐ Create Diagnostics/DiagnosticDescriptors.cs (v2 diagnostic definitions)
+    ☐ Update DIAGNOSTIC_DEFS.cs with new codes for v2 errors
+    Tests:
+      ☐ Test diagnostic for missing consume pattern
+      ☐ Test diagnostic for invalid token reference
+      ☐ Test diagnostic for circular dependency
+      ☐ Test diagnostic for invalid character range
+      ☐ Test diagnostic location points to correct span
+
+  Phase 8 - Integration Testing:
+    ☐ Add Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit package
+    ☐ Create test infrastructure in UnitTests/
+    Tests:
+      ☐ Test simple calculator schema end-to-end
+      ☐ Test identifier/keyword priority resolution
+      ☐ Test string literal with escape sequences
+      ☐ Test trivia preservation round-trip
+      ☐ Test large file parsing performance
+
+Target Frameworks:
+  Generator: netstandard2.0
+  Generated Output: .NET 8.0 (C# 12+)
+
+Reference Documents:
+  @file:docs/REDESIGN_GOALS.md
+  @file:docs/SCHEMA_V2_SPEC.md
+  @file:docs/GREEN_TOKEN_HIERARCHY.md
+  @file:docs/CONSUMER_CHAIN.md
