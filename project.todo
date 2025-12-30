@@ -75,14 +75,15 @@ Architecture Principle:
       ✔ Test generated trivia splits at newline @done
 
   Phase 6 - Red Node Code Generation:
-    ☐ Create Generation/RedNodeGenerator.cs (emits RedNode wrapper)
-    ☐ Create Generation/RedTokenGenerator.cs (emits RedToken wrapper)
+    ✔ Create Generation/RedNodeGenerator.cs (emits RedNode wrapper) @done
+    ✔ Create Generation/RedTokenGenerator.cs (emits RedToken wrapper) @done
     Generated output includes:
       - RedNode (lazy wrapper with Parent, Position)
       - RedToken (token wrapper with span access)
+      - TextSpan struct for span representation
     Tests:
-      ☐ Test generated RedNode parent navigation
-      ☐ Test generated RedNode position calculation
+      ✔ Test generated RedNode parent navigation @done
+      ✔ Test generated RedNode position calculation @done
 
   Phase 7 - Full Parser Code Generation:
     ☐ Create Generation/ParserGenerator.cs (emits full parser class)
