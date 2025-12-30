@@ -50,21 +50,21 @@ Architecture Principle:
       ✔ Test source reconstruction @done
 
   Phase 4 - TokenKind & Consumer Code Generation:
-    ☐ Create Generation/TokenKindGenerator.cs (emits TokenKind enum from schema)
-    ☐ Create Generation/ConsumerInterfaceGenerator.cs (emits IConsumer, ILexerConsumer)
-    ☐ Create Generation/SequenceReaderExtensionsGenerator.cs (emits SIMD helpers)
-    ☐ Create Generation/TokenConsumerGenerator.cs (emits consumer per token)
-    ☐ Create Generation/LexerGenerator.cs (emits lexer orchestrator)
+    ✔ Create Generation/TokenKindGenerator.cs (emits TokenKind enum from schema) @done
+    ✔ Create Generation/ConsumerInterfaceGenerator.cs (emits IConsumer, ILexerConsumer) @done
+    ✔ Create Generation/SequenceReaderExtensionsGenerator.cs (emits SIMD helpers) @done
+    ✔ Create Generation/TokenConsumerGenerator.cs (emits consumer per token) @done
+    ✔ Create Generation/LexerGenerator.cs (emits lexer orchestrator) @done
     Generated output includes:
       - TokenKind enum with all token types
-      - IConsumer<T>, ILexerConsumer interfaces
-      - SequenceReaderExtensions (TryReadExact, AdvanceWhileAny, etc.)
+      - ITokenConsumer interface with SequenceReader<char>
+      - SequenceReaderExtensions (TryReadExact, AdvanceWhile, etc.)
       - Per-token consumer classes
-      - Lexer class with Run() method
+      - Lexer class with Tokenize() method
     Tests:
-      ☐ Test generated TokenKind enum has all tokens
-      ☐ Test generated consumer interface compiles
-      ☐ Test generated lexer tokenizes simple input
+      ✔ Test generated TokenKind enum has all tokens @done
+      ✔ Test generated consumer interface compiles @done
+      ✔ Test generated lexer tokenizes simple input @done
 
   Phase 5 - Trivia Attachment Code Generation:
     ☐ Create Generation/TriviaAttachmentGenerator.cs (emits trivia splitting logic)
