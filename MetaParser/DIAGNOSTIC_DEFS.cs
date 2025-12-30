@@ -10,6 +10,7 @@ internal static class DIAGNOSTIC_DEFS
     
     // v2 Schema Validation
     public static DiagnosticDescriptor SchemaValidationError => new DiagnosticDescriptor("MP100", "Schema Validation Error", "{0}", "Schema", DiagnosticSeverity.Error, true);
+    public static DiagnosticDescriptor SchemaValidationWarning => new DiagnosticDescriptor("MP110", "Schema Validation Warning", "{0}", "Schema", DiagnosticSeverity.Warning, true);
     public static DiagnosticDescriptor InvalidTokenReference => new DiagnosticDescriptor("MP101", "Invalid Token Reference", "Token '{0}' references undefined token '{1}'", "Schema", DiagnosticSeverity.Error, true);
     public static DiagnosticDescriptor CircularDependency => new DiagnosticDescriptor("MP102", "Circular Dependency", "Circular dependency detected: {0}", "Schema", DiagnosticSeverity.Error, true);
     public static DiagnosticDescriptor InvalidCharacterRange => new DiagnosticDescriptor("MP103", "Invalid Character Range", "Invalid range in token '{0}': start '{1}' is greater than end '{2}'", "Schema", DiagnosticSeverity.Error, true);

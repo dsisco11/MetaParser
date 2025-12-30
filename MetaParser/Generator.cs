@@ -59,18 +59,18 @@ public sealed class Generator : IIncrementalGenerator
             return (File: file, Schema: schema);
         });
 
-        // Step 4: Validate schemas and report diagnostics
+        // Step 4: Validate schemas using SchemaValidator
         var validatedSchemas = schemas.Select(static (data, cancellationToken) =>
         {
-            var errors = ValidateSchema(data.Schema);
-            return (data.File, data.Schema, Errors: errors);
+            var result = SchemaValidator.Validate(data.Schema);
+            return (data.File, data.Schema, Validation: result);
         });
 
         // Step 5: Generate code for valid schemas
         context.RegisterSourceOutput(validatedSchemas, static (spc, data) =>
         {
             // Report any validation errors
-            foreach (var error in data.Errors)
+            foreach (var error in data.Validation.Errors)
             {
                 spc.ReportDiagnostic(Diagnostic.Create(
                     DIAGNOSTIC_DEFS.SchemaValidationError,
@@ -78,8 +78,17 @@ public sealed class Generator : IIncrementalGenerator
                     error));
             }
 
+            // Report any validation warnings
+            foreach (var warning in data.Validation.Warnings)
+            {
+                spc.ReportDiagnostic(Diagnostic.Create(
+                    DIAGNOSTIC_DEFS.SchemaValidationWarning,
+                    Location.None,
+                    warning));
+            }
+
             // Skip code generation if there are errors or schema is null
-            if (data.Errors.Length > 0 || data.Schema is null)
+            if (!data.Validation.IsValid || data.Schema is null)
                 return;
 
             // TODO: Implement v2 code generation
@@ -99,75 +108,6 @@ public sealed class Generator : IIncrementalGenerator
         catch (JsonException)
         {
             return null;
-        }
-    }
-
-    private static string[] ValidateSchema(SchemaDefinition? schema)
-    {
-        if (schema is null)
-            return new[] { "Failed to parse schema JSON" };
-
-        var errors = new System.Collections.Generic.List<string>();
-
-        // Validate required fields
-        if (string.IsNullOrWhiteSpace(schema.Namespace))
-            errors.Add("Schema must specify a 'namespace'");
-
-        if (schema.Tokens.Count == 0)
-            errors.Add("Schema must define at least one token");
-
-        // Validate each token
-        foreach (var kvp in schema.Tokens)
-        {
-            var name = kvp.Key;
-            var token = kvp.Value;
-            if (token.Consume is null)
-                errors.Add($"Token '{name}' must have a 'consume' pattern");
-        }
-
-        // Validate token references
-        foreach (var kvp in schema.Tokens)
-        {
-            var name = kvp.Key;
-            var token = kvp.Value;
-            ValidateTokenReferences(name, token.Start, schema, errors);
-            ValidateTokenReferences(name, token.Consume, schema, errors);
-            ValidateTokenReferences(name, token.Stop, schema, errors);
-            ValidateTokenReferences(name, token.Escape, schema, errors);
-        }
-
-        // Validate trivia references
-        foreach (var triviaName in schema.Trivia)
-        {
-            if (!schema.Tokens.ContainsKey(triviaName))
-                errors.Add($"Trivia references undefined token '{triviaName}'");
-        }
-
-        // TODO: Add circular dependency detection (requires Graffs)
-
-        return errors.ToArray();
-    }
-
-    private static void ValidateTokenReferences(
-        string tokenName,
-        PatternDefinition? pattern,
-        SchemaDefinition schema,
-        System.Collections.Generic.List<string> errors)
-    {
-        if (pattern is null)
-            return;
-
-        switch (pattern)
-        {
-            case TokenReferencePattern tokenRef:
-                if (!schema.Tokens.ContainsKey(tokenRef.TokenName))
-                    errors.Add($"Token '{tokenName}' references undefined token '{tokenRef.TokenName}'");
-                break;
-
-            case OneOfPattern oneOf:
-                foreach (var child in oneOf.Patterns)
-                    ValidateTokenReferences(tokenName, child, schema, errors);
-                break;
         }
     }
 
