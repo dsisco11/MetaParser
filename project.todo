@@ -97,19 +97,36 @@ Architecture Principle:
       ✔ Test generated parser produces valid tree @done
       ✔ Test generated parser round-trips source @done
 
-  Phase 8 - Diagnostics:
+  Phase 8 - Schema Analysis with Graffs:
+    ☐ Integrate Graffs dependency graphing library
+    ☐ Create Schema/TokenDependencyAnalyzer.cs (builds token reference graph)
+    ☐ Update SchemaValidator.cs to detect circular references
+    Features:
+      - Build directed graph of token → pattern → token references
+      - Detect circular dependencies (error diagnostic)
+      - Detect unreachable tokens (warning diagnostic)
+      - Compute optimal token generation order
+    Tests:
+      ☐ Test circular reference detection (A→B→C→A)
+      ☐ Test unreachable token detection
+      ☐ Test topological sort for generation order
+
+  Phase 9 - Diagnostics:
     ☐ Create Diagnostics/DiagnosticDescriptors.cs (v2 diagnostic definitions)
     Tests:
       ☐ Test diagnostic for invalid schema
       ☐ Test diagnostic location accuracy
 
-  Phase 9 - Integration Testing:
+  Phase 10 - Integration Testing:
     ☐ Create test project that consumes generated code
     Tests:
       ☐ Test simple calculator schema end-to-end
       ☐ Test string literal with escapes
       ☐ Test trivia preservation
       ☐ Test incremental generation
+
+Dependencies:
+  - Graffs: Dependency graphing library (for Phase 8)
 
 Target Frameworks:
   Generator: netstandard2.0 (required for Roslyn)
