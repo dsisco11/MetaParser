@@ -97,19 +97,25 @@ Architecture Principle:
       ✔ Test generated parser produces valid tree @done
       ✔ Test generated parser round-trips source @done
 
-  Phase 8 - Schema Analysis with Graffs:
-    ☐ Integrate Graffs dependency graphing library
-    ☐ Create Schema/TokenDependencyAnalyzer.cs (builds token reference graph)
-    ☐ Update SchemaValidator.cs to detect circular references
+  Phase 8 - Schema Analysis with Dependency Graphs:
+    ✔ Create Graphs/GraphEdge.cs (simple edge struct) @done
+    ✔ Create Graphs/DirectedGraph.cs (adjacency list implementation) @done
+    ✔ Create Graphs/CycleDetection.cs (DFS-based cycle detection) @done
+    ✔ Create Graphs/TopologicalSort.cs (Kahn's + DFS algorithms) @done
+    ✔ Create Schema/TokenDependencyAnalyzer.cs (builds token reference graph) @done
+    ✔ Update SchemaValidator.cs to detect circular references @done
     Features:
       - Build directed graph of token → pattern → token references
       - Detect circular dependencies (error diagnostic)
       - Detect unreachable tokens (warning diagnostic)
       - Compute optimal token generation order
     Tests:
-      ☐ Test circular reference detection (A→B→C→A)
-      ☐ Test unreachable token detection
-      ☐ Test topological sort for generation order
+      ✔ Test DirectedGraph add/query operations @done
+      ✔ Test CycleDetection for acyclic/cyclic graphs @done
+      ✔ Test TopologicalSort for dependency ordering @done
+      ✔ Test TokenDependencyAnalyzer circular reference detection @done
+      ✔ Test TokenDependencyAnalyzer unreachable token detection @done
+      ✔ Test SchemaValidator circular dependency integration @done
 
   Phase 9 - Diagnostics:
     ☐ Create Diagnostics/DiagnosticDescriptors.cs (v2 diagnostic definitions)
@@ -126,7 +132,7 @@ Architecture Principle:
       ☐ Test incremental generation
 
 Dependencies:
-  - Graffs: Dependency graphing library (for Phase 8)
+  - Custom Graphs library (Graphs/ folder, inspired by Graffs)
 
 Target Frameworks:
   Generator: netstandard2.0 (required for Roslyn)

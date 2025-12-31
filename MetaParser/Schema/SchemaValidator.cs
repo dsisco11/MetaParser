@@ -32,7 +32,8 @@ internal static class SchemaValidator
         // Validate trivia references
         ValidateTriviaReferences(schema, result);
 
-        // Note: Circular dependency detection deferred to Phase 5 (Graffs integration)
+        // Validate circular dependencies using dependency graph
+        ValidateCircularDependencies(schema, result);
 
         return result;
     }
@@ -170,6 +171,38 @@ internal static class SchemaValidator
             if (!schema.Tokens.ContainsKey(triviaName))
             {
                 result.AddError($"Trivia references undefined token '{triviaName}'");
+            }
+        }
+    }
+
+    private static void ValidateCircularDependencies(SchemaDefinition schema, ValidationResult result)
+    {
+        var analyzer = new TokenDependencyAnalyzer(schema);
+        analyzer.Analyze();
+
+        // Check for circular dependencies
+        var cycle = analyzer.FindFirstCycle();
+        if (cycle != null && cycle.Count > 0)
+        {
+            var cycleStr = string.Join(" → ", cycle);
+            result.AddError($"Circular dependency detected: {cycleStr} → {cycle[0]}");
+        }
+
+        // Warn about unreferenced tokens (potential dead code)
+        // Skip trivia tokens as they're referenced implicitly
+        var unreferenced = analyzer.GetUnreferencedTokens();
+        foreach (var token in unreferenced)
+        {
+            // Don't warn about trivia - they're entry points
+            if (!schema.IsTrivia(token))
+            {
+                // Only warn if the token references other tokens (meaning it's not a simple leaf)
+                // A token that references nothing and is unreferenced is likely an entry point
+                var deps = analyzer.Graph.GetDependencies(token);
+                if (deps.Count > 0)
+                {
+                    result.AddWarning($"Token '{token}' is never referenced by other tokens");
+                }
             }
         }
     }
