@@ -86,14 +86,16 @@ Architecture Principle:
       ✔ Test generated RedNode position calculation @done
 
   Phase 7 - Full Parser Code Generation:
-    ☐ Create Generation/ParserGenerator.cs (emits full parser class)
-    ☐ Create Generation/SyntaxTreeGenerator.cs (emits SyntaxTree class)
+    ✔ Create Generation/ParserGenerator.cs (emits full parser class) @done
+    ✔ Create Generation/SyntaxTreeGenerator.cs (emits SyntaxTree class) @done
     Generated output includes:
       - Parser class (lexer + trivia + tree building)
       - SyntaxTree (root accessor, diagnostics)
+      - Diagnostic and DiagnosticSeverity classes
+      - GreenTokenList for flat token streams
     Tests:
-      ☐ Test generated parser produces valid tree
-      ☐ Test generated parser round-trips source
+      ✔ Test generated parser produces valid tree @done
+      ✔ Test generated parser round-trips source @done
 
   Phase 8 - Diagnostics:
     ☐ Create Diagnostics/DiagnosticDescriptors.cs (v2 diagnostic definitions)

@@ -18,6 +18,8 @@ internal static class GreenTriviaGenerator
         GenerateGreenTrivia(code);
         code.AppendLine();
         GenerateGreenTriviaList(code);
+        code.AppendLine();
+        GenerateGreenTokenList(code);
 
         return file;
     }
@@ -165,6 +167,74 @@ internal static class GreenTriviaGenerator
 
         // FormatDebugString
         code.AppendLine("protected override string FormatDebugString() => $\"TriviaList[Count={_trivia.Length}, Width={FullWidth}]\";");
+
+        code.CloseBlock();
+    }
+
+    private static void GenerateGreenTokenList(CodeBuilder code)
+    {
+        code.AppendSummary("A list of tokens stored as a single green node (used as root for token streams).");
+        code.AppendLine("internal sealed class GreenTokenList : GreenNode");
+        code.OpenBlock();
+
+        code.AppendLine("private readonly GreenToken[] _tokens;");
+        code.AppendLine();
+
+        // Constructor
+        code.AppendLine("public GreenTokenList(GreenToken[] tokens)");
+        code.Indent();
+        code.AppendLine(": base(0, ComputeWidth(tokens), GreenNodeFlags.None, (byte)Math.Min(tokens.Length, 255))");
+        code.Outdent();
+        code.OpenBlock();
+        code.AppendLine("_tokens = tokens;");
+        code.CloseBlock();
+        code.AppendLine();
+
+        // Count
+        code.AppendSummaryLine("Gets the number of tokens.");
+        code.AppendLine("public int Count => _tokens.Length;");
+        code.AppendLine();
+
+        // Indexer
+        code.AppendSummaryLine("Gets the token at the specified index.");
+        code.AppendLine("public GreenToken this[int index] => _tokens[index];");
+        code.AppendLine();
+
+        // GetSlot
+        code.AppendLine("public override GreenNode? GetSlot(int index)");
+        code.OpenBlock();
+        code.AppendLine("if (index >= 0 && index < _tokens.Length) return _tokens[index];");
+        code.AppendLine("return null;");
+        code.CloseBlock();
+        code.AppendLine();
+
+        // WriteTo
+        code.AppendLine("public override void WriteTo(TextWriter writer)");
+        code.OpenBlock();
+        code.AppendLine("foreach (var t in _tokens) t.WriteTo(writer);");
+        code.CloseBlock();
+        code.AppendLine();
+
+        // ToOwned
+        code.AppendLine("public override GreenNode ToOwned()");
+        code.OpenBlock();
+        code.AppendLine("var owned = new GreenToken[_tokens.Length];");
+        code.AppendLine("for (int i = 0; i < _tokens.Length; i++) owned[i] = (GreenToken)_tokens[i].ToOwned();");
+        code.AppendLine("return new GreenTokenList(owned);");
+        code.CloseBlock();
+        code.AppendLine();
+
+        // ComputeWidth
+        code.AppendLine("private static int ComputeWidth(GreenToken[] tokens)");
+        code.OpenBlock();
+        code.AppendLine("int width = 0;");
+        code.AppendLine("foreach (var t in tokens) width += t.FullWidth;");
+        code.AppendLine("return width;");
+        code.CloseBlock();
+        code.AppendLine();
+
+        // FormatDebugString
+        code.AppendLine("protected override string FormatDebugString() => $\"TokenList[Count={_tokens.Length}, Width={FullWidth}]\";");
 
         code.CloseBlock();
     }

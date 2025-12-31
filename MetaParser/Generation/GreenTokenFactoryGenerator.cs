@@ -113,6 +113,12 @@ internal static class GreenTokenFactoryGenerator
         code.AppendLine("    => new GreenTriviaList(kind, trivia);");
         code.AppendLine();
 
+        // CreateTokenList
+        code.AppendSummaryLine("Creates a list node containing tokens (for simple flat token streams).");
+        code.AppendLine("public GreenTokenList CreateTokenList(params GreenToken[] tokens)");
+        code.AppendLine("    => new GreenTokenList(tokens);");
+        code.AppendLine();
+
         // ClearCache
         code.AppendSummaryLine("Clears the token cache.");
         code.AppendLine("public void ClearCache()");
