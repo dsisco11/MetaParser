@@ -118,10 +118,17 @@ Architecture Principle:
       ✔ Test SchemaValidator circular dependency integration @done
 
   Phase 9 - Diagnostics:
-    ☐ Create Diagnostics/DiagnosticDescriptors.cs (v2 diagnostic definitions)
+    ✔ Create Diagnostics/DiagnosticDescriptors.cs (v2 diagnostic definitions) @done
+    ✔ Create Diagnostics/DiagnosticReporter.cs (helper for reporting) @done
+    Diagnostic ID Ranges:
+      - MP0000-MP0099: General/Internal diagnostics
+      - MP0100-MP0199: Schema validation errors
+      - MP0200-MP0299: Schema validation warnings
+      - MP0300-MP0399: Code generation errors
     Tests:
-      ☐ Test diagnostic for invalid schema
-      ☐ Test diagnostic location accuracy
+      ✔ Test diagnostic IDs and severities @done
+      ✔ Test diagnostic message formatting @done
+      ✔ Test all descriptors have unique IDs @done
 
   Phase 10 - Integration Testing:
     ☐ Create test project that consumes generated code
