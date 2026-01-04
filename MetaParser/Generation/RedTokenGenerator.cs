@@ -16,6 +16,8 @@ internal static class RedTokenGenerator
         var code = file.Code;
 
         GenerateSyntaxTokenClass(code);
+        code.AppendLine();
+        GenerateSyntaxTokenList(code);
 
         return file;
     }
@@ -33,9 +35,9 @@ SyntaxToken wraps a GreenToken and provides:
 
         // Constructor
         code.AppendSummary("Creates a new syntax token wrapping the specified green token.");
-        code.AppendLine("internal SyntaxToken(GreenToken green, SyntaxNode? parent, int position)");
+        code.AppendLine("internal SyntaxToken(GreenToken green, SyntaxNode? parent, int position, int slotIndex = -1)");
         code.Indent();
-        code.AppendLine(": base(green, parent, position)");
+        code.AppendLine(": base(green, parent, position, slotIndex)");
         code.Outdent();
         code.OpenBlock();
         code.CloseBlock();
@@ -85,22 +87,45 @@ SyntaxToken wraps a GreenToken and provides:
         // Check if missing/synthesized
         code.AppendSummary("Gets whether this is a missing token (synthesized by parser).");
         code.AppendLine("public bool IsMissing => Green.Width == 0 && Kind != TokenKind.EndOfFile;");
-        code.AppendLine();
 
-        // Navigation helpers
-        code.AppendSummary("Gets the next token in the tree, or null if this is the last token.");
-        code.AppendLine("public SyntaxToken? GetNextToken()");
-        code.OpenBlock();
-        code.AppendLine("// TODO: Implement tree traversal for next token");
-        code.AppendLine("return null;");
         code.CloseBlock();
+    }
+
+    private static void GenerateSyntaxTokenList(CodeBuilder code)
+    {
+        code.AppendSummary("Represents a list of tokens in the syntax tree (typically the root).");
+        code.AppendLine("internal sealed class SyntaxTokenList : SyntaxNode");
+        code.OpenBlock();
+
+        // Constructor
+        code.AppendSummary("Creates a new syntax token list wrapping the specified green token list.");
+        code.AppendLine("internal SyntaxTokenList(GreenTokenList green, SyntaxNode? parent, int position, int slotIndex = -1)");
+        code.Indent();
+        code.AppendLine(": base(green, parent, position, slotIndex) { }");
+        code.Outdent();
         code.AppendLine();
 
-        code.AppendSummary("Gets the previous token in the tree, or null if this is the first token.");
-        code.AppendLine("public SyntaxToken? GetPreviousToken()");
+        // Typed Green accessor
+        code.AppendSummary("Gets the underlying green token list.");
+        code.AppendLine("public new GreenTokenList Green => (GreenTokenList)base.Green;");
+        code.AppendLine();
+
+        // Count
+        code.AppendSummary("Gets the number of tokens.");
+        code.AppendLine("public int Count => Green.Count;");
+        code.AppendLine();
+
+        // Indexer
+        code.AppendSummary("Gets the token at the specified index.");
+        code.AppendLine("public SyntaxToken this[int index]");
         code.OpenBlock();
-        code.AppendLine("// TODO: Implement tree traversal for previous token");
-        code.AppendLine("return null;");
+        code.AppendLine("get");
+        code.OpenBlock();
+        code.AppendLine("var greenToken = Green[index];");
+        code.AppendLine("int pos = Position;");
+        code.AppendLine("for (int i = 0; i < index; i++) pos += Green[i].FullWidth;");
+        code.AppendLine("return new SyntaxToken(greenToken, this, pos, index);");
+        code.CloseBlock();
         code.CloseBlock();
 
         code.CloseBlock();

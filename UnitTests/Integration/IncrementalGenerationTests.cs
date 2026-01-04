@@ -367,6 +367,7 @@ public class IncrementalGenerationTests
             LexerGenerator.Generate(schema).Build(),
             RedNodeGenerator.Generate(schema).Build(),
             RedTokenGenerator.Generate(schema).Build(),
+            SyntaxTriviaGenerator.Generate(schema).Build(),
             SyntaxTreeGenerator.Generate(schema).Build(),
             ParserGenerator.Generate(schema).Build(),
         };

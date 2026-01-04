@@ -100,7 +100,7 @@ Use Parse() or ParseText() to create a SyntaxTree.");
         code.AppendLine("private readonly GreenNode _greenRoot;");
         code.AppendLine("private readonly string _sourceText;");
         code.AppendLine("private readonly ImmutableArray<Diagnostic> _diagnostics;");
-        code.AppendLine("private RedNode? _redRoot;");
+        code.AppendLine("private SyntaxNode? _redRoot;");
         code.AppendLine();
 
         // Constructor

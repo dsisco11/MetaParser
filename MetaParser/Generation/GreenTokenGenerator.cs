@@ -52,6 +52,13 @@ internal static class GreenTokenGenerator
 
         code.AppendSummaryLine("Tokens have no child slots.");
         code.AppendLine("public sealed override GreenNode? GetSlot(int index) => null;");
+        code.AppendLine();
+
+        code.AppendSummaryLine("Creates a SyntaxToken wrapper for this green token.");
+        code.AppendLine("internal override SyntaxNode CreateRed(SyntaxNode? parent, int position, int slotIndex)");
+        code.Indent();
+        code.AppendLine("=> new SyntaxToken(this, parent, position, slotIndex);");
+        code.Outdent();
 
         code.CloseBlock();
     }

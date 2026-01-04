@@ -61,13 +61,20 @@ public class GreenNodeGeneratorTests
     public void GreenNodeGenerator_ProducesValidCSharp()
     {
         // GreenNode references GreenToken, GreenTrivia, etc. - so compile all together
+        // Also needs red node types for CreateRed method
         var schema = CreateTestSchema();
         var sources = new[]
         {
             GreenNodeGenerator.Generate(schema).Build(),
             GreenTriviaGenerator.Generate(schema).Build(),
             GreenTokenGenerator.Generate(schema).Build(),
-            GreenTokenFactoryGenerator.Generate(schema).Build()
+            GreenTokenFactoryGenerator.Generate(schema).Build(),
+            // TokenKind needed for SyntaxToken.Kind property
+            TokenKindGenerator.Generate(schema).Build(),
+            // Red nodes needed for CreateRed method references
+            RedNodeGenerator.Generate(schema).Build(),
+            RedTokenGenerator.Generate(schema).Build(),
+            SyntaxTriviaGenerator.Generate(schema).Build()
         };
 
         var compiles = CompilesSuccessfully(sources, out var errors);

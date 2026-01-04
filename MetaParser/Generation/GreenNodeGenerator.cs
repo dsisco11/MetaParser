@@ -143,6 +143,9 @@ Implements IFormattable with format specifiers: T, C, M, D, J, G.");
         code.AppendLine();
         code.AppendSummaryLine("Writes the full text to the writer.");
         code.AppendLine("public abstract void WriteTo(TextWriter writer);");
+        code.AppendLine();
+        code.AppendSummaryLine("Creates a red (syntax) node wrapper for this green node.");
+        code.AppendLine("internal abstract SyntaxNode CreateRed(SyntaxNode? parent, int position, int slotIndex);");
         code.AppendEndRegion();
         code.AppendLine();
 

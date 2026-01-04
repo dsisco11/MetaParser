@@ -37,7 +37,13 @@ public class GeneratedCodeFixture : IDisposable
             GreenNodeGenerator.Generate(schema).Build(),
             GreenTriviaGenerator.Generate(schema).Build(),
             GreenTokenGenerator.Generate(schema).Build(),
-            GreenTokenFactoryGenerator.Generate(schema).Build()
+            GreenTokenFactoryGenerator.Generate(schema).Build(),
+            // TokenKind needed for SyntaxToken.Kind property
+            TokenKindGenerator.Generate(schema).Build(),
+            // Red nodes needed for CreateRed method references
+            RedNodeGenerator.Generate(schema).Build(),
+            RedTokenGenerator.Generate(schema).Build(),
+            SyntaxTriviaGenerator.Generate(schema).Build(),
         };
 
         // Compile once

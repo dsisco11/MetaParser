@@ -98,8 +98,14 @@ internal static class GreenTriviaGenerator
         code.AppendLine("var escaped = text.Replace(\"\\r\", \"\\\\r\").Replace(\"\\n\", \"\\\\n\").Replace(\"\\t\", \"\\\\t\");");
         code.AppendLine("if (escaped.Length > 20) escaped = escaped.Substring(0, 17) + \"...\";");
         code.AppendLine("return $\"Trivia[Kind={RawKind}, \\\"{escaped}\\\"]\";");
-        code.CloseBlock();
+        code.CloseBlock();        code.AppendLine();
 
+        // CreateRed
+        code.AppendSummaryLine("Creates a SyntaxTrivia wrapper for this green trivia.");
+        code.AppendLine("internal override SyntaxNode CreateRed(SyntaxNode? parent, int position, int slotIndex)");
+        code.Indent();
+        code.AppendLine("=> new SyntaxTrivia(this, parent, position, slotIndex);");
+        code.Outdent();
         code.CloseBlock();
     }
 
@@ -167,6 +173,14 @@ internal static class GreenTriviaGenerator
 
         // FormatDebugString
         code.AppendLine("protected override string FormatDebugString() => $\"TriviaList[Count={_trivia.Length}, Width={FullWidth}]\";");
+        code.AppendLine();
+
+        // CreateRed
+        code.AppendSummaryLine("Creates a SyntaxTrivia wrapper for this green trivia list.");
+        code.AppendLine("internal override SyntaxNode CreateRed(SyntaxNode? parent, int position, int slotIndex)");
+        code.Indent();
+        code.AppendLine("=> new SyntaxTrivia(this, parent, position, slotIndex);");
+        code.Outdent();
 
         code.CloseBlock();
     }
@@ -235,6 +249,14 @@ internal static class GreenTriviaGenerator
 
         // FormatDebugString
         code.AppendLine("protected override string FormatDebugString() => $\"TokenList[Count={_tokens.Length}, Width={FullWidth}]\";");
+        code.AppendLine();
+
+        // CreateRed
+        code.AppendSummaryLine("Creates a SyntaxTokenList wrapper for this green token list.");
+        code.AppendLine("internal override SyntaxNode CreateRed(SyntaxNode? parent, int position, int slotIndex)");
+        code.Indent();
+        code.AppendLine("=> new SyntaxTokenList(this, parent, position, slotIndex);");
+        code.Outdent();
 
         code.CloseBlock();
     }

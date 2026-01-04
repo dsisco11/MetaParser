@@ -91,7 +91,11 @@ public class LexerGeneratedCodeFixture : IDisposable
             TokenConsumerGenerator.Generate(Schema).Build(),
             // Phase 5 generators
             TriviaAttachmentGenerator.Generate(Schema).Build(),
-            LexerGenerator.Generate(Schema).Build()
+            LexerGenerator.Generate(Schema).Build(),
+            // Phase 6 generators (needed for CreateRed references)
+            RedNodeGenerator.Generate(Schema).Build(),
+            RedTokenGenerator.Generate(Schema).Build(),
+            SyntaxTriviaGenerator.Generate(Schema).Build(),
         };
 
         // Compile

@@ -43,6 +43,7 @@ Syntax nodes are created on-demand as you navigate the tree.");
         code.AppendLine("private readonly GreenNode _green;");
         code.AppendLine("private readonly SyntaxNode? _parent;");
         code.AppendLine("private readonly int _position;");
+        code.AppendLine("private readonly int _slotIndex;");
         code.AppendLine();
 
         // Constructor
@@ -50,11 +51,13 @@ Syntax nodes are created on-demand as you navigate the tree.");
         code.AppendParam("green", "The underlying green node.");
         code.AppendParam("parent", "The parent syntax node, or null for root.");
         code.AppendParam("position", "The absolute position in the source text.");
-        code.AppendLine("protected SyntaxNode(GreenNode green, SyntaxNode? parent, int position)");
+        code.AppendParam("slotIndex", "The index of this node within its parent's slots, or -1 for root.");
+        code.AppendLine("protected SyntaxNode(GreenNode green, SyntaxNode? parent, int position, int slotIndex = -1)");
         code.OpenBlock();
         code.AppendLine("_green = green;");
         code.AppendLine("_parent = parent;");
         code.AppendLine("_position = position;");
+        code.AppendLine("_slotIndex = slotIndex;");
         code.CloseBlock();
         code.AppendLine();
 
@@ -85,6 +88,10 @@ Syntax nodes are created on-demand as you navigate the tree.");
 
         code.AppendSummary("Gets the raw token/node kind.");
         code.AppendLine("public ushort RawKind => _green.RawKind;");
+        code.AppendLine();
+
+        code.AppendSummary("Gets the slot index of this node within its parent, or -1 for root.");
+        code.AppendLine("public int SlotIndex => _slotIndex;");
         code.AppendLine();
 
         code.AppendSummary("Gets the span of this node (position and length excluding trivia).");
@@ -131,6 +138,37 @@ Syntax nodes are created on-demand as you navigate the tree.");
         code.Indent();
         code.AppendLine("yield return ancestor;");
         code.Outdent();
+        code.CloseBlock();
+        code.AppendLine();
+
+        // Sibling navigation
+        code.AppendSummary("Gets the next sibling node, or null if this is the last child.");
+        code.AppendLine("public SyntaxNode? GetNextSibling()");
+        code.OpenBlock();
+        code.AppendLine("if (_parent is null || _slotIndex < 0) return null;");
+        code.AppendLine();
+        code.AppendLine("int nextIndex = _slotIndex + 1;");
+        code.AppendLine("if (nextIndex >= _parent._green.SlotCount) return null;");
+        code.AppendLine();
+        code.AppendLine("var sibling = _parent._green.GetSlot(nextIndex);");
+        code.AppendLine("if (sibling is null) return null;");
+        code.AppendLine();
+        code.AppendLine("int siblingPosition = _position + _green.FullWidth;");
+        code.AppendLine("return sibling.CreateRed(_parent, siblingPosition, nextIndex);");
+        code.CloseBlock();
+        code.AppendLine();
+
+        code.AppendSummary("Gets the previous sibling node, or null if this is the first child.");
+        code.AppendLine("public SyntaxNode? GetPreviousSibling()");
+        code.OpenBlock();
+        code.AppendLine("if (_parent is null || _slotIndex <= 0) return null;");
+        code.AppendLine();
+        code.AppendLine("int prevIndex = _slotIndex - 1;");
+        code.AppendLine("var sibling = _parent._green.GetSlot(prevIndex);");
+        code.AppendLine("if (sibling is null) return null;");
+        code.AppendLine();
+        code.AppendLine("int siblingPosition = _position - sibling.FullWidth;");
+        code.AppendLine("return sibling.CreateRed(_parent, siblingPosition, prevIndex);");
         code.CloseBlock();
         code.AppendLine();
 

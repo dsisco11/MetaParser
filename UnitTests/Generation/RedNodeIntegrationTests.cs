@@ -13,8 +13,8 @@ namespace UnitTests.Generation;
 public class RedNodeGeneratedCodeFixture : IDisposable
 {
     public Assembly GeneratedAssembly { get; }
-    public Type RedNodeType { get; }
-    public Type RedTokenType { get; }
+    public Type SyntaxNodeType { get; }
+    public Type SyntaxTokenType { get; }
     public Type TextSpanType { get; }
     public Type LexerType { get; }
     public Type GreenTokenType { get; }
@@ -70,12 +70,13 @@ public class RedNodeGeneratedCodeFixture : IDisposable
             // Phase 6 generators
             RedNodeGenerator.Generate(Schema).Build(),
             RedTokenGenerator.Generate(Schema).Build(),
+            SyntaxTriviaGenerator.Generate(Schema).Build(),
         };
 
         GeneratedAssembly = CompileAndLoad(sources);
 
-        RedNodeType = GeneratedAssembly.GetType("TestRedNode.Syntax.RedNode")!;
-        RedTokenType = GeneratedAssembly.GetType("TestRedNode.Syntax.RedToken")!;
+        SyntaxNodeType = GeneratedAssembly.GetType("TestRedNode.Syntax.SyntaxNode")!;
+        SyntaxTokenType = GeneratedAssembly.GetType("TestRedNode.Syntax.SyntaxToken")!;
         TextSpanType = GeneratedAssembly.GetType("TestRedNode.Syntax.TextSpan")!;
         LexerType = GeneratedAssembly.GetType("TestRedNode.Syntax.TestLexer")!;
         GreenTokenType = GeneratedAssembly.GetType("TestRedNode.Syntax.GreenToken")!;
@@ -145,24 +146,24 @@ public class RedNodeIntegrationTests : IClassFixture<RedNodeGeneratedCodeFixture
     public void RedNode_HasExpectedProperties()
     {
         // Verify RedNode has expected properties
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("Green"));
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("Parent"));
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("Position"));
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("EndPosition"));
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("FullWidth"));
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("Width"));
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("RawKind"));
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("Span"));
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("FullSpan"));
-        Assert.NotNull(_fixture.RedNodeType.GetProperty("Root"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("Green"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("Parent"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("Position"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("EndPosition"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("FullWidth"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("Width"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("RawKind"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("Span"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("FullSpan"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetProperty("Root"));
     }
 
     [Fact]
     public void RedNode_HasNavigationMethods()
     {
-        Assert.NotNull(_fixture.RedNodeType.GetMethod("Ancestors"));
-        Assert.NotNull(_fixture.RedNodeType.GetMethod("AncestorsAndSelf"));
-        Assert.NotNull(_fixture.RedNodeType.GetMethod("ToFullString"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetMethod("Ancestors"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetMethod("AncestorsAndSelf"));
+        Assert.NotNull(_fixture.SyntaxNodeType.GetMethod("ToFullString"));
     }
 
     #endregion
@@ -172,20 +173,20 @@ public class RedNodeIntegrationTests : IClassFixture<RedNodeGeneratedCodeFixture
     [Fact]
     public void RedToken_InheritsFromRedNode()
     {
-        Assert.True(_fixture.RedNodeType.IsAssignableFrom(_fixture.RedTokenType));
+        Assert.True(_fixture.SyntaxNodeType.IsAssignableFrom(_fixture.SyntaxTokenType));
     }
 
     [Fact]
     public void RedToken_HasExpectedProperties()
     {
-        Assert.NotNull(_fixture.RedTokenType.GetProperty("Kind"));
-        Assert.NotNull(_fixture.RedTokenType.GetProperty("Text"));
-        Assert.NotNull(_fixture.RedTokenType.GetProperty("ValueText"));
-        Assert.NotNull(_fixture.RedTokenType.GetProperty("LeadingTriviaWidth"));
-        Assert.NotNull(_fixture.RedTokenType.GetProperty("TrailingTriviaWidth"));
-        Assert.NotNull(_fixture.RedTokenType.GetProperty("HasLeadingTrivia"));
-        Assert.NotNull(_fixture.RedTokenType.GetProperty("HasTrailingTrivia"));
-        Assert.NotNull(_fixture.RedTokenType.GetProperty("IsMissing"));
+        Assert.NotNull(_fixture.SyntaxTokenType.GetProperty("Kind"));
+        Assert.NotNull(_fixture.SyntaxTokenType.GetProperty("Text"));
+        Assert.NotNull(_fixture.SyntaxTokenType.GetProperty("ValueText"));
+        Assert.NotNull(_fixture.SyntaxTokenType.GetProperty("LeadingTriviaWidth"));
+        Assert.NotNull(_fixture.SyntaxTokenType.GetProperty("TrailingTriviaWidth"));
+        Assert.NotNull(_fixture.SyntaxTokenType.GetProperty("HasLeadingTrivia"));
+        Assert.NotNull(_fixture.SyntaxTokenType.GetProperty("HasTrailingTrivia"));
+        Assert.NotNull(_fixture.SyntaxTokenType.GetProperty("IsMissing"));
     }
 
     [Fact]
@@ -200,17 +201,17 @@ public class RedNodeIntegrationTests : IClassFixture<RedNodeGeneratedCodeFixture
         var greenToken = tokens[0];
 
         // Create a RedToken from it
-        var redTokenCtor = _fixture.RedTokenType.GetConstructor(
+        var redTokenCtor = _fixture.SyntaxTokenType.GetConstructor(
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
             null,
-            new[] { _fixture.GreenTokenType, _fixture.RedNodeType, typeof(int) },
+            new[] { _fixture.GreenTokenType, _fixture.SyntaxNodeType, typeof(int), typeof(int) },
             null)!;
 
-        var redToken = redTokenCtor.Invoke(new object?[] { greenToken, null, 0 });
+        var redToken = redTokenCtor.Invoke(new object?[] { greenToken, null, 0, -1 });
 
         // Verify properties
-        var textProp = _fixture.RedTokenType.GetProperty("Text")!;
-        var positionProp = _fixture.RedNodeType.GetProperty("Position")!;
+        var textProp = _fixture.SyntaxTokenType.GetProperty("Text")!;
+        var positionProp = _fixture.SyntaxNodeType.GetProperty("Position")!;
 
         Assert.Equal("abc", textProp.GetValue(redToken));
         Assert.Equal(0, positionProp.GetValue(redToken));
@@ -228,18 +229,18 @@ public class RedNodeIntegrationTests : IClassFixture<RedNodeGeneratedCodeFixture
         var greenToken = tokens[0];
 
         // Create red token at position 0 (start of source)
-        var redTokenCtor = _fixture.RedTokenType.GetConstructor(
+        var redTokenCtor = _fixture.SyntaxTokenType.GetConstructor(
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
             null,
-            new[] { _fixture.GreenTokenType, _fixture.RedNodeType, typeof(int) },
+            new[] { _fixture.GreenTokenType, _fixture.SyntaxNodeType, typeof(int), typeof(int) },
             null)!;
 
-        var redToken = redTokenCtor.Invoke(new object?[] { greenToken, null, 0 });
+        var redToken = redTokenCtor.Invoke(new object?[] { greenToken, null, 0, -1 });
 
-        var positionProp = _fixture.RedNodeType.GetProperty("Position")!;
-        var fullWidthProp = _fixture.RedNodeType.GetProperty("FullWidth")!;
-        var endPositionProp = _fixture.RedNodeType.GetProperty("EndPosition")!;
-        var leadingTriviaWidthProp = _fixture.RedTokenType.GetProperty("LeadingTriviaWidth")!;
+        var positionProp = _fixture.SyntaxNodeType.GetProperty("Position")!;
+        var fullWidthProp = _fixture.SyntaxNodeType.GetProperty("FullWidth")!;
+        var endPositionProp = _fixture.SyntaxNodeType.GetProperty("EndPosition")!;
+        var leadingTriviaWidthProp = _fixture.SyntaxTokenType.GetProperty("LeadingTriviaWidth")!;
 
         Assert.Equal(0, positionProp.GetValue(redToken));
         Assert.Equal(3, fullWidthProp.GetValue(redToken)); // 2 spaces + 1 char
@@ -316,16 +317,16 @@ public class RedNodeIntegrationTests : IClassFixture<RedNodeGeneratedCodeFixture
 
         var greenToken = tokens[0]; // 'x' with trivia
 
-        var redTokenCtor = _fixture.RedTokenType.GetConstructor(
+        var redTokenCtor = _fixture.SyntaxTokenType.GetConstructor(
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
             null,
-            new[] { _fixture.GreenTokenType, _fixture.RedNodeType, typeof(int) },
+            new[] { _fixture.GreenTokenType, _fixture.SyntaxNodeType, typeof(int), typeof(int) },
             null)!;
 
-        var redToken = redTokenCtor.Invoke(new object?[] { greenToken, null, 0 });
+        var redToken = redTokenCtor.Invoke(new object?[] { greenToken, null, 0, -1 });
 
-        var spanProp = _fixture.RedTokenType.GetProperty("Span")!;
-        var fullSpanProp = _fixture.RedNodeType.GetProperty("FullSpan")!;
+        var spanProp = _fixture.SyntaxTokenType.GetProperty("Span")!;
+        var fullSpanProp = _fixture.SyntaxNodeType.GetProperty("FullSpan")!;
         var span = spanProp.GetValue(redToken)!;
         var fullSpan = fullSpanProp.GetValue(redToken)!;
 
@@ -350,15 +351,15 @@ public class RedNodeIntegrationTests : IClassFixture<RedNodeGeneratedCodeFixture
 
         var greenToken = tokens[0];
 
-        var redTokenCtor = _fixture.RedTokenType.GetConstructor(
+        var redTokenCtor = _fixture.SyntaxTokenType.GetConstructor(
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance,
             null,
-            new[] { _fixture.GreenTokenType, _fixture.RedNodeType, typeof(int) },
+            new[] { _fixture.GreenTokenType, _fixture.SyntaxNodeType, typeof(int), typeof(int) },
             null)!;
 
-        var redToken = redTokenCtor.Invoke(new object?[] { greenToken, null, 0 });
+        var redToken = redTokenCtor.Invoke(new object?[] { greenToken, null, 0, -1 });
 
-        var parentProp = _fixture.RedNodeType.GetProperty("Parent")!;
+        var parentProp = _fixture.SyntaxNodeType.GetProperty("Parent")!;
         Assert.Null(parentProp.GetValue(redToken));
     }
 

@@ -72,6 +72,7 @@ public class ParserGeneratedCodeFixture : IDisposable
             // Phase 6 generators
             RedNodeGenerator.Generate(Schema).Build(),
             RedTokenGenerator.Generate(Schema).Build(),
+            SyntaxTriviaGenerator.Generate(Schema).Build(),
             // Phase 7 generators
             SyntaxTreeGenerator.Generate(Schema).Build(),
             ParserGenerator.Generate(Schema).Build(),
