@@ -10,30 +10,30 @@ internal static class RedTokenGenerator
     public static GeneratedFileBuilder Generate(SchemaDefinition schema)
     {
         var file = new GeneratedFileBuilder(schema.Namespace)
-            .WithFileName("RedToken.g.cs")
+            .WithFileName("SyntaxToken.g.cs")
             .AddUsings("System");
 
         var code = file.Code;
 
-        GenerateRedTokenClass(code);
+        GenerateSyntaxTokenClass(code);
 
         return file;
     }
 
-    private static void GenerateRedTokenClass(CodeBuilder code)
+    private static void GenerateSyntaxTokenClass(CodeBuilder code)
     {
-        code.AppendSummary(@"Represents a token in the red (facade) tree.
+        code.AppendSummary(@"Represents a token in the syntax tree.
 
-RedToken wraps a GreenToken and provides:
+SyntaxToken wraps a GreenToken and provides:
 - Parent reference for tree navigation
 - Absolute position in the source text
 - Access to leading and trailing trivia");
-        code.AppendLine("internal sealed class RedToken : RedNode");
+        code.AppendLine("internal sealed class SyntaxToken : SyntaxNode");
         code.OpenBlock();
 
         // Constructor
-        code.AppendSummary("Creates a new red token wrapping the specified green token.");
-        code.AppendLine("internal RedToken(GreenToken green, RedNode? parent, int position)");
+        code.AppendSummary("Creates a new syntax token wrapping the specified green token.");
+        code.AppendLine("internal SyntaxToken(GreenToken green, SyntaxNode? parent, int position)");
         code.Indent();
         code.AppendLine(": base(green, parent, position)");
         code.Outdent();
@@ -89,7 +89,7 @@ RedToken wraps a GreenToken and provides:
 
         // Navigation helpers
         code.AppendSummary("Gets the next token in the tree, or null if this is the last token.");
-        code.AppendLine("public RedToken? GetNextToken()");
+        code.AppendLine("public SyntaxToken? GetNextToken()");
         code.OpenBlock();
         code.AppendLine("// TODO: Implement tree traversal for next token");
         code.AppendLine("return null;");
@@ -97,7 +97,7 @@ RedToken wraps a GreenToken and provides:
         code.AppendLine();
 
         code.AppendSummary("Gets the previous token in the tree, or null if this is the first token.");
-        code.AppendLine("public RedToken? GetPreviousToken()");
+        code.AppendLine("public SyntaxToken? GetPreviousToken()");
         code.OpenBlock();
         code.AppendLine("// TODO: Implement tree traversal for previous token");
         code.AppendLine("return null;");

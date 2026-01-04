@@ -16,41 +16,41 @@ internal static class RedNodeGenerator
     public static GeneratedFileBuilder Generate(SchemaDefinition schema)
     {
         var file = new GeneratedFileBuilder(schema.Namespace)
-            .WithFileName("RedNode.g.cs")
+            .WithFileName("SyntaxNode.g.cs")
             .AddUsings("System", "System.Collections.Generic", "System.Diagnostics");
 
         var code = file.Code;
 
-        GenerateRedNodeClass(code);
+        GenerateSyntaxNodeClass(code);
 
         return file;
     }
 
-    private static void GenerateRedNodeClass(CodeBuilder code)
+    private static void GenerateSyntaxNodeClass(CodeBuilder code)
     {
-        code.AppendSummary(@"Base class for red (facade) syntax nodes.
+        code.AppendSummary(@"Base class for syntax nodes.
 
-Red nodes wrap immutable green nodes and provide:
+Syntax nodes wrap immutable green nodes and provide:
 - Parent references for tree navigation
 - Absolute positions in the source text
 - Lazy child node creation
 
-Red nodes are created on-demand as you navigate the tree.");
-        code.AppendLine("internal abstract class RedNode");
+Syntax nodes are created on-demand as you navigate the tree.");
+        code.AppendLine("internal abstract class SyntaxNode");
         code.OpenBlock();
 
         // Fields
         code.AppendLine("private readonly GreenNode _green;");
-        code.AppendLine("private readonly RedNode? _parent;");
+        code.AppendLine("private readonly SyntaxNode? _parent;");
         code.AppendLine("private readonly int _position;");
         code.AppendLine();
 
         // Constructor
-        code.AppendSummary("Creates a new red node wrapping the specified green node.");
+        code.AppendSummary("Creates a new syntax node wrapping the specified green node.");
         code.AppendParam("green", "The underlying green node.");
-        code.AppendParam("parent", "The parent red node, or null for root.");
+        code.AppendParam("parent", "The parent syntax node, or null for root.");
         code.AppendParam("position", "The absolute position in the source text.");
-        code.AppendLine("protected RedNode(GreenNode green, RedNode? parent, int position)");
+        code.AppendLine("protected SyntaxNode(GreenNode green, SyntaxNode? parent, int position)");
         code.OpenBlock();
         code.AppendLine("_green = green;");
         code.AppendLine("_parent = parent;");
@@ -64,7 +64,7 @@ Red nodes are created on-demand as you navigate the tree.");
         code.AppendLine();
 
         code.AppendSummary("Gets the parent node, or null if this is the root.");
-        code.AppendLine("public RedNode? Parent => _parent;");
+        code.AppendLine("public SyntaxNode? Parent => _parent;");
         code.AppendLine();
 
         code.AppendSummary("Gets the absolute position of this node in the source text.");
@@ -97,7 +97,7 @@ Red nodes are created on-demand as you navigate the tree.");
 
         // Navigation methods
         code.AppendSummary("Gets the root node of the tree.");
-        code.AppendLine("public RedNode Root");
+        code.AppendLine("public SyntaxNode Root");
         code.OpenBlock();
         code.AppendLine("get");
         code.OpenBlock();
@@ -112,7 +112,7 @@ Red nodes are created on-demand as you navigate the tree.");
         code.AppendLine();
 
         code.AppendSummary("Gets all ancestor nodes from this node to the root.");
-        code.AppendLine("public IEnumerable<RedNode> Ancestors()");
+        code.AppendLine("public IEnumerable<SyntaxNode> Ancestors()");
         code.OpenBlock();
         code.AppendLine("var node = _parent;");
         code.AppendLine("while (node is not null)");
@@ -124,7 +124,7 @@ Red nodes are created on-demand as you navigate the tree.");
         code.AppendLine();
 
         code.AppendSummary("Gets this node and all ancestor nodes.");
-        code.AppendLine("public IEnumerable<RedNode> AncestorsAndSelf()");
+        code.AppendLine("public IEnumerable<SyntaxNode> AncestorsAndSelf()");
         code.OpenBlock();
         code.AppendLine("yield return this;");
         code.AppendLine("foreach (var ancestor in Ancestors())");

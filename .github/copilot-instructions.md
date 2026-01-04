@@ -22,7 +22,8 @@ The generator transforms schemas through these stages:
 | `TokenKindGenerator` | `TokenKind.g.cs` | Enum of all token types from schema |
 | `LexerGenerator` | `Lexer.g.cs` | Token consumer orchestration |
 | `ParserGenerator` | `Parser.g.cs` | Full parser with trivia attachment |
-| `RedNodeGenerator` | `RedNode.g.cs` | Lazy wrapper with parent/position |
+| `RedNodeGenerator` | `SyntaxNode.g.cs` | Lazy wrapper with parent/position |
+| `RedTokenGenerator` | `SyntaxToken.g.cs` | Token wrapper with span access |
 
 ## Project Structure Patterns
 
