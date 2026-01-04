@@ -84,9 +84,14 @@ internal static class TokenKindGenerator
         code.AppendLine("TokenKind.Whitespace => true,");
         code.AppendLine("TokenKind.EndOfLine => true,");
 
-        // Add user-defined trivia
+        // Add user-defined trivia (filter out built-in trivia names to avoid duplicates)
+        var builtInTriviaNames = new[] { "whitespace", "end-of-line", "endofline" };
         foreach (var triviaName in schema.Trivia)
         {
+            // Skip if this would generate a duplicate of built-in trivia
+            if (builtInTriviaNames.Any(b => string.Equals(b, triviaName, System.StringComparison.OrdinalIgnoreCase)))
+                continue;
+
             code.AppendLine($"TokenKind.{SanitizeIdentifier(triviaName)} => true,");
         }
 
