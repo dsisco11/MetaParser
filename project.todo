@@ -138,10 +138,16 @@ Architecture Principle:
       ✔ Test trivia preservation @done
       ✔ Test incremental generation @done
 
-Dependencies:
-  - Custom Graphs library (Graphs/ folder, inspired by Graffs)
+  Phase 11 - Generator Wiring & Polish:
+    ☐ Wire up GenerateCode in Generator.cs to call all 15 generators
+    ☐ Add location tracking for schema validation diagnostics
+    ☐ Improve error recovery in generated lexer for malformed input
+    ☐ Complete JSON schema in Resources/schema.json for IDE intellisense
+    ☐ Add end-to-end test using CSharpGeneratorDriver (real generator, not manual composition)
 
-Target Frameworks:
-  Generator: netstandard2.0 (required for Roslyn)
-  Generated Output: net8.0+ (C# 12, SearchValues<char>)
+  Phase 12 - Release Preparation:
+    ☐ Create NuGet package with proper metadata (id, description, tags, license)
+    ☐ Write README.md with usage examples and API documentation
+    ☐ Create sample project demonstrating real-world usage
+    ☐ Add benchmarks for lexer/parser performance validation
 
