@@ -50,18 +50,19 @@ public class SchemaValidatorTests
     }
 
     [Fact]
-    public void Validate_MissingConsumePattern_ReturnsError()
+    public void Validate_MissingConsumePattern_IsValid()
     {
+        // Consume pattern is optional - single-char tokens like "+" don't need one
         var schema = new SchemaDefinition
         {
             Namespace = "Test",
-            Tokens = { ["test"] = new TokenDefinition { Consume = null } }
+            Tokens = { ["test"] = new TokenDefinition { Start = new LiteralPattern("+"), Consume = null } }
         };
 
         var result = SchemaValidator.Validate(schema);
 
-        Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.Contains("'consume' pattern"));
+        Assert.True(result.IsValid);
+        Assert.Empty(result.Errors);
     }
 
     #endregion

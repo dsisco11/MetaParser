@@ -1,172 +1,168 @@
 ﻿{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "/MetaParser/parser/schema-01",
-  "title": "Token Definitions",
-  "description": "A definition for a token which is consumed & output by the meta-parser system",
+  "$id": "https://raw.githubusercontent.com/dsisco11/MetaParser/main/MetaParser/Resources/schema.json",
+  "title": "MetaParser v2 Schema",
+  "description": "Schema definition for MetaParser .metaparser.json files. Defines tokens and patterns for text parser generation.",
   "type": "object",
+  "required": ["namespace", "tokens"],
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Reference to this JSON schema for IDE validation"
+    },
     "namespace": {
       "type": "string",
-      "description": "The namespace of the generated parser"
+      "description": "The .NET namespace for generated parser code",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_.]*$",
+      "examples": ["MyParser.Syntax", "Calculator"]
+    },
+    "classname": {
+      "type": "string",
+      "description": "The class name prefix for generated parser classes. If not specified, defaults to 'Parser'",
+      "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+      "default": "Parser",
+      "examples": ["Calculator", "JsonParser"]
     },
     "tokens": {
       "type": "object",
-      "propertyNames": {
-        "pattern": "^([\\w-]*)$"
-      },
+      "description": "Token definitions. Keys are token names, values are token definitions. Definition order determines priority (earlier = higher priority).",
       "additionalProperties": {
-        "type": "object",
-        "required": [ "$type" ],
-        "anyOf": [
-          { "$ref": "#/$defs/def:token:constant" },
-          { "$ref": "#/$defs/def:token:compound" },
-          { "$ref": "#/$defs/def:token:complex" }
-        ]
-      }
+        "$ref": "#/$defs/tokenDefinition"
+      },
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_-]*$",
+        "description": "Token names should be lowercase with hyphens or underscores"
+      },
+      "minProperties": 1
+    },
+    "trivia": {
+      "type": "array",
+      "description": "Token names to treat as trivia (whitespace, comments). Trivia is attached to following tokens.",
+      "items": {
+        "type": "string",
+        "description": "Name of a token defined in the tokens object"
+      },
+      "uniqueItems": true,
+      "examples": [["whitespace", "newline"], ["whitespace", "single-line-comment", "multi-line-comment"]]
     }
   },
   "$defs": {
-    "def:token:constant": {
+    "tokenDefinition": {
+      "type": "object",
+      "description": "Defines a token type with patterns for matching input",
       "properties": {
-        "$type": { "const": "constant" },
-        "value": {
-          "oneOf": [
-            { "$ref": "#/$defs/ref:value:constant" },
-            {
-              "type": "array",
-              "items": { "$ref": "#/$defs/ref:value:constant" },
-              "minItems": 1,
-              "uniqueItems": true
-            }
-          ]
+        "start": {
+          "$ref": "#/$defs/pattern",
+          "description": "Pattern that must match to begin consuming this token. Consumed as part of the token."
+        },
+        "consume": {
+          "$ref": "#/$defs/pattern",
+          "description": "Pattern(s) to consume repeatedly after the start pattern matches."
+        },
+        "stop": {
+          "$ref": "#/$defs/pattern",
+          "description": "Pattern that ends consumption. The stop pattern is NOT consumed as part of this token."
+        },
+        "escape": {
+          "$ref": "#/$defs/pattern",
+          "description": "Pattern that escapes the next character/token, allowing it to be consumed literally."
         }
       },
       "additionalProperties": false
     },
-    "def:token:compound": {
-      "properties": {
-        "$type": { "const": "compound" },
-        "consume": {
-          "oneOf": [
-            { "$ref": "#/$defs/ref:value:single" },
-            { "$ref": "#/$defs/ref:value:range" },
-            {
-              "type": "array",
-              "items": {
-                "anyOf": [
-                  { "$ref": "#/$defs/ref:value:single" },
-                  { "$ref": "#/$defs/ref:value:range" }
-                ]
-              },
-              "minItems": 1,
-              "uniqueItems": true
-            }
-          ]
-        },
-        "additionalProperties": false
-      }
-    },
-    "def:token:complex": {
-      "anyOf": [
-        { "$ref": "#/$defs/def:token:complex:static:value" },
-        { "$ref": "#/$defs/def:token:complex:dynamic:value" }
+    "pattern": {
+      "description": "A pattern for matching characters. Can be a literal string, a character range, a token reference, or an array combining multiple patterns.",
+      "oneOf": [
+        { "$ref": "#/$defs/literalPattern" },
+        { "$ref": "#/$defs/rangePattern" },
+        { "$ref": "#/$defs/tokenReference" },
+        { "$ref": "#/$defs/patternArray" }
       ]
     },
-    "def:token:compound:values": {
-      "values": {
-        "type": "array",
-        "items": { "$ref": "#/$defs/ref:value:single" }
-      }
-    },
-    "def:token:complex:dynamic:value": {
-      "type": "object",
-      "properties": {
-        "$type": { "const": "complex" },
-        "start": {
-          "description": "A prefix pattern for the token, used to detect the intended presence of the token to initiate the process of populating it",
-          "$ref": "#/$defs/ref:tokenid:single_or_array"
-        },
-        "consume": {
-          "description": "Set of valid items which this token may consume",
-          "$ref": "#/$defs/ref:tokenid:single_or_array"
-        },
-        "additionalProperties": false
-      },
-      "required": [ "start", "consume" ]
-    },
-    "def:token:complex:static:value": {
-      "type": "object",
-      "properties": {
-        "$type": { "const": "complex" },
-        "start": {
-          "description": "A prefix pattern for the token, used to detect the intended presence of the token to initiate the process of populating it",
-          "$ref": "#/$defs/ref:tokenid:single_or_array"
-        },
-        "end": {
-          "type": "object",
-          "properties": {
-            "terminator": {
-              "description": "The pattern which signifies the end of this token",
-              "$ref": "#/$defs/ref:tokenid:single_or_array"
-            },
-            "escape": {
-              "description": "A value which (when immediately preceeding it) will allow the token to ignore an occurance of its terminator and continue consuming items",
-              "$ref": "#/$defs/ref:tokenid"
-            }
-          },
-          "required": [ "terminator" ]
-        },
-        "additionalProperties": false
-      },
-      "required": [ "start", "end" ]
-    },
-    "ref:value:single": {
+    "literalPattern": {
       "type": "string",
-      "maxLength": 1
+      "description": "Matches an exact sequence of characters",
+      "minLength": 1,
+      "examples": ["if", "+", "//", "/*", "*/"]
     },
-    "ref:value:range": {
+    "rangePattern": {
       "type": "object",
+      "description": "Matches any character within an inclusive range",
       "properties": {
         "range": {
           "type": "array",
-          "items": { "$ref": "#/$defs/ref:value:single" },
+          "description": "Two-element array specifying [start, end] of character range (inclusive)",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1
+          },
+          "minItems": 2,
           "maxItems": 2,
-          "minItems": 2
+          "examples": [["a", "z"], ["0", "9"], ["A", "Z"]]
         }
       },
+      "required": ["range"],
       "additionalProperties": false
     },
-    "ref:array:value:single": {
+    "tokenReference": {
+      "type": "object",
+      "description": "References another token's pattern by name",
+      "properties": {
+        "$token": {
+          "type": "string",
+          "description": "Name of another token whose pattern should be matched",
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        }
+      },
+      "required": ["$token"],
+      "additionalProperties": false
+    },
+    "patternArray": {
       "type": "array",
-      "items": { "$ref": "#/$defs/ref:value:single" },
+      "description": "Combines multiple patterns - matches if ANY pattern matches (OR semantics)",
+      "items": {
+        "oneOf": [
+          { "$ref": "#/$defs/literalPattern" },
+          { "$ref": "#/$defs/rangePattern" },
+          { "$ref": "#/$defs/tokenReference" }
+        ]
+      },
       "minItems": 1,
-      "uniqueItems": true
-    },
-    "ref:value:constant": {
-      "type": "string"
-    },
-    "ref:array:value:constant": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/ref:value:constant" },
-      "minItems": 1,
-      "uniqueItems": true
-    },
-    "ref:tokenid": {
-      "description": "A token identifier",
-      "type": "string",
-      "pattern": "^([\\w-]*)$"
-    },
-    "ref:tokenid:array": {
-      "type": "array",
-      "items": { "$ref": "#/$defs/ref:tokenid" },
-      "minItems": 1,
-      "uniqueItems": true
-    },
-    "ref:tokenid:single_or_array": {
-      "oneOf": [
-        { "$ref": "#/$defs/ref:tokenid" },
-        { "$ref": "#/$defs/ref:tokenid:array" }
+      "examples": [
+        [" ", "\t"],
+        [{"range": ["a", "z"]}, {"range": ["A", "Z"]}, "_"],
+        ["\r\n", "\n", "\r"]
       ]
     }
-  }
+  },
+  "examples": [
+    {
+      "$schema": "https://raw.githubusercontent.com/dsisco11/MetaParser/main/MetaParser/Resources/schema.json",
+      "namespace": "Calculator.Syntax",
+      "classname": "Calculator",
+      "tokens": {
+        "whitespace": {
+          "start": [" ", "\t"],
+          "consume": [" ", "\t"]
+        },
+        "newline": {
+          "start": ["\r\n", "\n", "\r"]
+        },
+        "number": {
+          "start": {"range": ["0", "9"]},
+          "consume": {"range": ["0", "9"]}
+        },
+        "identifier": {
+          "start": [{"range": ["a", "z"]}, {"range": ["A", "Z"]}, "_"],
+          "consume": [{"range": ["a", "z"]}, {"range": ["A", "Z"]}, {"range": ["0", "9"]}, "_"]
+        },
+        "plus": {"start": "+"},
+        "minus": {"start": "-"},
+        "star": {"start": "*"},
+        "slash": {"start": "/"}
+      },
+      "trivia": ["whitespace", "newline"]
+    }
+  ]
 }

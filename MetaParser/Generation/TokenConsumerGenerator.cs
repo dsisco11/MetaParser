@@ -23,12 +23,17 @@ internal static class TokenConsumerGenerator
         GenerateEndOfLineConsumer(code);
         code.AppendLine();
 
-        // Generate consumer for each token in schema
+        // Generate consumer for each token in schema (skip built-in tokens)
         int priority = 10;
         foreach (var kvp in schema.Tokens)
         {
             var name = kvp.Key;
             var def = kvp.Value;
+
+            // Skip tokens that would conflict with built-in consumers
+            if (TokenKindGenerator.BuiltInTokenNames.Any(b => string.Equals(b, name, System.StringComparison.OrdinalIgnoreCase)))
+                continue;
+
             var isTrivia = schema.Trivia.Contains(name);
 
             GenerateTokenConsumer(code, name, def, priority++, isTrivia);

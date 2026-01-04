@@ -54,12 +54,8 @@ internal static class SchemaValidator
             var name = kvp.Key;
             var token = kvp.Value;
 
-            // Validate token has consume pattern
-            if (token.Consume is null)
-            {
-                result.AddError($"Token '{name}' must have a 'consume' pattern");
-                continue;
-            }
+            // Note: Consume pattern is optional - single-char tokens like "+" don't need one
+            // The lexer will only match the start pattern in that case
 
             // Validate patterns within the token
             ValidatePattern(name, "start", token.Start, result);

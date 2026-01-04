@@ -170,7 +170,7 @@ internal sealed class PatternDefinitionConverter : JsonConverter<PatternDefiniti
         }
     }
 
-    private static PatternDefinition ReadOneOfPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)
+    private static PatternDefinition? ReadOneOfPattern(ref Utf8JsonReader reader, JsonSerializerOptions options)
     {
         var patterns = new System.Collections.Generic.List<PatternDefinition>();
 
@@ -184,6 +184,10 @@ internal sealed class PatternDefinitionConverter : JsonConverter<PatternDefiniti
             if (pattern != null)
                 patterns.Add(pattern);
         }
+
+        // Empty array means no pattern (e.g., "consume": [] for single-char tokens)
+        if (patterns.Count == 0)
+            return null;
 
         // Optimization: if only one pattern, return it directly
         if (patterns.Count == 1)

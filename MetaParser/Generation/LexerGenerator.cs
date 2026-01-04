@@ -43,6 +43,10 @@ internal static class LexerGenerator
 
         foreach (var kvp in schema.Tokens)
         {
+            // Skip built-in tokens - they have hardcoded consumers above
+            if (TokenKindGenerator.BuiltInTokenNames.Any(b => string.Equals(b, kvp.Key, System.StringComparison.OrdinalIgnoreCase)))
+                continue;
+
             var className = SanitizeIdentifier(kvp.Key) + "Consumer";
             code.AppendLine($"{className}.Instance,");
         }

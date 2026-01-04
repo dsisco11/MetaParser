@@ -8,6 +8,13 @@ namespace MetaParser.Generation;
 /// </summary>
 internal static class TokenKindGenerator
 {
+    /// <summary>
+    /// Token names that map to built-in token kinds (Whitespace, EndOfLine).
+    /// These are skipped during generation as they have hardcoded consumers.
+    /// </summary>
+    internal static readonly string[] BuiltInTokenNames = 
+        { "whitespace", "endofline", "end-of-line", "newline", "eof", "endoffile", "bad" };
+
     public static GeneratedFileBuilder Generate(SchemaDefinition schema)
     {
         var file = new GeneratedFileBuilder(schema.Namespace)
@@ -50,6 +57,10 @@ internal static class TokenKindGenerator
             var name = kvp.Key;
             var def = kvp.Value;
 
+            // Skip tokens that would conflict with built-in kinds
+            if (BuiltInTokenNames.Any(b => string.Equals(b, name, System.StringComparison.OrdinalIgnoreCase)))
+                continue;
+
             // Generate summary from definition
             var patternDesc = GetPatternDescription(def.Start ?? def.Consume);
             if (patternDesc is not null)
@@ -85,11 +96,10 @@ internal static class TokenKindGenerator
         code.AppendLine("TokenKind.EndOfLine => true,");
 
         // Add user-defined trivia (filter out built-in trivia names to avoid duplicates)
-        var builtInTriviaNames = new[] { "whitespace", "end-of-line", "endofline" };
         foreach (var triviaName in schema.Trivia)
         {
             // Skip if this would generate a duplicate of built-in trivia
-            if (builtInTriviaNames.Any(b => string.Equals(b, triviaName, System.StringComparison.OrdinalIgnoreCase)))
+            if (BuiltInTokenNames.Any(b => string.Equals(b, triviaName, System.StringComparison.OrdinalIgnoreCase)))
                 continue;
 
             code.AppendLine($"TokenKind.{SanitizeIdentifier(triviaName)} => true,");
