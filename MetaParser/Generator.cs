@@ -2,6 +2,7 @@ using MetaParser.Generation;
 using MetaParser.Schema;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 
 using System;
 using System.Text.Json;
@@ -43,14 +44,16 @@ public sealed class Generator : IIncrementalGenerator
         var schemaFiles = context.AdditionalTextsProvider
             .Where(static file => file.Path.EndsWith(Common.MetaParserFileExtension, StringComparison.OrdinalIgnoreCase));
 
-        // Step 2: Read file contents
+        // Step 2: Read file contents (including SourceText for location tracking)
         var fileContents = schemaFiles.Select(static (text, cancellationToken) =>
         {
-            var content = text.GetText(cancellationToken)?.ToString() ?? string.Empty;
+            var sourceText = text.GetText(cancellationToken);
+            var content = sourceText?.ToString() ?? string.Empty;
             return new FileData(
                 Common.Get_FileName(text.Path),
                 text.Path,
-                content);
+                content,
+                sourceText);
         });
 
         // Step 3: Parse JSON into SchemaDefinition
@@ -70,12 +73,15 @@ public sealed class Generator : IIncrementalGenerator
         // Step 5: Generate code for valid schemas
         context.RegisterSourceOutput(validatedSchemas, static (spc, data) =>
         {
+            // Create location for diagnostics (file start if source available)
+            var location = CreateFileLocation(data.File);
+
             // Report any validation errors
             foreach (var error in data.Validation.Errors)
             {
                 spc.ReportDiagnostic(Diagnostic.Create(
                     DIAGNOSTIC_DEFS.SchemaValidationError,
-                    Location.None,
+                    location,
                     error));
             }
 
@@ -84,17 +90,13 @@ public sealed class Generator : IIncrementalGenerator
             {
                 spc.ReportDiagnostic(Diagnostic.Create(
                     DIAGNOSTIC_DEFS.SchemaValidationWarning,
-                    Location.None,
+                    location,
                     warning));
             }
 
             // Skip code generation if there are errors or schema is null
             if (!data.Validation.IsValid || data.Schema is null)
                 return;
-
-            // TODO: Implement v2 code generation
-            // Phase 5: Graffs integration for dependency analysis
-            // Phase 6: Code generation pipeline
             
             GenerateCode(spc, data.File, data.Schema);
         });
@@ -138,5 +140,20 @@ public sealed class Generator : IIncrementalGenerator
         // Phase 7: Syntax tree and parser
         spc.AddSource(SyntaxTreeGenerator.Generate(schema));
         spc.AddSource(ParserGenerator.Generate(schema));
+    }
+
+    /// <summary>
+    /// Creates a Location pointing to the start of the schema file.
+    /// Returns Location.None if SourceText is not available.
+    /// </summary>
+    private static Location CreateFileLocation(FileData file)
+    {
+        if (file.SourceText is null)
+            return Location.None;
+
+        // Create a location pointing to the start of the file
+        var span = new TextSpan(0, 0);
+        var lineSpan = file.SourceText.Lines.GetLinePositionSpan(span);
+        return Location.Create(file.Path, span, lineSpan);
     }
 }

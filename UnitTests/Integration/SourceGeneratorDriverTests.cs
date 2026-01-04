@@ -168,6 +168,11 @@ public class SourceGeneratorDriverTests
         var errors = diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
         Assert.NotEmpty(errors);
         Assert.Contains(errors, e => e.GetMessage().Contains("circular", StringComparison.OrdinalIgnoreCase));
+
+        // Assert - error should have file location
+        var firstError = errors[0];
+        Assert.NotEqual(Location.None, firstError.Location);
+        Assert.Contains("invalid.metaparser.json", firstError.Location.GetLineSpan().Path);
     }
 
     [Fact]
@@ -189,6 +194,59 @@ public class SourceGeneratorDriverTests
         // Assert - no generated files (schema parse failed)
         var generatedTrees = outputCompilation.SyntaxTrees.Skip(1).ToArray();
         Assert.Empty(generatedTrees);
+    }
+
+    [Fact]
+    public void Generator_ErrorRecovery_ContinuesAfterBadToken()
+    {
+        // Arrange
+        var generator = new Generator();
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+
+        var compilation = CreateCompilation();
+        var additionalText = new InMemoryAdditionalText("calculator.metaparser.json", CalculatorSchema);
+
+        driver = driver.AddAdditionalTexts(ImmutableArray.Create<AdditionalText>(additionalText));
+
+        // Act - generate and compile
+        driver.RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out _);
+
+        using var ms = new MemoryStream();
+        var emitResult = outputCompilation.Emit(ms);
+        Assert.True(emitResult.Success, string.Join("\n", emitResult.Diagnostics.Select(d => d.GetMessage())));
+
+        ms.Seek(0, SeekOrigin.Begin);
+        var assembly = Assembly.Load(ms.ToArray());
+
+        // Get parser and parse input with invalid characters
+        var parserType = assembly.GetType("Calculator.Syntax.CalculatorParserParser")!;
+        var parseMethod = parserType.GetMethod("Parse", new[] { typeof(string) })!;
+
+        // Parse input with @ and # which are not recognized tokens
+        var syntaxTree = parseMethod.Invoke(null, new object[] { "1 + @ + 2 # 3" });
+        Assert.NotNull(syntaxTree);
+
+        // Verify diagnostics were created for bad tokens
+        var diagnosticsProp = syntaxTree!.GetType().GetProperty("Diagnostics");
+        Assert.NotNull(diagnosticsProp);
+
+        var diagnostics = diagnosticsProp.GetValue(syntaxTree);
+        Assert.NotNull(diagnostics);
+
+        // Get the Length property from ImmutableArray
+        var lengthProp = diagnostics!.GetType().GetProperty("Length");
+        var count = (int)lengthProp!.GetValue(diagnostics)!;
+
+        // Should have 2 diagnostics (for @ and #)
+        Assert.Equal(2, count);
+
+        // Verify the source can still be reconstructed (error recovery worked)
+        var greenRootProp = syntaxTree.GetType().GetProperty("GreenRoot");
+        var greenRoot = greenRootProp!.GetValue(syntaxTree);
+        var toFullStringMethod = greenRoot!.GetType().GetMethod("ToFullString");
+        var reconstructed = (string)toFullStringMethod!.Invoke(greenRoot, null)!;
+
+        Assert.Equal("1 + @ + 2 # 3", reconstructed);
     }
 
     private static CSharpCompilation CreateCompilation()
